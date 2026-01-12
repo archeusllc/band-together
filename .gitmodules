@@ -1,0 +1,9 @@
+[submodule "client"]
+	path = client
+	url = https://github.com/archeusllc/bt-client.git
+[submodule "api"]
+	path = api
+	url = https://github.com/archeusllc/bt-api.git
+[submodule "db"]
+	path = db
+	url = https://github.com/archeusllc/bt-db.git
