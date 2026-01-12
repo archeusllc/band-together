@@ -9,7 +9,7 @@ help:
 	@echo "  make sync-all MSG='message'    Stage, commit, and push all (auto-generated msg if omitted)"
 	@echo ""
 	@echo "  INDIVIDUAL COMMANDS:"
-	@echo "  make install          Install all dependencies (client, api, db)"
+	@echo "  make install          Install all dependencies (shared, client, api, db)"
 	@echo "  make submodules       Initialize and update all submodules"
 	@echo "  make pull-submodules  Pull latest changes from all submodules"
 	@echo "  make stage-all        Stage all changes in submodules and parent repo"
@@ -64,6 +64,8 @@ check-dirty:
 
 # Install dependencies in all modules
 install: submodules
+	@echo "📚 Installing shared dependencies..."
+	cd shared && bun install
 	@echo "📚 Installing client dependencies..."
 	cd client && bun install
 	@echo "📚 Installing api dependencies..."
@@ -81,5 +83,5 @@ status:
 # Clean up node_modules from all modules
 clean:
 	@echo "🧹 Cleaning node_modules..."
-	rm -rf client/node_modules api/node_modules db/node_modules
+	rm -rf shared/node_modules client/node_modules api/node_modules db/node_modules
 	@echo "✅ Cleaned!"
