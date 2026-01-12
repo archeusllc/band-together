@@ -7,8 +7,9 @@
 ## Tech Stack
 
 - **Client:** Expo 54, React Native, TypeScript, NativeWind (Tailwind), Bun
-- **API:** Bun, Elysia, TypeScript
-- **Database:** PostgreSQL 16, Prisma ORM
+- **API:** Bun, Elysia, TypeScript, Prisma 7
+- **Database:** PostgreSQL 16, Prisma ORM 7 with PrismaPg adapter
+- **DB Module:** Prisma schema with TypeScript client generation (`@band-together/db`)
 - **Services:** Firebase (Auth, Storage, Cloud Messaging)
 - **Dev Environment:** Docker Compose (PostgreSQL + Adminer)
 - **Deploy Target:** Railway or Fly.io
@@ -144,6 +145,62 @@ Use `.env.example` as a template for new setups.
 - Simple phpMyAdmin-like interface for PostgreSQL
 - No server registration needed (vs pgAdmin)
 - Login credentials from `.env` file
+
+### DB Module (`@band-together/db`)
+
+The database module is published as a package on GitHub, allowing the API to import Prisma types and client:
+
+**What it provides:**
+- Prisma schema with 7 models: User, Band, BandMember, Song, Setlist, SetlistSong, Rehearsal, Gig
+- Generated Prisma Client (TypeScript-enabled)
+- Database migrations
+- Prisma Studio for visual database management
+
+**Development:**
+
+```bash
+cd db
+
+# Generate Prisma Client from schema
+bun run generate
+
+# Create a new migration
+bun run migrate:dev --name description
+
+# Deploy migrations to database
+bun run migrate:deploy
+
+# Open Prisma Studio (visual database browser)
+bun run studio
+```
+
+**Exports:**
+
+The `@band-together/db` package exports:
+- `PrismaClient` — Main database client
+- All Prisma types — Full type definitions for all models
+- Type-safe database queries
+
+### API-DB Integration
+
+The API imports PrismaClient from the db module:
+
+```typescript
+import { PrismaClient } from '@band-together/db';
+import { PrismaPg } from '@prisma/adapter-pg';
+
+const adapter = new PrismaPg({
+  connectionString: process.env.DATABASE_URL
+});
+
+const prisma = new PrismaClient({ adapter });
+```
+
+**Key points:**
+- Prisma 7 requires an adapter (PrismaPg for PostgreSQL)
+- DATABASE_URL should be set in `.env`
+- The db module is imported from GitHub: `github:archeusllc/bt-db`
+- Changes to db schema require regenerating the client and pushing to GitHub before API can use them
 
 ### Key Features
 
