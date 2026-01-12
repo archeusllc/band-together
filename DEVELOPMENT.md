@@ -93,8 +93,9 @@ const prisma = new PrismaClient({ adapter });
 **Key points:**
 - Prisma 7 requires an adapter (PrismaPg for PostgreSQL)
 - DATABASE_URL is read from `.env`
-- Prefer local workspace linking during development: `"@band-together/shared": "workspace:../shared"`
-- For CI/deployment you can depend on GitHub: `"github:archeusllc/bt-shared"`
+- **Shared module is pulled from GitHub** (`"@band-together/shared": "github:archeusllc/bt-shared"`) — this is intentional to ensure consistency across environments
+- Do not change this to a local workspace import (`workspace:../shared`) even though Bun supports it
+- Local generated client in `shared/generated/prisma-client/` is committed for distribution
 
 ### Common Tasks
 
@@ -203,6 +204,69 @@ When you modify the database schema:
 7. **Restart API server**
 
 ## Troubleshooting
+
+### Initial Setup Issues
+
+#### Prisma 7 Node.js Version Check with Bun
+
+**Problem:** During `bun install` in the `db/` module, you see:
+```
+Prisma only supports Node.js versions 20.19+, 22.12+, 24.0+.
+Please upgrade your Node.js version.
+error: preinstall script from "prisma" exited with 1
+```
+
+**Context:** Prisma 7 has a preinstall script that checks Node.js version. This check runs even when using Bun as the runtime, and will fail if Node.js is not installed or is an older version.
+
+**Solution:** Use the `--bun` flag with `bunx` to bypass Node.js version checks:
+```bash
+cd db && bunx --bun bun install
+```
+
+This is already configured in the root `make install` target, but if installing manually, remember this flag.
+
+#### Database Credentials Mismatch
+
+**Problem:** After running `bun run migrate:deploy`, you get:
+```
+Error: P1000: Authentication failed against database server, 
+the provided database credentials for `postgres` are not valid.
+```
+
+**Context:** The `.env.example` files contain default credentials, but your PostgreSQL container may have been initialized with different credentials. Docker volumes persist across container restarts, so the actual credentials are whatever was used when the container was first created.
+
+**Solution:** 
+1. Check your running PostgreSQL container's credentials:
+   ```bash
+   docker inspect bandtogether-postgres --format='{{range .Config.Env}}{{println .}}{{end}}' | grep POSTGRES
+   ```
+2. Update `.env`, `api/.env`, `shared/.env`, and `db/.env` with the actual credentials from the container
+3. Retry the migration:
+   ```bash
+   cd db && bun run migrate:deploy
+   ```
+
+**Prevention:** If setting up from scratch, either:
+- Create a fresh PostgreSQL container with known credentials
+- Copy credentials from a running container to `.env` files before running migrations
+
+#### Docker Container Name Conflict
+
+**Problem:** Running `docker compose up -d` returns:
+```
+Error response from daemon: Conflict. The container name "/bandtogether-postgres" 
+is already in use by another container
+```
+
+**Solution:** The container already exists (perhaps from a previous setup attempt):
+```bash
+# Option 1: Restart the existing container
+docker compose restart
+
+# Option 2: Remove old container and recreate
+docker compose down
+docker compose up -d
+```
 
 ### API won't start
 

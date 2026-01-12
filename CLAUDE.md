@@ -201,8 +201,9 @@ const prisma = new PrismaClient({ adapter });
 **Key points:**
 - Prisma 7 requires an adapter (PrismaPg for PostgreSQL)
 - DATABASE_URL should be set (shared/.env supported via dotenv)
-- During dev, prefer `workspace:../shared`; for CI/deployments use `github:archeusllc/bt-shared`
-- Changes to db schema → `bun run generate` (db) → copied into shared → API consumes new client
+- **Shared module is imported from GitHub** (`"@band-together/shared": "github:archeusllc/bt-shared"`) — intentional for consistency across environments
+- Do not change this to a local workspace import (`workspace:../shared`) even though Bun supports it; this ensures all environments consume the same committed generated Prisma client
+- Changes to db schema → `bun run generate` (db) → copied into shared → submodule push → API auto-pulls latest commit
 
 ### Key Features
 
