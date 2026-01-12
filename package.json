@@ -4,18 +4,18 @@
   "description": "A band companion app for musicians",
   "private": true,
   "scripts": {
-    "git:submodules": "git submodule update --init --recursive",
-    "git:pull": "git submodule foreach git pull origin main",
+    "git:submodules": "./scripts/submodules.sh",
+    "git:pull": "./scripts/pull-submodules.sh",
     "git:push": "./scripts/push-all.sh",
     "git:stage": "./scripts/stage-all.sh",
     "git:commit": "./scripts/commit-all.sh",
     "git:sync": "./scripts/sync-all.sh",
     "git:check": "./scripts/check-dirty.sh",
-    "git:status": "git submodule foreach --quiet 'echo === $name === && git status --short'",
-    "install-all": "npm run git:submodules && cd client && bun install && cd ../api && bun install && cd ../db && bunx -- bun install",
-    "clean": "rm -rf client/node_modules api/node_modules db/node_modules",
-    "reset": "npm run clean && npm run install-all",
-    "db:connect": "docker exec -it bandtogether-postgres psql -U postgres -d band_together"
+    "git:status": "./scripts/status.sh",
+    "install-all": "./scripts/install-all.sh",
+    "clean": "./scripts/clean.sh",
+    "reset": "./scripts/reset.sh",
+    "db:connect": "./scripts/db-connect.sh"
   },
   "keywords": [
     "band",
