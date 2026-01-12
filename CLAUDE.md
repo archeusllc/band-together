@@ -22,7 +22,8 @@ Git submodules:
 band-together/
 ├── client/    → archeusllc/bt-client (Expo app)
 ├── api/       → archeusllc/bt-api (Bun/Elysia)
-└── db/        → archeusllc/bt-db (Prisma schema)
+├── db/        → archeusllc/bt-db (Prisma schema)
+└── shared/    → archeusllc/bt-shared (Shared types + Prisma client)
 ```
 
 ## Current Phase
@@ -146,23 +147,24 @@ Use `.env.example` as a template for new setups.
 - No server registration needed (vs pgAdmin)
 - Login credentials from `.env` file
 
-### DB Module (`@band-together/db`)
+### DB Module (`@band-together/db`) & Shared Module (`@band-together/shared`)
 
-The database module is published as a package on GitHub, allowing the API to import Prisma types and client:
+The `db` module hosts the Prisma schema/migrations and generates a client. The `shared` module commits the generated client and exposes a configured factory for consumption by the API and other packages.
 
-**What it provides:**
+**db provides:**
 - Prisma schema with 7 models: User, Band, BandMember, Song, Setlist, SetlistSong, Rehearsal, Gig
-- Generated Prisma Client (TypeScript-enabled)
-- Database migrations
-- Prisma Studio for visual database management
+- Migrations & Prisma 7 config
+- `bun run generate` outputs to `db/generated/` and copies to `shared/generated/prisma-client/`
 
-**Development:**
+**shared provides:**
+- Committed Prisma client (`generated/prisma-client/`)
+- Configured `PrismaClient(options?)` using PrismaPg
+- Declares `@prisma/client` so consumers get Prisma runtime automatically
+
+**Development (db):**
 
 ```bash
-cd db
-
-# Generate Prisma Client from schema
-bun run generate
+cd db && bun run generate   # generates and copies to shared
 
 # Create a new migration
 bun run migrate:dev --name description
@@ -174,19 +176,19 @@ bun run migrate:deploy
 bun run studio
 ```
 
-**Exports:**
+**Exports (shared):**
 
-The `@band-together/db` package exports:
-- `PrismaClient` — Main database client
-- All Prisma types — Full type definitions for all models
-- Type-safe database queries
+The `@band-together/shared` package provides:
+- `PrismaClient(options?)` — Configured factory for the Prisma client
+- Committed generated client under `generated/prisma-client/`
+- Prisma model types via the generated client
 
-### API-DB Integration
+### API-Shared Integration
 
-The API imports PrismaClient from the db module:
+The API imports PrismaClient from the shared module:
 
 ```typescript
-import { PrismaClient } from '@band-together/db';
+import { PrismaClient } from '@band-together/shared';
 import { PrismaPg } from '@prisma/adapter-pg';
 
 const adapter = new PrismaPg({
@@ -198,9 +200,9 @@ const prisma = new PrismaClient({ adapter });
 
 **Key points:**
 - Prisma 7 requires an adapter (PrismaPg for PostgreSQL)
-- DATABASE_URL should be set in `.env`
-- The db module is imported from GitHub: `github:archeusllc/bt-db`
-- Changes to db schema require regenerating the client and pushing to GitHub before API can use them
+- DATABASE_URL should be set (shared/.env supported via dotenv)
+- During dev, prefer `workspace:../shared`; for CI/deployments use `github:archeusllc/bt-shared`
+- Changes to db schema → `bun run generate` (db) → copied into shared → API consumes new client
 
 ### Key Features
 

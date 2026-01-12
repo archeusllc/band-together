@@ -17,6 +17,7 @@ This repo uses git submodules:
 | `client/` | [archeusllc/bt-client](https://github.com/archeusllc/bt-client) — Expo React Native app |
 | `api/` | [archeusllc/bt-api](https://github.com/archeusllc/bt-api) — Bun/Elysia backend |
 | `db/` | [archeusllc/bt-db](https://github.com/archeusllc/bt-db) — Prisma schema + migrations |
+| `shared/` | [archeusllc/bt-shared](https://github.com/archeusllc/bt-shared) — Shared types/utilities and generated Prisma client |
 
 ## Quick Start
 
@@ -81,7 +82,7 @@ make install
 # 2. Start local PostgreSQL
 docker compose up -d
 
-# 3. Generate Prisma client in db/
+# 3. Generate Prisma client in db/ (copies to shared/)
 cd db && bun run generate && cd ..
 
 # 4. Start the API server
@@ -103,6 +104,7 @@ See individual submodule READMEs for specific setup:
 - [bt-client README](https://github.com/archeusllc/bt-client#readme) — Expo app setup and development
 - [bt-api README](https://github.com/archeusllc/bt-api#readme) — API server and endpoints
 - [bt-db README](https://github.com/archeusllc/bt-db#readme) — Database schema and migrations
+- [bt-shared README](https://github.com/archeusllc/bt-shared#readme) — Shared types and Prisma client usage
 
 ## Workflow
 

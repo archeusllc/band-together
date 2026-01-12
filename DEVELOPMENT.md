@@ -11,7 +11,7 @@ make install
 # Start PostgreSQL
 docker compose up -d
 
-# Generate Prisma client
+# Generate Prisma client (db → shared)
 cd db && bun run generate && cd ..
 
 # Start API server
@@ -20,19 +20,24 @@ cd api && bun run dev
 
 The API will be available at `http://localhost:3000`.
 
-## Working with the Database Module (`@band-together/db`)
+## Working with the Database and Shared Modules
 
 ### Understanding the Setup
 
 The `db` module contains:
 - **Prisma schema** — Definition of all database models (User, Band, BandMember, Song, Setlist, SetlistSong, Rehearsal, Gig)
-- **Generated Prisma Client** — TypeScript client for querying the database
+- **Generated Prisma Client** — Output to `db/generated/` and copied to `shared/generated/prisma-client/`
 - **Migrations** — Database version control
 - **prisma.config.ts** — Configuration for Prisma 7
 
+The `shared` module provides:
+- **Configured PrismaClient factory** — `PrismaClient(options?)` using the PrismaPg adapter
+- **Environment management** — Reads `DATABASE_URL` from `.env` in `shared/`
+- **Distribution** — Generated client committed under `shared/generated/prisma-client/`
+
 ### Common Tasks
 
-**Generate Prisma Client after schema changes:**
+**Generate Prisma Client after schema changes (also copies to shared):**
 ```bash
 cd db && bun run generate
 ```
@@ -72,10 +77,10 @@ cd db && bunx --bun prisma migrate status
 
 ### Understanding the Setup
 
-The API imports PrismaClient from the db module:
+The API imports PrismaClient from the shared module:
 
 ```typescript
-import { PrismaClient } from '@band-together/db';
+import { PrismaClient } from '@band-together/shared';
 import { PrismaPg } from '@prisma/adapter-pg';
 
 const adapter = new PrismaPg({
@@ -88,7 +93,8 @@ const prisma = new PrismaClient({ adapter });
 **Key points:**
 - Prisma 7 requires an adapter (PrismaPg for PostgreSQL)
 - DATABASE_URL is read from `.env`
-- The db module is fetched from GitHub: `github:archeusllc/bt-db`
+- Prefer local workspace linking during development: `"@band-together/shared": "workspace:../shared"`
+- For CI/deployment you can depend on GitHub: `"github:archeusllc/bt-shared"`
 
 ### Common Tasks
 
@@ -116,7 +122,7 @@ curl http://localhost:3000/health
 
 ### Environment Setup
 
-The `.env` file in the root contains database credentials:
+The `.env` file in the root contains database credentials for Docker Compose, and `shared/.env` holds the app `DATABASE_URL` used by the Prisma adapter.
 
 ```env
 POSTGRES_USER=postgres
@@ -124,7 +130,7 @@ POSTGRES_PASSWORD=your_password
 POSTGRES_DB=band_together
 ```
 
-This is used by Docker Compose. The API also reads `DATABASE_URL` from `.env`:
+This is used by Docker Compose. The API also reads `DATABASE_URL` (via the shared module configuration):
 
 ```env
 DATABASE_URL="postgresql://postgres:your_password@localhost:5432/band_together"
@@ -184,17 +190,17 @@ All models include:
 - **Band → Rehearsal** (one-to-many)
 - **Band → Gig** (one-to-many)
 
-## Workflow: Schema → API
+## Workflow: Schema → Shared → API
 
 When you modify the database schema:
 
 1. **Edit schema** in `db/prisma/schema.prisma`
 2. **Create migration:** `cd db && bun run migrate:dev --name description`
-3. **Generate client:** `cd db && bun run generate`
-4. **Commit db changes:** `git add . && git commit -m "..."`
-5. **Push db module:** `git push` (in db/)
-6. **Update API dependency:** API will automatically pull the latest when node_modules is refreshed
-7. **Restart API server:** The Prisma client types will be updated
+3. **Generate client:** `cd db && bun run generate` (copies to `shared/generated/prisma-client/`)
+4. **Commit db + shared changes** (db migration + shared generated client)
+5. **Push submodules**
+6. **API uses shared module** — workspace link locally, GitHub in deployment
+7. **Restart API server**
 
 ## Troubleshooting
 
@@ -203,9 +209,9 @@ When you modify the database schema:
 **Problem:** PrismaClient initialization error
 **Solution:** Ensure DATABASE_URL is set in `.env` and PostgreSQL is running (`docker compose up -d`)
 
-### "Cannot find module '@band-together/db'"
+### "Cannot find module '@band-together/shared'"
 
-**Problem:** db module not installed
+**Problem:** shared module not installed
 **Solution:**
 ```bash
 cd api
@@ -221,7 +227,7 @@ bun install
 cd db
 bun run generate
 cd ../api
-bun install  # to pull latest db module
+bun install  # to pull latest shared module
 ```
 
 ### Database connection refused
