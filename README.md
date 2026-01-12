@@ -4,7 +4,9 @@ A band companion app for scheduling, setlists, and gig booking.
 
 ## Documentation
 
-See the [Wiki](https://github.com/archeusllc/band-together/wiki) for full documentation.
+- **[DEVELOPMENT.md](DEVELOPMENT.md)** — Development guide for working with db and api modules
+- **[CLAUDE.md](CLAUDE.md)** — Project context, tech stack, and architecture
+- **[Wiki](https://github.com/archeusllc/band-together/wiki)** — Full project documentation
 
 ## Structure
 
@@ -69,6 +71,33 @@ git submodule update --init --recursive
 ```
 
 ## Development
+
+### Local Setup
+
+```bash
+# 1. Install dependencies for all submodules
+make install
+
+# 2. Start local PostgreSQL
+docker compose up -d
+
+# 3. Generate Prisma client in db/
+cd db && bun run generate && cd ..
+
+# 4. Start the API server
+cd api && bun run dev
+```
+
+The API will be available at `http://localhost:3000` with a `/health` endpoint to check database connection.
+
+**Optional: Visual Database Management**
+
+```bash
+cd db && bun run studio
+# Opens Prisma Studio at http://localhost:5555
+```
+
+### Submodule Documentation
 
 See individual submodule READMEs for specific setup:
 - [bt-client README](https://github.com/archeusllc/bt-client#readme) — Expo app setup and development
