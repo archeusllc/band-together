@@ -12,7 +12,7 @@
     "git:sync": "./scripts/sync-all.sh",
     "git:check": "./scripts/check-dirty.sh",
     "git:status": "git submodule foreach --quiet 'echo === $name === && git status --short'",
-    "install-all": "npm run git:submodules && cd client && bun install && cd ../api && bun install && cd ../db && bun install",
+    "install-all": "npm run git:submodules && cd client && bun install && cd ../api && bun install && cd ../db && bunx -- bun install",
     "clean": "rm -rf client/node_modules api/node_modules db/node_modules",
     "reset": "npm run clean && npm run install-all",
     "db:connect": "docker exec -it bandtogether-postgres psql -U postgres -d band_together"
