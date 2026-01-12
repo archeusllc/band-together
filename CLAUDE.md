@@ -8,9 +8,9 @@
 
 - **Client:** Expo 54, React Native, TypeScript, NativeWind (Tailwind), Bun
 - **API:** Bun, Elysia, TypeScript
-- **Database:** PostgreSQL, Prisma ORM
+- **Database:** PostgreSQL 16, Prisma ORM
 - **Services:** Firebase (Auth, Storage, Cloud Messaging)
-- **Dev Environment:** Docker (local Postgres + API)
+- **Dev Environment:** Docker Compose (PostgreSQL + Adminer)
 - **Deploy Target:** Railway or Fly.io
 
 ## Repo Structure
@@ -67,6 +67,12 @@ Full docs in the [Wiki](https://github.com/archeusllc/band-together/wiki).
 git clone --recurse-submodules https://github.com/archeusllc/band-together.git
 cd band-together
 make install
+
+# Start local PostgreSQL and Adminer
+docker compose up -d
+
+# Access Adminer at http://localhost:8080
+# Login: System=PostgreSQL, Server=postgres, Username=postgres, Password=(from .env), Database=band_together
 ```
 
 ### Daily Workflow
@@ -79,8 +85,8 @@ make sync-all
 make sync-all MSG='your message'
 
 # Equivalent commands:
-bun sync-all
-npm run sync-all
+bun git:sync
+npm run git:sync
 ./scripts/sync-all.sh
 ```
 
@@ -104,6 +110,40 @@ make install               # Install dependencies
 make status                # Show git status
 make clean                 # Remove node_modules
 ```
+
+### Database
+
+**Docker Compose Setup:**
+
+```bash
+# Start PostgreSQL and Adminer
+docker compose up -d
+
+# Stop services
+docker compose down
+
+# Connect to PostgreSQL via terminal
+bun db:connect
+# or
+npm run db:connect
+```
+
+**Environment Variables:**
+
+Database credentials are stored in `.env` (git-ignored):
+```env
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=<random-password>
+POSTGRES_DB=band_together
+```
+
+Use `.env.example` as a template for new setups.
+
+**Adminer (Database GUI):**
+- Access at `http://localhost:8080`
+- Simple phpMyAdmin-like interface for PostgreSQL
+- No server registration needed (vs pgAdmin)
+- Login credentials from `.env` file
 
 ### Key Features
 
@@ -138,7 +178,10 @@ This ensures the parent repo's `.gitmodules` and submodule index are always in s
 - **This file (CLAUDE.md)** — Project context, tech stack, workflow
 - **[README.md](README.md)** — Quick start, setup, commands
 - **[Makefile](Makefile)** — Make targets and commands
-- **[package.json](package.json)** — npm/bun scripts
+- **[package.json](package.json)** — npm/bun scripts (git:*, db:*, install-all, clean)
+  - `git:sync`, `git:stage`, `git:commit`, `git:push` — Git workflow
+  - `git:pull`, `git:check`, `git:status` — Git utilities  
+  - `db:connect` — Connect to PostgreSQL via psql
 - **Submodule READMEs:**
   - [bt-client](https://github.com/archeusllc/bt-client) — Expo app setup
   - [bt-api](https://github.com/archeusllc/bt-api) — API endpoints and development
