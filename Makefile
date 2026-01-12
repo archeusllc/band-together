@@ -1,6 +1,6 @@
 # Band Together — Makefile
 
-.PHONY: help install submodules pull-submodules push-all stage-all commit-all check-dirty status clean
+.PHONY: help install submodules pull-submodules push-all stage-all commit-all check-dirty sync-all status clean
 
 help:
 	@echo "Band Together — Available commands:"
@@ -11,6 +11,7 @@ help:
 	@echo "  make push-all         Push all submodules and parent repo"
 	@echo "  make stage-all        Stage all changes in submodules and parent repo"
 	@echo "  make commit-all MSG='message'  Commit with message (auto-generated if omitted)"
+	@echo "  make sync-all MSG='message'    Stage, commit, and push all (auto-generated msg if omitted)"
 	@echo "  make check-dirty      Check if submodules have uncommitted changes"
 	@echo "  make status           Show git status of all submodules"
 	@echo "  make clean            Remove node_modules from all modules"
@@ -42,6 +43,14 @@ commit-all:
 		./scripts/commit-all.sh; \
 	else \
 		./scripts/commit-all.sh -m "$(MSG)"; \
+	fi
+
+# Stage, commit, and push all changes
+sync-all:
+	@if [ -z "$(MSG)" ]; then \
+		./scripts/sync-all.sh; \
+	else \
+		./scripts/sync-all.sh -m "$(MSG)"; \
 	fi
 
 # Check if submodules have uncommitted changes
