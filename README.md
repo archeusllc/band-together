@@ -16,7 +16,38 @@ This repo uses git submodules:
 | `api/` | Bun/Elysia backend |
 | `db/` | Prisma schema + migrations |
 
-## Setup
+## Quick Start
+
+### Using Make (recommended)
+
+```bash
+# Initialize submodules and install all dependencies
+make install
+
+# Update submodules to latest
+make pull-submodules
+
+# View available commands
+make help
+```
+
+### Using npm/bun scripts
+
+```bash
+# Initialize submodules
+npm run submodules
+
+# Pull latest changes from all submodules
+npm run pull-submodules
+
+# Install all dependencies
+npm run install-all
+
+# View submodule status
+npm run status
+```
+
+### Manual setup
 
 ```bash
 # Clone with submodules
@@ -28,4 +59,7 @@ git submodule update --init --recursive
 
 ## Development
 
-See individual submodule READMEs for setup instructions.
+See individual submodule READMEs for specific setup:
+- [client/README.md](client/README.md) — Expo app
+- [api/README.md](api/README.md) — Bun/Elysia API
+- [db/README.md](db/README.md) — Prisma schema
