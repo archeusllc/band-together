@@ -42,17 +42,17 @@ make help
 
 ```bash
 # Initialize submodules
-bun submodules
+bun git:submodules
 
 # Sync all changes in one command
-bun sync-all
+bun git:sync
 
 # Or individual commands:
-bun pull-all            # Pull latest from all submodules
-bun stage-all           # Stage all changes
-bun commit-all          # Commit (auto-generates message)
-bun push-all            # Push all repos
-bun check               # Check for uncommitted changes
+bun git:pull            # Pull latest from all submodules
+bun git:stage           # Stage all changes
+bun git:commit          # Commit (auto-generates message)
+bun git:push            # Push all repos
+bun git:check           # Check for uncommitted changes
 
 # Install all dependencies
 bun install-all
