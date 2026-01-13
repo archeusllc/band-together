@@ -100,6 +100,16 @@ bun git:status
 
 All scripts respect the configured branch per submodule (from `.gitmodules`).
 
+### Agent Sessions
+
+When starting an AI agent session for feature development, bug fixes, or significant refactoring, **associate the session with a specific GitHub issue**. Include the issue number in your initial prompt to the agent. This ensures:
+
+- Clear traceability of work to requirements
+- Better documentation in commits and PRs
+- Easier context continuity across multiple sessions
+
+Example: "I'm working on #42 to implement user authentication. Please help with..."
+
 ### Database
 
 **Docker Compose Setup:**
