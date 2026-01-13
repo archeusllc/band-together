@@ -16,15 +16,18 @@
 
 ## Repo Structure
 
-Git submodules:
+Git submodules (with branch tracking):
 
 ```
 band-together/
-├── client/    → archeusllc/bt-client (Expo app)
-├── api/       → archeusllc/bt-api (Bun/Elysia)
-├── db/        → archeusllc/bt-db (Prisma schema)
-└── shared/    → archeusllc/bt-shared (Shared types + Prisma client)
+├── client/    → archeusllc/bt-client (Expo app, main branch)
+├── api/       → archeusllc/bt-api (Bun/Elysia, main branch)
+├── db/        → archeusllc/bt-db (Prisma schema, main branch)
+├── shared/    → archeusllc/bt-shared (Shared types + Prisma client, main branch)
+└── wiki/      → archeusllc/band-together.wiki (Documentation, master branch)
 ```
+
+Each submodule specifies its tracked branch in `.gitmodules`. Most use `main`, but the wiki uses `master` (GitHub wiki requirement).
 
 ## Current Phase
 
@@ -68,50 +71,34 @@ Full docs in the [Wiki](https://github.com/archeusllc/band-together/wiki).
 ```bash
 git clone --recurse-submodules https://github.com/archeusllc/band-together.git
 cd band-together
-make install
-
-# Start local PostgreSQL and Adminer
-docker compose up -d
-
-# Access Adminer at http://localhost:8080
-# Login: System=PostgreSQL, Server=postgres, Username=postgres, Password=(from .env), Database=band_together
+bun install
 ```
+
+This will:
+1. Initialize all submodules (at their configured branches)
+2. Create `.env` files from templates
+3. Install dependencies in all submodules
+4. Start PostgreSQL via Docker Compose
+5. Generate Prisma client and run migrations
+6. Start the dev environment (API in background, Expo in foreground)
 
 ### Daily Workflow
 
 ```bash
 # Single command to stage, commit, and push everything
-make sync-all
-
-# Or with custom message
-make sync-all MSG='your message'
-
-# Equivalent commands:
 bun git:sync
-npm run git:sync
-./scripts/sync-all.sh
+
+# With custom message
+bun git:sync -m "your message"
+
+# Pull latest changes
+bun git:pull
+
+# Check status
+bun git:status
 ```
 
-### Available Commands
-
-```bash
-make help                    # View all commands
-
-# Workflow
-make sync-all              # Stage, commit, push (recommended)
-
-# Individual operations
-make pull-submodules       # Pull latest from all submodules
-make stage-all             # Stage all changes
-make commit-all            # Commit all staged changes
-make push-all              # Push all repos to remote
-make check-dirty           # Check for uncommitted submodule changes
-
-# Utilities
-make install               # Install dependencies
-make status                # Show git status
-make clean                 # Remove node_modules
-```
+All scripts respect the configured branch per submodule (from `.gitmodules`).
 
 ### Database
 
@@ -236,14 +223,11 @@ This ensures the parent repo's `.gitmodules` and submodule index are always in s
 ## Documentation Structure
 
 - **This file (CLAUDE.md)** — Project context, tech stack, workflow
-- **[README.md](README.md)** — Quick start, setup, commands
-- **[Makefile](Makefile)** — Make targets and commands
-- **[package.json](package.json)** — npm/bun scripts (git:*, db:*, install-all, clean)
-  - `git:sync`, `git:stage`, `git:commit`, `git:push` — Git workflow
-  - `git:pull`, `git:check`, `git:status` — Git utilities  
-  - `db:connect` — Connect to PostgreSQL via psql
-- **Submodule READMEs:**
-  - [bt-client](https://github.com/archeusllc/bt-client) — Expo app setup
-  - [bt-api](https://github.com/archeusllc/bt-api) — API endpoints and development
-  - [bt-db](https://github.com/archeusllc/bt-db) — Database schema and migrations
-- **[Wiki](https://github.com/archeusllc/band-together/wiki)** — Full project documentation
+- **[README.md](README.md)** — Quick start and setup
+- **[DEVELOPMENT.md](DEVELOPMENT.md)** — Development guide with common tasks and troubleshooting
+- **[Wiki](https://github.com/archeusllc/band-together/wiki)** — Comprehensive documentation
+  - Architecture pages (Client, API, Database)
+  - Database schema details
+  - Development workflows and commands
+  - Branch configuration
+- **Submodule READMEs** — Quick start for each module (minimal, link to wiki for details)
