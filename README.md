@@ -15,28 +15,24 @@ A band companion app for scheduling, setlists, and gig booking.
 - Bun installed (https://bun.sh/docs/installation)
 - Docker Desktop installed **and running**
 
-### 2. Clone the Repository
+### 2. Clone and Setup
+
+Clone the repository:
 
 ```bash
 git clone https://github.com/archeusllc/band-together.git
 ```
 
+Navigate into the directory:
+
 ```bash
 cd band-together
 ```
 
-### 3. Automated Setup
-
-Run the setup script (initializes submodules, creates env files, installs deps, sets up database, and starts dev environment):
+Run the setup (initializes submodules, creates env files, installs deps, sets up database, and starts dev environment):
 
 ```bash
-make setup
-```
-
-Or use the script directly:
-
-```bash
-./scripts/setup.sh
+bun install
 ```
 
 This will:
