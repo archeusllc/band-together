@@ -8,6 +8,45 @@ A band companion app for scheduling, setlists, and gig booking.
 - **[CLAUDE.md](CLAUDE.md)** — Project context, tech stack, and architecture
 - **[Wiki](https://github.com/archeusllc/band-together/wiki)** — Full project documentation
 
+## Quick Start
+
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/archeusllc/band-together.git
+```
+
+```bash
+cd band-together
+```
+
+### 2. Prerequisites
+
+- Bun installed (https://bun.sh/docs/installation)
+- Docker Desktop installed **and running**
+
+### 3. Automated Setup
+
+Run the setup script (initializes submodules, creates env files, installs deps, sets up database, and starts dev environment):
+
+```bash
+make setup
+```
+
+Or use the script directly:
+
+```bash
+./scripts/setup.sh
+```
+
+This will:
+1. Initialize git submodules
+2. Create `.env` files from `.env.example` templates
+3. Install all dependencies
+4. Start Docker Compose (PostgreSQL + Adminer)
+5. Generate Prisma client and run migrations
+6. Start the dev environment (API in background, Expo in foreground with QR and auto-open browser)
+
 ## Structure
 
 This repo uses git submodules:
@@ -19,108 +58,192 @@ This repo uses git submodules:
 | `db/` | [archeusllc/bt-db](https://github.com/archeusllc/bt-db) — Prisma schema + migrations |
 | `shared/` | [archeusllc/bt-shared](https://github.com/archeusllc/bt-shared) — Shared types/utilities and generated Prisma client |
 
-## Quick Start
+## Workflows
 
-> **⚠️ Important:** This repository uses git submodules. When cloning, always use the `--recurse-submodules` flag or initialize them after cloning. See [Manual setup](#manual-setup) below.
+### Start Dev Environment
 
-### Automated Setup (recommended)
+Start the dev environment (ensures DB is running, starts API in background, Expo in foreground):
 
 ```bash
-# Complete setup from fresh clone (submodules, env, dependencies, database)
-make setup
-
-# Or run the script directly
-./scripts/setup.sh
+make dev
 ```
 
-This will:
-1. Initialize git submodules
-2. Create `.env` files from `.env.example` templates
-3. Install all dependencies
-4. Start Docker Compose (PostgreSQL + Adminer)
-5. Generate Prisma client and run migrations
-
-### Using Make for Workflows
+Or:
 
 ```bash
-# Sync all changes (stage, commit, push)
+bun run dev
+```
+
+### Sync All Changes
+
+Stage, commit, and push all changes in one command:
+
+```bash
 make sync-all
+```
 
-# Or individual commands:
-make install            # Install all dependencies
-make pull-submodules    # Pull latest from all submodules
-make stage-all          # Stage all changes
-make commit-all         # Commit (auto-generates message)
-make push-all           # Push all repos
-make check-dirty        # Check for uncommitted changes
+With a custom message:
 
-# View all available commands
+```bash
+make sync-all MSG='your message'
+```
+
+### Individual Commands (Make)
+
+View all available commands:
+
+```bash
 make help
 ```
 
-### Using npm/bun scripts
+Install all dependencies:
 
 ```bash
-# Complete automated setup
+make install
+```
+
+Pull latest from all submodules:
+
+```bash
+make pull-submodules
+```
+
+Stage all changes:
+
+```bash
+make stage-all
+```
+
+Commit (auto-generates message):
+
+```bash
+make commit-all
+```
+
+Push all repos:
+
+```bash
+make push-all
+```
+
+Check for uncommitted changes:
+
+```bash
+make check-dirty
+```
+
+### Individual Commands (Bun)
+
+Complete automated setup:
+
+```bash
 bun run setup
+```
 
-# Sync all changes in one command
+Start dev environment:
+
+```bash
+bun run dev
+```
+
+Sync all changes:
+
+```bash
 bun git:sync
-
-# Or individual commands:
-bun git:submodules      # Initialize submodules
-bun git:pull            # Pull latest from all submodules
-bun git:stage           # Stage all changes
-bun git:commit          # Commit (auto-generates message)
-bun git:push            # Push all repos
-bun git:check           # Check for uncommitted changes
 ```
 
-### Manual setup
+Initialize submodules:
 
-Clone with submodules
 ```bash
-git clone --recurse-submodules https://github.com/archeusllc/band-together.git
+bun git:submodules
 ```
 
-Or init submodules after clone
+Pull latest from all submodules:
+
 ```bash
-git submodule update --init --recursive
+bun git:pull
+```
+
+Stage all changes:
+
+```bash
+bun git:stage
+```
+
+Commit (auto-generates message):
+
+```bash
+bun git:commit
+```
+
+Push all repos:
+
+```bash
+bun git:push
+```
+
+Check for uncommitted changes:
+
+```bash
+bun git:check
 ```
 
 ## Development
 
-### Local Setup
+### Manual Setup
 
-If you didn't run `make setup`, you can set up manually:
+If you didn't run `make setup`, you can set up manually.
+
+Create `.env` files from examples:
 
 ```bash
-# 1. Create .env files from examples
 cp .env.example .env
-cp shared/.env.example shared/.env
-cp db/.env.example db/.env
-cp api/.env.example api/.env
-
-# 2. Install dependencies for all submodules
-make install
-
-# 3. Start local PostgreSQL
-docker compose up -d
-
-# 4. Generate Prisma client and run migrations
-cd db && bun run generate && bunx --bun prisma migrate deploy && cd ..
-
-# 5. Start the API server
-cd api && bun run dev
 ```
 
-The API will be available at `http://localhost:3000` with a `/health` endpoint to check database connection.
+```bash
+cp shared/.env.example shared/.env
+```
 
-**Optional: Visual Database Management**
+```bash
+cp db/.env.example db/.env
+```
+
+```bash
+cp api/.env.example api/.env
+```
+
+Install dependencies for all submodules:
+
+```bash
+make install
+```
+
+Start local PostgreSQL:
+
+```bash
+docker compose up -d
+```
+
+Generate Prisma client and run migrations:
+
+```bash
+cd db && bun run generate && bunx --bun prisma migrate deploy && cd ..
+```
+
+Start the dev environment (API background + Expo foreground):
+
+```bash
+./scripts/dev.sh
+```
+
+The API will be available at `http://localhost:3000` with a `/health` endpoint, and Expo will show the QR code and open the dev URL in your browser.
+
+### Visual Database Management
+
+Open Prisma Studio at http://localhost:5555:
 
 ```bash
 cd db && bun run studio
-# Opens Prisma Studio at http://localhost:5555
 ```
 
 ### Submodule Documentation
@@ -131,29 +254,23 @@ See individual submodule READMEs for specific setup:
 - [bt-db README](https://github.com/archeusllc/bt-db#readme) — Database schema and migrations
 - [bt-shared README](https://github.com/archeusllc/bt-shared#readme) — Shared types and Prisma client usage
 
-## Workflow
+## Advanced
 
-**Single command to sync everything:**
+### Git Hooks
 
-```bash
-make sync-all
-# or with custom message:
-make sync-all MSG='your message'
-```
-
-This will:
-1. Stage all changes in submodules and parent repo
-2. Commit submodule changes
-3. Re-stage parent repo (to capture updated submodule references)
-4. Commit parent repo
-5. Push all repos to remote
-
-**Commit messages are auto-generated** based on which submodules changed, but you can provide a custom message with the `MSG` flag.
-
-## Git Hooks
-
-The project includes a pre-commit hook that prevents committing with dirty submodules. To install it:
+Install the pre-commit hook that prevents committing with dirty submodules:
 
 ```bash
 ./scripts/setup-hooks.sh
 ```
+
+### Workflow Details
+
+The `make sync-all` command:
+1. Stages all changes in submodules and parent repo
+2. Commits submodule changes
+3. Re-stages parent repo (to capture updated submodule references)
+4. Commits parent repo
+5. Pushes all repos to remote
+
+Commit messages are auto-generated based on which submodules changed, but you can provide a custom message with the `MSG` flag.

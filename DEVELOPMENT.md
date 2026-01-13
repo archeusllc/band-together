@@ -2,23 +2,21 @@
 
 This guide covers common development tasks for the Band Together project.
 
+docker compose up -d
 ## Quick Start
 
+Prereqs: Bun installed; Docker Desktop installed **and running**.
+
 ```bash
-# Install all dependencies
-make install
+# Full setup + start dev environment (API background, Expo foreground)
+make setup
 
-# Start PostgreSQL
-docker compose up -d
-
-# Generate Prisma client (db → shared)
-cd db && bun run generate && cd ..
-
-# Start API server
-cd api && bun run dev
+# Or start dev environment after setup
+./scripts/dev.sh
 ```
 
-The API will be available at `http://localhost:3000`.
+API: `http://localhost:3000` (health: `/health`)
+Expo: auto-opens `http://localhost:8081` and shows QR in the terminal.
 
 ## Working with the Database and Shared Modules
 
