@@ -10,7 +10,12 @@ A band companion app for scheduling, setlists, and gig booking.
 
 ## Quick Start
 
-### 1. Clone the Repository
+### 1. Prerequisites
+
+- Bun installed (https://bun.sh/docs/installation)
+- Docker Desktop installed **and running**
+
+### 2. Clone the Repository
 
 ```bash
 git clone https://github.com/archeusllc/band-together.git
@@ -19,11 +24,6 @@ git clone https://github.com/archeusllc/band-together.git
 ```bash
 cd band-together
 ```
-
-### 2. Prerequisites
-
-- Bun installed (https://bun.sh/docs/installation)
-- Docker Desktop installed **and running**
 
 ### 3. Automated Setup
 
