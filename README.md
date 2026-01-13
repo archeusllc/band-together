@@ -27,5 +27,4 @@ bun dev
 ## Documentation
 
 - **[Wiki](https://github.com/archeusllc/band-together/wiki)** — Full project documentation
-- **[DEVELOPMENT.md](DEVELOPMENT.md)** — Development guide
 - **[CLAUDE.md](CLAUDE.md)** — Project context and architecture
