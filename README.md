@@ -78,11 +78,13 @@ bun git:check           # Check for uncommitted changes
 
 ### Manual setup
 
+Clone with submodules
 ```bash
-# Clone with submodules
 git clone --recurse-submodules https://github.com/archeusllc/band-together.git
+```
 
-# Or init submodules after clone
+Or init submodules after clone
+```bash
 git submodule update --init --recursive
 ```
 
