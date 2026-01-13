@@ -1,12 +1,13 @@
 #!/bin/bash
 
-# Push all submodules and parent repo
+# Push all submodules and parent repo, respecting configured branch per submodule
 
 echo "📤 Pushing submodules..."
 git submodule foreach '
   if [ -n "$(git status --porcelain)" ] || [ -n "$(git log @{u}.. 2>/dev/null)" ]; then
-    echo "Pushing $name..."
-    git push origin main || echo "⚠️  Failed to push $name"
+    BRANCH=$(git config --file $toplevel/.gitmodules submodule.$name.branch || echo main)
+    echo "Pushing $name to $BRANCH..."
+    git push origin $BRANCH || echo "⚠️  Failed to push $name"
   else
     echo "✓ $name - nothing to push"
   fi
