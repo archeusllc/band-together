@@ -74,71 +74,19 @@ bun git:sync
 
 ### Common Tasks
 
-Run the complete setup:
-
-```bash
-bun setup
-```
-
-Initialize submodules:
-
-```bash
-bun git:submodules
-```
-
-Pull latest from all submodules:
-
-```bash
-bun git:pull
-```
-
-Stage all changes:
-
-```bash
-bun git:stage
-```
-
-Commit (auto-generates message):
-
-```bash
-bun git:commit
-```
-
-Push all repos:
-
-```bash
-bun git:push
-```
-
-Check for uncommitted changes:
-
-```bash
-bun git:check
-```
-
-View git status:
-
-```bash
-bun git:status
-```
-
-Connect to database:
-
-```bash
-bun db:connect
-```
-
-Clean all node_modules:
-
-```bash
-bun clean
-```
-
-Reset and reinstall:
-
-```bash
-bun reset
-```
+| Task | Command |
+|------|---------|
+| Run complete setup | `bun setup` |
+| Initialize submodules | `bun git:submodules` |
+| Pull latest from all submodules | `bun git:pull` |
+| Stage all changes | `bun git:stage` |
+| Commit (auto-generates message) | `bun git:commit` |
+| Push all repos | `bun git:push` |
+| Check for uncommitted changes | `bun git:check` |
+| View git status | `bun git:status` |
+| Connect to database | `bun db:connect` |
+| Clean all node_modules | `bun clean` |
+| Reset and reinstall | `bun reset` |
 
 ## Development
 
