@@ -120,14 +120,6 @@ See individual submodule READMEs for specific setup:
 
 ## Advanced
 
-### Git Hooks
-
-Install the pre-commit hook that prevents committing with dirty submodules:
-
-```bash
-./scripts/setup-hooks.sh
-```
-
 ### Workflow Details
 
 The `bun git:sync` command:
