@@ -61,13 +61,7 @@ This repo uses git submodules:
 Start the dev environment (ensures DB is running, starts API in background, Expo in foreground):
 
 ```bash
-make dev
-```
-
-Or:
-
-```bash
-bun run dev
+bun dev
 ```
 
 ### Sync All Changes
@@ -75,77 +69,15 @@ bun run dev
 Stage, commit, and push all changes in one command:
 
 ```bash
-make sync-all
-```
-
-With a custom message:
-
-```bash
-make sync-all MSG='your message'
-```
-
-### Individual Commands (Make)
-
-View all available commands:
-
-```bash
-make help
-```
-
-Install all dependencies:
-
-```bash
-make install
-```
-
-Pull latest from all submodules:
-
-```bash
-make pull-submodules
-```
-
-Stage all changes:
-
-```bash
-make stage-all
-```
-
-Commit (auto-generates message):
-
-```bash
-make commit-all
-```
-
-Push all repos:
-
-```bash
-make push-all
-```
-
-Check for uncommitted changes:
-
-```bash
-make check-dirty
-```
-
-### Individual Commands (Bun)
-
-Complete automated setup:
-
-```bash
-bun run setup
-```
-
-Start dev environment:
-
-```bash
-bun run dev
-```
-
-Sync all changes:
-
-```bash
 bun git:sync
+```
+
+### Common Tasks
+
+Run the complete setup:
+
+```bash
+bun setup
 ```
 
 Initialize submodules:
@@ -184,11 +116,35 @@ Check for uncommitted changes:
 bun git:check
 ```
 
+View git status:
+
+```bash
+bun git:status
+```
+
+Connect to database:
+
+```bash
+bun db:connect
+```
+
+Clean all node_modules:
+
+```bash
+bun clean
+```
+
+Reset and reinstall:
+
+```bash
+bun reset
+```
+
 ## Development
 
 ### Manual Setup
 
-If you didn't run `make setup`, you can set up manually.
+If you didn't run `bun install`, you can set up manually.
 
 Create `.env` files from examples:
 
@@ -211,7 +167,7 @@ cp api/.env.example api/.env
 Install dependencies for all submodules:
 
 ```bash
-make install
+bun install-all
 ```
 
 Start local PostgreSQL:
@@ -229,7 +185,7 @@ cd db && bun run generate && bunx --bun prisma migrate deploy && cd ..
 Start the dev environment (API background + Expo foreground):
 
 ```bash
-./scripts/dev.sh
+bun dev
 ```
 
 The API will be available at `http://localhost:3000` with a `/health` endpoint, and Expo will show the QR code and open the dev URL in your browser.
@@ -262,7 +218,7 @@ Install the pre-commit hook that prevents committing with dirty submodules:
 
 ### Workflow Details
 
-The `make sync-all` command:
+The `bun git:sync` command:
 1. Stages all changes in submodules and parent repo
 2. Commits submodule changes
 3. Re-stages parent repo (to capture updated submodule references)
