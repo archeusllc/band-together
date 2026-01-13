@@ -2,102 +2,33 @@
 
 A band companion app for scheduling, setlists, and gig booking.
 
-## Documentation
-
-- **[DEVELOPMENT.md](DEVELOPMENT.md)** — Development guide for working with db and api modules
-- **[CLAUDE.md](CLAUDE.md)** — Project context, tech stack, and architecture
-- **[Wiki](https://github.com/archeusllc/band-together/wiki)** — Full project documentation
-
 ## Quick Start
 
-### 1. Prerequisites
-
+### Prerequisites
 - Bun installed (https://bun.sh/docs/installation)
 - Docker Desktop installed **and running**
 
-### 2. Clone and Setup
-
-Clone the repository:
+### Clone and Setup
 
 ```bash
 git clone https://github.com/archeusllc/band-together.git
-```
-
-Navigate into the directory:
-
-```bash
 cd band-together
-```
-
-Run the setup (initializes submodules, creates env files, installs deps, sets up database, and starts dev environment):
-
-```bash
 bun install
 ```
 
-This will:
-1. Initialize git submodules
-2. Create `.env` files from `.env.example` templates
-3. Install all dependencies
-4. Start Docker Compose (PostgreSQL + Adminer)
-5. Generate Prisma client and run migrations
-6. Start the dev environment (API in background, Expo in foreground with QR and auto-open browser)
+This initializes submodules, creates env files, installs dependencies, and starts the dev environment.
 
-## Structure
-
-This repo uses git submodules:
-
-| Submodule | Repository |
-|-----------|------------|
-| `client/` | [archeusllc/bt-client](https://github.com/archeusllc/bt-client) — Expo React Native app |
-| `api/` | [archeusllc/bt-api](https://github.com/archeusllc/bt-api) — Bun/Elysia backend |
-| `db/` | [archeusllc/bt-db](https://github.com/archeusllc/bt-db) — Prisma schema + migrations |
-| `shared/` | [archeusllc/bt-shared](https://github.com/archeusllc/bt-shared) — Shared types/utilities and generated Prisma client |
-
-## Workflows
-
-### Start Dev Environment
-
-Start the dev environment (ensures DB is running, starts API in background, Expo in foreground):
+### Start Developing
 
 ```bash
 bun dev
 ```
 
-### Sync All Changes
+## Documentation
 
-Stage, commit, and push all changes in one command:
-
-```bash
-bun git:sync
-```
-
-### Common Tasks
-
-| Task | Command |
-|------|---------|
-| Run complete setup | `bun setup` |
-| Initialize submodules | `bun git:submodules` |
-| Pull latest from all submodules | `bun git:pull` |
-| Stage all changes | `bun git:stage` |
-| Commit (auto-generates message) | `bun git:commit` |
-| Push all repos | `bun git:push` |
-| Check for uncommitted changes | `bun git:check` |
-| View git status | `bun git:status` |
-| Connect to database | `bun db:connect` |
-| Clean all node_modules | `bun clean` |
-| Reset and reinstall | `bun reset` |
-
-## Development
-
-### What Happens During Setup
-
-When you run `bun install`, the setup script automatically:
-1. Initializes git submodules
-2. Creates `.env` files from `.env.example` templates
-3. Installs dependencies in all submodules
-4. Starts Docker Compose (PostgreSQL + Adminer)
-5. Generates Prisma client and runs migrations
+- **[Wiki](https://github.com/archeusllc/band-together/wiki)** — Full project documentation
+- **[DEVELOPMENT.md](DEVELOPMENT.md)** — Development guide
+- **[CLAUDE.md](CLAUDE.md)** — Project context and architecture
 6. Launches the dev environment
 
 The API will be available at `http://localhost:3000` with a `/health` endpoint, and Expo will show the QR code and open the dev URL in your browser.

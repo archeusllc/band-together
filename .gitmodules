@@ -1,12 +1,20 @@
 [submodule "client"]
 	path = client
 	url = https://github.com/archeusllc/bt-client.git
+	branch = main
 [submodule "api"]
 	path = api
 	url = https://github.com/archeusllc/bt-api.git
+	branch = main
 [submodule "db"]
 	path = db
 	url = https://github.com/archeusllc/bt-db.git
+	branch = main
 [submodule "shared"]
 	path = shared
 	url = https://github.com/archeusllc/bt-shared
+	branch = main
+[submodule "wiki"]
+	path = wiki
+	url = https://github.com/archeusllc/band-together.wiki.git
+	branch = master

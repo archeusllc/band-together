@@ -5,7 +5,7 @@
 
 set -e
 
-SUBMODULES=("client" "api" "db" "shared")
+SUBMODULES=("client" "api" "db" "shared" "wiki")
 MISSING_SUBMODULES=()
 
 echo "🔍 Verifying submodules..."
