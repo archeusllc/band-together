@@ -39,13 +39,8 @@ echo "✅ Step 6/6: Verifying setup..."
 echo ""
 echo "🎉 Setup complete!"
 echo ""
-echo "Next steps:"
-echo "  1. Start the API server:  cd api && bun run dev"
-echo "  2. Test the API:          curl http://localhost:3000/health"
-echo "  3. View database:         http://localhost:8080 (Adminer)"
+echo "📱 Starting development environment..."
 echo ""
-echo "Available commands:"
-echo "  make help                 Show all available commands"
-echo "  make sync-all             Stage, commit, and push all changes"
-echo "  docker compose down       Stop the database"
-echo ""
+
+# Run the dev script
+exec ./scripts/dev.sh

@@ -6,6 +6,7 @@
   "scripts": {
     "preinstall": "./scripts/redirect-root-install.sh",
     "setup": "./scripts/setup.sh",
+    "dev": "./scripts/dev.sh",
     "git:submodules": "./scripts/submodules.sh",
     "git:pull": "./scripts/pull-submodules.sh",
     "git:push": "./scripts/push-all.sh",

@@ -1,12 +1,15 @@
 # Band Together — Makefile
 
-.PHONY: help setup install verify-submodules submodules pull-submodules push-all stage-all commit-all check-dirty sync-all status clean
+.PHONY: help setup install verify-submodules submodules pull-submodules push-all stage-all commit-all check-dirty sync-all status clean dev
 
 help:
 	@echo "Band Together — Available commands:"
 	@echo ""
 	@echo "  SETUP:"
 	@echo "  make setup            Complete setup from fresh clone (submodules, env, install, db)"
+	@echo ""
+	@echo "  DEVELOPMENT:"
+	@echo "  make dev              Start development environment (DB, API, and Expo client)"
 	@echo ""
 	@echo "  WORKFLOW:"
 	@echo "  make sync-all MSG='message'    Stage, commit, and push all (auto-generated msg if omitted)"
@@ -97,3 +100,7 @@ clean:
 	@echo "🧹 Cleaning node_modules..."
 	rm -rf shared/node_modules client/node_modules api/node_modules db/node_modules
 	@echo "✅ Cleaned!"
+
+# Start development environment
+dev:
+	@./scripts/dev.sh
