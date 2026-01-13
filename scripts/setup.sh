@@ -15,7 +15,7 @@ echo ""
 
 # Step 2: Checkout main branch in submodules
 echo "🔀 Step 2/6: Checking out origin/main in submodules..."
-git submodule foreach 'git checkout origin/main'
+git submodule foreach 'git checkout -b main --track origin/main || git checkout main'
 echo "✅ Submodules on origin/main"
 echo ""
 
