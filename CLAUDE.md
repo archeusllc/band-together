@@ -31,11 +31,14 @@ Each submodule specifies its tracked branch in `.gitmodules`. Most use `main`, b
 
 ## Current Phase
 
-**MVP (Phase 1):** Band-only tools
-- Setlist CRUD
-- Rehearsal scheduling
-- Gig calendar
-- Band membership
+**Baseline (Ready for Prototyping):** Generic codebase with User authentication infrastructure only
+- User model with Firebase auth integration
+- Database connection and Prisma ORM configured
+- API health monitoring and structure in place
+- Client app foundation (Expo 54 + React Native)
+- Feature models removed for build/discard/rebuild cycles
+
+Future phases will add feature-specific models and functionality.
 
 ## Future Phases
 
@@ -50,9 +53,9 @@ Each submodule specifies its tracked branch in `.gitmodules`. Most use `main`, b
 | Venue | Businesses booking acts (Phase 3) |
 | Fan | Music lovers discovering live music (Phase 2) |
 
-## Core Action
+## Core Infrastructure
 
-*Create and share a setlist for an upcoming gig.*
+*Baseline codebase with User authentication via Firebase, PostgreSQL database, Elysia API, and Expo client. Ready for rapid prototyping and feature development.*
 
 ## Documentation
 
@@ -149,8 +152,8 @@ Use `.env.example` as a template for new setups.
 The `db` module hosts the Prisma schema/migrations and generates a client. The `shared` module commits the generated client and exposes a configured factory for consumption by the API and other packages.
 
 **db provides:**
-- Prisma schema with 7 models: User, Band, BandMember, Song, Setlist, SetlistSong, Rehearsal, Gig
-- Migrations & Prisma 7 config
+- Prisma schema with 1 model: User (Firebase auth integration)
+- Baseline migration for User-only database
 - `bun run generate` outputs to `db/generated/` and copies to `shared/generated/prisma-client/`
 
 **shared provides:**
