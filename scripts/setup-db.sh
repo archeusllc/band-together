@@ -1,32 +1,21 @@
 #!/bin/bash
 # Setup database: generate Prisma client and run migrations
 
-set -e
+set -euo pipefail
+
+SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+source "$SCRIPT_DIR/lib.sh"
 
 echo "🗄️  Setting up database..."
 
-# Check if Docker is running
-if ! docker info > /dev/null 2>&1; then
-  echo "❌ Docker is not running. Please start Docker and try again."
-  exit 1
-fi
+require_bun
+ensure_postgres
 
-# Check if PostgreSQL container is running
-if ! docker ps | grep -q bandtogether-postgres; then
-  echo "⚠️  PostgreSQL container is not running."
-  echo "   Starting Docker Compose..."
-  docker compose up -d
-  echo "   Waiting for PostgreSQL to be ready..."
-  sleep 5
-fi
-
-# Generate Prisma client (also copies to shared)
 echo "📦 Generating Prisma client..."
-cd db && bunx --bun bun run generate && cd ..
+cd "$SCRIPT_DIR/../db" && bunx --bun bun run generate && cd - >/dev/null
 
-# Run migrations
 echo "📋 Running database migrations..."
-cd db && bunx --bun prisma migrate deploy && cd ..
+cd "$SCRIPT_DIR/../db" && bunx --bun prisma migrate deploy && cd - >/dev/null
 
 echo "✅ Database setup complete!"
 echo "   You can view the database at http://localhost:8080 (Adminer)"

@@ -1,7 +1,13 @@
 #!/bin/bash
 # Complete project setup from fresh clone
 
-set -e
+set -euo pipefail
+
+SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+source "$SCRIPT_DIR/lib.sh"
+
+require_bun
+require_docker_running
 
 echo "🎸 Band Together - Complete Setup"
 echo "=================================="
@@ -21,7 +27,7 @@ echo ""
 
 # Step 3: Setup .env files
 echo "🔧 Step 3/6: Setting up environment files..."
-./scripts/setup-env.sh
+"$SCRIPT_DIR"/setup-env.sh
 echo ""
 
 # Step 4: Install dependencies
@@ -31,7 +37,7 @@ echo ""
 
 # Step 5: Setup database
 echo "🗄️  Step 5/6: Setting up database..."
-./scripts/setup-db.sh
+"$SCRIPT_DIR"/setup-db.sh
 echo ""
 
 # Step 6: Verify setup
@@ -43,4 +49,4 @@ echo "📱 Starting development environment..."
 echo ""
 
 # Run the dev script
-exec ./scripts/dev.sh
+exec "$SCRIPT_DIR"/dev.sh
