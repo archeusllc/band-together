@@ -1,6 +1,6 @@
 # Band Together — Makefile
 
-.PHONY: help install submodules pull-submodules push-all stage-all commit-all check-dirty sync-all status clean
+.PHONY: help install verify-submodules submodules pull-submodules push-all stage-all commit-all check-dirty sync-all status clean
 
 help:
 	@echo "Band Together — Available commands:"
@@ -20,10 +20,15 @@ help:
 	@echo ""
 	@echo "  MAINTENANCE:"
 	@echo "  make clean            Remove node_modules from all modules"
+	@echo "  make verify-submodules  Verify all submodules are initialized"
 	@echo ""
 
+# Verify all submodules are properly initialized
+verify-submodules:
+	@./scripts/verify-submodules.sh
+
 # Initialize and update submodules
-submodules:
+submodules: verify-submodules
 	@echo "📦 Updating submodules..."
 	git submodule update --init --recursive
 	@echo "✅ Submodules ready!"

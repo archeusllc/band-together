@@ -21,6 +21,8 @@ This repo uses git submodules:
 
 ## Quick Start
 
+> **⚠️ Important:** This repository uses git submodules. When cloning, always use the `--recurse-submodules` flag or initialize them after cloning. See [Manual setup](#manual-setup) below.
+
 ### Using Make (recommended)
 
 ```bash
