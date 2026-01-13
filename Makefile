@@ -1,9 +1,12 @@
 # Band Together — Makefile
 
-.PHONY: help install verify-submodules submodules pull-submodules push-all stage-all commit-all check-dirty sync-all status clean
+.PHONY: help setup install verify-submodules submodules pull-submodules push-all stage-all commit-all check-dirty sync-all status clean
 
 help:
 	@echo "Band Together — Available commands:"
+	@echo ""
+	@echo "  SETUP:"
+	@echo "  make setup            Complete setup from fresh clone (submodules, env, install, db)"
 	@echo ""
 	@echo "  WORKFLOW:"
 	@echo "  make sync-all MSG='message'    Stage, commit, and push all (auto-generated msg if omitted)"
@@ -26,6 +29,10 @@ help:
 # Verify all submodules are properly initialized
 verify-submodules:
 	@./scripts/verify-submodules.sh
+
+# Complete setup from fresh clone
+setup:
+	@./scripts/setup.sh
 
 # Initialize and update submodules
 submodules: verify-submodules
@@ -76,7 +83,7 @@ install: submodules
 	@echo "📚 Installing api dependencies..."
 	cd api && bun install
 	@echo "📚 Installing db dependencies..."
-	cd db && bun install
+	cd db && bunx --bun bun install
 	@echo "✅ All dependencies installed!"
 
 # Show git status for all submodules

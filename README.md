@@ -23,16 +23,31 @@ This repo uses git submodules:
 
 > **⚠️ Important:** This repository uses git submodules. When cloning, always use the `--recurse-submodules` flag or initialize them after cloning. See [Manual setup](#manual-setup) below.
 
-### Using Make (recommended)
+### Automated Setup (recommended)
 
 ```bash
-# Initialize submodules and install all dependencies
-make install
+# Complete setup from fresh clone (submodules, env, dependencies, database)
+make setup
 
+# Or run the script directly
+./scripts/setup.sh
+```
+
+This will:
+1. Initialize git submodules
+2. Create `.env` files from `.env.example` templates
+3. Install all dependencies
+4. Start Docker Compose (PostgreSQL + Adminer)
+5. Generate Prisma client and run migrations
+
+### Using Make for Workflows
+
+```bash
 # Sync all changes (stage, commit, push)
 make sync-all
 
 # Or individual commands:
+make install            # Install all dependencies
 make pull-submodules    # Pull latest from all submodules
 make stage-all          # Stage all changes
 make commit-all         # Commit (auto-generates message)
@@ -46,21 +61,19 @@ make help
 ### Using npm/bun scripts
 
 ```bash
-# Initialize submodules
-bun git:submodules
+# Complete automated setup
+bun run setup
 
 # Sync all changes in one command
 bun git:sync
 
 # Or individual commands:
+bun git:submodules      # Initialize submodules
 bun git:pull            # Pull latest from all submodules
 bun git:stage           # Stage all changes
 bun git:commit          # Commit (auto-generates message)
 bun git:push            # Push all repos
 bun git:check           # Check for uncommitted changes
-
-# Install all dependencies
-bun install-all
 ```
 
 ### Manual setup
@@ -77,17 +90,25 @@ git submodule update --init --recursive
 
 ### Local Setup
 
+If you didn't run `make setup`, you can set up manually:
+
 ```bash
-# 1. Install dependencies for all submodules
+# 1. Create .env files from examples
+cp .env.example .env
+cp shared/.env.example shared/.env
+cp db/.env.example db/.env
+cp api/.env.example api/.env
+
+# 2. Install dependencies for all submodules
 make install
 
-# 2. Start local PostgreSQL
+# 3. Start local PostgreSQL
 docker compose up -d
 
-# 3. Generate Prisma client in db/ (copies to shared/)
-cd db && bun run generate && cd ..
+# 4. Generate Prisma client and run migrations
+cd db && bun run generate && bunx --bun prisma migrate deploy && cd ..
 
-# 4. Start the API server
+# 5. Start the API server
 cd api && bun run dev
 ```
 

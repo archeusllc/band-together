@@ -4,6 +4,7 @@
   "description": "A band companion app for musicians",
   "private": true,
   "scripts": {
+    "setup": "./scripts/setup.sh",
     "git:submodules": "./scripts/submodules.sh",
     "git:pull": "./scripts/pull-submodules.sh",
     "git:push": "./scripts/push-all.sh",
