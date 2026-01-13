@@ -90,51 +90,15 @@ bun git:sync
 
 ## Development
 
-### Manual Setup
+### What Happens During Setup
 
-If you didn't run `bun install`, you can set up manually.
-
-Create `.env` files from examples:
-
-```bash
-cp .env.example .env
-```
-
-```bash
-cp shared/.env.example shared/.env
-```
-
-```bash
-cp db/.env.example db/.env
-```
-
-```bash
-cp api/.env.example api/.env
-```
-
-Install dependencies for all submodules:
-
-```bash
-bun install-all
-```
-
-Start local PostgreSQL:
-
-```bash
-docker compose up -d
-```
-
-Generate Prisma client and run migrations:
-
-```bash
-cd db && bun run generate && bunx --bun prisma migrate deploy && cd ..
-```
-
-Start the dev environment (API background + Expo foreground):
-
-```bash
-bun dev
-```
+When you run `bun install`, the setup script automatically:
+1. Initializes git submodules
+2. Creates `.env` files from `.env.example` templates
+3. Installs dependencies in all submodules
+4. Starts Docker Compose (PostgreSQL + Adminer)
+5. Generates Prisma client and runs migrations
+6. Launches the dev environment
 
 The API will be available at `http://localhost:3000` with a `/health` endpoint, and Expo will show the QR code and open the dev URL in your browser.
 
