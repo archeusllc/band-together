@@ -39,6 +39,4 @@ The following practices deviate from standard patterns and should be documented:
 
 3. **Submodule hash re-staging** — The `sync-all.sh` script re-stages the parent repo after committing submodules to capture updated hash references. This prevents the parent repo from drifting out of sync with submodule changes.
 
-4. **Health check routes at module level** — The API includes dedicated health check middleware for database and Firebase, executed at the framework initialization level rather than as a simple status endpoint.
-
-5. **PrismaPg adapter configuration in shared module** — Rather than requiring each consumer to configure the adapter, the shared module exports a pre-configured `PrismaClient` factory that handles the adapter setup internally.
+4. **PrismaPg adapter configuration in shared module** — Rather than requiring each consumer to configure the adapter, the shared module exports a pre-configured `PrismaClient` factory that handles the adapter setup internally.
