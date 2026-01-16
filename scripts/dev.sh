@@ -10,9 +10,21 @@ echo "🚀 Starting Band Together development environment..."
 echo ""
 
 require_bun
+
+# Check if dependencies are installed, install if needed
+echo "0️⃣  Checking dependencies..."
+if [ ! -d "node_modules" ] || [ ! -d "client/node_modules" ] || [ ! -d "api/node_modules" ] || [ ! -d "db/node_modules" ] || [ ! -d "shared/node_modules" ]; then
+  echo "📦 Installing dependencies..."
+  bun install
+  echo "✅ Dependencies installed"
+else
+  echo "✅ Dependencies already installed"
+fi
+echo ""
+
 ensure_postgres
 
-echo "0️⃣  Checking for existing servers..."
+echo "1️⃣  Checking for existing servers..."
 kill_existing_servers
 echo "✅ Existing dev servers cleared"
 echo ""
