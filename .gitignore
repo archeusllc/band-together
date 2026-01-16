@@ -15,10 +15,9 @@ coverage/
 build/
 dist/
 
-# Environment
-.env
-.env.local
-.env.*.local
+# Environment variables
+.env*
+!.env.development
 
 # IDE
 .vscode/
