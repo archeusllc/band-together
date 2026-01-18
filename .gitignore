@@ -42,3 +42,6 @@ yarn-error.log*
 .env.local
 prisma/dev.db
 prisma/dev.db-journal
+
+# Plans
+.claude/plans/
