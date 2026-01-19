@@ -119,6 +119,17 @@ band-together/
     └── AI-Context.md  # Full project context
 ```
 
+## Submodule Definition
+
+For planning and task organization purposes, a **submodule** is any directory exactly one level deeper from the project root:
+- `api/` - Backend API layer
+- `client/` - React Native client app
+- `db/` - Database & Prisma configuration
+- `shared/` - Shared types and utilities
+- `wiki/` - Documentation and context
+
+Tasks should be scoped to work within a single submodule when possible, keeping changes focused and independent.
+
 ## Key Standards
 
 1. **Arrow functions** - Use for all component/function exports (except screen defaults)
