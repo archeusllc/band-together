@@ -13,12 +13,197 @@ datasource db {
   provider = "postgresql"
 }
 
+enum GuildType {
+  ACT
+  VENUE
+  CLUB
+}
+
+enum GuildInvitationStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+  CANCELLED
+}
+
+enum FollowEntityType {
+  USER
+  TAG
+  GUILD
+}
+
 model User {
-  id          String   @id @default(cuid())
-  email       String   @unique
-  displayName String?
+  userId                String             @id @default(cuid())
+  email                 String             @unique
+  displayName           String?
+  avatar                String?
+  firebaseUid           String?            @unique
+  createdAt             DateTime           @default(now())
+  updatedAt             DateTime           @updatedAt
+
+  createdGuilds         Guild[]            @relation("GuildCreator")
+  ownedGuilds           Guild[]            @relation("GuildOwner")
+  memberOfGuilds        Guild[]            @relation("GuildMembers")
+
+  follows               Follow[]
+  followedBy            Follow[]           @relation("UserFollows")
+
+  feedActivities        FeedActivity[]
+
+  sentInvitations       GuildInvitation[]  @relation("SentInvitations")
+  receivedInvitations   GuildInvitation[]  @relation("ReceivedInvitations")
+}
+
+model Follow {
+  followId       String           @id @default(cuid())
+  userId         String
+  user           User             @relation(fields: [userId], references: [userId])
+
+  entityType     FollowEntityType
+
+  // Exactly one of these should be set based on entityType
+  followedUserId String?
+  followedUser   User?            @relation("UserFollows", fields: [followedUserId], references: [userId])
+
+  tagId          String?
+  tag            Tag?             @relation(fields: [tagId], references: [tagId])
+
+  guildId        String?
+  guild          Guild?           @relation(fields: [guildId], references: [guildId])
+
+  createdAt      DateTime         @default(now())
+
+  @@unique([userId, entityType, followedUserId, tagId, guildId])
+  @@index([userId])
+  @@index([followedUserId])
+  @@index([tagId])
+  @@index([guildId])
+}
+
+model Tag {
+  tagId    String   @id @default(cuid())
+  category String
+  value    String
+  follows  Follow[]
+
+  @@unique([category, value])
+}
+
+model Guild {
+  guildId        String    @id @default(cuid())
+  name           String
+  guildType      GuildType
+  createdAt      DateTime  @default(now())
+  createdById    String?
+  createdBy      User?     @relation("GuildCreator", fields: [createdById], references: [userId])
+  currentOwnerId String
+  currentOwner   User      @relation("GuildOwner", fields: [currentOwnerId], references: [userId])
+  members        User[]    @relation("GuildMembers")
+
+  // Explicit foreign keys (exactly one should be set based on guildType)
+  actId          String?   @unique
+  act            Act?      @relation(fields: [actId], references: [actId])
+  venueId        String?   @unique
+  venue          Venue?    @relation(fields: [venueId], references: [venueId])
+  clubId         String?   @unique
+  club           Club?     @relation(fields: [clubId], references: [clubId])
+
+  follows        Follow[]
+  invitations    GuildInvitation[]
+}
+
+model Act {
+  actId          String         @id @default(cuid())
+  name           String
+  bio            String?
+  avatar         String?
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+
+  guild          Guild?
+  calendarEvents CalendarEvent[]
+}
+
+model Venue {
+  venueId        String         @id @default(cuid())
+  name           String
+  address        String?
+  city           String?
+  state          String?
+  zipCode        String?
+  avatar         String?
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+
+  guild          Guild?
+  calendarEvents CalendarEvent[]
+}
+
+model Club {
+  clubId      String   @id @default(cuid())
+  name        String
+  description String?
   avatar      String?
-  firebaseUid String?  @unique
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+
+  guild       Guild?
+}
+
+model CalendarEvent {
+  eventId        String         @id @default(cuid())
+  title          String?
+  description    String?
+  poster         String?        // Event poster/flyer image
+  startTime      DateTime
+  duration       Int            // In minutes
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+
+  venueId        String
+  venue          Venue          @relation(fields: [venueId], references: [venueId])
+
+  acts           Act[]
+  feedActivities FeedActivity[]
+}
+
+model FeedActivity {
+  activityId       String         @id @default(cuid())
+  activityType     String         // e.g., "event_created", "event_updated"
+  createdAt        DateTime       @default(now())
+
+  // Polymorphic reference to the subject of the activity
+  subjectType      String         // "CalendarEvent", "User", etc.
+  subjectId        String
+
+  // Optional reference to calendar event if this is event-related
+  calendarEventId  String?
+  calendarEvent    CalendarEvent? @relation(fields: [calendarEventId], references: [eventId])
+
+  // Optional reference to user who triggered the activity
+  userId           String?
+  user             User?          @relation(fields: [userId], references: [userId])
+
+  @@index([createdAt])
+  @@index([subjectType, subjectId])
+}
+
+model GuildInvitation {
+  invitationId String                @id @default(cuid())
+  guildId      String
+  guild        Guild                 @relation(fields: [guildId], references: [guildId])
+
+  invitedUserId String
+  invitedUser   User                 @relation("ReceivedInvitations", fields: [invitedUserId], references: [userId])
+
+  invitedById   String?
+  invitedBy     User?                @relation("SentInvitations", fields: [invitedById], references: [userId])
+
+  status        GuildInvitationStatus @default(PENDING)
+  createdAt     DateTime             @default(now())
+  respondedAt   DateTime?
+
+  @@unique([guildId, invitedUserId])
+  @@index([invitedUserId, status])
+  @@index([guildId, status])
 }

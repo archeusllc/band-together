@@ -93,7 +93,7 @@ exports.Prisma.TransactionIsolationLevel = makeStrictEnum({
 });
 
 exports.Prisma.UserScalarFieldEnum = {
-  id: 'id',
+  userId: 'userId',
   email: 'email',
   displayName: 'displayName',
   avatar: 'avatar',
@@ -102,14 +102,94 @@ exports.Prisma.UserScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
-exports.Prisma.PushTokenScalarFieldEnum = {
-  id: 'id',
+exports.Prisma.FollowScalarFieldEnum = {
+  followId: 'followId',
   userId: 'userId',
-  token: 'token',
-  platform: 'platform',
-  deviceId: 'deviceId',
+  entityType: 'entityType',
+  followedUserId: 'followedUserId',
+  tagId: 'tagId',
+  guildId: 'guildId',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.TagScalarFieldEnum = {
+  tagId: 'tagId',
+  category: 'category',
+  value: 'value'
+};
+
+exports.Prisma.GuildScalarFieldEnum = {
+  guildId: 'guildId',
+  name: 'name',
+  guildType: 'guildType',
+  createdAt: 'createdAt',
+  createdById: 'createdById',
+  currentOwnerId: 'currentOwnerId',
+  actId: 'actId',
+  venueId: 'venueId',
+  clubId: 'clubId'
+};
+
+exports.Prisma.ActScalarFieldEnum = {
+  actId: 'actId',
+  name: 'name',
+  bio: 'bio',
+  avatar: 'avatar',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
+};
+
+exports.Prisma.VenueScalarFieldEnum = {
+  venueId: 'venueId',
+  name: 'name',
+  address: 'address',
+  city: 'city',
+  state: 'state',
+  zipCode: 'zipCode',
+  avatar: 'avatar',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.ClubScalarFieldEnum = {
+  clubId: 'clubId',
+  name: 'name',
+  description: 'description',
+  avatar: 'avatar',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.CalendarEventScalarFieldEnum = {
+  eventId: 'eventId',
+  title: 'title',
+  description: 'description',
+  poster: 'poster',
+  startTime: 'startTime',
+  duration: 'duration',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  venueId: 'venueId'
+};
+
+exports.Prisma.FeedActivityScalarFieldEnum = {
+  activityId: 'activityId',
+  activityType: 'activityType',
+  createdAt: 'createdAt',
+  subjectType: 'subjectType',
+  subjectId: 'subjectId',
+  calendarEventId: 'calendarEventId',
+  userId: 'userId'
+};
+
+exports.Prisma.GuildInvitationScalarFieldEnum = {
+  invitationId: 'invitationId',
+  guildId: 'guildId',
+  invitedUserId: 'invitedUserId',
+  invitedById: 'invitedById',
+  status: 'status',
+  createdAt: 'createdAt',
+  respondedAt: 'respondedAt'
 };
 
 exports.Prisma.SortOrder = {
@@ -126,14 +206,36 @@ exports.Prisma.NullsOrder = {
   first: 'first',
   last: 'last'
 };
-exports.PushTokenPlatform = exports.$Enums.PushTokenPlatform = {
-  ANDROID: 'ANDROID',
-  WEB: 'WEB'
+exports.GuildType = exports.$Enums.GuildType = {
+  ACT: 'ACT',
+  VENUE: 'VENUE',
+  CLUB: 'CLUB'
+};
+
+exports.GuildInvitationStatus = exports.$Enums.GuildInvitationStatus = {
+  PENDING: 'PENDING',
+  ACCEPTED: 'ACCEPTED',
+  REJECTED: 'REJECTED',
+  CANCELLED: 'CANCELLED'
+};
+
+exports.FollowEntityType = exports.$Enums.FollowEntityType = {
+  USER: 'USER',
+  TAG: 'TAG',
+  GUILD: 'GUILD'
 };
 
 exports.Prisma.ModelName = {
   User: 'User',
-  PushToken: 'PushToken'
+  Follow: 'Follow',
+  Tag: 'Tag',
+  Guild: 'Guild',
+  Act: 'Act',
+  Venue: 'Venue',
+  Club: 'Club',
+  CalendarEvent: 'CalendarEvent',
+  FeedActivity: 'FeedActivity',
+  GuildInvitation: 'GuildInvitation'
 };
 /**
  * Create the Client
@@ -143,10 +245,10 @@ const config = {
   "clientVersion": "7.2.0",
   "engineVersion": "0c8ef2ce45c83248ab3df073180d5eda9e8be7a3",
   "activeProvider": "postgresql",
-  "inlineSchema": "// This is your Prisma schema file,\n// learn more about it in the docs: https://pris.ly/d/prisma-schema\n\ngenerator client {\n  provider               = \"prisma-client-js\"\n  output                 = \"../../shared/generated/prisma-client\"\n  moduleFormat           = \"esm\"\n  generatedFileExtension = \".ts\"\n  importFileExtension    = \".ts\"\n}\n\ndatasource db {\n  provider = \"postgresql\"\n}\n\nmodel User {\n  id          String   @id @default(cuid())\n  email       String   @unique\n  displayName String?\n  avatar      String?\n  firebaseUid String?  @unique\n  createdAt   DateTime @default(now())\n  updatedAt   DateTime @updatedAt\n\n  // Relations\n  pushTokens PushToken[]\n}\n\nmodel PushToken {\n  id        String            @id @default(cuid())\n  userId    String\n  token     String            @unique\n  platform  PushTokenPlatform\n  deviceId  String?\n  createdAt DateTime          @default(now())\n  updatedAt DateTime          @updatedAt\n\n  // Relations\n  user User @relation(fields: [userId], references: [id], onDelete: Cascade)\n\n  @@index([userId])\n}\n\nenum PushTokenPlatform {\n  ANDROID\n  WEB\n}\n"
+  "inlineSchema": "// This is your Prisma schema file,\n// learn more about it in the docs: https://pris.ly/d/prisma-schema\n\ngenerator client {\n  provider               = \"prisma-client-js\"\n  output                 = \"../../shared/generated/prisma-client\"\n  moduleFormat           = \"esm\"\n  generatedFileExtension = \".ts\"\n  importFileExtension    = \".ts\"\n}\n\ndatasource db {\n  provider = \"postgresql\"\n}\n\nenum GuildType {\n  ACT\n  VENUE\n  CLUB\n}\n\nenum GuildInvitationStatus {\n  PENDING\n  ACCEPTED\n  REJECTED\n  CANCELLED\n}\n\nenum FollowEntityType {\n  USER\n  TAG\n  GUILD\n}\n\nmodel User {\n  userId      String   @id @default(cuid())\n  email       String   @unique\n  displayName String?\n  avatar      String?\n  firebaseUid String?  @unique\n  createdAt   DateTime @default(now())\n  updatedAt   DateTime @updatedAt\n\n  createdGuilds  Guild[] @relation(\"GuildCreator\")\n  ownedGuilds    Guild[] @relation(\"GuildOwner\")\n  memberOfGuilds Guild[] @relation(\"GuildMembers\")\n\n  follows    Follow[]\n  followedBy Follow[] @relation(\"UserFollows\")\n\n  feedActivities FeedActivity[]\n\n  sentInvitations     GuildInvitation[] @relation(\"SentInvitations\")\n  receivedInvitations GuildInvitation[] @relation(\"ReceivedInvitations\")\n}\n\nmodel Follow {\n  followId String @id @default(cuid())\n  userId   String\n  user     User   @relation(fields: [userId], references: [userId])\n\n  entityType FollowEntityType\n\n  // Exactly one of these should be set based on entityType\n  followedUserId String?\n  followedUser   User?   @relation(\"UserFollows\", fields: [followedUserId], references: [userId])\n\n  tagId String?\n  tag   Tag?    @relation(fields: [tagId], references: [tagId])\n\n  guildId String?\n  guild   Guild?  @relation(fields: [guildId], references: [guildId])\n\n  createdAt DateTime @default(now())\n\n  @@unique([userId, entityType, followedUserId, tagId, guildId])\n  @@index([userId])\n  @@index([followedUserId])\n  @@index([tagId])\n  @@index([guildId])\n}\n\nmodel Tag {\n  tagId    String   @id @default(cuid())\n  category String\n  value    String\n  follows  Follow[]\n\n  @@unique([category, value])\n}\n\nmodel Guild {\n  guildId        String    @id @default(cuid())\n  name           String\n  guildType      GuildType\n  createdAt      DateTime  @default(now())\n  createdById    String?\n  createdBy      User?     @relation(\"GuildCreator\", fields: [createdById], references: [userId])\n  currentOwnerId String\n  currentOwner   User      @relation(\"GuildOwner\", fields: [currentOwnerId], references: [userId])\n  members        User[]    @relation(\"GuildMembers\")\n\n  // Explicit foreign keys (exactly one should be set based on guildType)\n  actId   String? @unique\n  act     Act?    @relation(fields: [actId], references: [actId])\n  venueId String? @unique\n  venue   Venue?  @relation(fields: [venueId], references: [venueId])\n  clubId  String? @unique\n  club    Club?   @relation(fields: [clubId], references: [clubId])\n\n  follows     Follow[]\n  invitations GuildInvitation[]\n}\n\nmodel Act {\n  actId     String   @id @default(cuid())\n  name      String\n  bio       String?\n  avatar    String?\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n\n  guild          Guild?\n  calendarEvents CalendarEvent[]\n}\n\nmodel Venue {\n  venueId   String   @id @default(cuid())\n  name      String\n  address   String?\n  city      String?\n  state     String?\n  zipCode   String?\n  avatar    String?\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n\n  guild          Guild?\n  calendarEvents CalendarEvent[]\n}\n\nmodel Club {\n  clubId      String   @id @default(cuid())\n  name        String\n  description String?\n  avatar      String?\n  createdAt   DateTime @default(now())\n  updatedAt   DateTime @updatedAt\n\n  guild Guild?\n}\n\nmodel CalendarEvent {\n  eventId     String   @id @default(cuid())\n  title       String?\n  description String?\n  poster      String? // Event poster/flyer image\n  startTime   DateTime\n  duration    Int // In minutes\n  createdAt   DateTime @default(now())\n  updatedAt   DateTime @updatedAt\n\n  venueId String\n  venue   Venue  @relation(fields: [venueId], references: [venueId])\n\n  acts           Act[]\n  feedActivities FeedActivity[]\n}\n\nmodel FeedActivity {\n  activityId   String   @id @default(cuid())\n  activityType String // e.g., \"event_created\", \"event_updated\"\n  createdAt    DateTime @default(now())\n\n  // Polymorphic reference to the subject of the activity\n  subjectType String // \"CalendarEvent\", \"User\", etc.\n  subjectId   String\n\n  // Optional reference to calendar event if this is event-related\n  calendarEventId String?\n  calendarEvent   CalendarEvent? @relation(fields: [calendarEventId], references: [eventId])\n\n  // Optional reference to user who triggered the activity\n  userId String?\n  user   User?   @relation(fields: [userId], references: [userId])\n\n  @@index([createdAt])\n  @@index([subjectType, subjectId])\n}\n\nmodel GuildInvitation {\n  invitationId String @id @default(cuid())\n  guildId      String\n  guild        Guild  @relation(fields: [guildId], references: [guildId])\n\n  invitedUserId String\n  invitedUser   User   @relation(\"ReceivedInvitations\", fields: [invitedUserId], references: [userId])\n\n  invitedById String?\n  invitedBy   User?   @relation(\"SentInvitations\", fields: [invitedById], references: [userId])\n\n  status      GuildInvitationStatus @default(PENDING)\n  createdAt   DateTime              @default(now())\n  respondedAt DateTime?\n\n  @@unique([guildId, invitedUserId])\n  @@index([invitedUserId, status])\n  @@index([guildId, status])\n}\n"
 }
 
-config.runtimeDataModel = JSON.parse("{\"models\":{\"User\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"email\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"displayName\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"avatar\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"firebaseUid\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"pushTokens\",\"kind\":\"object\",\"type\":\"PushToken\",\"relationName\":\"PushTokenToUser\"}],\"dbName\":null},\"PushToken\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"userId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"token\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"platform\",\"kind\":\"enum\",\"type\":\"PushTokenPlatform\"},{\"name\":\"deviceId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"user\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"PushTokenToUser\"}],\"dbName\":null}},\"enums\":{},\"types\":{}}")
+config.runtimeDataModel = JSON.parse("{\"models\":{\"User\":{\"fields\":[{\"name\":\"userId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"email\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"displayName\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"avatar\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"firebaseUid\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"createdGuilds\",\"kind\":\"object\",\"type\":\"Guild\",\"relationName\":\"GuildCreator\"},{\"name\":\"ownedGuilds\",\"kind\":\"object\",\"type\":\"Guild\",\"relationName\":\"GuildOwner\"},{\"name\":\"memberOfGuilds\",\"kind\":\"object\",\"type\":\"Guild\",\"relationName\":\"GuildMembers\"},{\"name\":\"follows\",\"kind\":\"object\",\"type\":\"Follow\",\"relationName\":\"FollowToUser\"},{\"name\":\"followedBy\",\"kind\":\"object\",\"type\":\"Follow\",\"relationName\":\"UserFollows\"},{\"name\":\"feedActivities\",\"kind\":\"object\",\"type\":\"FeedActivity\",\"relationName\":\"FeedActivityToUser\"},{\"name\":\"sentInvitations\",\"kind\":\"object\",\"type\":\"GuildInvitation\",\"relationName\":\"SentInvitations\"},{\"name\":\"receivedInvitations\",\"kind\":\"object\",\"type\":\"GuildInvitation\",\"relationName\":\"ReceivedInvitations\"}],\"dbName\":null},\"Follow\":{\"fields\":[{\"name\":\"followId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"userId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"user\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"FollowToUser\"},{\"name\":\"entityType\",\"kind\":\"enum\",\"type\":\"FollowEntityType\"},{\"name\":\"followedUserId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"followedUser\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"UserFollows\"},{\"name\":\"tagId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"tag\",\"kind\":\"object\",\"type\":\"Tag\",\"relationName\":\"FollowToTag\"},{\"name\":\"guildId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"guild\",\"kind\":\"object\",\"type\":\"Guild\",\"relationName\":\"FollowToGuild\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":null},\"Tag\":{\"fields\":[{\"name\":\"tagId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"category\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"value\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"follows\",\"kind\":\"object\",\"type\":\"Follow\",\"relationName\":\"FollowToTag\"}],\"dbName\":null},\"Guild\":{\"fields\":[{\"name\":\"guildId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"name\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"guildType\",\"kind\":\"enum\",\"type\":\"GuildType\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"createdById\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdBy\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"GuildCreator\"},{\"name\":\"currentOwnerId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"currentOwner\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"GuildOwner\"},{\"name\":\"members\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"GuildMembers\"},{\"name\":\"actId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"act\",\"kind\":\"object\",\"type\":\"Act\",\"relationName\":\"ActToGuild\"},{\"name\":\"venueId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"venue\",\"kind\":\"object\",\"type\":\"Venue\",\"relationName\":\"GuildToVenue\"},{\"name\":\"clubId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"club\",\"kind\":\"object\",\"type\":\"Club\",\"relationName\":\"ClubToGuild\"},{\"name\":\"follows\",\"kind\":\"object\",\"type\":\"Follow\",\"relationName\":\"FollowToGuild\"},{\"name\":\"invitations\",\"kind\":\"object\",\"type\":\"GuildInvitation\",\"relationName\":\"GuildToGuildInvitation\"}],\"dbName\":null},\"Act\":{\"fields\":[{\"name\":\"actId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"name\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"bio\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"avatar\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"guild\",\"kind\":\"object\",\"type\":\"Guild\",\"relationName\":\"ActToGuild\"},{\"name\":\"calendarEvents\",\"kind\":\"object\",\"type\":\"CalendarEvent\",\"relationName\":\"ActToCalendarEvent\"}],\"dbName\":null},\"Venue\":{\"fields\":[{\"name\":\"venueId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"name\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"address\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"city\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"state\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"zipCode\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"avatar\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"guild\",\"kind\":\"object\",\"type\":\"Guild\",\"relationName\":\"GuildToVenue\"},{\"name\":\"calendarEvents\",\"kind\":\"object\",\"type\":\"CalendarEvent\",\"relationName\":\"CalendarEventToVenue\"}],\"dbName\":null},\"Club\":{\"fields\":[{\"name\":\"clubId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"name\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"description\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"avatar\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"guild\",\"kind\":\"object\",\"type\":\"Guild\",\"relationName\":\"ClubToGuild\"}],\"dbName\":null},\"CalendarEvent\":{\"fields\":[{\"name\":\"eventId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"title\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"description\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"poster\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"startTime\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"duration\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"venueId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"venue\",\"kind\":\"object\",\"type\":\"Venue\",\"relationName\":\"CalendarEventToVenue\"},{\"name\":\"acts\",\"kind\":\"object\",\"type\":\"Act\",\"relationName\":\"ActToCalendarEvent\"},{\"name\":\"feedActivities\",\"kind\":\"object\",\"type\":\"FeedActivity\",\"relationName\":\"CalendarEventToFeedActivity\"}],\"dbName\":null},\"FeedActivity\":{\"fields\":[{\"name\":\"activityId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"activityType\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"subjectType\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"subjectId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"calendarEventId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"calendarEvent\",\"kind\":\"object\",\"type\":\"CalendarEvent\",\"relationName\":\"CalendarEventToFeedActivity\"},{\"name\":\"userId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"user\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"FeedActivityToUser\"}],\"dbName\":null},\"GuildInvitation\":{\"fields\":[{\"name\":\"invitationId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"guildId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"guild\",\"kind\":\"object\",\"type\":\"Guild\",\"relationName\":\"GuildToGuildInvitation\"},{\"name\":\"invitedUserId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"invitedUser\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"ReceivedInvitations\"},{\"name\":\"invitedById\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"invitedBy\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"SentInvitations\"},{\"name\":\"status\",\"kind\":\"enum\",\"type\":\"GuildInvitationStatus\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"respondedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":null}},\"enums\":{},\"types\":{}}")
 defineDmmfProperty(exports.Prisma, config.runtimeDataModel)
 config.compilerWasm = {
   getRuntime: async () => require('./query_compiler_bg.js'),

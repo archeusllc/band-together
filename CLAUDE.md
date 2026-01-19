@@ -51,6 +51,28 @@ When working on Band Together, please follow these conventions:
 - Add comments only when logic isn't self-evident
 - Use TypeScript strict mode rigorously
 
+### API Layer (api/)
+
+**Endpoint Development**
+- Use Elysia framework patterns (controllers, services, middleware)
+- Always include OpenAPI documentation for new endpoints using JSDoc comments
+- Export route handlers as named functions with proper types
+- Place route definitions in `@routes`, handlers in `@controllers`
+
+**OpenAPI Documentation**
+- Add JSDoc comments to all endpoint handlers with `@summary`, `@description`, `@param`, `@returns` tags
+- Keep endpoint documentation in sync with implementation changes
+- Example:
+  ```typescript
+  /**
+   * @summary Get user's activity feed
+   * @description Returns personalized feed of calendar events from followed entities
+   * @param {string} userId - User ID
+   * @returns {CalendarEvent[]} Array of events sorted by startTime
+   */
+  export const getFeed = async (userId: string) => { /* ... */ }
+  ```
+
 ### Planning & Execution
 
 - **Keep plans focused and small in scope** - prefer incremental changes
@@ -85,6 +107,7 @@ bun run db:connect        # Connect to database
 docker-compose up -d      # Start PostgreSQL + Adminer
 bun run db:push          # Push schema changes
 bun run db:studio        # Open Prisma Studio
+cd db && bun generate    # Generate Prisma client from schema
 ```
 
 ## Path Aliases

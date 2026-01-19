@@ -121,7 +121,7 @@ exports.Prisma.TransactionIsolationLevel = makeStrictEnum({
 });
 
 exports.Prisma.UserScalarFieldEnum = {
-  id: 'id',
+  userId: 'userId',
   email: 'email',
   displayName: 'displayName',
   avatar: 'avatar',
@@ -130,14 +130,94 @@ exports.Prisma.UserScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
-exports.Prisma.PushTokenScalarFieldEnum = {
-  id: 'id',
+exports.Prisma.FollowScalarFieldEnum = {
+  followId: 'followId',
   userId: 'userId',
-  token: 'token',
-  platform: 'platform',
-  deviceId: 'deviceId',
+  entityType: 'entityType',
+  followedUserId: 'followedUserId',
+  tagId: 'tagId',
+  guildId: 'guildId',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.TagScalarFieldEnum = {
+  tagId: 'tagId',
+  category: 'category',
+  value: 'value'
+};
+
+exports.Prisma.GuildScalarFieldEnum = {
+  guildId: 'guildId',
+  name: 'name',
+  guildType: 'guildType',
+  createdAt: 'createdAt',
+  createdById: 'createdById',
+  currentOwnerId: 'currentOwnerId',
+  actId: 'actId',
+  venueId: 'venueId',
+  clubId: 'clubId'
+};
+
+exports.Prisma.ActScalarFieldEnum = {
+  actId: 'actId',
+  name: 'name',
+  bio: 'bio',
+  avatar: 'avatar',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
+};
+
+exports.Prisma.VenueScalarFieldEnum = {
+  venueId: 'venueId',
+  name: 'name',
+  address: 'address',
+  city: 'city',
+  state: 'state',
+  zipCode: 'zipCode',
+  avatar: 'avatar',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.ClubScalarFieldEnum = {
+  clubId: 'clubId',
+  name: 'name',
+  description: 'description',
+  avatar: 'avatar',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.CalendarEventScalarFieldEnum = {
+  eventId: 'eventId',
+  title: 'title',
+  description: 'description',
+  poster: 'poster',
+  startTime: 'startTime',
+  duration: 'duration',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  venueId: 'venueId'
+};
+
+exports.Prisma.FeedActivityScalarFieldEnum = {
+  activityId: 'activityId',
+  activityType: 'activityType',
+  createdAt: 'createdAt',
+  subjectType: 'subjectType',
+  subjectId: 'subjectId',
+  calendarEventId: 'calendarEventId',
+  userId: 'userId'
+};
+
+exports.Prisma.GuildInvitationScalarFieldEnum = {
+  invitationId: 'invitationId',
+  guildId: 'guildId',
+  invitedUserId: 'invitedUserId',
+  invitedById: 'invitedById',
+  status: 'status',
+  createdAt: 'createdAt',
+  respondedAt: 'respondedAt'
 };
 
 exports.Prisma.SortOrder = {
@@ -154,14 +234,36 @@ exports.Prisma.NullsOrder = {
   first: 'first',
   last: 'last'
 };
-exports.PushTokenPlatform = exports.$Enums.PushTokenPlatform = {
-  ANDROID: 'ANDROID',
-  WEB: 'WEB'
+exports.FollowEntityType = exports.$Enums.FollowEntityType = {
+  USER: 'USER',
+  TAG: 'TAG',
+  GUILD: 'GUILD'
+};
+
+exports.GuildType = exports.$Enums.GuildType = {
+  ACT: 'ACT',
+  VENUE: 'VENUE',
+  CLUB: 'CLUB'
+};
+
+exports.GuildInvitationStatus = exports.$Enums.GuildInvitationStatus = {
+  PENDING: 'PENDING',
+  ACCEPTED: 'ACCEPTED',
+  REJECTED: 'REJECTED',
+  CANCELLED: 'CANCELLED'
 };
 
 exports.Prisma.ModelName = {
   User: 'User',
-  PushToken: 'PushToken'
+  Follow: 'Follow',
+  Tag: 'Tag',
+  Guild: 'Guild',
+  Act: 'Act',
+  Venue: 'Venue',
+  Club: 'Club',
+  CalendarEvent: 'CalendarEvent',
+  FeedActivity: 'FeedActivity',
+  GuildInvitation: 'GuildInvitation'
 };
 
 /**
