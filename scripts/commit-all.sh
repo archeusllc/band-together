@@ -35,6 +35,13 @@ else
   fi
 fi
 
+# Validate commit message is not empty
+if [ -z "$COMMIT_MSG" ]; then
+  echo "❌ ERROR: Commit message cannot be empty"
+  echo "   Usage: bun git:commit -m 'Your commit message'"
+  exit 1
+fi
+
 echo "💾 Committing with message: \"$COMMIT_MSG\""
 echo ""
 

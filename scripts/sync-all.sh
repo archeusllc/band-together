@@ -8,8 +8,9 @@ if [ "$1" = "-m" ] && [ -n "$2" ]; then
   COMMIT_MSG="-m"
   COMMIT_ARG="$2"
 else
-  COMMIT_MSG=""
-  COMMIT_ARG=""
+  echo "❌ ERROR: Commit message is required"
+  echo "   Usage: bun git:sync -m 'Your commit message'"
+  exit 1
 fi
 
 echo "🔄 Band Together Sync: Stage → Commit → Push"
@@ -30,11 +31,7 @@ echo "💾 Step 2: Committing submodule changes..."
 git submodule foreach "
   if [ -n \"\$(git diff --cached --name-only)\" ]; then
     echo \"Committing \$name...\"
-    if [ -n \"$COMMIT_MSG\" ]; then
-      git commit -m \"$COMMIT_ARG\" || echo \"⚠️  Failed to commit \$name\"
-    else
-      git commit --allow-empty-message -m \"\" || echo \"⚠️  Failed to commit \$name\"
-    fi
+    git commit -m \"$COMMIT_ARG\" || echo \"⚠️  Failed to commit \$name\"
   else
     echo \"✓ \$name - no staged changes to commit\"
   fi
@@ -54,11 +51,7 @@ fi
 # Commit parent repo
 echo "💾 Step 4: Committing parent repo..."
 if [ -n "$(git diff --cached --name-only)" ]; then
-  if [ -n "$COMMIT_MSG" ]; then
-    git commit -m "$COMMIT_ARG"
-  else
-    git commit -m "Update submodule references"
-  fi
+  git commit -m "$COMMIT_ARG"
   if [ $? -ne 0 ]; then
     echo "❌ Parent repo commit failed"
     exit 1
