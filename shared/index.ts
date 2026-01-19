@@ -3,7 +3,7 @@ import { PrismaClient as _PrismaClient, Prisma } from './generated/prisma-client
 import { PrismaPg } from '@prisma/adapter-pg'
 
 const {
-  DATABASE_URL = 'postgresql://postgres:postgres@localhost:5432/band-together'
+  DATABASE_URL = 'postgresql://postgres:postgres@localhost:5432/band_together'
 } = process.env;
 
 // Change the adapter depending on the db used - in this case, PostgreSQL
