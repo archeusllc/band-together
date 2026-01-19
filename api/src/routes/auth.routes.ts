@@ -22,6 +22,19 @@ export const authRoutes = new Elysia().group('/auth', (authRoute) =>
           firebaseUid: t.String(),
           idToken: t.String(),
         }),
+        detail: {
+          tags: ['Authentication'],
+          summary: 'Register New User',
+          description: 'Create a new user account using Firebase authentication. Accepts user email, display name, Firebase UID, and ID token.',
+          responses: {
+            200: {
+              description: 'User successfully registered',
+            },
+            400: {
+              description: 'Bad request - invalid input or registration failed',
+            },
+          },
+        },
       }
     )
     .post(
@@ -40,6 +53,19 @@ export const authRoutes = new Elysia().group('/auth', (authRoute) =>
           firebaseUid: t.String(),
           idToken: t.String(),
         }),
+        detail: {
+          tags: ['Authentication'],
+          summary: 'User Login',
+          description: 'Authenticate an existing user using Firebase UID and ID token. Returns authenticated user object on success.',
+          responses: {
+            200: {
+              description: 'User successfully authenticated',
+            },
+            401: {
+              description: 'Unauthorized - invalid Firebase credentials',
+            },
+          },
+        },
       }
     )
     .use(firebaseAuthMiddleware)
@@ -54,12 +80,43 @@ export const authRoutes = new Elysia().group('/auth', (authRoute) =>
           set.status = 401;
           return { error: (error as Error).message };
         }
+      },
+      {
+        detail: {
+          tags: ['Authentication'],
+          summary: 'Get Current User',
+          description: 'Retrieve the profile of the currently authenticated user. Requires valid Firebase ID token in Authorization header (Bearer token).',
+          security: [{ bearerAuth: [] }],
+          responses: {
+            200: {
+              description: 'Current user profile retrieved',
+            },
+            401: {
+              description: 'Unauthorized - missing or invalid Firebase ID token',
+            },
+          },
+        },
       }
     )
-    .get('/logout', async () => {
-      await authController.logout();
-      return { success: true };
-    })
+    .get(
+      '/logout',
+      async () => {
+        await authController.logout();
+        return { success: true };
+      },
+      {
+        detail: {
+          tags: ['Authentication'],
+          summary: 'User Logout',
+          description: 'Log out the currently authenticated user and clear their session.',
+          responses: {
+            200: {
+              description: 'User successfully logged out',
+            },
+          },
+        },
+      }
+    )
     .post(
       '/reset',
       async ({ body }) => {
@@ -68,6 +125,19 @@ export const authRoutes = new Elysia().group('/auth', (authRoute) =>
       },
       {
         body: t.Object({ email: t.String() }),
+        detail: {
+          tags: ['Authentication'],
+          summary: 'Request Password Reset',
+          description: 'Initiate a password reset process by sending a reset email to the specified address. The email will contain a link to set a new password.',
+          responses: {
+            200: {
+              description: 'Password reset email sent successfully',
+            },
+            400: {
+              description: 'Bad request - invalid email or reset failed',
+            },
+          },
+        },
       }
     )
 );
