@@ -4,7 +4,7 @@
   "main": "index.tsx",
   "scripts": {
     "start": "expo start",
-    "clean": "rm -rf node_modules bun.lock package-lock.json",
+    "clean": "rm -rf node_modules bun.lock package-lock.json .expo",
     "reset": "bun clean && bun install",
     "build:android:preview": "eas build --platform android --profile preview"
   },

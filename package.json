@@ -4,9 +4,8 @@
   "description": "A band companion app for musicians",
   "private": true,
   "scripts": {
-    "preinstall": "bun generate && cd api && bun reset && cd ../client && bun reset && cd ../shared && bun reset && cd ../db && bun reset",
-    "postinstall": "rm -rf node_modules bun.lock package-lock.json",
-    "generate": "cd api && bun run generate && cd ../db && bun run generate"
+    "preinstall": "cd shared && bun install && cd ../api && bun install && cd ../client && bun install && cd ../db && bun install",
+    "postinstall": "rm -rf node_modules bun.lock package-lock.json"
   },
   "keywords": [
     "band",
