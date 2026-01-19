@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { firebaseAuthService, firebaseMessagingService, api } from '@/services';
+import { firebaseAuthService, api } from '@/services';
 import type { User } from '@band-together/shared';
 import { User as FirebaseUser } from 'firebase/auth';
 
@@ -84,12 +84,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
     if (userData && !error) {
       setUser(userData);
-
-      // Register push token after successful login
-      if (userData.id) {
-        await firebaseMessagingService.registerPushToken(userData.id);
-      }
-
       return true;
     }
     return false;
@@ -100,26 +94,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
     if (userData && !error) {
       setUser(userData);
-
-      // Register push token after successful registration
-      if (userData.id) {
-        await firebaseMessagingService.registerPushToken(userData.id);
-      }
-
       return true;
     }
     return false;
   };
 
   const logout = async () => {
-    // Unregister push token before logout
-    if (user?.id) {
-      const { token } = await firebaseMessagingService.getPushToken();
-      if (token) {
-        await firebaseMessagingService.unregisterPushToken(token);
-      }
-    }
-
     await firebaseAuthService.logout();
     setUser(null);
     setFirebaseUser(null);
