@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, Pressable, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useAuth } from '@contexts';
+import { colors, tailwind } from '@theme';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 type NavigationProp = NativeStackNavigationProp<any>;
@@ -46,18 +47,19 @@ export default function RegisterScreen() {
   };
 
   return (
-    <View className="flex-1 bg-slate-100">
+    <View className={`flex-1 ${tailwind.background.both}`}>
       <View className="flex-1 justify-center px-5">
-        <Text className="text-4xl font-bold mb-8 text-center">Create Account</Text>
+        <Text className={`text-4xl font-bold mb-8 text-center ${tailwind.text.both}`}>Create Account</Text>
 
-        <View className="bg-white rounded-xl p-5">
+        <View className={`${tailwind.card.both} rounded-xl p-5`}>
           <View className="mb-5">
-            <Text className="text-base font-semibold mb-2 text-black">Email</Text>
+            <Text className={`text-base font-semibold mb-2 ${tailwind.text.both}`}>Email</Text>
             <TextInput
-              className="border border-slate-200 rounded-lg px-4 py-3 text-base bg-white"
+              className={`border rounded-lg px-4 py-3 text-base ${tailwind.border.both} ${tailwind.card.both} ${tailwind.text.both}`}
               value={email}
               onChangeText={setEmail}
               placeholder="Enter your email"
+              placeholderTextColor={colors.light.muted}
               keyboardType="email-address"
               autoCapitalize="none"
               autoComplete="email"
@@ -66,12 +68,13 @@ export default function RegisterScreen() {
           </View>
 
           <View className="mb-5">
-            <Text className="text-base font-semibold mb-2 text-black">Password</Text>
+            <Text className={`text-base font-semibold mb-2 ${tailwind.text.both}`}>Password</Text>
             <TextInput
-              className="border border-slate-200 rounded-lg px-4 py-3 text-base bg-white"
+              className={`border rounded-lg px-4 py-3 text-base ${tailwind.border.both} ${tailwind.card.both} ${tailwind.text.both}`}
               value={password}
               onChangeText={setPassword}
               placeholder="Enter your password"
+              placeholderTextColor={colors.light.muted}
               secureTextEntry
               autoCapitalize="none"
               autoComplete="password"
@@ -80,12 +83,13 @@ export default function RegisterScreen() {
           </View>
 
           <View className="mb-5">
-            <Text className="text-base font-semibold mb-2 text-black">Confirm Password</Text>
+            <Text className={`text-base font-semibold mb-2 ${tailwind.text.both}`}>Confirm Password</Text>
             <TextInput
-              className="border border-slate-200 rounded-lg px-4 py-3 text-base bg-white"
+              className={`border rounded-lg px-4 py-3 text-base ${tailwind.border.both} ${tailwind.card.both} ${tailwind.text.both}`}
               value={confirmPassword}
               onChangeText={setConfirmPassword}
               placeholder="Confirm your password"
+              placeholderTextColor={colors.light.muted}
               secureTextEntry
               autoCapitalize="none"
               editable={!loading}
@@ -103,9 +107,9 @@ export default function RegisterScreen() {
           </Pressable>
 
           <View className="flex-row justify-center mt-5">
-            <Text className="text-sm text-gray-600">Already have an account? </Text>
+            <Text className={`text-sm ${tailwind.textMuted.both}`}>Already have an account? </Text>
             <Pressable onPress={() => navigation.navigate('Login')}>
-              <Text className="text-sm text-blue-500 font-semibold">Login</Text>
+              <Text className={`text-sm ${tailwind.primary} font-semibold`}>Login</Text>
             </Pressable>
           </View>
         </View>

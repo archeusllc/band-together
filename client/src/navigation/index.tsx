@@ -1,3 +1,4 @@
+import { useColorScheme } from 'react-native';
 import { createStaticNavigation } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createDrawerNavigator } from '@react-navigation/drawer';
@@ -10,6 +11,7 @@ import {
   RegisterScreen,
   NotFoundScreen,
 } from '@screens';
+import { lightTheme, darkTheme } from './themes';
 
 const MainDrawer = createDrawerNavigator({
   drawerContent: (props) => <DrawerContent {...props} />,
@@ -90,5 +92,12 @@ const RootStack = createNativeStackNavigator({
   },
 });
 
-export const Navigation = createStaticNavigation(RootStack);
+const RootNavigator = createStaticNavigation(RootStack);
+
+export function Navigation(props: any) {
+  const colorScheme = useColorScheme();
+  const theme = colorScheme === 'dark' ? darkTheme : lightTheme;
+
+  return <RootNavigator {...props} theme={theme} />;
+}
 

@@ -61,6 +61,12 @@
       ],
       "@assets/*": [
         "./src/assets/*"
+      ],
+      "@theme": [
+        "./src/theme/index"
+      ],
+      "@theme/*": [
+        "./src/theme/*"
       ]
     }
   },

@@ -1,14 +1,14 @@
 import React from 'react';
 import { View, Text, ScrollView, Switch, Alert } from 'react-native';
 import { apiBaseUrl, firebaseMessagingService } from '@services';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@contexts';
+import { colors, tailwind } from '@theme';
 
 type ApiStatus = 'checking' | 'online' | 'offline';
 
 export default function SettingsScreen() {
   const { user } = useAuth();
   const [notificationsEnabled, setNotificationsEnabled] = React.useState(false);
-  const [darkModeEnabled, setDarkModeEnabled] = React.useState(false);
   const [apiStatus, setApiStatus] = React.useState<ApiStatus>('checking');
 
   React.useEffect(() => {
@@ -78,65 +78,54 @@ export default function SettingsScreen() {
   };
 
   return (
-    <ScrollView className="flex-1 bg-slate-100">
-      <View className="mt-5 bg-white px-4">
-        <Text className="text-xs font-semibold text-gray-600 uppercase tracking-wider px-4 pt-4 pb-2 bg-slate-100 -mx-4">Preferences</Text>
+    <ScrollView className={`flex-1 ${tailwind.background.both}`}>
+      <View className={`mt-5 ${tailwind.card.both} px-4`}>
+        <Text className={`text-xs font-semibold ${tailwind.textMuted.both} uppercase tracking-wider px-4 pt-4 pb-2 ${tailwind.background.both} -mx-4`}>Preferences</Text>
 
-        <View className="flex-row items-center justify-between py-3 border-b border-slate-200">
+        <View className={`flex-row items-center justify-between py-3 border-b ${tailwind.border.both}`}>
           <View className="flex-1 mr-3">
-            <Text className="text-base font-medium text-black mb-0.5">Notifications</Text>
-            <Text className="text-sm text-gray-600">Receive push notifications</Text>
+            <Text className={`text-base font-medium ${tailwind.text.both} mb-0.5`}>Notifications</Text>
+            <Text className={`text-sm ${tailwind.textMuted.both}`}>Receive push notifications</Text>
           </View>
           <Switch
             value={notificationsEnabled}
             onValueChange={handleNotificationToggle}
           />
         </View>
-
-        <View className="flex-row items-center justify-between py-3 border-b border-slate-200">
-          <View className="flex-1 mr-3">
-            <Text className="text-base font-medium text-black mb-0.5">Dark Mode</Text>
-            <Text className="text-sm text-gray-600">Use dark theme</Text>
-          </View>
-          <Switch
-            value={darkModeEnabled}
-            onValueChange={setDarkModeEnabled}
-          />
-        </View>
       </View>
 
-      <View className="mt-5 bg-white px-4">
-        <Text className="text-xs font-semibold text-gray-600 uppercase tracking-wider px-4 pt-4 pb-2 bg-slate-100 -mx-4">About</Text>
-        <View className="flex-row justify-between items-center py-3 border-b border-slate-200">
-          <Text className="text-base text-black">API Status</Text>
+      <View className={`mt-5 ${tailwind.card.both} px-4`}>
+        <Text className={`text-xs font-semibold ${tailwind.textMuted.both} uppercase tracking-wider px-4 pt-4 pb-2 ${tailwind.background.both} -mx-4`}>About</Text>
+        <View className={`flex-row justify-between items-center py-3 border-b ${tailwind.border.both}`}>
+          <Text className={`text-base ${tailwind.text.both}`}>API Status</Text>
           <View className="items-end">
             <Text
               className={`text-base font-semibold ${apiStatus === 'online'
                   ? 'text-green-600'
                   : apiStatus === 'offline'
                     ? 'text-red-600'
-                    : 'text-gray-600'
+                    : tailwind.textMutedLight.light
                 }`}
             >
               {apiStatus === 'checking' ? 'Checking…' : apiStatus === 'online' ? 'Online' : 'Offline'}
             </Text>
-            <Text className="text-xs text-gray-600 font-mono" numberOfLines={1}>
+            <Text className={`text-xs ${tailwind.textMuted.both} font-mono`} numberOfLines={1}>
               {apiBaseUrl}
             </Text>
           </View>
         </View>
-        <View className="flex-row justify-between items-center py-3 border-b border-slate-200">
-          <Text className="text-base text-black">Version</Text>
-          <Text className="text-base text-gray-600">1.0.0</Text>
+        <View className={`flex-row justify-between items-center py-3 border-b ${tailwind.border.both}`}>
+          <Text className={`text-base ${tailwind.text.both}`}>Version</Text>
+          <Text className={`text-base ${tailwind.textMuted.both}`}>1.0.0</Text>
         </View>
-        <View className="flex-row justify-between items-center py-3 border-b border-slate-200">
-          <Text className="text-base text-black">Build</Text>
-          <Text className="text-base text-gray-600">2026.01.18</Text>
+        <View className={`flex-row justify-between items-center py-3 border-b ${tailwind.border.both}`}>
+          <Text className={`text-base ${tailwind.text.both}`}>Build</Text>
+          <Text className={`text-base ${tailwind.textMuted.both}`}>2026.01.18</Text>
         </View>
       </View>
 
-      <View className="m-5 p-4 bg-white rounded-lg">
-        <Text className="text-sm text-gray-600 text-center italic">
+      <View className={`m-5 p-4 ${tailwind.card.both} rounded-lg`}>
+        <Text className={`text-sm ${tailwind.textMuted.both} text-center italic`}>
           Additional settings will be available in future updates
         </Text>
       </View>
