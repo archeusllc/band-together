@@ -94,20 +94,41 @@ When working on Band Together, please follow these conventions:
 
 ## Development Commands
 
+### Root Commands
 ```bash
-# Setup and installation
-bun install-all           # Install all packages
-bun run setup             # Initial project setup
+# Installation (runs preinstall to set up all workspaces)
+bun install
+```
 
-# Development
-bun run dev               # Start all dev servers
-bun run db:connect        # Connect to database
+### Database Commands (from `db/` directory)
+```bash
+cd db
 
-# Database
-docker-compose up -d      # Start PostgreSQL + Adminer
-bun run db:push          # Push schema changes
-bun run db:studio        # Open Prisma Studio
-cd db && bun generate    # Generate Prisma client from schema
+bun start                 # Open Prisma Studio
+bun push                  # Push schema changes to database
+bun generate             # Generate Prisma client
+bun clean                # Clean node_modules and lock files
+bun reset                # Clean and reinstall dependencies
+```
+
+### API Commands (from `api/` directory)
+```bash
+cd api
+
+bun start                # Start API server with watch mode
+bun generate             # Generate API types from running server
+bun clean                # Clean node_modules and lock files
+bun reset                # Clean and reinstall dependencies
+```
+
+### Local Database Setup
+```bash
+# Start PostgreSQL + Adminer (from project root)
+docker-compose up -d
+
+# Apply schema and manage database
+cd db && bun push        # Apply schema migrations
+cd db && bun start       # Open Prisma Studio for visual management
 ```
 
 ## Path Aliases
