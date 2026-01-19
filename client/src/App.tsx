@@ -1,6 +1,6 @@
 import 'react-native-gesture-handler';
 import { Navigation } from './navigation';
-import { AuthProvider } from '@contexts';
+import { AuthProvider, FeedProvider } from '@contexts';
 
 const config = {
   prefixes: ['bandtogethermobile://', 'https://band-together.app'],
@@ -9,7 +9,9 @@ const config = {
 export function App() {
   return (
     <AuthProvider>
-      <Navigation linking={config} />
+      <FeedProvider>
+        <Navigation linking={config} />
+      </FeedProvider>
     </AuthProvider>
   );
 }

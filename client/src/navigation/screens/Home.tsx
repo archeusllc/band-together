@@ -1,24 +1,87 @@
-import { Text, View } from "react-native";
-import { useAuth } from '@contexts';
+import React, { useEffect } from 'react';
+import { Text, View, FlatList, RefreshControl, ActivityIndicator } from 'react-native';
+import { useFeed } from '@contexts';
+import { FeedCard } from '@components';
 import { tailwind } from '@theme';
 
 export default function HomeScreen() {
-  const { isAuthenticated, user } = useAuth();
+  const { events, loading, refreshing, hasMore, error, fetchFeed, refreshFeed, loadMore } = useFeed();
+
+  useEffect(() => {
+    fetchFeed();
+  }, []);
+
+  if (loading && events.length === 0) {
+    return (
+      <View className={`flex-1 ${tailwind.background.both} justify-center items-center`}>
+        <ActivityIndicator size="large" color="#3B82F6" />
+        <Text className={`text-base ${tailwind.textMuted.both} mt-4`}>
+          Loading feed...
+        </Text>
+      </View>
+    );
+  }
+
+  if (error && events.length === 0) {
+    return (
+      <View className={`flex-1 ${tailwind.background.both} justify-center items-center px-5`}>
+        <Text className="text-6xl mb-4">⚠️</Text>
+        <Text className={`text-xl font-bold mb-2 text-center ${tailwind.text.both}`}>
+          Failed to Load Feed
+        </Text>
+        <Text className={`text-sm ${tailwind.textMuted.both} text-center`}>
+          {error}
+        </Text>
+      </View>
+    );
+  }
+
+  if (events.length === 0) {
+    return (
+      <View className={`flex-1 ${tailwind.background.both} justify-center items-center px-5`}>
+        <Text className="text-6xl mb-4">🎵</Text>
+        <Text className={`text-2xl font-bold mb-2 text-center ${tailwind.text.both}`}>
+          No Events Yet
+        </Text>
+        <Text className={`text-base ${tailwind.textMuted.both} text-center`}>
+          Check back later for upcoming shows and performances
+        </Text>
+      </View>
+    );
+  }
 
   return (
     <View className={`flex-1 ${tailwind.background.both}`}>
-      <View className="flex-1 justify-center items-center px-5">
-        <View className="items-center max-w-xs">
-          <Text className="text-6xl mb-4">🎵</Text>
-          <Text className={`text-2xl font-bold mb-2 text-center ${tailwind.text.both}`}>Your Feed</Text>
-          <Text className={`text-base ${tailwind.textMuted.both} text-center mb-6`}>
-            Your activity feed will appear here
-          </Text>
-          <Text className={`text-sm ${tailwind.textMutedLight.both} italic text-center`}>
-            Open the drawer menu to navigate
-          </Text>
-        </View>
-      </View>
+      <FlatList
+        data={events}
+        keyExtractor={(item) => item.eventId}
+        renderItem={({ item }) => (
+          <FeedCard
+            event={item}
+            onPress={() => {
+              // TODO: Navigate to event details in future phase
+              console.log('Event pressed:', item.eventId);
+            }}
+          />
+        )}
+        contentContainerStyle={{ paddingVertical: 12 }}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={refreshFeed}
+            tintColor="#3B82F6"
+          />
+        }
+        onEndReached={loadMore}
+        onEndReachedThreshold={0.5}
+        ListFooterComponent={
+          hasMore && !refreshing ? (
+            <View className="py-4">
+              <ActivityIndicator size="small" color="#3B82F6" />
+            </View>
+          ) : null
+        }
+      />
     </View>
   );
 }
