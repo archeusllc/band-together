@@ -1,0 +1,40 @@
+{
+  "expo": {
+    "name": "band-together-mobile",
+    "slug": "band-together-mobile",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "src/assets/images/icon.png",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "scheme": "bandtogethermobile",
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "package": "com.bandtogether.mobile",
+      "adaptiveIcon": {
+        "foregroundImage": "src/assets/images/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      }
+    },
+    "web": {
+      "favicon": "src/assets/images/favicon.png"
+    },
+    "plugins": [
+      "expo-asset",
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#ffffff",
+          "image": "src/assets/images/splash-icon.png"
+        }
+      ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "377239a6-5385-4597-bd2e-2413c4047687"
+      }
+    }
+  }
+}

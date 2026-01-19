@@ -1,0 +1,24 @@
+{
+  "name": "@band-together/api",
+  "version": "0.1.0",
+  "description": "REST API for Band Together",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "bun run --watch src/index.ts",
+    "clean": "rm -rf node_modules bun.lock package-lock.json",
+    "reset": "bun clean && bun install"
+  },
+  "dependencies": {
+    "@band-together/shared": "file:../shared",
+    "@elysiajs/cors": "^1.4.1",
+    "@elysiajs/jwt": "^1.4.0",
+    "@elysiajs/openapi": "^1.4.13",
+    "elysia": "latest",
+    "elysia-remote-dts": "^1.0.3",
+    "firebase-admin": "^13.6.0"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  }
+}

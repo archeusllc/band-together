@@ -1,0 +1,30 @@
+{
+  "name": "band-together",
+  "version": "0.1.0",
+  "description": "A band companion app for musicians",
+  "private": true,
+  "scripts": {
+    "preinstall": "./scripts/redirect-root-install.sh",
+    "setup": "./scripts/setup.sh",
+    "dev": "./scripts/dev.sh",
+    "git:submodules": "./scripts/submodules.sh",
+    "git:pull": "./scripts/pull-submodules.sh",
+    "git:push": "./scripts/push-all.sh",
+    "git:stage": "./scripts/stage-all.sh",
+    "git:commit": "./scripts/commit-all.sh",
+    "git:sync": "./scripts/sync-all.sh",
+    "git:check": "./scripts/check-dirty.sh",
+    "git:status": "./scripts/status.sh",
+    "install-all": "./scripts/install-all.sh",
+    "clean": "./scripts/clean.sh",
+    "reset": "./scripts/reset.sh",
+    "db:connect": "./scripts/db-connect.sh"
+  },
+  "keywords": [
+    "band",
+    "music",
+    "setlist",
+    "rehearsal",
+    "gig"
+  ]
+}

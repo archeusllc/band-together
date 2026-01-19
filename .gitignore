@@ -1,0 +1,47 @@
+# Root .gitignore for Band Together
+
+# Dependencies
+node_modules/
+*.pnp
+.pnp.js
+
+# Bun
+.bun/
+
+# Testing
+coverage/
+
+# Production
+build/
+dist/
+
+# Environment variables
+.env*
+!.env.development
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Prisma
+.env.local
+prisma/dev.db
+prisma/dev.db-journal
+
+# Plans
+.claude/plans/

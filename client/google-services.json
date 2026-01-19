@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "496192484528",
+    "project_id": "band-together-firebase",
+    "storage_bucket": "band-together-firebase.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:496192484528:android:d038e1c194b0bebc2e7775",
+        "android_client_info": {
+          "package_name": "com.bandtogether.mobile"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCRSJZxzKJNv-7c04RO-msfRom_Ec8SmqA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

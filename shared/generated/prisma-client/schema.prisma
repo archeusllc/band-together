@@ -1,0 +1,47 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider               = "prisma-client-js"
+  output                 = "../generated"
+  moduleFormat           = "esm"
+  generatedFileExtension = ".ts"
+  importFileExtension    = ".ts"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id          String   @id @default(cuid())
+  email       String   @unique
+  displayName String?
+  avatar      String?
+  firebaseUid String?  @unique
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  pushTokens PushToken[]
+}
+
+model PushToken {
+  id        String            @id @default(cuid())
+  userId    String
+  token     String            @unique
+  platform  PushTokenPlatform
+  deviceId  String?
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+enum PushTokenPlatform {
+  ANDROID
+  WEB
+}

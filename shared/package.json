@@ -1,0 +1,28 @@
+{
+  "name": "@band-together/shared",
+  "version": "0.1.0",
+  "description": "Shared types, schemas, and utilities for Band Together",
+  "private": true,
+  "type": "module",
+  "main": "./index.ts",
+  "types": "./index.ts",
+  "exports": {
+    ".": {
+      "import": "./index.ts",
+      "types": "./index.ts"
+    }
+  },
+  "scripts": {
+    "clean": "rm -rf node_modules bun.lock package-lock.json",
+    "reset": "bun clean && bun install"
+  },
+  "dependencies": {
+    "@prisma/adapter-pg": "^7.2.0",
+    "@prisma/client": "^7.2.0",
+    "dotenv": "^17.2.3"
+  },
+  "devDependencies": {
+    "@types/node": "^25.0.6",
+    "typescript": "^5.9.3"
+  }
+}

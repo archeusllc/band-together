@@ -1,0 +1,72 @@
+{
+  "extends": "expo/tsconfig.base",
+  "compilerOptions": {
+    "strict": true,
+    "moduleResolution": "bundler",
+    "baseUrl": ".",
+    "types": [
+      "nativewind/types"
+    ],
+    "paths": {
+      "@/*": [
+        "./src/*"
+      ],
+      "@components": [
+        "./src/components/index"
+      ],
+      "@components/*": [
+        "./src/components/*"
+      ],
+      "@ui": [
+        "./src/components/ui/index"
+      ],
+      "@ui/*": [
+        "./src/components/ui/*"
+      ],
+      "@screens": [
+        "./src/navigation/screens/index"
+      ],
+      "@screens/*": [
+        "./src/navigation/screens/*"
+      ],
+      "@navigation": [
+        "./src/navigation/index"
+      ],
+      "@navigation/*": [
+        "./src/navigation/*"
+      ],
+      "@hooks": [
+        "./src/hooks/index"
+      ],
+      "@hooks/*": [
+        "./src/hooks/*"
+      ],
+      "@constants": [
+        "./src/constants/index"
+      ],
+      "@constants/*": [
+        "./src/constants/*"
+      ],
+      "@contexts": [
+        "./src/contexts/index"
+      ],
+      "@contexts/*": [
+        "./src/contexts/*"
+      ],
+      "@services": [
+        "./src/services/index"
+      ],
+      "@services/*": [
+        "./src/services/*"
+      ],
+      "@assets/*": [
+        "./src/assets/*"
+      ]
+    }
+  },
+  "include": [
+    "**/*.ts",
+    "**/*.tsx",
+    "nativewind-env.d.ts"
+  ]
+}
