@@ -54,4 +54,37 @@ export const eventsRoutes = new Elysia().group('/events', (eventsRoute) =>
         }
       }
     )
+    .get(
+      '/:eventId',
+      async ({ firebaseUid, set, params }) => {
+        try {
+          // Public endpoint - works for both authenticated and unauthenticated users
+          const result = await feedController.getEventById(firebaseUid || null, params.eventId);
+          return result;
+        } catch (error) {
+          const message = (error as Error).message;
+          if (message.includes('not found')) {
+            set.status = 404;
+          } else {
+            set.status = 500;
+          }
+          return { error: message };
+        }
+      },
+      {
+        params: t.Object({
+          eventId: t.String()
+        }),
+        detail: {
+          tags: ['Events'],
+          summary: 'Get Event by ID',
+          description: 'Retrieve a single event with full details including venue and acts with guild relations. Public endpoint.',
+          responses: {
+            200: { description: 'Event retrieved successfully' },
+            404: { description: 'Event not found' },
+            500: { description: 'Server error' }
+          }
+        }
+      }
+    )
 );

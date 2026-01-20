@@ -354,5 +354,37 @@ export const feedController = {
       console.error('Delete follow error:', error);
       throw error;
     }
+  },
+
+  /**
+   * Get single event by ID with full details
+   */
+  getEventById: async (firebaseUid: string | null, eventId: string) => {
+    try {
+      const event = await prisma.calendarEvent.findUnique({
+        where: { eventId },
+        include: {
+          venue: {
+            include: {
+              guild: true  // Include venue's guild for follow status
+            }
+          },
+          acts: {
+            include: {
+              guild: true  // Include acts' guilds for follow status
+            }
+          }
+        }
+      });
+
+      if (!event) {
+        throw new Error('Event not found');
+      }
+
+      return event;
+    } catch (error) {
+      console.error('Get event by ID error:', error);
+      throw error;
+    }
   }
 };

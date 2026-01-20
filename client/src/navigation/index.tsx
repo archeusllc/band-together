@@ -10,8 +10,12 @@ import {
   LoginScreen,
   RegisterScreen,
   NotFoundScreen,
+  EventDetailsScreen,
 } from '@screens';
 import { lightTheme, darkTheme } from './themes';
+import type { RootStackParamList, DrawerParamList } from './types';
+
+export type { RootStackParamList, DrawerParamList } from './types';
 
 const MainDrawer = createDrawerNavigator({
   drawerContent: (props) => <DrawerContent {...props} />,
@@ -78,6 +82,17 @@ const RootStack = createNativeStackNavigator({
       options: {
         presentation: 'modal',
         title: 'Register',
+      },
+    },
+    EventDetails: {
+      screen: EventDetailsScreen,
+      linking: {
+        path: 'event/:eventId',
+      },
+      options: {
+        presentation: 'card',
+        title: 'Event Details',
+        headerShown: true,
       },
     },
     NotFound: {

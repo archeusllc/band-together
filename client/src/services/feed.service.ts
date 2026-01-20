@@ -128,5 +128,27 @@ export const feedService = {
     } catch (err) {
       return { data: null, error: err };
     }
+  },
+
+  /**
+   * Get single event by ID (public endpoint)
+   */
+  getEventById: async (eventId: string) => {
+    try {
+      // Optional auth - endpoint is public but may return personalized data if authenticated
+      const idToken = await firebaseAuthService.getIdToken().catch(() => null);
+
+      const headers = idToken ? {
+        $headers: {
+          authorization: `Bearer ${idToken}`,
+        },
+      } : {};
+
+      const { data, error } = await api.events({ eventId }).get(headers);
+
+      return { data, error };
+    } catch (err) {
+      return { data: null, error: err };
+    }
   }
 };
