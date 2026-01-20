@@ -300,20 +300,149 @@ export const myService = {
 };
 ```
 
-## Getting Help
+## Activity Feed Implementation - Lessons Learned
 
-- **Comprehensive Context**: See [AI Context Guide](wiki/AI-Context.md)
-- **Architecture Questions**: Check the wiki for project structure details
-- **Code Examples**: Reference existing code in `client/src/` and `api/src/`
-- **Issues**: Check project README or GitHub issues
+### Overview
+Phases 1-4 of the Activity Feed feature are complete. Key learnings for future feature development:
+
+### Navigation & Type Safety
+
+**Type-Safe Navigation with RootStackParamList**
+- Define all screens and their params in a centralized `RootStackParamList` type
+- Use `useNavigation<NavigationProp>()` with proper generic typing for compile-time safety
+- Screen components receive props via `NativeStackScreenProps<RootStackParamList, 'ScreenName'>`
+- This pattern catches route name and param typos at compile time rather than runtime
+
+Example:
+```typescript
+// navigation/types.ts
+export type RootStackParamList = {
+  EventDetails: { eventId: string };
+  Login: undefined;
+};
+
+// In component
+const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+navigation.navigate('EventDetails', { eventId: '123' }); // Type-safe
+```
+
+**Static Navigation Configuration**
+- Use static navigation config with `createNativeStackNavigator()` and `createDrawerNavigator()`
+- Register all screens upfront in the navigator configuration
+- Screens remain as default exports for ease of registration
+- Drawer + Stack composition works well for main app (drawer) and modal flows (stack)
+
+### API Client Patterns
+
+**Eden Treaty Path Parameters with Bracket Notation**
+- **CRITICAL**: Use bracket notation for dynamic segments: `api.resource[id].get()` not `api.resource({ id }).get()`
+- Bracket notation properly interpolates path parameters into URLs
+- Object notation treats values as query/body parameters (incorrect for path params)
+- This was a critical bug fix in Phase 4: `api.events({ eventId })` → `api.events[eventId]`
+
+Example:
+```typescript
+// ✅ Correct - path parameter
+const { data } = await api.events[eventId].get()
+
+// ❌ Incorrect - treats as query param
+const { data } = await api.events({ eventId }).get()
+```
+
+**Public Endpoints with Optional Authentication**
+- Use `firebaseUid || null` pattern to support both authenticated and unauthenticated access
+- Service layer catches auth errors and returns null as fallback
+- API endpoints can check `if (firebaseUid || null)` to provide personalized data when authenticated
+- This pattern allows graceful degradation: unauthenticated users get public data, authenticated users get personalized data
+
+### State Management
+
+**Local State vs Global Context**
+- For simple, screen-scoped state (like follow status in EventDetails), use local `useState`
+- Only promote to Context when state needs to be shared across multiple screens
+- Follow state in EventDetails is intentionally local: updates immediately but doesn't require feed refresh
+- Future enhancement: Move to Context when multiple screens need synchronized follow state
+
+**Set Data Structure for Multi-Item State**
+- Use `Set<string>` for tracking which items are in a particular state across a collection
+- Example: `followingActs = Set<string>` where strings are act IDs
+- Faster lookup with `.has()` than array filtering
+- Immutable updates: `new Set(prev).add(id)` when spreading state
+
+### Component Patterns
+
+**Separation of Concerns in Screens**
+- Data fetching: `useEffect` on screen mount, separate async functions
+- Business logic: Handlers like `handleFollowVenue()`, `handleFollowAct()` kept together
+- Rendering: Separate views for loading, error, empty, and content states
+- This structure makes screens maintainable even at 300+ lines
+
+**Follow State Checking Pattern**
+- After fetching main data, check follow status only if authenticated
+- Use `data.follows.some(f => f.entityType === 'GUILD' && f.guildId === targetId)` to find matches
+- This pattern works for both venues and acts with the same comparison logic
+
+### API Endpoint Design
+
+**Public Endpoints with Guild Relations**
+- When an endpoint needs to support follow features, include guild relations in response
+- Include relations eagerly: `include: { guild: true }` in Prisma queries
+- This prevents N+1 queries and provides all data needed for follow status checking
+- Single endpoint can serve both authenticated and unauthenticated users
+
+**OpenAPI Documentation**
+- Always include `detail` object in Elysia route definitions with tags, summary, description
+- Document response codes: 200 for success, 404 for not found, 401 for unauthorized, 500 for errors
+- This auto-generates Swagger docs and helps API consumers understand behavior
+
+### Dark Mode Integration
+
+**Use Centralized Theme for All Components**
+- Import `{ tailwind, colors }` from `@theme` instead of hardcoding Tailwind classes
+- Always use `.both` variants for dual light/dark mode support: `${tailwind.background.both}`
+- The centralized theme makes it trivial to update color scheme globally
+- All components automatically inherit new colors when theme is updated
+
+### Error Handling
+
+**User-Facing Error Messages**
+- Catch API errors and display human-readable messages to users
+- Show loading indicators (spinners) while operations are in progress
+- Disable buttons during loading to prevent duplicate requests
+- This pattern: loading → success/error → user action flow
+
+### Commits & Documentation
+
+**Incremental Commits**
+- Phase 4 was split into 2 commits: initial implementation + critical bug fix
+- Each commit should represent a working state (even if buggy features are still present)
+- Bug fix commits should clearly reference the issue: "Fix API call for getting event by ID"
+- Commit messages help future developers understand "why" not just "what"
+
+### What Worked Well
+
+1. **Type-safe navigation** - Caught bugs early and enabled confident refactoring
+2. **Service layer abstraction** - `feedService` kept API details away from components
+3. **NativeWind styling** - Dark mode support with minimal extra code
+4. **Incremental phases** - Breaking work into digestible chunks made it manageable
+5. **Local state for follow tracking** - Simple and sufficient for Phase 4
+
+### Areas for Improvement (Phase 5+)
+
+1. **Global follow state** - Share follow updates across multiple screens
+2. **Feed refresh on follow changes** - Currently requires manual feed refresh
+3. **Optimistic updates** - Update UI immediately, roll back on error
+4. **Error retry logic** - Graceful retry mechanism for transient failures
+5. **Loading states per action** - Different loading states for different operations (follow vs unfollow)
 
 ---
 
-**Last Updated**: 2026-01-18
+**Last Updated**: 2026-01-19
 
 **Recent Changes**:
-- Implemented device-based dark mode with automatic theme switching
-- Centralized all theme colors and Tailwind classnames in `@theme` module
-- Updated all screen components to use centralized theme
+- Completed Activity Feed Phase 4 (Event Details & Follow Features)
+- Fixed critical API call bug with Eden Treaty path parameters
+- Added type-safe navigation with RootStackParamList
+- Documented lessons learned for future development
 
 Happy coding! 🎵
