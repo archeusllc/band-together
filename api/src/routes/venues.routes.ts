@@ -1,13 +1,20 @@
 import Elysia, { t } from 'elysia';
 import { guildController } from '@controllers';
-import { firebaseAuthMiddleware, firebaseAuthGuard, optionalFirebaseAuthMiddleware } from '@middleware';
+import { optionalFirebaseAuthMiddleware } from '@middleware';
 import { GuildType } from '@band-together/shared';
 
+// Guard to enforce Firebase authentication for protected routes
+const firebaseAuthGuard = async ({ firebaseUid, set }: any) => {
+  if (!firebaseUid) {
+    set.status = 401;
+    throw new Error('Unauthorized: No valid Firebase token provided');
+  }
+};
+
 export const venuesRoutes = new Elysia()
+  .use(optionalFirebaseAuthMiddleware)
   .group('/venues', (route) =>
     route
-      // Optional auth middleware - applies to all routes in this group
-      .use(optionalFirebaseAuthMiddleware)
       // GET /venues - List all venues (public)
       .get(
         '/',
@@ -85,14 +92,15 @@ export const venuesRoutes = new Elysia()
           }
         }
       )
-      // Authenticated routes (guard applies to all routes after this point)
-      .use(firebaseAuthMiddleware)
+      // Guard for authenticated routes - prevents handler execution without valid firebaseUid
+      .guard({
+        beforeHandle: firebaseAuthGuard
+      })
       // POST /venues - Create new venue (authenticated)
       .post(
         '/',
         async ({ firebaseUid, set, body }: any) => {
           try {
-            await firebaseAuthGuard({ firebaseUid, set });
             const result = await guildController.createVenue(firebaseUid, body);
             set.status = 201;
             return result;
@@ -136,7 +144,6 @@ export const venuesRoutes = new Elysia()
         '/:venueId',
         async ({ firebaseUid, set, params, body }: any) => {
           try {
-            await firebaseAuthGuard({ firebaseUid, set });
             const result = await guildController.updateVenue(firebaseUid, params.venueId, body);
             return result;
           } catch (error) {
@@ -185,7 +192,6 @@ export const venuesRoutes = new Elysia()
         '/:venueId',
         async ({ firebaseUid, set, params }: any) => {
           try {
-            await firebaseAuthGuard({ firebaseUid, set });
             const result = await guildController.deleteGuild(firebaseUid, params.venueId);
             return result;
           } catch (error) {

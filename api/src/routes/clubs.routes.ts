@@ -1,13 +1,20 @@
 import Elysia, { t } from 'elysia';
 import { guildController } from '@controllers';
-import { firebaseAuthMiddleware, firebaseAuthGuard, optionalFirebaseAuthMiddleware } from '@middleware';
+import { optionalFirebaseAuthMiddleware } from '@middleware';
 import { GuildType } from '@band-together/shared';
 
+// Guard to enforce Firebase authentication for protected routes
+const firebaseAuthGuard = async ({ firebaseUid, set }: any) => {
+  if (!firebaseUid) {
+    set.status = 401;
+    throw new Error('Unauthorized: No valid Firebase token provided');
+  }
+};
+
 export const clubsRoutes = new Elysia()
+  .use(optionalFirebaseAuthMiddleware)
   .group('/clubs', (route) =>
     route
-      // Optional auth middleware - applies to all routes in this group
-      .use(optionalFirebaseAuthMiddleware)
       // GET /clubs - List all clubs (public)
       .get(
         '/',
@@ -85,14 +92,15 @@ export const clubsRoutes = new Elysia()
           }
         }
       )
-      // Authenticated routes (guard applies to all routes after this point)
-      .use(firebaseAuthMiddleware)
+      // Guard for authenticated routes - prevents handler execution without valid firebaseUid
+      .guard({
+        beforeHandle: firebaseAuthGuard
+      })
       // POST /clubs - Create new club (authenticated)
       .post(
         '/',
         async ({ firebaseUid, set, body }: any) => {
           try {
-            await firebaseAuthGuard({ firebaseUid, set });
             const result = await guildController.createClub(firebaseUid, body);
             set.status = 201;
             return result;
@@ -133,7 +141,6 @@ export const clubsRoutes = new Elysia()
         '/:clubId',
         async ({ firebaseUid, set, params, body }: any) => {
           try {
-            await firebaseAuthGuard({ firebaseUid, set });
             const result = await guildController.updateClub(firebaseUid, params.clubId, body);
             return result;
           } catch (error) {
@@ -179,7 +186,6 @@ export const clubsRoutes = new Elysia()
         '/:clubId',
         async ({ firebaseUid, set, params }: any) => {
           try {
-            await firebaseAuthGuard({ firebaseUid, set });
             const result = await guildController.deleteGuild(firebaseUid, params.clubId);
             return result;
           } catch (error) {
