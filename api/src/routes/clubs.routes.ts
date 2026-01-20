@@ -4,9 +4,10 @@ import { firebaseAuthMiddleware, firebaseAuthGuard, optionalFirebaseAuthMiddlewa
 import { GuildType } from '@band-together/shared';
 
 export const clubsRoutes = new Elysia()
-  .use(optionalFirebaseAuthMiddleware)
   .group('/clubs', (route) =>
     route
+      // Optional auth middleware - applies to all routes in this group
+      .use(optionalFirebaseAuthMiddleware)
       // GET /clubs - List all clubs (public)
       .get(
         '/',
