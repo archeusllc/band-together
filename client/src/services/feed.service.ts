@@ -138,13 +138,13 @@ export const feedService = {
       // Optional auth - endpoint is public but may return personalized data if authenticated
       const idToken = await firebaseAuthService.getIdToken().catch(() => null);
 
-      const headers = idToken ? {
+      const options = idToken ? {
         $headers: {
           authorization: `Bearer ${idToken}`,
         },
       } : {};
 
-      const { data, error } = await api.events({ eventId }).get(headers);
+      const { data, error } = await api.events[eventId].get(options);
 
       return { data, error };
     } catch (err) {
