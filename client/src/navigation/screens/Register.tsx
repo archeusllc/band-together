@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Pressable, Alert } from 'react-native';
+import { View, Text, TextInput, Pressable, Alert, KeyboardAvoidingView, Platform } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useAuth } from '@contexts';
 import { colors, tailwind } from '@theme';
@@ -47,7 +47,10 @@ export default function RegisterScreen() {
   };
 
   return (
-    <View className={`flex-1 ${tailwind.background.both}`}>
+    <KeyboardAvoidingView
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      className={`flex-1 ${tailwind.background.both}`}
+    >
       <View className="flex-1 justify-center px-5">
         <Text className={`text-4xl font-bold mb-8 text-center ${tailwind.text.both}`}>Create Account</Text>
 
@@ -114,6 +117,6 @@ export default function RegisterScreen() {
           </View>
         </View>
       </View>
-    </View>
+    </KeyboardAvoidingView>
   );
 }
