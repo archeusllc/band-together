@@ -20,7 +20,7 @@ export const firebaseAuthMiddleware = new Elysia()
       };
     } catch (error) {
       set.status = 401;
-      throw new Error('Unauthorized: Invalid token');
+      throw new Error(`Unauthorized: Invalid token - ${(error as any).message}`);
     }
   });
 
@@ -30,3 +30,30 @@ export const firebaseAuthGuard = async ({ firebaseUid, set }: any) => {
     throw new Error('Unauthorized');
   }
 };
+
+export const optionalFirebaseAuthMiddleware = new Elysia()
+  .derive(async ({ request }) => {
+    const authHeader = request.headers.get('authorization');
+
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return {
+        firebaseUid: null,
+        firebaseEmail: null,
+      };
+    }
+
+    const idToken = authHeader.substring(7);
+
+    try {
+      const decodedToken = await firebaseAuth.verifyIdToken(idToken);
+      return {
+        firebaseUid: decodedToken.uid,
+        firebaseEmail: decodedToken.email,
+      };
+    } catch (error) {
+      return {
+        firebaseUid: null,
+        firebaseEmail: null,
+      };
+    }
+  });

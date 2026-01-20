@@ -1,5 +1,5 @@
 import { initializeApp } from 'firebase/app';
-import { getAuth, initializeAuth, getReactNativePersistence } from 'firebase/auth';
+import { getAuth, initializeAuth, getReactNativePersistence, setPersistence, browserLocalPersistence, browserSessionPersistence } from 'firebase/auth';
 import { getStorage } from 'firebase/storage';
 import { getMessaging, isSupported } from 'firebase/messaging';
 import { Platform } from 'react-native';
@@ -18,12 +18,32 @@ const firebaseConfig = {
 // Initialize Firebase
 export const firebaseApp = initializeApp(firebaseConfig);
 
-// Initialize Auth with AsyncStorage persistence for React Native
+// Initialize Auth with platform-specific persistence
 export const auth = Platform.OS === 'web'
   ? getAuth(firebaseApp)
   : initializeAuth(firebaseApp, {
       persistence: getReactNativePersistence(AsyncStorage)
     });
+
+// Set up persistence for web after auth is initialized
+if (Platform.OS === 'web') {
+  console.log('[Firebase] Setting up web persistence...');
+  setPersistence(auth, browserLocalPersistence)
+    .then(() => {
+      console.log('[Firebase] Successfully set browserLocalPersistence');
+    })
+    .catch(error => {
+      console.warn('[Firebase] Failed to set browserLocalPersistence, trying browserSessionPersistence:', error);
+      // Fallback to session persistence if local persistence fails
+      return setPersistence(auth, browserSessionPersistence)
+        .then(() => {
+          console.log('[Firebase] Successfully set browserSessionPersistence');
+        });
+    })
+    .catch(error => {
+      console.error('[Firebase] Failed to set any persistence strategy:', error);
+    });
+}
 
 // Initialize Storage
 export const storage = getStorage(firebaseApp);

@@ -33,28 +33,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [firebaseUser, setFirebaseUser] = useState<FirebaseUser | null>(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    // Listen to Firebase auth state changes
-    const unsubscribe = firebaseAuthService.onAuthStateChanged(async (fbUser) => {
-      setFirebaseUser(fbUser);
-
-      if (fbUser) {
-        // User is signed in, fetch user data from backend
-        await refreshUser();
-      } else {
-        // User is signed out
-        setUser(null);
-      }
-
-      setLoading(false);
-    });
-
-    return () => unsubscribe();
-  }, []);
-
-  const refreshUser = async () => {
+  const refreshUser = React.useCallback(async () => {
     try {
       const idToken = await firebaseAuthService.getIdToken();
+
       if (!idToken) {
         setUser(null);
         return;
@@ -67,17 +49,43 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         },
       });
 
-      if (error || !data) {
+      if (error) {
+        // Don't clear user on backend error - might be transient
+        return;
+      }
+
+      if (!data) {
         setUser(null);
         return;
       }
 
       setUser(data as User);
     } catch (error) {
-      console.error('Error refreshing user:', error);
-      setUser(null);
+      // Don't clear user on unexpected error - might be transient
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    // Listen to Firebase auth state changes
+    const unsubscribe = firebaseAuthService.onAuthStateChanged(async (fbUser) => {
+      setFirebaseUser(fbUser);
+
+      if (fbUser) {
+        // User is signed in, fetch user data from backend
+        // Add a small delay on initial load to ensure Firebase has fully restored the session
+        // This is especially important on web where persistence uses IndexedDB
+        await new Promise(resolve => setTimeout(resolve, 100));
+        await refreshUser();
+      } else {
+        // User is signed out
+        setUser(null);
+      }
+
+      setLoading(false);
+    });
+
+    return () => unsubscribe();
+  }, [refreshUser]);
 
   const login = async (email: string, password: string): Promise<boolean> => {
     const { user: userData, error } = await firebaseAuthService.login(email, password);

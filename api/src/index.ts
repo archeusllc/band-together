@@ -8,7 +8,12 @@ import { routes } from '@routes';
 const { PORT = 3000 } = process.env;
 
 const app = new Elysia()
-  .use(cors())
+  .use(cors({
+    origin: true,
+    credentials: true,
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS']
+  }))
   .get('/', () => ({
     message: 'Band Together API',
     status: 'running'

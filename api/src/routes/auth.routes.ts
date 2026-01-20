@@ -1,6 +1,5 @@
 import Elysia, { t } from 'elysia';
 import { authController } from '@controllers';
-import { firebaseAuthMiddleware, firebaseAuthGuard } from '@middleware';
 
 export const authRoutes = new Elysia().group('/auth', (authRoute) =>
   authRoute
@@ -68,36 +67,6 @@ export const authRoutes = new Elysia().group('/auth', (authRoute) =>
         },
       }
     )
-    .use(firebaseAuthMiddleware)
-    .get(
-      '/me',
-      async ({ firebaseUid, set }) => {
-        try {
-          await firebaseAuthGuard({ firebaseUid, set });
-          const user = await authController.me(firebaseUid);
-          return user;
-        } catch (error) {
-          set.status = 401;
-          return { error: (error as Error).message };
-        }
-      },
-      {
-        detail: {
-          tags: ['Authentication'],
-          summary: 'Get Current User',
-          description: 'Retrieve the profile of the currently authenticated user. Requires valid Firebase ID token in Authorization header (Bearer token).',
-          security: [{ bearerAuth: [] }],
-          responses: {
-            200: {
-              description: 'Current user profile retrieved',
-            },
-            401: {
-              description: 'Unauthorized - missing or invalid Firebase ID token',
-            },
-          },
-        },
-      }
-    )
     .get(
       '/logout',
       async () => {
@@ -135,6 +104,46 @@ export const authRoutes = new Elysia().group('/auth', (authRoute) =>
             },
             400: {
               description: 'Bad request - invalid email or reset failed',
+            },
+          },
+        },
+      }
+    )
+    .get(
+      '/me',
+      async ({ request, set }) => {
+        const authHeader = request.headers.get('authorization');
+
+        if (!authHeader || !authHeader.startsWith('Bearer ')) {
+          set.status = 401;
+          return { error: 'Unauthorized: No token provided' };
+        }
+
+        const idToken = authHeader.substring(7);
+
+        try {
+          // Import firebase auth here to verify token
+          const { firebaseAuth } = await import('@config/firebase-admin.config');
+          const decodedToken = await firebaseAuth.verifyIdToken(idToken);
+          const user = await authController.me(decodedToken.uid);
+          return user;
+        } catch (error) {
+          set.status = 401;
+          return { error: (error as Error).message };
+        }
+      },
+      {
+        detail: {
+          tags: ['Authentication'],
+          summary: 'Get Current User',
+          description: 'Retrieve the profile of the currently authenticated user. Requires valid Firebase ID token in Authorization header (Bearer token).',
+          security: [{ bearerAuth: [] }],
+          responses: {
+            200: {
+              description: 'Current user profile retrieved',
+            },
+            401: {
+              description: 'Unauthorized - missing or invalid Firebase ID token',
             },
           },
         },

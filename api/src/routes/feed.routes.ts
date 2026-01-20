@@ -1,10 +1,10 @@
 import Elysia, { t } from 'elysia';
 import { feedController } from '@controllers';
-import { firebaseAuthMiddleware } from '@middleware';
+import { optionalFirebaseAuthMiddleware } from '@middleware';
 
 export const feedRoutes = new Elysia().group('/feed', (feedRoute) =>
   feedRoute
-    .use(firebaseAuthMiddleware)
+    .use(optionalFirebaseAuthMiddleware)
     .get(
       '/',
       async ({ firebaseUid, set, query }) => {

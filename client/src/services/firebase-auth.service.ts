@@ -103,15 +103,35 @@ export const firebaseAuthService = {
   },
 
   /**
-   * Get ID token for current user
+   * Get ID token for current user with retry logic for web persistence
    */
   getIdToken: async (): Promise<string | null> => {
     try {
       const user = auth.currentUser;
-      if (!user) return null;
-      return await user.getIdToken();
+
+      if (!user) {
+        return null;
+      }
+
+      // Try to get the token, with retry for transient failures
+      let lastError: any;
+      for (let attempt = 0; attempt < 3; attempt++) {
+        try {
+          const token = await user.getIdToken(true); // Force refresh
+          if (token) {
+            return token;
+          }
+        } catch (error) {
+          lastError = error;
+          // Wait before retrying
+          if (attempt < 2) {
+            await new Promise(resolve => setTimeout(resolve, 100));
+          }
+        }
+      }
+
+      return null;
     } catch (error) {
-      console.error('Error getting ID token:', error);
       return null;
     }
   },
