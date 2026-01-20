@@ -38,6 +38,33 @@ export const firebaseStorageService = {
   },
 
   /**
+   * Upload guild image (act, venue, or club avatar)
+   */
+  uploadGuildImage: async (imageUri: string, guildId: string): Promise<{ url: string | null; error: any }> => {
+    try {
+      const currentUser = auth.currentUser;
+      if (!currentUser) {
+        return { url: null, error: new Error('Unauthorized') };
+      }
+
+      const response = await fetch(imageUri);
+      const blob = await response.blob();
+
+      const timestamp = Date.now();
+      const fileExtension = imageUri.split('.').pop() || 'jpg';
+      const filename = `guild_${timestamp}.${fileExtension}`;
+
+      const storageRef = ref(storage, `guilds/${guildId}/${filename}`);
+      await uploadBytes(storageRef, blob);
+
+      const downloadURL = await getDownloadURL(storageRef);
+      return { url: downloadURL, error: null };
+    } catch (error) {
+      return { url: null, error };
+    }
+  },
+
+  /**
    * Delete a file from storage
    */
   deleteFile: async (fileUrl: string): Promise<{ error: any }> => {

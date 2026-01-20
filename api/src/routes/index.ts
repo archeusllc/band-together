@@ -5,6 +5,9 @@ import { profileRoutes } from "./profile.routes";
 import { feedRoutes } from "./feed.routes";
 import { eventsRoutes } from "./events.routes";
 import { followsRoutes } from "./follows.routes";
+import { actsRoutes } from "./acts.routes";
+import { venuesRoutes } from "./venues.routes";
+import { clubsRoutes } from "./clubs.routes";
 
 export const routes = new Elysia()
   .use(healthRoutes)
@@ -12,4 +15,7 @@ export const routes = new Elysia()
   .use(profileRoutes)
   .use(feedRoutes)
   .use(eventsRoutes)
-  .use(followsRoutes);
+  .use(followsRoutes)
+  .use(actsRoutes)
+  .use(venuesRoutes)
+  .use(clubsRoutes);

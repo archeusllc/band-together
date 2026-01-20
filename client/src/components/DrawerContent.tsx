@@ -15,6 +15,9 @@ export function DrawerContent(props: DrawerContentComponentProps) {
 
   const drawerItems = [
     { name: 'Home', icon: 'house.fill', route: 'Home' },
+    { name: 'Acts', icon: 'music.note', route: 'ActsList' },
+    { name: 'Venues', icon: 'building.2', route: 'VenuesList' },
+    { name: 'Clubs', icon: 'person.3.fill', route: 'ClubsList' },
     { name: 'Profile', icon: 'person.fill', route: 'Profile' },
     { name: 'Settings', icon: 'gearshape.fill', route: 'Settings' },
   ];

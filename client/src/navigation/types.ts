@@ -10,4 +10,19 @@ export type DrawerParamList = {
   Profile: undefined;
   Settings: undefined;
   EventDetails: { eventId: string };
+  // Acts
+  ActsList: undefined;
+  ActDetails: { actId: string };
+  CreateAct: undefined;
+  EditAct: { actId: string };
+  // Venues
+  VenuesList: undefined;
+  VenueDetails: { venueId: string };
+  CreateVenue: undefined;
+  EditVenue: { venueId: string };
+  // Clubs
+  ClubsList: undefined;
+  ClubDetails: { clubId: string };
+  CreateClub: undefined;
+  EditClub: { clubId: string };
 };
