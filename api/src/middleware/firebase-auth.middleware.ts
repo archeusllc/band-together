@@ -1,5 +1,5 @@
 import Elysia from 'elysia';
-import { firebaseAuth } from '@/config/firebase-admin.config';
+import { firebaseAuth } from '@config/firebase-admin.config';
 
 export const firebaseAuthMiddleware = new Elysia()
   .derive(async ({ request, set }) => {

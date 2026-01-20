@@ -1,5 +1,5 @@
 import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
-import { storage, auth } from '@/config/firebase.config';
+import { storage, auth } from '@config/firebase.config';
 
 export const firebaseStorageService = {
   /**

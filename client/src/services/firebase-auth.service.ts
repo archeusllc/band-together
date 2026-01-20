@@ -6,7 +6,7 @@ import {
   User as FirebaseUser,
   updateProfile,
 } from 'firebase/auth';
-import { auth } from '@/config/firebase.config';
+import { auth } from '@config/firebase.config';
 import { api } from './api';
 import type { User } from '@band-together/shared';
 

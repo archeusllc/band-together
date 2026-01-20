@@ -2,7 +2,7 @@ import { useColorScheme } from 'react-native';
 import { createStaticNavigation } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createDrawerNavigator } from '@react-navigation/drawer';
-import { DrawerContent } from '@/components/DrawerContent';
+import { DrawerContent } from '@components/DrawerContent';
 import {
   HomeScreen,
   ProfileScreen,

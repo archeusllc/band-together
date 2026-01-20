@@ -4,7 +4,7 @@ import {
   DrawerContentScrollView,
   DrawerContentComponentProps,
 } from '@react-navigation/drawer';
-import { IconSymbol } from '@/components/ui/IconSymbol';
+import { IconSymbol } from '@ui/IconSymbol';
 import { useAuth } from '@contexts';
 import { colors, tailwind } from '@theme/colors';
 

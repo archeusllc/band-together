@@ -11,9 +11,6 @@
     ],
     "baseUrl": ".",
     "paths": {
-      "@/*": [
-        "./src/*"
-      ],
       "@routes": [
         "./src/routes/index"
       ],
@@ -37,6 +34,12 @@
       ],
       "@services/*": [
         "./src/services/*"
+      ],
+      "@config": [
+        "./src/config/index"
+      ],
+      "@config/*": [
+        "./src/config/*"
       ],
       "@types": [
         "./src/types/index"

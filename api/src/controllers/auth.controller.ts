@@ -1,5 +1,5 @@
-import { prisma } from '@/services';
-import { firebaseAuth } from '@/config/firebase-admin.config';
+import { prisma } from '@services';
+import { firebaseAuth } from '@config/firebase-admin.config';
 
 export const authController = {
   /**

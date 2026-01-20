@@ -8,9 +8,6 @@
       "nativewind/types"
     ],
     "paths": {
-      "@/*": [
-        "./src/*"
-      ],
       "@components": [
         "./src/components/index"
       ],
@@ -58,6 +55,12 @@
       ],
       "@services/*": [
         "./src/services/*"
+      ],
+      "@config": [
+        "./src/config/index"
+      ],
+      "@config/*": [
+        "./src/config/*"
       ],
       "@assets/*": [
         "./src/assets/*"
