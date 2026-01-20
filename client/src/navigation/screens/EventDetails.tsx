@@ -1,23 +1,26 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, ScrollView, Image, Pressable, ActivityIndicator } from 'react-native';
-import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import type { RootStackParamList } from '@navigation/types';
+import { useNavigation } from '@react-navigation/native';
+import type { DrawerScreenProps } from '@react-navigation/drawer';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import type { DrawerParamList, RootStackParamList } from '@navigation/types';
 import { useAuth } from '@contexts';
 import { feedService } from '@services';
 import { tailwind, colors } from '@theme';
 import { IconSymbol } from '@ui';
 import type { CalendarEvent, Venue, Act, Guild } from '@band-together/shared';
 
-type Props = NativeStackScreenProps<RootStackParamList, 'EventDetails'>;
+type Props = DrawerScreenProps<DrawerParamList, 'EventDetails'>;
 
 type EventDetails = CalendarEvent & {
   venue?: Venue & { guild?: Guild };
   acts?: (Act & { guild?: Guild })[];
 };
 
-export default function EventDetailsScreen({ route, navigation }: Props) {
+export default function EventDetailsScreen({ route, navigation: drawerNavigation }: Props) {
   const { eventId } = route.params;
   const { isAuthenticated } = useAuth();
+  const rootNavigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -65,7 +68,7 @@ export default function EventDetailsScreen({ route, navigation }: Props) {
       // Check if following venue guild
       if (eventData.venue?.guild) {
         const isFollowingVenue = data.follows.some(
-          f => f.entityType === 'GUILD' && f.guildId === eventData.venue?.guild?.guildId
+          (f: any) => f.entityType === 'GUILD' && f.guildId === eventData.venue?.guild?.guildId
         );
         setFollowingVenue(isFollowingVenue);
       }
@@ -75,7 +78,7 @@ export default function EventDetailsScreen({ route, navigation }: Props) {
       eventData.acts?.forEach(act => {
         if (act.guild) {
           const isFollowing = data.follows.some(
-            f => f.entityType === 'GUILD' && f.guildId === act.guild?.guildId
+            (f: any) => f.entityType === 'GUILD' && f.guildId === act.guild?.guildId
           );
           if (isFollowing) {
             followedActIds.add(act.actId);
@@ -90,7 +93,7 @@ export default function EventDetailsScreen({ route, navigation }: Props) {
 
   const handleFollowVenue = async () => {
     if (!isAuthenticated) {
-      navigation.navigate('Login');
+      rootNavigation.navigate('Login');
       return;
     }
 
@@ -103,7 +106,7 @@ export default function EventDetailsScreen({ route, navigation }: Props) {
         const { data } = await feedService.getFollows();
         if (data) {
           const follow = data.follows.find(
-            f => f.entityType === 'GUILD' && f.guildId === event.venue?.guild?.guildId
+            (f: any) => f.entityType === 'GUILD' && f.guildId === event.venue?.guild?.guildId
           );
           if (follow) {
             await feedService.deleteFollow(follow.followId);
@@ -124,7 +127,7 @@ export default function EventDetailsScreen({ route, navigation }: Props) {
 
   const handleFollowAct = async (act: Act & { guild?: Guild }) => {
     if (!isAuthenticated) {
-      navigation.navigate('Login');
+      rootNavigation.navigate('Login');
       return;
     }
 
@@ -139,7 +142,7 @@ export default function EventDetailsScreen({ route, navigation }: Props) {
         const { data } = await feedService.getFollows();
         if (data) {
           const follow = data.follows.find(
-            f => f.entityType === 'GUILD' && f.guildId === act.guild?.guildId
+            (f: any) => f.entityType === 'GUILD' && f.guildId === act.guild?.guildId
           );
           if (follow) {
             await feedService.deleteFollow(follow.followId);
@@ -185,7 +188,7 @@ export default function EventDetailsScreen({ route, navigation }: Props) {
         </Text>
         <Pressable
           className="bg-blue-500 py-3 px-6 rounded-lg"
-          onPress={() => navigation.goBack()}
+          onPress={() => drawerNavigation.goBack()}
         >
           <Text className="text-white text-base font-semibold">Go Back</Text>
         </Pressable>

@@ -50,6 +50,17 @@ const MainDrawer = createDrawerNavigator({
         headerShown: true,
       },
     },
+    EventDetails: {
+      screen: EventDetailsScreen,
+      linking: {
+        path: 'event/:eventId',
+      },
+      options: {
+        title: 'Event Details',
+        headerShown: true,
+        drawerItemStyle: { display: 'none' },
+      },
+    },
   },
 });
 
@@ -71,7 +82,7 @@ const RootStack = createNativeStackNavigator({
       },
       options: {
         presentation: 'modal',
-        title: 'Login',
+        headerShown: false,
       },
     },
     Register: {
@@ -81,18 +92,7 @@ const RootStack = createNativeStackNavigator({
       },
       options: {
         presentation: 'modal',
-        title: 'Register',
-      },
-    },
-    EventDetails: {
-      screen: EventDetailsScreen,
-      linking: {
-        path: 'event/:eventId',
-      },
-      options: {
-        presentation: 'card',
-        title: 'Event Details',
-        headerShown: true,
+        headerShown: false,
       },
     },
     NotFound: {
@@ -101,7 +101,7 @@ const RootStack = createNativeStackNavigator({
         path: '*',
       },
       options: {
-        title: 'Not Found',
+        headerShown: false,
       },
     },
   },

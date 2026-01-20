@@ -94,7 +94,7 @@ declare const app: Elysia<"", {
                             email: string;
                             displayName: string | null;
                             firebaseUid: string | null;
-                            id: string;
+                            userId: string;
                             avatar: string | null;
                             createdAt: Date;
                             updatedAt: Date;
@@ -134,7 +134,7 @@ declare const app: Elysia<"", {
                             email: string;
                             displayName: string | null;
                             firebaseUid: string | null;
-                            id: string;
+                            userId: string;
                             avatar: string | null;
                             createdAt: Date;
                             updatedAt: Date;
@@ -172,7 +172,7 @@ declare const app: Elysia<"", {
                         email: string;
                         displayName: string | null;
                         firebaseUid: string | null;
-                        id: string;
+                        userId: string;
                         avatar: string | null;
                         createdAt: Date;
                         updatedAt: Date;
@@ -266,25 +266,126 @@ declare const app: Elysia<"", {
         };
     };
 } & {
-    notifications: {
-        register: {
-            post: {
-                body: {
-                    deviceId?: string | undefined;
-                    token: string;
-                    userId: string;
-                    platform: "ANDROID" | "WEB";
+    feed: {};
+} & {
+    feed: {
+        get: {
+            body: unknown;
+            params: {};
+            query: {
+                page?: number | undefined;
+                limit?: number | undefined;
+            };
+            headers: unknown;
+            response: {
+                422: {
+                    type: "validation";
+                    on: string;
+                    summary?: string;
+                    message?: string;
+                    found?: unknown;
+                    property?: string;
+                    expected?: string;
                 };
-                params: {};
+            };
+        };
+    };
+} & {
+    events: {};
+} & {
+    events: {
+        get: {
+            body: unknown;
+            params: {};
+            query: {
+                page?: number | undefined;
+                limit?: number | undefined;
+                venueId?: string | undefined;
+                actId?: string | undefined;
+                startDate?: string | undefined;
+                endDate?: string | undefined;
+            };
+            headers: unknown;
+            response: {
+                422: {
+                    type: "validation";
+                    on: string;
+                    summary?: string;
+                    message?: string;
+                    found?: unknown;
+                    property?: string;
+                    expected?: string;
+                };
+            };
+        };
+    };
+} & {
+    events: {
+        ":eventId": {
+            get: {
+                body: unknown;
+                params: {
+                    eventId: string;
+                };
                 query: unknown;
                 headers: unknown;
                 response: {
-                    200: {
-                        success: boolean;
-                        error?: undefined;
-                    } | {
+                    200: ({
+                        venue: {
+                            guild: {
+                                createdAt: Date;
+                                name: string;
+                                venueId: string | null;
+                                actId: string | null;
+                                guildId: string;
+                                guildType: import("node_modules/@band-together/shared/generated/prisma-client").$Enums.GuildType;
+                                createdById: string | null;
+                                currentOwnerId: string;
+                                clubId: string | null;
+                            } | null;
+                        } & {
+                            avatar: string | null;
+                            createdAt: Date;
+                            updatedAt: Date;
+                            name: string;
+                            venueId: string;
+                            address: string | null;
+                            city: string | null;
+                            state: string | null;
+                            zipCode: string | null;
+                        };
+                        acts: ({
+                            guild: {
+                                createdAt: Date;
+                                name: string;
+                                venueId: string | null;
+                                actId: string | null;
+                                guildId: string;
+                                guildType: import("node_modules/@band-together/shared/generated/prisma-client").$Enums.GuildType;
+                                createdById: string | null;
+                                currentOwnerId: string;
+                                clubId: string | null;
+                            } | null;
+                        } & {
+                            avatar: string | null;
+                            createdAt: Date;
+                            updatedAt: Date;
+                            name: string;
+                            actId: string;
+                            bio: string | null;
+                        })[];
+                    } & {
+                        description: string | null;
+                        createdAt: Date;
+                        updatedAt: Date;
+                        eventId: string;
+                        title: string | null;
+                        poster: string | null;
+                        startTime: Date;
+                        duration: number;
+                        venueId: string;
+                    }) | {
                         error: string;
-                        success?: undefined;
                     };
                     422: {
                         type: "validation";
@@ -300,56 +401,132 @@ declare const app: Elysia<"", {
         };
     };
 } & {
-    notifications: {
-        unregister: {
-            post: {
-                body: {
-                    token: string;
-                };
-                params: {};
-                query: unknown;
-                headers: unknown;
-                response: {
-                    200: {
-                        success: boolean;
-                        error?: undefined;
-                    } | {
-                        error: string;
-                        success?: undefined;
-                    };
-                    422: {
-                        type: "validation";
-                        on: string;
-                        summary?: string;
-                        message?: string;
-                        found?: unknown;
-                        property?: string;
-                        expected?: string;
-                    };
+    follows: {};
+} & {
+    follows: {
+        get: {
+            body: unknown;
+            params: {};
+            query: unknown;
+            headers: unknown;
+            response: {
+                422: {
+                    type: "validation";
+                    on: string;
+                    summary?: string;
+                    message?: string;
+                    found?: unknown;
+                    property?: string;
+                    expected?: string;
                 };
             };
         };
     };
 } & {
-    notifications: {
-        send: {
-            post: {
-                body: {
-                    data?: {} | undefined;
-                    body: string;
+    follows: {
+        post: {
+            body: {
+                followedUserId?: string | undefined;
+                tagId?: string | undefined;
+                guildId?: string | undefined;
+                entityType: "USER" | "TAG" | "GUILD";
+            };
+            params: {};
+            query: unknown;
+            headers: unknown;
+            response: {
+                200: ({
+                    guild: ({
+                        venue: {
+                            avatar: string | null;
+                            createdAt: Date;
+                            updatedAt: Date;
+                            name: string;
+                            venueId: string;
+                            address: string | null;
+                            city: string | null;
+                            state: string | null;
+                            zipCode: string | null;
+                        } | null;
+                        act: {
+                            avatar: string | null;
+                            createdAt: Date;
+                            updatedAt: Date;
+                            name: string;
+                            actId: string;
+                            bio: string | null;
+                        } | null;
+                        club: {
+                            description: string | null;
+                            avatar: string | null;
+                            createdAt: Date;
+                            updatedAt: Date;
+                            name: string;
+                            clubId: string;
+                        } | null;
+                    } & {
+                        createdAt: Date;
+                        name: string;
+                        venueId: string | null;
+                        actId: string | null;
+                        guildId: string;
+                        guildType: import("node_modules/@band-together/shared/generated/prisma-client").$Enums.GuildType;
+                        createdById: string | null;
+                        currentOwnerId: string;
+                        clubId: string | null;
+                    }) | null;
+                    followedUser: {
+                        email: string;
+                        displayName: string | null;
+                        firebaseUid: string | null;
+                        userId: string;
+                        avatar: string | null;
+                        createdAt: Date;
+                        updatedAt: Date;
+                    } | null;
+                    tag: {
+                        value: string;
+                        tagId: string;
+                        category: string;
+                    } | null;
+                } & {
                     userId: string;
-                    title: string;
+                    createdAt: Date;
+                    followId: string;
+                    entityType: import("node_modules/@band-together/shared/generated/prisma-client").$Enums.FollowEntityType;
+                    followedUserId: string | null;
+                    tagId: string | null;
+                    guildId: string | null;
+                }) | {
+                    error: string;
                 };
-                params: {};
+                422: {
+                    type: "validation";
+                    on: string;
+                    summary?: string;
+                    message?: string;
+                    found?: unknown;
+                    property?: string;
+                    expected?: string;
+                };
+            };
+        };
+    };
+} & {
+    follows: {
+        ":followId": {
+            delete: {
+                body: unknown;
+                params: {
+                    followId: string;
+                };
                 query: unknown;
                 headers: unknown;
                 response: {
                     200: {
                         success: boolean;
-                        error?: undefined;
                     } | {
                         error: string;
-                        success?: undefined;
                     };
                     422: {
                         type: "validation";

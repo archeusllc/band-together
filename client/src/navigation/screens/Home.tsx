@@ -1,13 +1,13 @@
 import React, { useEffect } from 'react';
 import { Text, View, FlatList, RefreshControl, ActivityIndicator } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import type { RootStackParamList } from '@navigation/types';
+import type { DrawerNavigationProp } from '@react-navigation/drawer';
+import type { DrawerParamList } from '@navigation/types';
 import { useFeed } from '@contexts';
 import { FeedCard } from '@components';
 import { tailwind } from '@theme';
 
-type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
+type NavigationProp = DrawerNavigationProp<DrawerParamList>;
 
 export default function HomeScreen() {
   const navigation = useNavigation<NavigationProp>();
