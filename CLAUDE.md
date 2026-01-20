@@ -360,49 +360,68 @@ const { data } = await api.events({ eventId }).get()
 - API endpoints can check `if (firebaseUid || null)` to provide personalized data when authenticated
 - This pattern allows graceful degradation: unauthenticated users get public data, authenticated users get personalized data
 
-### API Middleware Patterns (Elysia)
+### Firebase Authentication Pattern (Elysia)
 
-**Middleware Scope and Guards**
-- Middleware in Elysia must be applied **within the same route callback scope** - guards apply to all routes defined **after** them
-- Middleware does NOT propagate across separate Elysia instances when composed with `.use()`
-- This causes 401 errors when separate public/authenticated route groups are composed
+**Derived Context Extension for Firebase Auth**
+- Use Elysia's `.derive()` with `as: 'scoped'` to create a reusable Firebase authentication middleware
+- The `firebaseMiddleware` makes a `firebase` object available in the request context containing `uid` and `email`
+- Adding `.use(firebaseMiddleware)` to a route scope enables Firebase auth for all routes in that scope
+- Routes can access `firebase.uid` directly: `async ({ firebase }) => { /* firebase.uid is available */ }`
+- If the Bearer token is missing or invalid, the middleware throws an error with a 401 status
 
-**Correct Pattern for Mixed Authentication**:
+**Correct Pattern - Firebase Authentication Middleware**:
 ```typescript
-export const actsRoutes = new Elysia()
-  .use(optionalFirebaseAuthMiddleware)           // Top-level for optional auth
-  .group('/acts', (route) =>
-    route
-      // Public routes come first
-      .get('/', handler)                          // Uses optionalFirebaseAuthMiddleware
-      .get('/:id', handler)                       // Uses optionalFirebaseAuthMiddleware
-      // Middleware applied HERE - all routes after get firebaseAuthMiddleware
-      .use(firebaseAuthMiddleware)
-      // Protected routes after middleware
-      .post('/', async ({ firebaseUid, ... }) => {})   // ✅ firebaseUid injected
-      .patch('/:id', async ({ firebaseUid, ... }) => {})
-      .delete('/:id', async ({ firebaseUid, ... }) => {})
-  );
+// api/src/middleware/firebase.middleware.ts
+export const firebaseMiddleware = new Elysia({
+  name: 'firebase'
+})
+  .derive({
+    as: 'scoped'
+  }, async ({ request }) => {
+    const authHeader = request.headers.get('authorization');
+    if (!authHeader || !authHeader.startsWith('Bearer ')) throw new Error('Unauthorized: No token provided');
+    const decoded = await firebaseAuth.verifyIdToken(authHeader.substring(7))
+
+    return {
+      firebase: {
+        uid: decoded.uid,
+        email: decoded.email,
+      }
+    }
+  })
 ```
 
-**Incorrect Pattern to Avoid**:
+**Usage Example - Gating Routes Behind Authentication**:
 ```typescript
-// ❌ WRONG - Middleware doesn't propagate across instances
-const publicRoutes = new Elysia()
-  .use(optionalFirebaseAuthMiddleware)
-  .group('/acts', (route) => route.get(...));
-
-const authRoutes = new Elysia()
-  .use(firebaseAuthMiddleware)
-  .group('/acts', (route) => route.post(...));
-
-// This composition doesn't work - firebaseUid undefined in POST handler
-export const routes = new Elysia()
-  .use(publicRoutes)
-  .use(authRoutes);
+// api/src/routes/auth.routes.ts
+export const authRoutes = new Elysia().group('/auth', (authRoute) =>
+  authRoute
+    .use(firebaseMiddleware)  // All routes in this group now require Firebase auth
+    .get(
+      '/me',
+      async ({ firebase }) => {
+        // firebase.uid is guaranteed to be present here
+        return await authController.me(firebase.uid);
+      },
+      {
+        detail: {
+          security: [{ bearerAuth: [] }],
+          responses: {
+            200: { description: 'Current user profile retrieved' },
+            401: { description: 'Unauthorized - missing or invalid Firebase token' }
+          }
+        }
+      }
+    )
+)
 ```
 
-**Key Insight**: Guards/middleware must be declared and applied in sequence within the same builder chain to properly scope to the routes that follow them.
+**Key Points**:
+- `.derive({ as: 'scoped' })` makes the returned object available in request context
+- Routes that `.use(firebaseMiddleware)` will have `firebase` object available
+- If token is missing/invalid, error is thrown and request fails with 401 before handler executes
+- The middleware is only applied to routes that explicitly `.use()` it - it doesn't automatically apply
+- This pattern is flexible: mix public and private routes in same file by using middleware selectively
 
 ### State Management
 
@@ -490,9 +509,11 @@ export const routes = new Elysia()
 
 **Recent Changes**:
 - Completed Guild CRUD MVP with type-specific endpoints (/acts, /venues, /clubs)
-- Fixed critical Elysia middleware scope bug - guards must be applied within route callback, not across instances
-- Documented middleware patterns and Bearer token transmission for future development
-- Fixed client service to properly send Authorization headers with request bodies
-- Added API middleware pattern documentation to prevent future 401 authorization errors
+- Implemented Firebase authentication using Elysia `.derive({ as: 'scoped' })` pattern
+- Documented correct Firebase authentication middleware pattern with scoped context extension
+- Fixed Bearer token transmission in client service with proper `$headers` handling
+- Clarified that authentication middleware is optional - only applies to routes that use it
+
+**Key Learning**: The correct Elysia pattern for Firebase authentication is using `.derive({ as: 'scoped' })` to create a reusable middleware that makes a `firebase` context object available to routes that opt-in via `.use(firebaseMiddleware)`. This is cleaner and more composable than trying to mix public/private routes with sequential guards.
 
 Happy coding! 🎵
