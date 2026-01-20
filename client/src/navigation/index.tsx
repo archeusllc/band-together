@@ -12,6 +12,21 @@ import {
   RegisterScreen,
   NotFoundScreen,
   EventDetailsScreen,
+  // Acts
+  ActsListScreen,
+  ActDetailsScreen,
+  CreateActScreen,
+  EditActScreen,
+  // Venues
+  VenuesListScreen,
+  VenueDetailsScreen,
+  CreateVenueScreen,
+  EditVenueScreen,
+  // Clubs
+  ClubsListScreen,
+  ClubDetailsScreen,
+  CreateClubScreen,
+  EditClubScreen,
 } from '@screens';
 import { lightTheme, darkTheme } from './themes';
 import type { RootStackParamList, DrawerParamList } from './types';
@@ -28,6 +43,123 @@ const MainDrawer = createDrawerNavigator({
       },
       options: {
         header: () => <AppHeader />,
+      },
+    },
+    ActsList: {
+      screen: ActsListScreen,
+      linking: {
+        path: 'acts',
+      },
+      options: {
+        header: () => <AppHeader />,
+      },
+    },
+    ActDetails: {
+      screen: ActDetailsScreen,
+      linking: {
+        path: 'act/:actId',
+      },
+      options: {
+        header: () => <AppHeader />,
+        drawerItemStyle: { display: 'none' },
+      },
+    },
+    CreateAct: {
+      screen: CreateActScreen,
+      linking: {
+        path: 'act/create',
+      },
+      options: {
+        header: () => <AppHeader />,
+        drawerItemStyle: { display: 'none' },
+      },
+    },
+    EditAct: {
+      screen: EditActScreen,
+      linking: {
+        path: 'act/:actId/edit',
+      },
+      options: {
+        header: () => <AppHeader />,
+        drawerItemStyle: { display: 'none' },
+      },
+    },
+    VenuesList: {
+      screen: VenuesListScreen,
+      linking: {
+        path: 'venues',
+      },
+      options: {
+        header: () => <AppHeader />,
+      },
+    },
+    VenueDetails: {
+      screen: VenueDetailsScreen,
+      linking: {
+        path: 'venue/:venueId',
+      },
+      options: {
+        header: () => <AppHeader />,
+        drawerItemStyle: { display: 'none' },
+      },
+    },
+    CreateVenue: {
+      screen: CreateVenueScreen,
+      linking: {
+        path: 'venue/create',
+      },
+      options: {
+        header: () => <AppHeader />,
+        drawerItemStyle: { display: 'none' },
+      },
+    },
+    EditVenue: {
+      screen: EditVenueScreen,
+      linking: {
+        path: 'venue/:venueId/edit',
+      },
+      options: {
+        header: () => <AppHeader />,
+        drawerItemStyle: { display: 'none' },
+      },
+    },
+    ClubsList: {
+      screen: ClubsListScreen,
+      linking: {
+        path: 'clubs',
+      },
+      options: {
+        header: () => <AppHeader />,
+      },
+    },
+    ClubDetails: {
+      screen: ClubDetailsScreen,
+      linking: {
+        path: 'club/:clubId',
+      },
+      options: {
+        header: () => <AppHeader />,
+        drawerItemStyle: { display: 'none' },
+      },
+    },
+    CreateClub: {
+      screen: CreateClubScreen,
+      linking: {
+        path: 'club/create',
+      },
+      options: {
+        header: () => <AppHeader />,
+        drawerItemStyle: { display: 'none' },
+      },
+    },
+    EditClub: {
+      screen: EditClubScreen,
+      linking: {
+        path: 'club/:clubId/edit',
+      },
+      options: {
+        header: () => <AppHeader />,
+        drawerItemStyle: { display: 'none' },
       },
     },
     Profile: {
