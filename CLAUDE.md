@@ -349,11 +349,60 @@ const { data } = await api.events[eventId].get()
 const { data } = await api.events({ eventId }).get()
 ```
 
+**Bearer Token Transmission**
+- When sending Bearer tokens with request bodies (POST/PATCH), merge headers into the request object using `$headers`
+- Example: `api.acts.post({ ...body, $headers: { authorization: `Bearer ${token}` } })`
+- Headers passed as separate arguments don't properly merge with request body in Eden Treaty client
+
 **Public Endpoints with Optional Authentication**
 - Use `firebaseUid || null` pattern to support both authenticated and unauthenticated access
 - Service layer catches auth errors and returns null as fallback
 - API endpoints can check `if (firebaseUid || null)` to provide personalized data when authenticated
 - This pattern allows graceful degradation: unauthenticated users get public data, authenticated users get personalized data
+
+### API Middleware Patterns (Elysia)
+
+**Middleware Scope and Guards**
+- Middleware in Elysia must be applied **within the same route callback scope** - guards apply to all routes defined **after** them
+- Middleware does NOT propagate across separate Elysia instances when composed with `.use()`
+- This causes 401 errors when separate public/authenticated route groups are composed
+
+**Correct Pattern for Mixed Authentication**:
+```typescript
+export const actsRoutes = new Elysia()
+  .use(optionalFirebaseAuthMiddleware)           // Top-level for optional auth
+  .group('/acts', (route) =>
+    route
+      // Public routes come first
+      .get('/', handler)                          // Uses optionalFirebaseAuthMiddleware
+      .get('/:id', handler)                       // Uses optionalFirebaseAuthMiddleware
+      // Middleware applied HERE - all routes after get firebaseAuthMiddleware
+      .use(firebaseAuthMiddleware)
+      // Protected routes after middleware
+      .post('/', async ({ firebaseUid, ... }) => {})   // ✅ firebaseUid injected
+      .patch('/:id', async ({ firebaseUid, ... }) => {})
+      .delete('/:id', async ({ firebaseUid, ... }) => {})
+  );
+```
+
+**Incorrect Pattern to Avoid**:
+```typescript
+// ❌ WRONG - Middleware doesn't propagate across instances
+const publicRoutes = new Elysia()
+  .use(optionalFirebaseAuthMiddleware)
+  .group('/acts', (route) => route.get(...));
+
+const authRoutes = new Elysia()
+  .use(firebaseAuthMiddleware)
+  .group('/acts', (route) => route.post(...));
+
+// This composition doesn't work - firebaseUid undefined in POST handler
+export const routes = new Elysia()
+  .use(publicRoutes)
+  .use(authRoutes);
+```
+
+**Key Insight**: Guards/middleware must be declared and applied in sequence within the same builder chain to properly scope to the routes that follow them.
 
 ### State Management
 
@@ -437,12 +486,13 @@ const { data } = await api.events({ eventId }).get()
 
 ---
 
-**Last Updated**: 2026-01-19
+**Last Updated**: 2026-01-20
 
 **Recent Changes**:
-- Completed Activity Feed Phase 4 (Event Details & Follow Features)
-- Fixed critical API call bug with Eden Treaty path parameters
-- Added type-safe navigation with RootStackParamList
-- Documented lessons learned for future development
+- Completed Guild CRUD MVP with type-specific endpoints (/acts, /venues, /clubs)
+- Fixed critical Elysia middleware scope bug - guards must be applied within route callback, not across instances
+- Documented middleware patterns and Bearer token transmission for future development
+- Fixed client service to properly send Authorization headers with request bodies
+- Added API middleware pattern documentation to prevent future 401 authorization errors
 
 Happy coding! 🎵
