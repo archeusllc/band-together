@@ -1,21 +1,14 @@
 import Elysia, { t } from 'elysia';
 import { feedController } from '@controllers';
-import { firebaseAuthMiddleware, firebaseAuthGuard } from '@middleware';
+import { firebaseGate } from '@middleware';
 
 export const followsRoutes = new Elysia().group('/follows', (followsRoute) =>
   followsRoute
-    .use(firebaseAuthMiddleware)
+    .use(firebaseGate)
     .get(
       '/',
-      async ({ firebaseUid, set }) => {
-        try {
-          await firebaseAuthGuard({ firebaseUid, set });
-          const result = await feedController.getFollows(firebaseUid);
-          return result;
-        } catch (error) {
-          set.status = 500;
-          return { error: (error as Error).message };
-        }
+      async ({ firebase }) => {
+        return await feedController.getFollows(firebase.uid);
       },
       {
         detail: {
@@ -46,10 +39,9 @@ export const followsRoutes = new Elysia().group('/follows', (followsRoute) =>
     )
     .post(
       '/',
-      async ({ firebaseUid, set, body }) => {
+      async ({ firebase, set, body }) => {
         try {
-          await firebaseAuthGuard({ firebaseUid, set });
-          const result = await feedController.createFollow(firebaseUid, body);
+          const result = await feedController.createFollow(firebase.uid, body);
           set.status = 201;
           return result;
         } catch (error) {
@@ -89,10 +81,9 @@ export const followsRoutes = new Elysia().group('/follows', (followsRoute) =>
     )
     .delete(
       '/:followId',
-      async ({ firebaseUid, set, params }) => {
+      async ({ firebase, set, params }) => {
         try {
-          await firebaseAuthGuard({ firebaseUid, set });
-          const result = await feedController.deleteFollow(firebaseUid, params.followId);
+          const result = await feedController.deleteFollow(firebase.uid, params.followId);
           return result;
         } catch (error) {
           const message = (error as Error).message;

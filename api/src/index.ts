@@ -4,6 +4,7 @@ import { openapi } from '@elysiajs/openapi';
 import { dts } from 'elysia-remote-dts'
 
 import { routes } from '@routes';
+import { firebaseMiddleware } from '@middleware';
 
 const { PORT = 3000 } = process.env;
 

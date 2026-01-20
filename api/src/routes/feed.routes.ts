@@ -1,16 +1,16 @@
 import Elysia, { t } from 'elysia';
 import { feedController } from '@controllers';
-import { optionalFirebaseAuthMiddleware } from '@middleware';
+import { firebaseMiddleware } from '@middleware';
 
 export const feedRoutes = new Elysia().group('/feed', (feedRoute) =>
   feedRoute
-    .use(optionalFirebaseAuthMiddleware)
+    .use(firebaseMiddleware)
     .get(
       '/',
-      async ({ firebaseUid, set, query }) => {
+      async ({ firebase, set, query }) => {
         try {
           // Feed is public - works for both authenticated and unauthenticated users
-          const result = await feedController.getFeed(firebaseUid || null, query);
+          const result = await feedController.getFeed(firebase?.uid || null, query);
           return result;
         } catch (error) {
           set.status = 500;

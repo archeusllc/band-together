@@ -362,14 +362,17 @@ const { data } = await api.events({ eventId }).get()
 
 ### Firebase Authentication Pattern (Elysia)
 
-**Derived Context Extension for Firebase Auth**
-- Use Elysia's `.derive()` with `as: 'scoped'` to create a reusable Firebase authentication middleware
-- The `firebaseMiddleware` makes a `firebase` object available in the request context containing `uid` and `email`
-- Adding `.use(firebaseMiddleware)` to a route scope enables Firebase auth for all routes in that scope
-- Routes can access `firebase.uid` directly: `async ({ firebase }) => { /* firebase.uid is available */ }`
-- If the Bearer token is missing or invalid, the middleware throws an error with a 401 status
+**Two-Tier Authentication System**
 
-**Correct Pattern - Firebase Authentication Middleware**:
+The API uses two Firebase authentication middleware layers with different purposes:
+
+1. **`firebaseMiddleware`** - Optional authentication for endpoints that can work with or without auth
+2. **`firebaseGate`** - Required authentication that rejects requests without valid tokens
+
+**Optional Authentication (`firebaseMiddleware`)**
+
+Use this for endpoints that may receive authentication but don't require it:
+
 ```typescript
 // api/src/middleware/firebase.middleware.ts
 export const firebaseMiddleware = new Elysia({
@@ -379,7 +382,7 @@ export const firebaseMiddleware = new Elysia({
     as: 'scoped'
   }, async ({ request }) => {
     const authHeader = request.headers.get('authorization');
-    if (!authHeader || !authHeader.startsWith('Bearer ')) throw new Error('Unauthorized: No token provided');
+    if (!authHeader || !authHeader.startsWith('Bearer ')) return;
     const decoded = await firebaseAuth.verifyIdToken(authHeader.substring(7))
 
     return {
@@ -391,12 +394,49 @@ export const firebaseMiddleware = new Elysia({
   })
 ```
 
-**Usage Example - Gating Routes Behind Authentication**:
+Key characteristics:
+- Returns early if no Bearer token is present (no error thrown)
+- Makes `firebase` context object available when token is valid
+- `firebase` will be `undefined` if no token was provided
+- Allows endpoints to provide personalized data when authenticated, public data otherwise
+
+**Required Authentication (`firebaseGate`)**
+
+Use this for endpoints that must have valid Firebase authentication:
+
+```typescript
+// api/src/middleware/firebase.middleware.ts
+export const firebaseGate = new Elysia()
+  .use(firebaseMiddleware)
+  .derive({
+    as: 'scoped'
+  }, async ({ firebase }) => {
+    if (!firebase) {
+      throw new Error('Unauthorized: No valid Firebase token provided');
+    }
+    return { firebase }
+  })
+```
+
+Key characteristics:
+- Builds on top of `firebaseMiddleware`
+- Throws error if `firebase` context is undefined
+- Guarantees `firebase.uid` and `firebase.email` are present in handlers
+- Request fails with 401 before handler executes if token is missing/invalid
+
+**Usage Example - Mixed Public and Protected Routes**:
+
 ```typescript
 // api/src/routes/auth.routes.ts
 export const authRoutes = new Elysia().group('/auth', (authRoute) =>
   authRoute
-    .use(firebaseMiddleware)  // All routes in this group now require Firebase auth
+    // Public routes (no authentication middleware)
+    .post('/register', async ({ body, set }) => { /* ... */ })
+    .post('/login', async ({ body, set }) => { /* ... */ })
+    .post('/reset', async ({ body }) => { /* ... */ })
+
+    // Protected routes (require valid Firebase token)
+    .use(firebaseGate)
     .get(
       '/me',
       async ({ firebase }) => {
@@ -418,10 +458,11 @@ export const authRoutes = new Elysia().group('/auth', (authRoute) =>
 
 **Key Points**:
 - `.derive({ as: 'scoped' })` makes the returned object available in request context
-- Routes that `.use(firebaseMiddleware)` will have `firebase` object available
-- If token is missing/invalid, error is thrown and request fails with 401 before handler executes
-- The middleware is only applied to routes that explicitly `.use()` it - it doesn't automatically apply
-- This pattern is flexible: mix public and private routes in same file by using middleware selectively
+- Middleware placement within `.group()` callback determines which routes it applies to
+- Routes defined before `.use(firebaseGate)` are public
+- Routes defined after `.use(firebaseGate)` require authentication
+- This pattern allows mixing public and protected routes in the same file
+- Always document protected endpoints with `security: [{ bearerAuth: [] }]` in OpenAPI detail
 
 ### State Management
 

@@ -1,26 +1,17 @@
 import Elysia, { t } from 'elysia';
 import { guildController } from '@controllers';
-import { optionalFirebaseAuthMiddleware } from '@middleware';
 import { GuildType } from '@band-together/shared';
+import { firebaseGate } from '@middleware';
 
-// Guard to enforce Firebase authentication for protected routes
-const firebaseAuthGuard = async ({ firebaseUid, set }: any) => {
-  if (!firebaseUid) {
-    set.status = 401;
-    throw new Error('Unauthorized: No valid Firebase token provided');
-  }
-};
-
-export const clubsRoutes = new Elysia()
-  .use(optionalFirebaseAuthMiddleware)
-  .group('/clubs', (route) =>
+export const actsRoutes = new Elysia()
+  .group('/acts', (route) =>
     route
-      // GET /clubs - List all clubs (public)
+      // GET /acts - List all acts (public)
       .get(
         '/',
         async ({ set, query }: any) => {
           try {
-            const result = await guildController.getGuilds(GuildType.CLUB, query);
+            const result = await guildController.getGuilds(GuildType.ACT, query);
             return result;
           } catch (error) {
             set.status = 500;
@@ -34,37 +25,22 @@ export const clubsRoutes = new Elysia()
             search: t.Optional(t.String({ minLength: 1 }))
           }),
           detail: {
-            tags: ['Clubs'],
-            summary: 'List Clubs',
-            description: 'Retrieve paginated list of clubs with optional search. Public endpoint.',
+            tags: ['Acts'],
+            summary: 'List Acts',
+            description: 'Retrieve paginated list of acts with optional search. Public endpoint.',
             responses: {
-              200: {
-                description: 'Clubs retrieved successfully',
-                content: {
-                  'application/json': {
-                    schema: {
-                      type: 'object',
-                      properties: {
-                        guilds: { type: 'array' },
-                        total: { type: 'number' },
-                        page: { type: 'number' },
-                        limit: { type: 'number' }
-                      }
-                    }
-                  }
-                }
-              },
+              200: { description: 'Acts retrieved successfully' },
               500: { description: 'Server error' }
             }
           }
         }
       )
-      // GET /clubs/:clubId - Get single club (public)
+      // GET /acts/:actId - Get single act (public)
       .get(
-        '/:clubId',
+        '/:actId',
         async ({ set, params }: any) => {
           try {
-            const result = await guildController.getGuildById(params.clubId);
+            const result = await guildController.getGuildById(params.actId);
             return result;
           } catch (error) {
             const message = (error as Error).message;
@@ -78,30 +54,26 @@ export const clubsRoutes = new Elysia()
         },
         {
           params: t.Object({
-            clubId: t.String()
+            actId: t.String()
           }),
           detail: {
-            tags: ['Clubs'],
-            summary: 'Get Club by ID',
-            description: 'Retrieve a single club with full details including owner and members. Public endpoint.',
+            tags: ['Acts'],
+            summary: 'Get Act by ID',
+            description: 'Retrieve a single act with full details including owner and members. Public endpoint.',
             responses: {
-              200: { description: 'Club retrieved successfully' },
-              404: { description: 'Club not found' },
+              200: { description: 'Act retrieved successfully' },
+              404: { description: 'Act not found' },
               500: { description: 'Server error' }
             }
           }
         }
       )
-      // Guard for authenticated routes - prevents handler execution without valid firebaseUid
-      .guard({
-        beforeHandle: firebaseAuthGuard
-      })
-      // POST /clubs - Create new club (authenticated)
+      .use(firebaseGate)
       .post(
         '/',
-        async ({ firebaseUid, set, body }: any) => {
+        async ({ firebase, set, body }: any) => {
           try {
-            const result = await guildController.createClub(firebaseUid, body);
+            const result = await guildController.createAct(firebase.uid, body);
             set.status = 201;
             return result;
           } catch (error) {
@@ -119,16 +91,16 @@ export const clubsRoutes = new Elysia()
         {
           body: t.Object({
             name: t.String({ minLength: 2, maxLength: 100 }),
-            description: t.Optional(t.String({ maxLength: 1000 })),
+            bio: t.Optional(t.String({ maxLength: 500 })),
             avatar: t.Optional(t.String())
           }),
           detail: {
-            tags: ['Clubs'],
-            summary: 'Create Club',
-            description: 'Create a new club with associated guild. Creator becomes owner. Requires authentication.',
+            tags: ['Acts'],
+            summary: 'Create Act',
+            description: 'Create a new act with associated guild. Creator becomes owner. Requires authentication.',
             security: [{ bearerAuth: [] }],
             responses: {
-              201: { description: 'Club created successfully' },
+              201: { description: 'Act created successfully' },
               400: { description: 'Invalid input data' },
               401: { description: 'Unauthorized' },
               500: { description: 'Server error' }
@@ -136,12 +108,12 @@ export const clubsRoutes = new Elysia()
           }
         }
       )
-      // PATCH /clubs/:clubId - Update club (owner only)
+      // PATCH /acts/:actId - Update act (owner only)
       .patch(
-        '/:clubId',
-        async ({ firebaseUid, set, params, body }: any) => {
+        '/:actId',
+        async ({ firebase, set, params, body }: any) => {
           try {
-            const result = await guildController.updateClub(firebaseUid, params.clubId, body);
+            const result = await guildController.updateAct(firebase.uid, params.actId, body);
             return result;
           } catch (error) {
             const message = (error as Error).message;
@@ -159,34 +131,34 @@ export const clubsRoutes = new Elysia()
         },
         {
           params: t.Object({
-            clubId: t.String()
+            actId: t.String()
           }),
           body: t.Object({
             name: t.Optional(t.String({ minLength: 2, maxLength: 100 })),
-            description: t.Optional(t.String({ maxLength: 1000 })),
+            bio: t.Optional(t.String({ maxLength: 500 })),
             avatar: t.Optional(t.String())
           }),
           detail: {
-            tags: ['Clubs'],
-            summary: 'Update Club',
-            description: 'Update club details. Only club owner can update. Requires authentication.',
+            tags: ['Acts'],
+            summary: 'Update Act',
+            description: 'Update act details. Only act owner can update. Requires authentication.',
             security: [{ bearerAuth: [] }],
             responses: {
-              200: { description: 'Club updated successfully' },
+              200: { description: 'Act updated successfully' },
               400: { description: 'Invalid input data' },
-              403: { description: 'Forbidden - not club owner' },
-              404: { description: 'Club not found' },
+              403: { description: 'Forbidden - not act owner' },
+              404: { description: 'Act not found' },
               500: { description: 'Server error' }
             }
           }
         }
       )
-      // DELETE /clubs/:clubId - Delete club (owner only)
+      // DELETE /acts/:actId - Delete act (owner only)
       .delete(
-        '/:clubId',
-        async ({ firebaseUid, set, params }: any) => {
+        '/:actId',
+        async ({ firebase, set, params }: any) => {
           try {
-            const result = await guildController.deleteGuild(firebaseUid, params.clubId);
+            const result = await guildController.deleteGuild(firebase.uid, params.actId);
             return result;
           } catch (error) {
             const message = (error as Error).message;
@@ -202,17 +174,17 @@ export const clubsRoutes = new Elysia()
         },
         {
           params: t.Object({
-            clubId: t.String()
+            actId: t.String()
           }),
           detail: {
-            tags: ['Clubs'],
-            summary: 'Delete Club',
-            description: 'Delete club and associated guild. Only club owner can delete. This action cannot be undone. Requires authentication.',
+            tags: ['Acts'],
+            summary: 'Delete Act',
+            description: 'Delete act and associated guild. Only act owner can delete. This action cannot be undone. Requires authentication.',
             security: [{ bearerAuth: [] }],
             responses: {
-              200: { description: 'Club deleted successfully' },
-              403: { description: 'Forbidden - not club owner' },
-              404: { description: 'Club not found' },
+              200: { description: 'Act deleted successfully' },
+              403: { description: 'Forbidden - not act owner' },
+              404: { description: 'Act not found' },
               500: { description: 'Server error' }
             }
           }

@@ -109,6 +109,7 @@ export const guildController = {
    * @returns {Object} Newly created guild
    */
   createAct: async (firebaseUid: string, data: CreateActBody): Promise<GuildResponse> => {
+
     const user = await prisma.user.findUnique({
       where: { firebaseUid }
     });

@@ -1,26 +1,17 @@
 import Elysia, { t } from 'elysia';
 import { guildController } from '@controllers';
-import { optionalFirebaseAuthMiddleware } from '@middleware';
 import { GuildType } from '@band-together/shared';
+import { firebaseGate } from '@middleware';
 
-// Guard to enforce Firebase authentication for protected routes
-const firebaseAuthGuard = async ({ firebaseUid, set }: any) => {
-  if (!firebaseUid) {
-    set.status = 401;
-    throw new Error('Unauthorized: No valid Firebase token provided');
-  }
-};
-
-export const venuesRoutes = new Elysia()
-  .use(optionalFirebaseAuthMiddleware)
-  .group('/venues', (route) =>
+export const clubsRoutes = new Elysia()
+  .group('/clubs', (route) =>
     route
-      // GET /venues - List all venues (public)
+      // GET /clubs - List all clubs (public)
       .get(
         '/',
         async ({ set, query }: any) => {
           try {
-            const result = await guildController.getGuilds(GuildType.VENUE, query);
+            const result = await guildController.getGuilds(GuildType.CLUB, query);
             return result;
           } catch (error) {
             set.status = 500;
@@ -34,12 +25,12 @@ export const venuesRoutes = new Elysia()
             search: t.Optional(t.String({ minLength: 1 }))
           }),
           detail: {
-            tags: ['Venues'],
-            summary: 'List Venues',
-            description: 'Retrieve paginated list of venues with optional search. Public endpoint.',
+            tags: ['Clubs'],
+            summary: 'List Clubs',
+            description: 'Retrieve paginated list of clubs with optional search. Public endpoint.',
             responses: {
               200: {
-                description: 'Venues retrieved successfully',
+                description: 'Clubs retrieved successfully',
                 content: {
                   'application/json': {
                     schema: {
@@ -59,12 +50,12 @@ export const venuesRoutes = new Elysia()
           }
         }
       )
-      // GET /venues/:venueId - Get single venue (public)
+      // GET /clubs/:clubId - Get single club (public)
       .get(
-        '/:venueId',
+        '/:clubId',
         async ({ set, params }: any) => {
           try {
-            const result = await guildController.getGuildById(params.venueId);
+            const result = await guildController.getGuildById(params.clubId);
             return result;
           } catch (error) {
             const message = (error as Error).message;
@@ -78,30 +69,28 @@ export const venuesRoutes = new Elysia()
         },
         {
           params: t.Object({
-            venueId: t.String()
+            clubId: t.String()
           }),
           detail: {
-            tags: ['Venues'],
-            summary: 'Get Venue by ID',
-            description: 'Retrieve a single venue with full details including owner and members. Public endpoint.',
+            tags: ['Clubs'],
+            summary: 'Get Club by ID',
+            description: 'Retrieve a single club with full details including owner and members. Public endpoint.',
             responses: {
-              200: { description: 'Venue retrieved successfully' },
-              404: { description: 'Venue not found' },
+              200: { description: 'Club retrieved successfully' },
+              404: { description: 'Club not found' },
               500: { description: 'Server error' }
             }
           }
         }
       )
-      // Guard for authenticated routes - prevents handler execution without valid firebaseUid
-      .guard({
-        beforeHandle: firebaseAuthGuard
-      })
-      // POST /venues - Create new venue (authenticated)
+      // Authenticated routes - require valid Firebase token
+      .use(firebaseGate)
+      // POST /clubs - Create new club (authenticated)
       .post(
         '/',
-        async ({ firebaseUid, set, body }: any) => {
+        async ({ firebase, set, body }: any) => {
           try {
-            const result = await guildController.createVenue(firebaseUid, body);
+            const result = await guildController.createClub(firebase.uid, body);
             set.status = 201;
             return result;
           } catch (error) {
@@ -119,19 +108,16 @@ export const venuesRoutes = new Elysia()
         {
           body: t.Object({
             name: t.String({ minLength: 2, maxLength: 100 }),
-            address: t.Optional(t.String({ maxLength: 200 })),
-            city: t.Optional(t.String({ maxLength: 100 })),
-            state: t.Optional(t.String({ maxLength: 50 })),
-            zipCode: t.Optional(t.String({ maxLength: 20 })),
+            description: t.Optional(t.String({ maxLength: 1000 })),
             avatar: t.Optional(t.String())
           }),
           detail: {
-            tags: ['Venues'],
-            summary: 'Create Venue',
-            description: 'Create a new venue with associated guild. Creator becomes owner. Requires authentication.',
+            tags: ['Clubs'],
+            summary: 'Create Club',
+            description: 'Create a new club with associated guild. Creator becomes owner. Requires authentication.',
             security: [{ bearerAuth: [] }],
             responses: {
-              201: { description: 'Venue created successfully' },
+              201: { description: 'Club created successfully' },
               400: { description: 'Invalid input data' },
               401: { description: 'Unauthorized' },
               500: { description: 'Server error' }
@@ -139,12 +125,12 @@ export const venuesRoutes = new Elysia()
           }
         }
       )
-      // PATCH /venues/:venueId - Update venue (owner only)
+      // PATCH /clubs/:clubId - Update club (owner only)
       .patch(
-        '/:venueId',
-        async ({ firebaseUid, set, params, body }: any) => {
+        '/:clubId',
+        async ({ firebase, set, params, body }: any) => {
           try {
-            const result = await guildController.updateVenue(firebaseUid, params.venueId, body);
+            const result = await guildController.updateClub(firebase.uid, params.clubId, body);
             return result;
           } catch (error) {
             const message = (error as Error).message;
@@ -162,37 +148,34 @@ export const venuesRoutes = new Elysia()
         },
         {
           params: t.Object({
-            venueId: t.String()
+            clubId: t.String()
           }),
           body: t.Object({
             name: t.Optional(t.String({ minLength: 2, maxLength: 100 })),
-            address: t.Optional(t.String({ maxLength: 200 })),
-            city: t.Optional(t.String({ maxLength: 100 })),
-            state: t.Optional(t.String({ maxLength: 50 })),
-            zipCode: t.Optional(t.String({ maxLength: 20 })),
+            description: t.Optional(t.String({ maxLength: 1000 })),
             avatar: t.Optional(t.String())
           }),
           detail: {
-            tags: ['Venues'],
-            summary: 'Update Venue',
-            description: 'Update venue details. Only venue owner can update. Requires authentication.',
+            tags: ['Clubs'],
+            summary: 'Update Club',
+            description: 'Update club details. Only club owner can update. Requires authentication.',
             security: [{ bearerAuth: [] }],
             responses: {
-              200: { description: 'Venue updated successfully' },
+              200: { description: 'Club updated successfully' },
               400: { description: 'Invalid input data' },
-              403: { description: 'Forbidden - not venue owner' },
-              404: { description: 'Venue not found' },
+              403: { description: 'Forbidden - not club owner' },
+              404: { description: 'Club not found' },
               500: { description: 'Server error' }
             }
           }
         }
       )
-      // DELETE /venues/:venueId - Delete venue (owner only)
+      // DELETE /clubs/:clubId - Delete club (owner only)
       .delete(
-        '/:venueId',
-        async ({ firebaseUid, set, params }: any) => {
+        '/:clubId',
+        async ({ firebase, set, params }: any) => {
           try {
-            const result = await guildController.deleteGuild(firebaseUid, params.venueId);
+            const result = await guildController.deleteGuild(firebase.uid, params.clubId);
             return result;
           } catch (error) {
             const message = (error as Error).message;
@@ -208,17 +191,17 @@ export const venuesRoutes = new Elysia()
         },
         {
           params: t.Object({
-            venueId: t.String()
+            clubId: t.String()
           }),
           detail: {
-            tags: ['Venues'],
-            summary: 'Delete Venue',
-            description: 'Delete venue and associated guild. Only venue owner can delete. This action cannot be undone. Requires authentication.',
+            tags: ['Clubs'],
+            summary: 'Delete Club',
+            description: 'Delete club and associated guild. Only club owner can delete. This action cannot be undone. Requires authentication.',
             security: [{ bearerAuth: [] }],
             responses: {
-              200: { description: 'Venue deleted successfully' },
-              403: { description: 'Forbidden - not venue owner' },
-              404: { description: 'Venue not found' },
+              200: { description: 'Club deleted successfully' },
+              403: { description: 'Forbidden - not club owner' },
+              404: { description: 'Club not found' },
               500: { description: 'Server error' }
             }
           }

@@ -82,7 +82,8 @@ export const guildService = {
         return { data: null, error: 'Authentication required' };
       }
 
-      const { data, error } = await api.acts.post(input, {
+      const { data, error } = await api.acts.post({
+        ...input,
         $headers: {
           authorization: `Bearer ${idToken}`,
         },
@@ -104,7 +105,8 @@ export const guildService = {
         return { data: null, error: 'Authentication required' };
       }
 
-      const { data, error } = await api.acts[actId].patch(input, {
+      const { data, error } = await api.acts[actId].patch({
+        ...input,
         $headers: {
           authorization: `Bearer ${idToken}`,
         },
@@ -175,7 +177,8 @@ export const guildService = {
         return { data: null, error: 'Authentication required' };
       }
 
-      const { data, error } = await api.venues.post(input, {
+      const { data, error } = await api.venues.post({
+        ...input,
         $headers: {
           authorization: `Bearer ${idToken}`,
         },
@@ -197,7 +200,8 @@ export const guildService = {
         return { data: null, error: 'Authentication required' };
       }
 
-      const { data, error } = await api.venues[venueId].patch(input, {
+      const { data, error } = await api.venues[venueId].patch({
+        ...input,
         $headers: {
           authorization: `Bearer ${idToken}`,
         },
@@ -268,7 +272,8 @@ export const guildService = {
         return { data: null, error: 'Authentication required' };
       }
 
-      const { data, error } = await api.clubs.post(input, {
+      const { data, error } = await api.clubs.post({
+        ...input,
         $headers: {
           authorization: `Bearer ${idToken}`,
         },
@@ -290,7 +295,8 @@ export const guildService = {
         return { data: null, error: 'Authentication required' };
       }
 
-      const { data, error } = await api.clubs[clubId].patch(input, {
+      const { data, error } = await api.clubs[clubId].patch({
+        ...input,
         $headers: {
           authorization: `Bearer ${idToken}`,
         },

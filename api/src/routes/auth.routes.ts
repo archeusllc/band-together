@@ -1,5 +1,6 @@
 import Elysia, { t } from 'elysia';
 import { authController } from '@controllers';
+import { firebaseGate } from '@middleware';
 
 export const authRoutes = new Elysia().group('/auth', (authRoute) =>
   authRoute
@@ -109,28 +110,11 @@ export const authRoutes = new Elysia().group('/auth', (authRoute) =>
         },
       }
     )
+    .use(firebaseGate)
     .get(
       '/me',
-      async ({ request, set }) => {
-        const authHeader = request.headers.get('authorization');
-
-        if (!authHeader || !authHeader.startsWith('Bearer ')) {
-          set.status = 401;
-          return { error: 'Unauthorized: No token provided' };
-        }
-
-        const idToken = authHeader.substring(7);
-
-        try {
-          // Import firebase auth here to verify token
-          const { firebaseAuth } = await import('@config/firebase-admin.config');
-          const decodedToken = await firebaseAuth.verifyIdToken(idToken);
-          const user = await authController.me(decodedToken.uid);
-          return user;
-        } catch (error) {
-          set.status = 401;
-          return { error: (error as Error).message };
-        }
+      async ({ firebase }) => {
+        return await authController.me(firebase.uid);
       },
       {
         detail: {
