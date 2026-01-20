@@ -1,4 +1,5 @@
 import 'react-native-gesture-handler';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { Navigation } from './navigation';
 import { AuthProvider, FeedProvider } from '@contexts';
 
@@ -8,11 +9,13 @@ const config = {
 
 export function App() {
   return (
-    <AuthProvider>
-      <FeedProvider>
-        <Navigation linking={config} />
-      </FeedProvider>
-    </AuthProvider>
+    <SafeAreaProvider>
+      <AuthProvider>
+        <FeedProvider>
+          <Navigation linking={config} />
+        </FeedProvider>
+      </AuthProvider>
+    </SafeAreaProvider>
   );
 }
 

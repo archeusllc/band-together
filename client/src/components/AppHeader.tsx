@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, Pressable, Image } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { DrawerActions, useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { RootStackParamList, DrawerParamList } from '@navigation/types';
@@ -24,7 +25,10 @@ export const AppHeader = () => {
   const displayName = isAuthenticated && user?.displayName ? user.displayName : 'Log In';
 
   return (
-    <View className={`${tailwind.card.both} border-b ${tailwind.border.both}`}>
+    <SafeAreaView
+      edges={['top']}
+      className={`${tailwind.card.both} border-b ${tailwind.border.both}`}
+    >
       <View className="h-14 flex-row items-center justify-between px-4">
         <Pressable
           onPress={() => navigation.dispatch(DrawerActions.toggleDrawer())}
@@ -63,6 +67,6 @@ export const AppHeader = () => {
           )}
         </Pressable>
       </View>
-    </View>
+    </SafeAreaView>
   );
 };
