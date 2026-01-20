@@ -27,22 +27,10 @@ export const auth = Platform.OS === 'web'
 
 // Set up persistence for web after auth is initialized
 if (Platform.OS === 'web') {
-  console.log('[Firebase] Setting up web persistence...');
-  setPersistence(auth, browserLocalPersistence)
-    .then(() => {
-      console.log('[Firebase] Successfully set browserLocalPersistence');
-    })
-    .catch(error => {
-      console.warn('[Firebase] Failed to set browserLocalPersistence, trying browserSessionPersistence:', error);
-      // Fallback to session persistence if local persistence fails
-      return setPersistence(auth, browserSessionPersistence)
-        .then(() => {
-          console.log('[Firebase] Successfully set browserSessionPersistence');
-        });
-    })
-    .catch(error => {
-      console.error('[Firebase] Failed to set any persistence strategy:', error);
-    });
+  setPersistence(auth, browserLocalPersistence).catch(() => {
+    // Fallback to session persistence if local persistence fails
+    return setPersistence(auth, browserSessionPersistence);
+  });
 }
 
 // Initialize Storage

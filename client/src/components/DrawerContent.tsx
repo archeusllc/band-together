@@ -52,7 +52,14 @@ export function DrawerContent(props: DrawerContentComponentProps) {
 
       {isAuthenticated && (
         <View className={`border-t ${tailwind.border.both} p-5`}>
-          <Pressable className="flex-row items-center gap-4" onPress={logout}>
+          <Pressable
+            className="flex-row items-center gap-4"
+            onPress={async () => {
+              await logout();
+              navigation.closeDrawer();
+              navigation.navigate('Home');
+            }}
+          >
             <IconSymbol name="rectangle.portrait.and.arrow.right" size={24} color={colors.brand.error} />
             <Text className={`text-base ${tailwind.error} ${tailwind.errorDark} font-semibold`}>Logout</Text>
           </Pressable>
