@@ -3,6 +3,7 @@ import { createStaticNavigation } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { DrawerContent } from '@components/DrawerContent';
+import { AppHeader } from '@components/AppHeader';
 import {
   HomeScreen,
   ProfileScreen,
@@ -26,8 +27,7 @@ const MainDrawer = createDrawerNavigator({
         path: '',
       },
       options: {
-        title: 'Home',
-        headerShown: true,
+        header: () => <AppHeader />,
       },
     },
     Profile: {
@@ -36,8 +36,7 @@ const MainDrawer = createDrawerNavigator({
         path: 'profile',
       },
       options: {
-        title: 'Profile',
-        headerShown: true,
+        header: () => <AppHeader />,
       },
     },
     Settings: {
@@ -46,8 +45,7 @@ const MainDrawer = createDrawerNavigator({
         path: 'settings',
       },
       options: {
-        title: 'Settings',
-        headerShown: true,
+        header: () => <AppHeader />,
       },
     },
     EventDetails: {
@@ -56,8 +54,7 @@ const MainDrawer = createDrawerNavigator({
         path: 'event/:eventId',
       },
       options: {
-        title: 'Event Details',
-        headerShown: true,
+        header: () => <AppHeader />,
         drawerItemStyle: { display: 'none' },
       },
     },
