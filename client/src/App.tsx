@@ -7,7 +7,7 @@ const config = {
   prefixes: ['bandtogethermobile://', 'https://band-together.app'],
 };
 
-export function App() {
+export const App = () => {
   return (
     <SafeAreaProvider>
       <AuthProvider>
@@ -17,7 +17,7 @@ export function App() {
       </AuthProvider>
     </SafeAreaProvider>
   );
-}
+};
 
 
 

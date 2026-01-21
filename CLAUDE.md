@@ -46,6 +46,7 @@ When working on Band Together, please follow these conventions:
     return <View>Content</View>;
   };
   ```
+- **Prefer named exports over default exports** for better refactoring and IDE support
 
 **Import Style**
 - Use path aliases without `@/` prefix

@@ -64,6 +64,8 @@ export const MyComponent = () => {
 };
 ```
 
+**Prefer named exports over default exports** for better refactoring and IDE support.
+
 **Styling - NativeWind with centralized theme**:
 ```typescript
 import { tailwind, colors } from '@theme';
@@ -180,8 +182,8 @@ Use `$headers` within the request object to properly merge headers with body.
 
 ## Reference Files
 
-- [CLAUDE.md](CLAUDE.md) - Full AI assistant guide with patterns and examples
-- [wiki/AI-Context.md](wiki/AI-Context.md) - Comprehensive project context
-- [db/prisma/schema.prisma](db/prisma/schema.prisma) - Database schema (source of truth)
-- [client/src/theme/colors.ts](client/src/theme/colors.ts) - Theme color definitions
-- [api/src/index.ts](api/src/index.ts) - API entry point with middleware setup
+- [CLAUDE.md](../CLAUDE.md) - Full AI assistant guide with patterns and examples
+- [wiki/AI-Context.md](../wiki/AI-Context.md) - Comprehensive project context
+- [db/prisma/schema.prisma](../db/prisma/schema.prisma) - Database schema (source of truth)
+- [client/src/theme/colors.ts](../client/src/theme/colors.ts) - Theme color definitions
+- [api/src/index.ts](../api/src/index.ts) - API entry point with middleware setup

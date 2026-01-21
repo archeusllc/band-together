@@ -118,7 +118,7 @@ export const GuildForm = ({ guildType, initialData, onSubmit, submitLabel, loadi
           {guildTypeLabel} Name *
         </Text>
         <TextInput
-          className={`${tailwind.card.both} border ${tailwind.border.both} rounded-lg p-3 mb-1 text-black dark:text-white`}
+          className={`${tailwind.card.both} border ${tailwind.border.both} rounded-lg p-3 mb-1 ${tailwind.text.both}`}
           placeholder={`Enter ${guildTypeLabel.toLowerCase()} name`}
           placeholderTextColor={colors.light.muted}
           value={formData.name}
@@ -139,7 +139,7 @@ export const GuildForm = ({ guildType, initialData, onSubmit, submitLabel, loadi
               Bio
             </Text>
             <TextInput
-              className={`${tailwind.card.both} border ${tailwind.border.both} rounded-lg p-3 mb-4 text-black dark:text-white`}
+              className={`${tailwind.card.both} border ${tailwind.border.both} rounded-lg p-3 mb-4 ${tailwind.text.both}`}
               placeholder="Tell us about your musical act"
               placeholderTextColor={colors.light.muted}
               value={formData.bio}
@@ -157,7 +157,7 @@ export const GuildForm = ({ guildType, initialData, onSubmit, submitLabel, loadi
               Address
             </Text>
             <TextInput
-              className={`${tailwind.card.both} border ${tailwind.border.both} rounded-lg p-3 mb-4 text-black dark:text-white`}
+              className={`${tailwind.card.both} border ${tailwind.border.both} rounded-lg p-3 mb-4 ${tailwind.text.both}`}
               placeholder="Street address"
               placeholderTextColor={colors.light.muted}
               value={formData.address}
@@ -171,7 +171,7 @@ export const GuildForm = ({ guildType, initialData, onSubmit, submitLabel, loadi
                   City
                 </Text>
                 <TextInput
-                  className={`${tailwind.card.both} border ${tailwind.border.both} rounded-lg p-3 text-black dark:text-white`}
+                  className={`${tailwind.card.both} border ${tailwind.border.both} rounded-lg p-3 ${tailwind.text.both}`}
                   placeholder="City"
                   placeholderTextColor={colors.light.muted}
                   value={formData.city}
@@ -185,7 +185,7 @@ export const GuildForm = ({ guildType, initialData, onSubmit, submitLabel, loadi
                   State
                 </Text>
                 <TextInput
-                  className={`${tailwind.card.both} border ${tailwind.border.both} rounded-lg p-3 text-black dark:text-white`}
+                  className={`${tailwind.card.both} border ${tailwind.border.both} rounded-lg p-3 ${tailwind.text.both}`}
                   placeholder="ST"
                   placeholderTextColor={colors.light.muted}
                   value={formData.state}
@@ -200,7 +200,7 @@ export const GuildForm = ({ guildType, initialData, onSubmit, submitLabel, loadi
               ZIP Code
             </Text>
             <TextInput
-              className={`${tailwind.card.both} border ${tailwind.border.both} rounded-lg p-3 mb-4 text-black dark:text-white`}
+              className={`${tailwind.card.both} border ${tailwind.border.both} rounded-lg p-3 mb-4 ${tailwind.text.both}`}
               placeholder="ZIP Code"
               placeholderTextColor={colors.light.muted}
               value={formData.zipCode}
@@ -217,7 +217,7 @@ export const GuildForm = ({ guildType, initialData, onSubmit, submitLabel, loadi
               Description
             </Text>
             <TextInput
-              className={`${tailwind.card.both} border ${tailwind.border.both} rounded-lg p-3 mb-4 text-black dark:text-white`}
+              className={`${tailwind.card.both} border ${tailwind.border.both} rounded-lg p-3 mb-4 ${tailwind.text.both}`}
               placeholder="Describe your fan club"
               placeholderTextColor={colors.light.muted}
               value={formData.description}
