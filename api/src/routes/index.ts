@@ -5,6 +5,7 @@ import { feedRoutes } from "./feed.routes";
 import { eventsRoutes } from "./events.routes";
 import { followsRoutes } from "./follows.routes";
 import { guildsRoutes } from "./guilds.routes";
+import { trackRoutes } from "./track.routes";
 
 export const routes = new Elysia()
   .use(healthRoutes)
@@ -12,4 +13,5 @@ export const routes = new Elysia()
   .use(feedRoutes)
   .use(eventsRoutes)
   .use(followsRoutes)
+  .use(trackRoutes)
   .use(guildsRoutes)
