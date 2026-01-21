@@ -68,6 +68,26 @@ export type FeedActivity = $Result.DefaultSelection<Prisma.$FeedActivityPayload>
  * 
  */
 export type GuildInvitation = $Result.DefaultSelection<Prisma.$GuildInvitationPayload>
+/**
+ * Model SetList
+ * 
+ */
+export type SetList = $Result.DefaultSelection<Prisma.$SetListPayload>
+/**
+ * Model SetItem
+ * 
+ */
+export type SetItem = $Result.DefaultSelection<Prisma.$SetItemPayload>
+/**
+ * Model SetSection
+ * 
+ */
+export type SetSection = $Result.DefaultSelection<Prisma.$SetSectionPayload>
+/**
+ * Model SetListShare
+ * 
+ */
+export type SetListShare = $Result.DefaultSelection<Prisma.$SetListSharePayload>
 
 /**
  * Enums
@@ -108,6 +128,14 @@ export const TrackType: {
 
 export type TrackType = (typeof TrackType)[keyof typeof TrackType]
 
+
+export const SharePermission: {
+  VIEW_ONLY: 'VIEW_ONLY',
+  CAN_EDIT: 'CAN_EDIT'
+};
+
+export type SharePermission = (typeof SharePermission)[keyof typeof SharePermission]
+
 }
 
 export type GuildType = $Enums.GuildType
@@ -125,6 +153,10 @@ export const FollowEntityType: typeof $Enums.FollowEntityType
 export type TrackType = $Enums.TrackType
 
 export const TrackType: typeof $Enums.TrackType
+
+export type SharePermission = $Enums.SharePermission
+
+export const SharePermission: typeof $Enums.SharePermission
 
 /**
  * ##  Prisma Client ʲˢ
@@ -352,6 +384,46 @@ export class PrismaClient<
     * ```
     */
   get guildInvitation(): Prisma.GuildInvitationDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.setList`: Exposes CRUD operations for the **SetList** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more SetLists
+    * const setLists = await prisma.setList.findMany()
+    * ```
+    */
+  get setList(): Prisma.SetListDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.setItem`: Exposes CRUD operations for the **SetItem** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more SetItems
+    * const setItems = await prisma.setItem.findMany()
+    * ```
+    */
+  get setItem(): Prisma.SetItemDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.setSection`: Exposes CRUD operations for the **SetSection** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more SetSections
+    * const setSections = await prisma.setSection.findMany()
+    * ```
+    */
+  get setSection(): Prisma.SetSectionDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.setListShare`: Exposes CRUD operations for the **SetListShare** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more SetListShares
+    * const setListShares = await prisma.setListShare.findMany()
+    * ```
+    */
+  get setListShare(): Prisma.SetListShareDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -796,7 +868,11 @@ export namespace Prisma {
     Track: 'Track',
     CalendarEvent: 'CalendarEvent',
     FeedActivity: 'FeedActivity',
-    GuildInvitation: 'GuildInvitation'
+    GuildInvitation: 'GuildInvitation',
+    SetList: 'SetList',
+    SetItem: 'SetItem',
+    SetSection: 'SetSection',
+    SetListShare: 'SetListShare'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -812,7 +888,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "follow" | "tag" | "guild" | "act" | "venue" | "club" | "track" | "calendarEvent" | "feedActivity" | "guildInvitation"
+      modelProps: "user" | "follow" | "tag" | "guild" | "act" | "venue" | "club" | "track" | "calendarEvent" | "feedActivity" | "guildInvitation" | "setList" | "setItem" | "setSection" | "setListShare"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1630,6 +1706,302 @@ export namespace Prisma {
           }
         }
       }
+      SetList: {
+        payload: Prisma.$SetListPayload<ExtArgs>
+        fields: Prisma.SetListFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.SetListFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SetListPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.SetListFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SetListPayload>
+          }
+          findFirst: {
+            args: Prisma.SetListFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SetListPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.SetListFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SetListPayload>
+          }
+          findMany: {
+            args: Prisma.SetListFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SetListPayload>[]
+          }
+          create: {
+            args: Prisma.SetListCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SetListPayload>
+          }
+          createMany: {
+            args: Prisma.SetListCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.SetListCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SetListPayload>[]
+          }
+          delete: {
+            args: Prisma.SetListDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SetListPayload>
+          }
+          update: {
+            args: Prisma.SetListUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SetListPayload>
+          }
+          deleteMany: {
+            args: Prisma.SetListDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.SetListUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.SetListUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SetListPayload>[]
+          }
+          upsert: {
+            args: Prisma.SetListUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SetListPayload>
+          }
+          aggregate: {
+            args: Prisma.SetListAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateSetList>
+          }
+          groupBy: {
+            args: Prisma.SetListGroupByArgs<ExtArgs>
+            result: $Utils.Optional<SetListGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.SetListCountArgs<ExtArgs>
+            result: $Utils.Optional<SetListCountAggregateOutputType> | number
+          }
+        }
+      }
+      SetItem: {
+        payload: Prisma.$SetItemPayload<ExtArgs>
+        fields: Prisma.SetItemFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.SetItemFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SetItemPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.SetItemFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SetItemPayload>
+          }
+          findFirst: {
+            args: Prisma.SetItemFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SetItemPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.SetItemFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SetItemPayload>
+          }
+          findMany: {
+            args: Prisma.SetItemFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SetItemPayload>[]
+          }
+          create: {
+            args: Prisma.SetItemCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SetItemPayload>
+          }
+          createMany: {
+            args: Prisma.SetItemCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.SetItemCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SetItemPayload>[]
+          }
+          delete: {
+            args: Prisma.SetItemDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SetItemPayload>
+          }
+          update: {
+            args: Prisma.SetItemUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SetItemPayload>
+          }
+          deleteMany: {
+            args: Prisma.SetItemDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.SetItemUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.SetItemUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SetItemPayload>[]
+          }
+          upsert: {
+            args: Prisma.SetItemUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SetItemPayload>
+          }
+          aggregate: {
+            args: Prisma.SetItemAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateSetItem>
+          }
+          groupBy: {
+            args: Prisma.SetItemGroupByArgs<ExtArgs>
+            result: $Utils.Optional<SetItemGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.SetItemCountArgs<ExtArgs>
+            result: $Utils.Optional<SetItemCountAggregateOutputType> | number
+          }
+        }
+      }
+      SetSection: {
+        payload: Prisma.$SetSectionPayload<ExtArgs>
+        fields: Prisma.SetSectionFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.SetSectionFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SetSectionPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.SetSectionFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SetSectionPayload>
+          }
+          findFirst: {
+            args: Prisma.SetSectionFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SetSectionPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.SetSectionFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SetSectionPayload>
+          }
+          findMany: {
+            args: Prisma.SetSectionFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SetSectionPayload>[]
+          }
+          create: {
+            args: Prisma.SetSectionCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SetSectionPayload>
+          }
+          createMany: {
+            args: Prisma.SetSectionCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.SetSectionCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SetSectionPayload>[]
+          }
+          delete: {
+            args: Prisma.SetSectionDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SetSectionPayload>
+          }
+          update: {
+            args: Prisma.SetSectionUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SetSectionPayload>
+          }
+          deleteMany: {
+            args: Prisma.SetSectionDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.SetSectionUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.SetSectionUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SetSectionPayload>[]
+          }
+          upsert: {
+            args: Prisma.SetSectionUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SetSectionPayload>
+          }
+          aggregate: {
+            args: Prisma.SetSectionAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateSetSection>
+          }
+          groupBy: {
+            args: Prisma.SetSectionGroupByArgs<ExtArgs>
+            result: $Utils.Optional<SetSectionGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.SetSectionCountArgs<ExtArgs>
+            result: $Utils.Optional<SetSectionCountAggregateOutputType> | number
+          }
+        }
+      }
+      SetListShare: {
+        payload: Prisma.$SetListSharePayload<ExtArgs>
+        fields: Prisma.SetListShareFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.SetListShareFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SetListSharePayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.SetListShareFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SetListSharePayload>
+          }
+          findFirst: {
+            args: Prisma.SetListShareFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SetListSharePayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.SetListShareFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SetListSharePayload>
+          }
+          findMany: {
+            args: Prisma.SetListShareFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SetListSharePayload>[]
+          }
+          create: {
+            args: Prisma.SetListShareCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SetListSharePayload>
+          }
+          createMany: {
+            args: Prisma.SetListShareCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.SetListShareCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SetListSharePayload>[]
+          }
+          delete: {
+            args: Prisma.SetListShareDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SetListSharePayload>
+          }
+          update: {
+            args: Prisma.SetListShareUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SetListSharePayload>
+          }
+          deleteMany: {
+            args: Prisma.SetListShareDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.SetListShareUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.SetListShareUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SetListSharePayload>[]
+          }
+          upsert: {
+            args: Prisma.SetListShareUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SetListSharePayload>
+          }
+          aggregate: {
+            args: Prisma.SetListShareAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateSetListShare>
+          }
+          groupBy: {
+            args: Prisma.SetListShareGroupByArgs<ExtArgs>
+            result: $Utils.Optional<SetListShareGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.SetListShareCountArgs<ExtArgs>
+            result: $Utils.Optional<SetListShareCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -1749,6 +2121,10 @@ export namespace Prisma {
     calendarEvent?: CalendarEventOmit
     feedActivity?: FeedActivityOmit
     guildInvitation?: GuildInvitationOmit
+    setList?: SetListOmit
+    setItem?: SetItemOmit
+    setSection?: SetSectionOmit
+    setListShare?: SetListShareOmit
   }
 
   /* Types for Logging */
@@ -1837,6 +2213,8 @@ export namespace Prisma {
     feedActivities: number
     sentInvitations: number
     receivedInvitations: number
+    ownedSetLists: number
+    createdShares: number
   }
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -1848,6 +2226,8 @@ export namespace Prisma {
     feedActivities?: boolean | UserCountOutputTypeCountFeedActivitiesArgs
     sentInvitations?: boolean | UserCountOutputTypeCountSentInvitationsArgs
     receivedInvitations?: boolean | UserCountOutputTypeCountReceivedInvitationsArgs
+    ownedSetLists?: boolean | UserCountOutputTypeCountOwnedSetListsArgs
+    createdShares?: boolean | UserCountOutputTypeCountCreatedSharesArgs
   }
 
   // Custom InputTypes
@@ -1917,6 +2297,20 @@ export namespace Prisma {
     where?: GuildInvitationWhereInput
   }
 
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountOwnedSetListsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: SetListWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountCreatedSharesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: SetListShareWhereInput
+  }
+
 
   /**
    * Count Type TagCountOutputType
@@ -1966,12 +2360,14 @@ export namespace Prisma {
     members: number
     follows: number
     invitations: number
+    setLists: number
   }
 
   export type GuildCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     members?: boolean | GuildCountOutputTypeCountMembersArgs
     follows?: boolean | GuildCountOutputTypeCountFollowsArgs
     invitations?: boolean | GuildCountOutputTypeCountInvitationsArgs
+    setLists?: boolean | GuildCountOutputTypeCountSetListsArgs
   }
 
   // Custom InputTypes
@@ -2004,6 +2400,13 @@ export namespace Prisma {
    */
   export type GuildCountOutputTypeCountInvitationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: GuildInvitationWhereInput
+  }
+
+  /**
+   * GuildCountOutputType without action
+   */
+  export type GuildCountOutputTypeCountSetListsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: SetListWhereInput
   }
 
 
@@ -2075,10 +2478,12 @@ export namespace Prisma {
 
   export type TrackCountOutputType = {
     tags: number
+    setItems: number
   }
 
   export type TrackCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     tags?: boolean | TrackCountOutputTypeCountTagsArgs
+    setItems?: boolean | TrackCountOutputTypeCountSetItemsArgs
   }
 
   // Custom InputTypes
@@ -2097,6 +2502,13 @@ export namespace Prisma {
    */
   export type TrackCountOutputTypeCountTagsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: TagWhereInput
+  }
+
+  /**
+   * TrackCountOutputType without action
+   */
+  export type TrackCountOutputTypeCountSetItemsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: SetItemWhereInput
   }
 
 
@@ -2137,6 +2549,86 @@ export namespace Prisma {
    */
   export type CalendarEventCountOutputTypeCountFeedActivitiesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: FeedActivityWhereInput
+  }
+
+
+  /**
+   * Count Type SetListCountOutputType
+   */
+
+  export type SetListCountOutputType = {
+    setItems: number
+    setSections: number
+    shares: number
+  }
+
+  export type SetListCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    setItems?: boolean | SetListCountOutputTypeCountSetItemsArgs
+    setSections?: boolean | SetListCountOutputTypeCountSetSectionsArgs
+    shares?: boolean | SetListCountOutputTypeCountSharesArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * SetListCountOutputType without action
+   */
+  export type SetListCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SetListCountOutputType
+     */
+    select?: SetListCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * SetListCountOutputType without action
+   */
+  export type SetListCountOutputTypeCountSetItemsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: SetItemWhereInput
+  }
+
+  /**
+   * SetListCountOutputType without action
+   */
+  export type SetListCountOutputTypeCountSetSectionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: SetSectionWhereInput
+  }
+
+  /**
+   * SetListCountOutputType without action
+   */
+  export type SetListCountOutputTypeCountSharesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: SetListShareWhereInput
+  }
+
+
+  /**
+   * Count Type SetSectionCountOutputType
+   */
+
+  export type SetSectionCountOutputType = {
+    setItems: number
+  }
+
+  export type SetSectionCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    setItems?: boolean | SetSectionCountOutputTypeCountSetItemsArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * SetSectionCountOutputType without action
+   */
+  export type SetSectionCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SetSectionCountOutputType
+     */
+    select?: SetSectionCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * SetSectionCountOutputType without action
+   */
+  export type SetSectionCountOutputTypeCountSetItemsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: SetItemWhereInput
   }
 
 
@@ -2332,6 +2824,8 @@ export namespace Prisma {
     feedActivities?: boolean | User$feedActivitiesArgs<ExtArgs>
     sentInvitations?: boolean | User$sentInvitationsArgs<ExtArgs>
     receivedInvitations?: boolean | User$receivedInvitationsArgs<ExtArgs>
+    ownedSetLists?: boolean | User$ownedSetListsArgs<ExtArgs>
+    createdShares?: boolean | User$createdSharesArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -2375,6 +2869,8 @@ export namespace Prisma {
     feedActivities?: boolean | User$feedActivitiesArgs<ExtArgs>
     sentInvitations?: boolean | User$sentInvitationsArgs<ExtArgs>
     receivedInvitations?: boolean | User$receivedInvitationsArgs<ExtArgs>
+    ownedSetLists?: boolean | User$ownedSetListsArgs<ExtArgs>
+    createdShares?: boolean | User$createdSharesArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type UserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -2391,6 +2887,8 @@ export namespace Prisma {
       feedActivities: Prisma.$FeedActivityPayload<ExtArgs>[]
       sentInvitations: Prisma.$GuildInvitationPayload<ExtArgs>[]
       receivedInvitations: Prisma.$GuildInvitationPayload<ExtArgs>[]
+      ownedSetLists: Prisma.$SetListPayload<ExtArgs>[]
+      createdShares: Prisma.$SetListSharePayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       userId: string
@@ -2802,6 +3300,8 @@ export namespace Prisma {
     feedActivities<T extends User$feedActivitiesArgs<ExtArgs> = {}>(args?: Subset<T, User$feedActivitiesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FeedActivityPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     sentInvitations<T extends User$sentInvitationsArgs<ExtArgs> = {}>(args?: Subset<T, User$sentInvitationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$GuildInvitationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     receivedInvitations<T extends User$receivedInvitationsArgs<ExtArgs> = {}>(args?: Subset<T, User$receivedInvitationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$GuildInvitationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    ownedSetLists<T extends User$ownedSetListsArgs<ExtArgs> = {}>(args?: Subset<T, User$ownedSetListsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SetListPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    createdShares<T extends User$createdSharesArgs<ExtArgs> = {}>(args?: Subset<T, User$createdSharesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SetListSharePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -3415,6 +3915,54 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: GuildInvitationScalarFieldEnum | GuildInvitationScalarFieldEnum[]
+  }
+
+  /**
+   * User.ownedSetLists
+   */
+  export type User$ownedSetListsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SetList
+     */
+    select?: SetListSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SetList
+     */
+    omit?: SetListOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SetListInclude<ExtArgs> | null
+    where?: SetListWhereInput
+    orderBy?: SetListOrderByWithRelationInput | SetListOrderByWithRelationInput[]
+    cursor?: SetListWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: SetListScalarFieldEnum | SetListScalarFieldEnum[]
+  }
+
+  /**
+   * User.createdShares
+   */
+  export type User$createdSharesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SetListShare
+     */
+    select?: SetListShareSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SetListShare
+     */
+    omit?: SetListShareOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SetListShareInclude<ExtArgs> | null
+    where?: SetListShareWhereInput
+    orderBy?: SetListShareOrderByWithRelationInput | SetListShareOrderByWithRelationInput[]
+    cursor?: SetListShareWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: SetListShareScalarFieldEnum | SetListShareScalarFieldEnum[]
   }
 
   /**
@@ -5877,6 +6425,7 @@ export namespace Prisma {
     club?: boolean | Guild$clubArgs<ExtArgs>
     follows?: boolean | Guild$followsArgs<ExtArgs>
     invitations?: boolean | Guild$invitationsArgs<ExtArgs>
+    setLists?: boolean | Guild$setListsArgs<ExtArgs>
     _count?: boolean | GuildCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["guild"]>
 
@@ -5936,6 +6485,7 @@ export namespace Prisma {
     club?: boolean | Guild$clubArgs<ExtArgs>
     follows?: boolean | Guild$followsArgs<ExtArgs>
     invitations?: boolean | Guild$invitationsArgs<ExtArgs>
+    setLists?: boolean | Guild$setListsArgs<ExtArgs>
     _count?: boolean | GuildCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type GuildIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -5964,6 +6514,7 @@ export namespace Prisma {
       club: Prisma.$ClubPayload<ExtArgs> | null
       follows: Prisma.$FollowPayload<ExtArgs>[]
       invitations: Prisma.$GuildInvitationPayload<ExtArgs>[]
+      setLists: Prisma.$SetListPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       guildId: string
@@ -6377,6 +6928,7 @@ export namespace Prisma {
     club<T extends Guild$clubArgs<ExtArgs> = {}>(args?: Subset<T, Guild$clubArgs<ExtArgs>>): Prisma__ClubClient<$Result.GetResult<Prisma.$ClubPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     follows<T extends Guild$followsArgs<ExtArgs> = {}>(args?: Subset<T, Guild$followsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FollowPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     invitations<T extends Guild$invitationsArgs<ExtArgs> = {}>(args?: Subset<T, Guild$invitationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$GuildInvitationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    setLists<T extends Guild$setListsArgs<ExtArgs> = {}>(args?: Subset<T, Guild$setListsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SetListPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -6956,6 +7508,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: GuildInvitationScalarFieldEnum | GuildInvitationScalarFieldEnum[]
+  }
+
+  /**
+   * Guild.setLists
+   */
+  export type Guild$setListsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SetList
+     */
+    select?: SetListSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SetList
+     */
+    omit?: SetListOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SetListInclude<ExtArgs> | null
+    where?: SetListWhereInput
+    orderBy?: SetListOrderByWithRelationInput | SetListOrderByWithRelationInput[]
+    cursor?: SetListWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: SetListScalarFieldEnum | SetListScalarFieldEnum[]
   }
 
   /**
@@ -10543,6 +11119,7 @@ export namespace Prisma {
     updatedAt?: boolean
     createdBy?: boolean
     tags?: boolean | Track$tagsArgs<ExtArgs>
+    setItems?: boolean | Track$setItemsArgs<ExtArgs>
     _count?: boolean | TrackCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["track"]>
 
@@ -10588,6 +11165,7 @@ export namespace Prisma {
   export type TrackOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"trackId" | "type" | "title" | "artist" | "defaultDuration" | "defaultTuning" | "isActive" | "createdAt" | "updatedAt" | "createdBy", ExtArgs["result"]["track"]>
   export type TrackInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     tags?: boolean | Track$tagsArgs<ExtArgs>
+    setItems?: boolean | Track$setItemsArgs<ExtArgs>
     _count?: boolean | TrackCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type TrackIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -10597,6 +11175,7 @@ export namespace Prisma {
     name: "Track"
     objects: {
       tags: Prisma.$TagPayload<ExtArgs>[]
+      setItems: Prisma.$SetItemPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       trackId: string
@@ -11004,6 +11583,7 @@ export namespace Prisma {
   export interface Prisma__TrackClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     tags<T extends Track$tagsArgs<ExtArgs> = {}>(args?: Subset<T, Track$tagsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TagPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    setItems<T extends Track$setItemsArgs<ExtArgs> = {}>(args?: Subset<T, Track$setItemsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SetItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -11452,6 +12032,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: TagScalarFieldEnum | TagScalarFieldEnum[]
+  }
+
+  /**
+   * Track.setItems
+   */
+  export type Track$setItemsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SetItem
+     */
+    select?: SetItemSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SetItem
+     */
+    omit?: SetItemOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SetItemInclude<ExtArgs> | null
+    where?: SetItemWhereInput
+    orderBy?: SetItemOrderByWithRelationInput | SetItemOrderByWithRelationInput[]
+    cursor?: SetItemWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: SetItemScalarFieldEnum | SetItemScalarFieldEnum[]
   }
 
   /**
@@ -14925,6 +15529,4639 @@ export namespace Prisma {
 
 
   /**
+   * Model SetList
+   */
+
+  export type AggregateSetList = {
+    _count: SetListCountAggregateOutputType | null
+    _min: SetListMinAggregateOutputType | null
+    _max: SetListMaxAggregateOutputType | null
+  }
+
+  export type SetListMinAggregateOutputType = {
+    setListId: string | null
+    name: string | null
+    description: string | null
+    ownerId: string | null
+    guildId: string | null
+    isPrivate: boolean | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type SetListMaxAggregateOutputType = {
+    setListId: string | null
+    name: string | null
+    description: string | null
+    ownerId: string | null
+    guildId: string | null
+    isPrivate: boolean | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type SetListCountAggregateOutputType = {
+    setListId: number
+    name: number
+    description: number
+    ownerId: number
+    guildId: number
+    isPrivate: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type SetListMinAggregateInputType = {
+    setListId?: true
+    name?: true
+    description?: true
+    ownerId?: true
+    guildId?: true
+    isPrivate?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type SetListMaxAggregateInputType = {
+    setListId?: true
+    name?: true
+    description?: true
+    ownerId?: true
+    guildId?: true
+    isPrivate?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type SetListCountAggregateInputType = {
+    setListId?: true
+    name?: true
+    description?: true
+    ownerId?: true
+    guildId?: true
+    isPrivate?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type SetListAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which SetList to aggregate.
+     */
+    where?: SetListWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of SetLists to fetch.
+     */
+    orderBy?: SetListOrderByWithRelationInput | SetListOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: SetListWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` SetLists from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` SetLists.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned SetLists
+    **/
+    _count?: true | SetListCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: SetListMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: SetListMaxAggregateInputType
+  }
+
+  export type GetSetListAggregateType<T extends SetListAggregateArgs> = {
+        [P in keyof T & keyof AggregateSetList]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateSetList[P]>
+      : GetScalarType<T[P], AggregateSetList[P]>
+  }
+
+
+
+
+  export type SetListGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: SetListWhereInput
+    orderBy?: SetListOrderByWithAggregationInput | SetListOrderByWithAggregationInput[]
+    by: SetListScalarFieldEnum[] | SetListScalarFieldEnum
+    having?: SetListScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: SetListCountAggregateInputType | true
+    _min?: SetListMinAggregateInputType
+    _max?: SetListMaxAggregateInputType
+  }
+
+  export type SetListGroupByOutputType = {
+    setListId: string
+    name: string
+    description: string | null
+    ownerId: string
+    guildId: string | null
+    isPrivate: boolean
+    createdAt: Date
+    updatedAt: Date
+    _count: SetListCountAggregateOutputType | null
+    _min: SetListMinAggregateOutputType | null
+    _max: SetListMaxAggregateOutputType | null
+  }
+
+  type GetSetListGroupByPayload<T extends SetListGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<SetListGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof SetListGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], SetListGroupByOutputType[P]>
+            : GetScalarType<T[P], SetListGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type SetListSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    setListId?: boolean
+    name?: boolean
+    description?: boolean
+    ownerId?: boolean
+    guildId?: boolean
+    isPrivate?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    owner?: boolean | UserDefaultArgs<ExtArgs>
+    guild?: boolean | SetList$guildArgs<ExtArgs>
+    setItems?: boolean | SetList$setItemsArgs<ExtArgs>
+    setSections?: boolean | SetList$setSectionsArgs<ExtArgs>
+    shares?: boolean | SetList$sharesArgs<ExtArgs>
+    _count?: boolean | SetListCountOutputTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["setList"]>
+
+  export type SetListSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    setListId?: boolean
+    name?: boolean
+    description?: boolean
+    ownerId?: boolean
+    guildId?: boolean
+    isPrivate?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    owner?: boolean | UserDefaultArgs<ExtArgs>
+    guild?: boolean | SetList$guildArgs<ExtArgs>
+  }, ExtArgs["result"]["setList"]>
+
+  export type SetListSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    setListId?: boolean
+    name?: boolean
+    description?: boolean
+    ownerId?: boolean
+    guildId?: boolean
+    isPrivate?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    owner?: boolean | UserDefaultArgs<ExtArgs>
+    guild?: boolean | SetList$guildArgs<ExtArgs>
+  }, ExtArgs["result"]["setList"]>
+
+  export type SetListSelectScalar = {
+    setListId?: boolean
+    name?: boolean
+    description?: boolean
+    ownerId?: boolean
+    guildId?: boolean
+    isPrivate?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type SetListOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"setListId" | "name" | "description" | "ownerId" | "guildId" | "isPrivate" | "createdAt" | "updatedAt", ExtArgs["result"]["setList"]>
+  export type SetListInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    owner?: boolean | UserDefaultArgs<ExtArgs>
+    guild?: boolean | SetList$guildArgs<ExtArgs>
+    setItems?: boolean | SetList$setItemsArgs<ExtArgs>
+    setSections?: boolean | SetList$setSectionsArgs<ExtArgs>
+    shares?: boolean | SetList$sharesArgs<ExtArgs>
+    _count?: boolean | SetListCountOutputTypeDefaultArgs<ExtArgs>
+  }
+  export type SetListIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    owner?: boolean | UserDefaultArgs<ExtArgs>
+    guild?: boolean | SetList$guildArgs<ExtArgs>
+  }
+  export type SetListIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    owner?: boolean | UserDefaultArgs<ExtArgs>
+    guild?: boolean | SetList$guildArgs<ExtArgs>
+  }
+
+  export type $SetListPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "SetList"
+    objects: {
+      owner: Prisma.$UserPayload<ExtArgs>
+      guild: Prisma.$GuildPayload<ExtArgs> | null
+      setItems: Prisma.$SetItemPayload<ExtArgs>[]
+      setSections: Prisma.$SetSectionPayload<ExtArgs>[]
+      shares: Prisma.$SetListSharePayload<ExtArgs>[]
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      setListId: string
+      name: string
+      description: string | null
+      ownerId: string
+      guildId: string | null
+      isPrivate: boolean
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["setList"]>
+    composites: {}
+  }
+
+  type SetListGetPayload<S extends boolean | null | undefined | SetListDefaultArgs> = $Result.GetResult<Prisma.$SetListPayload, S>
+
+  type SetListCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<SetListFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: SetListCountAggregateInputType | true
+    }
+
+  export interface SetListDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['SetList'], meta: { name: 'SetList' } }
+    /**
+     * Find zero or one SetList that matches the filter.
+     * @param {SetListFindUniqueArgs} args - Arguments to find a SetList
+     * @example
+     * // Get one SetList
+     * const setList = await prisma.setList.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends SetListFindUniqueArgs>(args: SelectSubset<T, SetListFindUniqueArgs<ExtArgs>>): Prisma__SetListClient<$Result.GetResult<Prisma.$SetListPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one SetList that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {SetListFindUniqueOrThrowArgs} args - Arguments to find a SetList
+     * @example
+     * // Get one SetList
+     * const setList = await prisma.setList.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends SetListFindUniqueOrThrowArgs>(args: SelectSubset<T, SetListFindUniqueOrThrowArgs<ExtArgs>>): Prisma__SetListClient<$Result.GetResult<Prisma.$SetListPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first SetList that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SetListFindFirstArgs} args - Arguments to find a SetList
+     * @example
+     * // Get one SetList
+     * const setList = await prisma.setList.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends SetListFindFirstArgs>(args?: SelectSubset<T, SetListFindFirstArgs<ExtArgs>>): Prisma__SetListClient<$Result.GetResult<Prisma.$SetListPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first SetList that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SetListFindFirstOrThrowArgs} args - Arguments to find a SetList
+     * @example
+     * // Get one SetList
+     * const setList = await prisma.setList.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends SetListFindFirstOrThrowArgs>(args?: SelectSubset<T, SetListFindFirstOrThrowArgs<ExtArgs>>): Prisma__SetListClient<$Result.GetResult<Prisma.$SetListPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more SetLists that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SetListFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all SetLists
+     * const setLists = await prisma.setList.findMany()
+     * 
+     * // Get first 10 SetLists
+     * const setLists = await prisma.setList.findMany({ take: 10 })
+     * 
+     * // Only select the `setListId`
+     * const setListWithSetListIdOnly = await prisma.setList.findMany({ select: { setListId: true } })
+     * 
+     */
+    findMany<T extends SetListFindManyArgs>(args?: SelectSubset<T, SetListFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SetListPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a SetList.
+     * @param {SetListCreateArgs} args - Arguments to create a SetList.
+     * @example
+     * // Create one SetList
+     * const SetList = await prisma.setList.create({
+     *   data: {
+     *     // ... data to create a SetList
+     *   }
+     * })
+     * 
+     */
+    create<T extends SetListCreateArgs>(args: SelectSubset<T, SetListCreateArgs<ExtArgs>>): Prisma__SetListClient<$Result.GetResult<Prisma.$SetListPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many SetLists.
+     * @param {SetListCreateManyArgs} args - Arguments to create many SetLists.
+     * @example
+     * // Create many SetLists
+     * const setList = await prisma.setList.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends SetListCreateManyArgs>(args?: SelectSubset<T, SetListCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many SetLists and returns the data saved in the database.
+     * @param {SetListCreateManyAndReturnArgs} args - Arguments to create many SetLists.
+     * @example
+     * // Create many SetLists
+     * const setList = await prisma.setList.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many SetLists and only return the `setListId`
+     * const setListWithSetListIdOnly = await prisma.setList.createManyAndReturn({
+     *   select: { setListId: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends SetListCreateManyAndReturnArgs>(args?: SelectSubset<T, SetListCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SetListPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a SetList.
+     * @param {SetListDeleteArgs} args - Arguments to delete one SetList.
+     * @example
+     * // Delete one SetList
+     * const SetList = await prisma.setList.delete({
+     *   where: {
+     *     // ... filter to delete one SetList
+     *   }
+     * })
+     * 
+     */
+    delete<T extends SetListDeleteArgs>(args: SelectSubset<T, SetListDeleteArgs<ExtArgs>>): Prisma__SetListClient<$Result.GetResult<Prisma.$SetListPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one SetList.
+     * @param {SetListUpdateArgs} args - Arguments to update one SetList.
+     * @example
+     * // Update one SetList
+     * const setList = await prisma.setList.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends SetListUpdateArgs>(args: SelectSubset<T, SetListUpdateArgs<ExtArgs>>): Prisma__SetListClient<$Result.GetResult<Prisma.$SetListPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more SetLists.
+     * @param {SetListDeleteManyArgs} args - Arguments to filter SetLists to delete.
+     * @example
+     * // Delete a few SetLists
+     * const { count } = await prisma.setList.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends SetListDeleteManyArgs>(args?: SelectSubset<T, SetListDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more SetLists.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SetListUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many SetLists
+     * const setList = await prisma.setList.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends SetListUpdateManyArgs>(args: SelectSubset<T, SetListUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more SetLists and returns the data updated in the database.
+     * @param {SetListUpdateManyAndReturnArgs} args - Arguments to update many SetLists.
+     * @example
+     * // Update many SetLists
+     * const setList = await prisma.setList.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more SetLists and only return the `setListId`
+     * const setListWithSetListIdOnly = await prisma.setList.updateManyAndReturn({
+     *   select: { setListId: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends SetListUpdateManyAndReturnArgs>(args: SelectSubset<T, SetListUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SetListPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one SetList.
+     * @param {SetListUpsertArgs} args - Arguments to update or create a SetList.
+     * @example
+     * // Update or create a SetList
+     * const setList = await prisma.setList.upsert({
+     *   create: {
+     *     // ... data to create a SetList
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the SetList we want to update
+     *   }
+     * })
+     */
+    upsert<T extends SetListUpsertArgs>(args: SelectSubset<T, SetListUpsertArgs<ExtArgs>>): Prisma__SetListClient<$Result.GetResult<Prisma.$SetListPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of SetLists.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SetListCountArgs} args - Arguments to filter SetLists to count.
+     * @example
+     * // Count the number of SetLists
+     * const count = await prisma.setList.count({
+     *   where: {
+     *     // ... the filter for the SetLists we want to count
+     *   }
+     * })
+    **/
+    count<T extends SetListCountArgs>(
+      args?: Subset<T, SetListCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], SetListCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a SetList.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SetListAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends SetListAggregateArgs>(args: Subset<T, SetListAggregateArgs>): Prisma.PrismaPromise<GetSetListAggregateType<T>>
+
+    /**
+     * Group by SetList.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SetListGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends SetListGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: SetListGroupByArgs['orderBy'] }
+        : { orderBy?: SetListGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, SetListGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetSetListGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the SetList model
+   */
+  readonly fields: SetListFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for SetList.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__SetListClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    owner<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    guild<T extends SetList$guildArgs<ExtArgs> = {}>(args?: Subset<T, SetList$guildArgs<ExtArgs>>): Prisma__GuildClient<$Result.GetResult<Prisma.$GuildPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    setItems<T extends SetList$setItemsArgs<ExtArgs> = {}>(args?: Subset<T, SetList$setItemsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SetItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    setSections<T extends SetList$setSectionsArgs<ExtArgs> = {}>(args?: Subset<T, SetList$setSectionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SetSectionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    shares<T extends SetList$sharesArgs<ExtArgs> = {}>(args?: Subset<T, SetList$sharesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SetListSharePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the SetList model
+   */
+  interface SetListFieldRefs {
+    readonly setListId: FieldRef<"SetList", 'String'>
+    readonly name: FieldRef<"SetList", 'String'>
+    readonly description: FieldRef<"SetList", 'String'>
+    readonly ownerId: FieldRef<"SetList", 'String'>
+    readonly guildId: FieldRef<"SetList", 'String'>
+    readonly isPrivate: FieldRef<"SetList", 'Boolean'>
+    readonly createdAt: FieldRef<"SetList", 'DateTime'>
+    readonly updatedAt: FieldRef<"SetList", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * SetList findUnique
+   */
+  export type SetListFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SetList
+     */
+    select?: SetListSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SetList
+     */
+    omit?: SetListOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SetListInclude<ExtArgs> | null
+    /**
+     * Filter, which SetList to fetch.
+     */
+    where: SetListWhereUniqueInput
+  }
+
+  /**
+   * SetList findUniqueOrThrow
+   */
+  export type SetListFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SetList
+     */
+    select?: SetListSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SetList
+     */
+    omit?: SetListOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SetListInclude<ExtArgs> | null
+    /**
+     * Filter, which SetList to fetch.
+     */
+    where: SetListWhereUniqueInput
+  }
+
+  /**
+   * SetList findFirst
+   */
+  export type SetListFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SetList
+     */
+    select?: SetListSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SetList
+     */
+    omit?: SetListOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SetListInclude<ExtArgs> | null
+    /**
+     * Filter, which SetList to fetch.
+     */
+    where?: SetListWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of SetLists to fetch.
+     */
+    orderBy?: SetListOrderByWithRelationInput | SetListOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for SetLists.
+     */
+    cursor?: SetListWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` SetLists from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` SetLists.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of SetLists.
+     */
+    distinct?: SetListScalarFieldEnum | SetListScalarFieldEnum[]
+  }
+
+  /**
+   * SetList findFirstOrThrow
+   */
+  export type SetListFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SetList
+     */
+    select?: SetListSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SetList
+     */
+    omit?: SetListOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SetListInclude<ExtArgs> | null
+    /**
+     * Filter, which SetList to fetch.
+     */
+    where?: SetListWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of SetLists to fetch.
+     */
+    orderBy?: SetListOrderByWithRelationInput | SetListOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for SetLists.
+     */
+    cursor?: SetListWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` SetLists from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` SetLists.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of SetLists.
+     */
+    distinct?: SetListScalarFieldEnum | SetListScalarFieldEnum[]
+  }
+
+  /**
+   * SetList findMany
+   */
+  export type SetListFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SetList
+     */
+    select?: SetListSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SetList
+     */
+    omit?: SetListOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SetListInclude<ExtArgs> | null
+    /**
+     * Filter, which SetLists to fetch.
+     */
+    where?: SetListWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of SetLists to fetch.
+     */
+    orderBy?: SetListOrderByWithRelationInput | SetListOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing SetLists.
+     */
+    cursor?: SetListWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` SetLists from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` SetLists.
+     */
+    skip?: number
+    distinct?: SetListScalarFieldEnum | SetListScalarFieldEnum[]
+  }
+
+  /**
+   * SetList create
+   */
+  export type SetListCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SetList
+     */
+    select?: SetListSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SetList
+     */
+    omit?: SetListOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SetListInclude<ExtArgs> | null
+    /**
+     * The data needed to create a SetList.
+     */
+    data: XOR<SetListCreateInput, SetListUncheckedCreateInput>
+  }
+
+  /**
+   * SetList createMany
+   */
+  export type SetListCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many SetLists.
+     */
+    data: SetListCreateManyInput | SetListCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * SetList createManyAndReturn
+   */
+  export type SetListCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SetList
+     */
+    select?: SetListSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the SetList
+     */
+    omit?: SetListOmit<ExtArgs> | null
+    /**
+     * The data used to create many SetLists.
+     */
+    data: SetListCreateManyInput | SetListCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SetListIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * SetList update
+   */
+  export type SetListUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SetList
+     */
+    select?: SetListSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SetList
+     */
+    omit?: SetListOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SetListInclude<ExtArgs> | null
+    /**
+     * The data needed to update a SetList.
+     */
+    data: XOR<SetListUpdateInput, SetListUncheckedUpdateInput>
+    /**
+     * Choose, which SetList to update.
+     */
+    where: SetListWhereUniqueInput
+  }
+
+  /**
+   * SetList updateMany
+   */
+  export type SetListUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update SetLists.
+     */
+    data: XOR<SetListUpdateManyMutationInput, SetListUncheckedUpdateManyInput>
+    /**
+     * Filter which SetLists to update
+     */
+    where?: SetListWhereInput
+    /**
+     * Limit how many SetLists to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * SetList updateManyAndReturn
+   */
+  export type SetListUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SetList
+     */
+    select?: SetListSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the SetList
+     */
+    omit?: SetListOmit<ExtArgs> | null
+    /**
+     * The data used to update SetLists.
+     */
+    data: XOR<SetListUpdateManyMutationInput, SetListUncheckedUpdateManyInput>
+    /**
+     * Filter which SetLists to update
+     */
+    where?: SetListWhereInput
+    /**
+     * Limit how many SetLists to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SetListIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * SetList upsert
+   */
+  export type SetListUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SetList
+     */
+    select?: SetListSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SetList
+     */
+    omit?: SetListOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SetListInclude<ExtArgs> | null
+    /**
+     * The filter to search for the SetList to update in case it exists.
+     */
+    where: SetListWhereUniqueInput
+    /**
+     * In case the SetList found by the `where` argument doesn't exist, create a new SetList with this data.
+     */
+    create: XOR<SetListCreateInput, SetListUncheckedCreateInput>
+    /**
+     * In case the SetList was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<SetListUpdateInput, SetListUncheckedUpdateInput>
+  }
+
+  /**
+   * SetList delete
+   */
+  export type SetListDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SetList
+     */
+    select?: SetListSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SetList
+     */
+    omit?: SetListOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SetListInclude<ExtArgs> | null
+    /**
+     * Filter which SetList to delete.
+     */
+    where: SetListWhereUniqueInput
+  }
+
+  /**
+   * SetList deleteMany
+   */
+  export type SetListDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which SetLists to delete
+     */
+    where?: SetListWhereInput
+    /**
+     * Limit how many SetLists to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * SetList.guild
+   */
+  export type SetList$guildArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Guild
+     */
+    select?: GuildSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Guild
+     */
+    omit?: GuildOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GuildInclude<ExtArgs> | null
+    where?: GuildWhereInput
+  }
+
+  /**
+   * SetList.setItems
+   */
+  export type SetList$setItemsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SetItem
+     */
+    select?: SetItemSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SetItem
+     */
+    omit?: SetItemOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SetItemInclude<ExtArgs> | null
+    where?: SetItemWhereInput
+    orderBy?: SetItemOrderByWithRelationInput | SetItemOrderByWithRelationInput[]
+    cursor?: SetItemWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: SetItemScalarFieldEnum | SetItemScalarFieldEnum[]
+  }
+
+  /**
+   * SetList.setSections
+   */
+  export type SetList$setSectionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SetSection
+     */
+    select?: SetSectionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SetSection
+     */
+    omit?: SetSectionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SetSectionInclude<ExtArgs> | null
+    where?: SetSectionWhereInput
+    orderBy?: SetSectionOrderByWithRelationInput | SetSectionOrderByWithRelationInput[]
+    cursor?: SetSectionWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: SetSectionScalarFieldEnum | SetSectionScalarFieldEnum[]
+  }
+
+  /**
+   * SetList.shares
+   */
+  export type SetList$sharesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SetListShare
+     */
+    select?: SetListShareSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SetListShare
+     */
+    omit?: SetListShareOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SetListShareInclude<ExtArgs> | null
+    where?: SetListShareWhereInput
+    orderBy?: SetListShareOrderByWithRelationInput | SetListShareOrderByWithRelationInput[]
+    cursor?: SetListShareWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: SetListShareScalarFieldEnum | SetListShareScalarFieldEnum[]
+  }
+
+  /**
+   * SetList without action
+   */
+  export type SetListDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SetList
+     */
+    select?: SetListSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SetList
+     */
+    omit?: SetListOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SetListInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model SetItem
+   */
+
+  export type AggregateSetItem = {
+    _count: SetItemCountAggregateOutputType | null
+    _avg: SetItemAvgAggregateOutputType | null
+    _sum: SetItemSumAggregateOutputType | null
+    _min: SetItemMinAggregateOutputType | null
+    _max: SetItemMaxAggregateOutputType | null
+  }
+
+  export type SetItemAvgAggregateOutputType = {
+    position: number | null
+    customDuration: number | null
+  }
+
+  export type SetItemSumAggregateOutputType = {
+    position: number | null
+    customDuration: number | null
+  }
+
+  export type SetItemMinAggregateOutputType = {
+    setItemId: string | null
+    setListId: string | null
+    trackId: string | null
+    position: number | null
+    customTuning: string | null
+    customNotes: string | null
+    customDuration: number | null
+    sectionId: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type SetItemMaxAggregateOutputType = {
+    setItemId: string | null
+    setListId: string | null
+    trackId: string | null
+    position: number | null
+    customTuning: string | null
+    customNotes: string | null
+    customDuration: number | null
+    sectionId: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type SetItemCountAggregateOutputType = {
+    setItemId: number
+    setListId: number
+    trackId: number
+    position: number
+    customTuning: number
+    customNotes: number
+    customDuration: number
+    sectionId: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type SetItemAvgAggregateInputType = {
+    position?: true
+    customDuration?: true
+  }
+
+  export type SetItemSumAggregateInputType = {
+    position?: true
+    customDuration?: true
+  }
+
+  export type SetItemMinAggregateInputType = {
+    setItemId?: true
+    setListId?: true
+    trackId?: true
+    position?: true
+    customTuning?: true
+    customNotes?: true
+    customDuration?: true
+    sectionId?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type SetItemMaxAggregateInputType = {
+    setItemId?: true
+    setListId?: true
+    trackId?: true
+    position?: true
+    customTuning?: true
+    customNotes?: true
+    customDuration?: true
+    sectionId?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type SetItemCountAggregateInputType = {
+    setItemId?: true
+    setListId?: true
+    trackId?: true
+    position?: true
+    customTuning?: true
+    customNotes?: true
+    customDuration?: true
+    sectionId?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type SetItemAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which SetItem to aggregate.
+     */
+    where?: SetItemWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of SetItems to fetch.
+     */
+    orderBy?: SetItemOrderByWithRelationInput | SetItemOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: SetItemWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` SetItems from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` SetItems.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned SetItems
+    **/
+    _count?: true | SetItemCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: SetItemAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: SetItemSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: SetItemMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: SetItemMaxAggregateInputType
+  }
+
+  export type GetSetItemAggregateType<T extends SetItemAggregateArgs> = {
+        [P in keyof T & keyof AggregateSetItem]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateSetItem[P]>
+      : GetScalarType<T[P], AggregateSetItem[P]>
+  }
+
+
+
+
+  export type SetItemGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: SetItemWhereInput
+    orderBy?: SetItemOrderByWithAggregationInput | SetItemOrderByWithAggregationInput[]
+    by: SetItemScalarFieldEnum[] | SetItemScalarFieldEnum
+    having?: SetItemScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: SetItemCountAggregateInputType | true
+    _avg?: SetItemAvgAggregateInputType
+    _sum?: SetItemSumAggregateInputType
+    _min?: SetItemMinAggregateInputType
+    _max?: SetItemMaxAggregateInputType
+  }
+
+  export type SetItemGroupByOutputType = {
+    setItemId: string
+    setListId: string
+    trackId: string
+    position: number
+    customTuning: string | null
+    customNotes: string | null
+    customDuration: number | null
+    sectionId: string | null
+    createdAt: Date
+    updatedAt: Date
+    _count: SetItemCountAggregateOutputType | null
+    _avg: SetItemAvgAggregateOutputType | null
+    _sum: SetItemSumAggregateOutputType | null
+    _min: SetItemMinAggregateOutputType | null
+    _max: SetItemMaxAggregateOutputType | null
+  }
+
+  type GetSetItemGroupByPayload<T extends SetItemGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<SetItemGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof SetItemGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], SetItemGroupByOutputType[P]>
+            : GetScalarType<T[P], SetItemGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type SetItemSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    setItemId?: boolean
+    setListId?: boolean
+    trackId?: boolean
+    position?: boolean
+    customTuning?: boolean
+    customNotes?: boolean
+    customDuration?: boolean
+    sectionId?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    setList?: boolean | SetListDefaultArgs<ExtArgs>
+    track?: boolean | TrackDefaultArgs<ExtArgs>
+    section?: boolean | SetItem$sectionArgs<ExtArgs>
+  }, ExtArgs["result"]["setItem"]>
+
+  export type SetItemSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    setItemId?: boolean
+    setListId?: boolean
+    trackId?: boolean
+    position?: boolean
+    customTuning?: boolean
+    customNotes?: boolean
+    customDuration?: boolean
+    sectionId?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    setList?: boolean | SetListDefaultArgs<ExtArgs>
+    track?: boolean | TrackDefaultArgs<ExtArgs>
+    section?: boolean | SetItem$sectionArgs<ExtArgs>
+  }, ExtArgs["result"]["setItem"]>
+
+  export type SetItemSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    setItemId?: boolean
+    setListId?: boolean
+    trackId?: boolean
+    position?: boolean
+    customTuning?: boolean
+    customNotes?: boolean
+    customDuration?: boolean
+    sectionId?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    setList?: boolean | SetListDefaultArgs<ExtArgs>
+    track?: boolean | TrackDefaultArgs<ExtArgs>
+    section?: boolean | SetItem$sectionArgs<ExtArgs>
+  }, ExtArgs["result"]["setItem"]>
+
+  export type SetItemSelectScalar = {
+    setItemId?: boolean
+    setListId?: boolean
+    trackId?: boolean
+    position?: boolean
+    customTuning?: boolean
+    customNotes?: boolean
+    customDuration?: boolean
+    sectionId?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type SetItemOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"setItemId" | "setListId" | "trackId" | "position" | "customTuning" | "customNotes" | "customDuration" | "sectionId" | "createdAt" | "updatedAt", ExtArgs["result"]["setItem"]>
+  export type SetItemInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    setList?: boolean | SetListDefaultArgs<ExtArgs>
+    track?: boolean | TrackDefaultArgs<ExtArgs>
+    section?: boolean | SetItem$sectionArgs<ExtArgs>
+  }
+  export type SetItemIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    setList?: boolean | SetListDefaultArgs<ExtArgs>
+    track?: boolean | TrackDefaultArgs<ExtArgs>
+    section?: boolean | SetItem$sectionArgs<ExtArgs>
+  }
+  export type SetItemIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    setList?: boolean | SetListDefaultArgs<ExtArgs>
+    track?: boolean | TrackDefaultArgs<ExtArgs>
+    section?: boolean | SetItem$sectionArgs<ExtArgs>
+  }
+
+  export type $SetItemPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "SetItem"
+    objects: {
+      setList: Prisma.$SetListPayload<ExtArgs>
+      track: Prisma.$TrackPayload<ExtArgs>
+      section: Prisma.$SetSectionPayload<ExtArgs> | null
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      setItemId: string
+      setListId: string
+      trackId: string
+      position: number
+      customTuning: string | null
+      customNotes: string | null
+      customDuration: number | null
+      sectionId: string | null
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["setItem"]>
+    composites: {}
+  }
+
+  type SetItemGetPayload<S extends boolean | null | undefined | SetItemDefaultArgs> = $Result.GetResult<Prisma.$SetItemPayload, S>
+
+  type SetItemCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<SetItemFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: SetItemCountAggregateInputType | true
+    }
+
+  export interface SetItemDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['SetItem'], meta: { name: 'SetItem' } }
+    /**
+     * Find zero or one SetItem that matches the filter.
+     * @param {SetItemFindUniqueArgs} args - Arguments to find a SetItem
+     * @example
+     * // Get one SetItem
+     * const setItem = await prisma.setItem.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends SetItemFindUniqueArgs>(args: SelectSubset<T, SetItemFindUniqueArgs<ExtArgs>>): Prisma__SetItemClient<$Result.GetResult<Prisma.$SetItemPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one SetItem that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {SetItemFindUniqueOrThrowArgs} args - Arguments to find a SetItem
+     * @example
+     * // Get one SetItem
+     * const setItem = await prisma.setItem.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends SetItemFindUniqueOrThrowArgs>(args: SelectSubset<T, SetItemFindUniqueOrThrowArgs<ExtArgs>>): Prisma__SetItemClient<$Result.GetResult<Prisma.$SetItemPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first SetItem that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SetItemFindFirstArgs} args - Arguments to find a SetItem
+     * @example
+     * // Get one SetItem
+     * const setItem = await prisma.setItem.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends SetItemFindFirstArgs>(args?: SelectSubset<T, SetItemFindFirstArgs<ExtArgs>>): Prisma__SetItemClient<$Result.GetResult<Prisma.$SetItemPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first SetItem that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SetItemFindFirstOrThrowArgs} args - Arguments to find a SetItem
+     * @example
+     * // Get one SetItem
+     * const setItem = await prisma.setItem.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends SetItemFindFirstOrThrowArgs>(args?: SelectSubset<T, SetItemFindFirstOrThrowArgs<ExtArgs>>): Prisma__SetItemClient<$Result.GetResult<Prisma.$SetItemPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more SetItems that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SetItemFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all SetItems
+     * const setItems = await prisma.setItem.findMany()
+     * 
+     * // Get first 10 SetItems
+     * const setItems = await prisma.setItem.findMany({ take: 10 })
+     * 
+     * // Only select the `setItemId`
+     * const setItemWithSetItemIdOnly = await prisma.setItem.findMany({ select: { setItemId: true } })
+     * 
+     */
+    findMany<T extends SetItemFindManyArgs>(args?: SelectSubset<T, SetItemFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SetItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a SetItem.
+     * @param {SetItemCreateArgs} args - Arguments to create a SetItem.
+     * @example
+     * // Create one SetItem
+     * const SetItem = await prisma.setItem.create({
+     *   data: {
+     *     // ... data to create a SetItem
+     *   }
+     * })
+     * 
+     */
+    create<T extends SetItemCreateArgs>(args: SelectSubset<T, SetItemCreateArgs<ExtArgs>>): Prisma__SetItemClient<$Result.GetResult<Prisma.$SetItemPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many SetItems.
+     * @param {SetItemCreateManyArgs} args - Arguments to create many SetItems.
+     * @example
+     * // Create many SetItems
+     * const setItem = await prisma.setItem.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends SetItemCreateManyArgs>(args?: SelectSubset<T, SetItemCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many SetItems and returns the data saved in the database.
+     * @param {SetItemCreateManyAndReturnArgs} args - Arguments to create many SetItems.
+     * @example
+     * // Create many SetItems
+     * const setItem = await prisma.setItem.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many SetItems and only return the `setItemId`
+     * const setItemWithSetItemIdOnly = await prisma.setItem.createManyAndReturn({
+     *   select: { setItemId: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends SetItemCreateManyAndReturnArgs>(args?: SelectSubset<T, SetItemCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SetItemPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a SetItem.
+     * @param {SetItemDeleteArgs} args - Arguments to delete one SetItem.
+     * @example
+     * // Delete one SetItem
+     * const SetItem = await prisma.setItem.delete({
+     *   where: {
+     *     // ... filter to delete one SetItem
+     *   }
+     * })
+     * 
+     */
+    delete<T extends SetItemDeleteArgs>(args: SelectSubset<T, SetItemDeleteArgs<ExtArgs>>): Prisma__SetItemClient<$Result.GetResult<Prisma.$SetItemPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one SetItem.
+     * @param {SetItemUpdateArgs} args - Arguments to update one SetItem.
+     * @example
+     * // Update one SetItem
+     * const setItem = await prisma.setItem.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends SetItemUpdateArgs>(args: SelectSubset<T, SetItemUpdateArgs<ExtArgs>>): Prisma__SetItemClient<$Result.GetResult<Prisma.$SetItemPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more SetItems.
+     * @param {SetItemDeleteManyArgs} args - Arguments to filter SetItems to delete.
+     * @example
+     * // Delete a few SetItems
+     * const { count } = await prisma.setItem.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends SetItemDeleteManyArgs>(args?: SelectSubset<T, SetItemDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more SetItems.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SetItemUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many SetItems
+     * const setItem = await prisma.setItem.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends SetItemUpdateManyArgs>(args: SelectSubset<T, SetItemUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more SetItems and returns the data updated in the database.
+     * @param {SetItemUpdateManyAndReturnArgs} args - Arguments to update many SetItems.
+     * @example
+     * // Update many SetItems
+     * const setItem = await prisma.setItem.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more SetItems and only return the `setItemId`
+     * const setItemWithSetItemIdOnly = await prisma.setItem.updateManyAndReturn({
+     *   select: { setItemId: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends SetItemUpdateManyAndReturnArgs>(args: SelectSubset<T, SetItemUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SetItemPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one SetItem.
+     * @param {SetItemUpsertArgs} args - Arguments to update or create a SetItem.
+     * @example
+     * // Update or create a SetItem
+     * const setItem = await prisma.setItem.upsert({
+     *   create: {
+     *     // ... data to create a SetItem
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the SetItem we want to update
+     *   }
+     * })
+     */
+    upsert<T extends SetItemUpsertArgs>(args: SelectSubset<T, SetItemUpsertArgs<ExtArgs>>): Prisma__SetItemClient<$Result.GetResult<Prisma.$SetItemPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of SetItems.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SetItemCountArgs} args - Arguments to filter SetItems to count.
+     * @example
+     * // Count the number of SetItems
+     * const count = await prisma.setItem.count({
+     *   where: {
+     *     // ... the filter for the SetItems we want to count
+     *   }
+     * })
+    **/
+    count<T extends SetItemCountArgs>(
+      args?: Subset<T, SetItemCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], SetItemCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a SetItem.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SetItemAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends SetItemAggregateArgs>(args: Subset<T, SetItemAggregateArgs>): Prisma.PrismaPromise<GetSetItemAggregateType<T>>
+
+    /**
+     * Group by SetItem.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SetItemGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends SetItemGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: SetItemGroupByArgs['orderBy'] }
+        : { orderBy?: SetItemGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, SetItemGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetSetItemGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the SetItem model
+   */
+  readonly fields: SetItemFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for SetItem.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__SetItemClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    setList<T extends SetListDefaultArgs<ExtArgs> = {}>(args?: Subset<T, SetListDefaultArgs<ExtArgs>>): Prisma__SetListClient<$Result.GetResult<Prisma.$SetListPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    track<T extends TrackDefaultArgs<ExtArgs> = {}>(args?: Subset<T, TrackDefaultArgs<ExtArgs>>): Prisma__TrackClient<$Result.GetResult<Prisma.$TrackPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    section<T extends SetItem$sectionArgs<ExtArgs> = {}>(args?: Subset<T, SetItem$sectionArgs<ExtArgs>>): Prisma__SetSectionClient<$Result.GetResult<Prisma.$SetSectionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the SetItem model
+   */
+  interface SetItemFieldRefs {
+    readonly setItemId: FieldRef<"SetItem", 'String'>
+    readonly setListId: FieldRef<"SetItem", 'String'>
+    readonly trackId: FieldRef<"SetItem", 'String'>
+    readonly position: FieldRef<"SetItem", 'Int'>
+    readonly customTuning: FieldRef<"SetItem", 'String'>
+    readonly customNotes: FieldRef<"SetItem", 'String'>
+    readonly customDuration: FieldRef<"SetItem", 'Int'>
+    readonly sectionId: FieldRef<"SetItem", 'String'>
+    readonly createdAt: FieldRef<"SetItem", 'DateTime'>
+    readonly updatedAt: FieldRef<"SetItem", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * SetItem findUnique
+   */
+  export type SetItemFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SetItem
+     */
+    select?: SetItemSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SetItem
+     */
+    omit?: SetItemOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SetItemInclude<ExtArgs> | null
+    /**
+     * Filter, which SetItem to fetch.
+     */
+    where: SetItemWhereUniqueInput
+  }
+
+  /**
+   * SetItem findUniqueOrThrow
+   */
+  export type SetItemFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SetItem
+     */
+    select?: SetItemSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SetItem
+     */
+    omit?: SetItemOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SetItemInclude<ExtArgs> | null
+    /**
+     * Filter, which SetItem to fetch.
+     */
+    where: SetItemWhereUniqueInput
+  }
+
+  /**
+   * SetItem findFirst
+   */
+  export type SetItemFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SetItem
+     */
+    select?: SetItemSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SetItem
+     */
+    omit?: SetItemOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SetItemInclude<ExtArgs> | null
+    /**
+     * Filter, which SetItem to fetch.
+     */
+    where?: SetItemWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of SetItems to fetch.
+     */
+    orderBy?: SetItemOrderByWithRelationInput | SetItemOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for SetItems.
+     */
+    cursor?: SetItemWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` SetItems from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` SetItems.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of SetItems.
+     */
+    distinct?: SetItemScalarFieldEnum | SetItemScalarFieldEnum[]
+  }
+
+  /**
+   * SetItem findFirstOrThrow
+   */
+  export type SetItemFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SetItem
+     */
+    select?: SetItemSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SetItem
+     */
+    omit?: SetItemOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SetItemInclude<ExtArgs> | null
+    /**
+     * Filter, which SetItem to fetch.
+     */
+    where?: SetItemWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of SetItems to fetch.
+     */
+    orderBy?: SetItemOrderByWithRelationInput | SetItemOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for SetItems.
+     */
+    cursor?: SetItemWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` SetItems from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` SetItems.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of SetItems.
+     */
+    distinct?: SetItemScalarFieldEnum | SetItemScalarFieldEnum[]
+  }
+
+  /**
+   * SetItem findMany
+   */
+  export type SetItemFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SetItem
+     */
+    select?: SetItemSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SetItem
+     */
+    omit?: SetItemOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SetItemInclude<ExtArgs> | null
+    /**
+     * Filter, which SetItems to fetch.
+     */
+    where?: SetItemWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of SetItems to fetch.
+     */
+    orderBy?: SetItemOrderByWithRelationInput | SetItemOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing SetItems.
+     */
+    cursor?: SetItemWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` SetItems from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` SetItems.
+     */
+    skip?: number
+    distinct?: SetItemScalarFieldEnum | SetItemScalarFieldEnum[]
+  }
+
+  /**
+   * SetItem create
+   */
+  export type SetItemCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SetItem
+     */
+    select?: SetItemSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SetItem
+     */
+    omit?: SetItemOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SetItemInclude<ExtArgs> | null
+    /**
+     * The data needed to create a SetItem.
+     */
+    data: XOR<SetItemCreateInput, SetItemUncheckedCreateInput>
+  }
+
+  /**
+   * SetItem createMany
+   */
+  export type SetItemCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many SetItems.
+     */
+    data: SetItemCreateManyInput | SetItemCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * SetItem createManyAndReturn
+   */
+  export type SetItemCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SetItem
+     */
+    select?: SetItemSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the SetItem
+     */
+    omit?: SetItemOmit<ExtArgs> | null
+    /**
+     * The data used to create many SetItems.
+     */
+    data: SetItemCreateManyInput | SetItemCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SetItemIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * SetItem update
+   */
+  export type SetItemUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SetItem
+     */
+    select?: SetItemSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SetItem
+     */
+    omit?: SetItemOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SetItemInclude<ExtArgs> | null
+    /**
+     * The data needed to update a SetItem.
+     */
+    data: XOR<SetItemUpdateInput, SetItemUncheckedUpdateInput>
+    /**
+     * Choose, which SetItem to update.
+     */
+    where: SetItemWhereUniqueInput
+  }
+
+  /**
+   * SetItem updateMany
+   */
+  export type SetItemUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update SetItems.
+     */
+    data: XOR<SetItemUpdateManyMutationInput, SetItemUncheckedUpdateManyInput>
+    /**
+     * Filter which SetItems to update
+     */
+    where?: SetItemWhereInput
+    /**
+     * Limit how many SetItems to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * SetItem updateManyAndReturn
+   */
+  export type SetItemUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SetItem
+     */
+    select?: SetItemSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the SetItem
+     */
+    omit?: SetItemOmit<ExtArgs> | null
+    /**
+     * The data used to update SetItems.
+     */
+    data: XOR<SetItemUpdateManyMutationInput, SetItemUncheckedUpdateManyInput>
+    /**
+     * Filter which SetItems to update
+     */
+    where?: SetItemWhereInput
+    /**
+     * Limit how many SetItems to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SetItemIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * SetItem upsert
+   */
+  export type SetItemUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SetItem
+     */
+    select?: SetItemSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SetItem
+     */
+    omit?: SetItemOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SetItemInclude<ExtArgs> | null
+    /**
+     * The filter to search for the SetItem to update in case it exists.
+     */
+    where: SetItemWhereUniqueInput
+    /**
+     * In case the SetItem found by the `where` argument doesn't exist, create a new SetItem with this data.
+     */
+    create: XOR<SetItemCreateInput, SetItemUncheckedCreateInput>
+    /**
+     * In case the SetItem was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<SetItemUpdateInput, SetItemUncheckedUpdateInput>
+  }
+
+  /**
+   * SetItem delete
+   */
+  export type SetItemDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SetItem
+     */
+    select?: SetItemSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SetItem
+     */
+    omit?: SetItemOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SetItemInclude<ExtArgs> | null
+    /**
+     * Filter which SetItem to delete.
+     */
+    where: SetItemWhereUniqueInput
+  }
+
+  /**
+   * SetItem deleteMany
+   */
+  export type SetItemDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which SetItems to delete
+     */
+    where?: SetItemWhereInput
+    /**
+     * Limit how many SetItems to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * SetItem.section
+   */
+  export type SetItem$sectionArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SetSection
+     */
+    select?: SetSectionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SetSection
+     */
+    omit?: SetSectionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SetSectionInclude<ExtArgs> | null
+    where?: SetSectionWhereInput
+  }
+
+  /**
+   * SetItem without action
+   */
+  export type SetItemDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SetItem
+     */
+    select?: SetItemSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SetItem
+     */
+    omit?: SetItemOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SetItemInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model SetSection
+   */
+
+  export type AggregateSetSection = {
+    _count: SetSectionCountAggregateOutputType | null
+    _avg: SetSectionAvgAggregateOutputType | null
+    _sum: SetSectionSumAggregateOutputType | null
+    _min: SetSectionMinAggregateOutputType | null
+    _max: SetSectionMaxAggregateOutputType | null
+  }
+
+  export type SetSectionAvgAggregateOutputType = {
+    position: number | null
+  }
+
+  export type SetSectionSumAggregateOutputType = {
+    position: number | null
+  }
+
+  export type SetSectionMinAggregateOutputType = {
+    sectionId: string | null
+    setListId: string | null
+    name: string | null
+    position: number | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type SetSectionMaxAggregateOutputType = {
+    sectionId: string | null
+    setListId: string | null
+    name: string | null
+    position: number | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type SetSectionCountAggregateOutputType = {
+    sectionId: number
+    setListId: number
+    name: number
+    position: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type SetSectionAvgAggregateInputType = {
+    position?: true
+  }
+
+  export type SetSectionSumAggregateInputType = {
+    position?: true
+  }
+
+  export type SetSectionMinAggregateInputType = {
+    sectionId?: true
+    setListId?: true
+    name?: true
+    position?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type SetSectionMaxAggregateInputType = {
+    sectionId?: true
+    setListId?: true
+    name?: true
+    position?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type SetSectionCountAggregateInputType = {
+    sectionId?: true
+    setListId?: true
+    name?: true
+    position?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type SetSectionAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which SetSection to aggregate.
+     */
+    where?: SetSectionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of SetSections to fetch.
+     */
+    orderBy?: SetSectionOrderByWithRelationInput | SetSectionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: SetSectionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` SetSections from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` SetSections.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned SetSections
+    **/
+    _count?: true | SetSectionCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: SetSectionAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: SetSectionSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: SetSectionMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: SetSectionMaxAggregateInputType
+  }
+
+  export type GetSetSectionAggregateType<T extends SetSectionAggregateArgs> = {
+        [P in keyof T & keyof AggregateSetSection]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateSetSection[P]>
+      : GetScalarType<T[P], AggregateSetSection[P]>
+  }
+
+
+
+
+  export type SetSectionGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: SetSectionWhereInput
+    orderBy?: SetSectionOrderByWithAggregationInput | SetSectionOrderByWithAggregationInput[]
+    by: SetSectionScalarFieldEnum[] | SetSectionScalarFieldEnum
+    having?: SetSectionScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: SetSectionCountAggregateInputType | true
+    _avg?: SetSectionAvgAggregateInputType
+    _sum?: SetSectionSumAggregateInputType
+    _min?: SetSectionMinAggregateInputType
+    _max?: SetSectionMaxAggregateInputType
+  }
+
+  export type SetSectionGroupByOutputType = {
+    sectionId: string
+    setListId: string
+    name: string
+    position: number
+    createdAt: Date
+    updatedAt: Date
+    _count: SetSectionCountAggregateOutputType | null
+    _avg: SetSectionAvgAggregateOutputType | null
+    _sum: SetSectionSumAggregateOutputType | null
+    _min: SetSectionMinAggregateOutputType | null
+    _max: SetSectionMaxAggregateOutputType | null
+  }
+
+  type GetSetSectionGroupByPayload<T extends SetSectionGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<SetSectionGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof SetSectionGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], SetSectionGroupByOutputType[P]>
+            : GetScalarType<T[P], SetSectionGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type SetSectionSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    sectionId?: boolean
+    setListId?: boolean
+    name?: boolean
+    position?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    setList?: boolean | SetListDefaultArgs<ExtArgs>
+    setItems?: boolean | SetSection$setItemsArgs<ExtArgs>
+    _count?: boolean | SetSectionCountOutputTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["setSection"]>
+
+  export type SetSectionSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    sectionId?: boolean
+    setListId?: boolean
+    name?: boolean
+    position?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    setList?: boolean | SetListDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["setSection"]>
+
+  export type SetSectionSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    sectionId?: boolean
+    setListId?: boolean
+    name?: boolean
+    position?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    setList?: boolean | SetListDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["setSection"]>
+
+  export type SetSectionSelectScalar = {
+    sectionId?: boolean
+    setListId?: boolean
+    name?: boolean
+    position?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type SetSectionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"sectionId" | "setListId" | "name" | "position" | "createdAt" | "updatedAt", ExtArgs["result"]["setSection"]>
+  export type SetSectionInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    setList?: boolean | SetListDefaultArgs<ExtArgs>
+    setItems?: boolean | SetSection$setItemsArgs<ExtArgs>
+    _count?: boolean | SetSectionCountOutputTypeDefaultArgs<ExtArgs>
+  }
+  export type SetSectionIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    setList?: boolean | SetListDefaultArgs<ExtArgs>
+  }
+  export type SetSectionIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    setList?: boolean | SetListDefaultArgs<ExtArgs>
+  }
+
+  export type $SetSectionPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "SetSection"
+    objects: {
+      setList: Prisma.$SetListPayload<ExtArgs>
+      setItems: Prisma.$SetItemPayload<ExtArgs>[]
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      sectionId: string
+      setListId: string
+      name: string
+      position: number
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["setSection"]>
+    composites: {}
+  }
+
+  type SetSectionGetPayload<S extends boolean | null | undefined | SetSectionDefaultArgs> = $Result.GetResult<Prisma.$SetSectionPayload, S>
+
+  type SetSectionCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<SetSectionFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: SetSectionCountAggregateInputType | true
+    }
+
+  export interface SetSectionDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['SetSection'], meta: { name: 'SetSection' } }
+    /**
+     * Find zero or one SetSection that matches the filter.
+     * @param {SetSectionFindUniqueArgs} args - Arguments to find a SetSection
+     * @example
+     * // Get one SetSection
+     * const setSection = await prisma.setSection.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends SetSectionFindUniqueArgs>(args: SelectSubset<T, SetSectionFindUniqueArgs<ExtArgs>>): Prisma__SetSectionClient<$Result.GetResult<Prisma.$SetSectionPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one SetSection that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {SetSectionFindUniqueOrThrowArgs} args - Arguments to find a SetSection
+     * @example
+     * // Get one SetSection
+     * const setSection = await prisma.setSection.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends SetSectionFindUniqueOrThrowArgs>(args: SelectSubset<T, SetSectionFindUniqueOrThrowArgs<ExtArgs>>): Prisma__SetSectionClient<$Result.GetResult<Prisma.$SetSectionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first SetSection that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SetSectionFindFirstArgs} args - Arguments to find a SetSection
+     * @example
+     * // Get one SetSection
+     * const setSection = await prisma.setSection.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends SetSectionFindFirstArgs>(args?: SelectSubset<T, SetSectionFindFirstArgs<ExtArgs>>): Prisma__SetSectionClient<$Result.GetResult<Prisma.$SetSectionPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first SetSection that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SetSectionFindFirstOrThrowArgs} args - Arguments to find a SetSection
+     * @example
+     * // Get one SetSection
+     * const setSection = await prisma.setSection.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends SetSectionFindFirstOrThrowArgs>(args?: SelectSubset<T, SetSectionFindFirstOrThrowArgs<ExtArgs>>): Prisma__SetSectionClient<$Result.GetResult<Prisma.$SetSectionPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more SetSections that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SetSectionFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all SetSections
+     * const setSections = await prisma.setSection.findMany()
+     * 
+     * // Get first 10 SetSections
+     * const setSections = await prisma.setSection.findMany({ take: 10 })
+     * 
+     * // Only select the `sectionId`
+     * const setSectionWithSectionIdOnly = await prisma.setSection.findMany({ select: { sectionId: true } })
+     * 
+     */
+    findMany<T extends SetSectionFindManyArgs>(args?: SelectSubset<T, SetSectionFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SetSectionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a SetSection.
+     * @param {SetSectionCreateArgs} args - Arguments to create a SetSection.
+     * @example
+     * // Create one SetSection
+     * const SetSection = await prisma.setSection.create({
+     *   data: {
+     *     // ... data to create a SetSection
+     *   }
+     * })
+     * 
+     */
+    create<T extends SetSectionCreateArgs>(args: SelectSubset<T, SetSectionCreateArgs<ExtArgs>>): Prisma__SetSectionClient<$Result.GetResult<Prisma.$SetSectionPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many SetSections.
+     * @param {SetSectionCreateManyArgs} args - Arguments to create many SetSections.
+     * @example
+     * // Create many SetSections
+     * const setSection = await prisma.setSection.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends SetSectionCreateManyArgs>(args?: SelectSubset<T, SetSectionCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many SetSections and returns the data saved in the database.
+     * @param {SetSectionCreateManyAndReturnArgs} args - Arguments to create many SetSections.
+     * @example
+     * // Create many SetSections
+     * const setSection = await prisma.setSection.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many SetSections and only return the `sectionId`
+     * const setSectionWithSectionIdOnly = await prisma.setSection.createManyAndReturn({
+     *   select: { sectionId: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends SetSectionCreateManyAndReturnArgs>(args?: SelectSubset<T, SetSectionCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SetSectionPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a SetSection.
+     * @param {SetSectionDeleteArgs} args - Arguments to delete one SetSection.
+     * @example
+     * // Delete one SetSection
+     * const SetSection = await prisma.setSection.delete({
+     *   where: {
+     *     // ... filter to delete one SetSection
+     *   }
+     * })
+     * 
+     */
+    delete<T extends SetSectionDeleteArgs>(args: SelectSubset<T, SetSectionDeleteArgs<ExtArgs>>): Prisma__SetSectionClient<$Result.GetResult<Prisma.$SetSectionPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one SetSection.
+     * @param {SetSectionUpdateArgs} args - Arguments to update one SetSection.
+     * @example
+     * // Update one SetSection
+     * const setSection = await prisma.setSection.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends SetSectionUpdateArgs>(args: SelectSubset<T, SetSectionUpdateArgs<ExtArgs>>): Prisma__SetSectionClient<$Result.GetResult<Prisma.$SetSectionPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more SetSections.
+     * @param {SetSectionDeleteManyArgs} args - Arguments to filter SetSections to delete.
+     * @example
+     * // Delete a few SetSections
+     * const { count } = await prisma.setSection.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends SetSectionDeleteManyArgs>(args?: SelectSubset<T, SetSectionDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more SetSections.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SetSectionUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many SetSections
+     * const setSection = await prisma.setSection.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends SetSectionUpdateManyArgs>(args: SelectSubset<T, SetSectionUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more SetSections and returns the data updated in the database.
+     * @param {SetSectionUpdateManyAndReturnArgs} args - Arguments to update many SetSections.
+     * @example
+     * // Update many SetSections
+     * const setSection = await prisma.setSection.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more SetSections and only return the `sectionId`
+     * const setSectionWithSectionIdOnly = await prisma.setSection.updateManyAndReturn({
+     *   select: { sectionId: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends SetSectionUpdateManyAndReturnArgs>(args: SelectSubset<T, SetSectionUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SetSectionPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one SetSection.
+     * @param {SetSectionUpsertArgs} args - Arguments to update or create a SetSection.
+     * @example
+     * // Update or create a SetSection
+     * const setSection = await prisma.setSection.upsert({
+     *   create: {
+     *     // ... data to create a SetSection
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the SetSection we want to update
+     *   }
+     * })
+     */
+    upsert<T extends SetSectionUpsertArgs>(args: SelectSubset<T, SetSectionUpsertArgs<ExtArgs>>): Prisma__SetSectionClient<$Result.GetResult<Prisma.$SetSectionPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of SetSections.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SetSectionCountArgs} args - Arguments to filter SetSections to count.
+     * @example
+     * // Count the number of SetSections
+     * const count = await prisma.setSection.count({
+     *   where: {
+     *     // ... the filter for the SetSections we want to count
+     *   }
+     * })
+    **/
+    count<T extends SetSectionCountArgs>(
+      args?: Subset<T, SetSectionCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], SetSectionCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a SetSection.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SetSectionAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends SetSectionAggregateArgs>(args: Subset<T, SetSectionAggregateArgs>): Prisma.PrismaPromise<GetSetSectionAggregateType<T>>
+
+    /**
+     * Group by SetSection.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SetSectionGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends SetSectionGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: SetSectionGroupByArgs['orderBy'] }
+        : { orderBy?: SetSectionGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, SetSectionGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetSetSectionGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the SetSection model
+   */
+  readonly fields: SetSectionFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for SetSection.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__SetSectionClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    setList<T extends SetListDefaultArgs<ExtArgs> = {}>(args?: Subset<T, SetListDefaultArgs<ExtArgs>>): Prisma__SetListClient<$Result.GetResult<Prisma.$SetListPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    setItems<T extends SetSection$setItemsArgs<ExtArgs> = {}>(args?: Subset<T, SetSection$setItemsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SetItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the SetSection model
+   */
+  interface SetSectionFieldRefs {
+    readonly sectionId: FieldRef<"SetSection", 'String'>
+    readonly setListId: FieldRef<"SetSection", 'String'>
+    readonly name: FieldRef<"SetSection", 'String'>
+    readonly position: FieldRef<"SetSection", 'Int'>
+    readonly createdAt: FieldRef<"SetSection", 'DateTime'>
+    readonly updatedAt: FieldRef<"SetSection", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * SetSection findUnique
+   */
+  export type SetSectionFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SetSection
+     */
+    select?: SetSectionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SetSection
+     */
+    omit?: SetSectionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SetSectionInclude<ExtArgs> | null
+    /**
+     * Filter, which SetSection to fetch.
+     */
+    where: SetSectionWhereUniqueInput
+  }
+
+  /**
+   * SetSection findUniqueOrThrow
+   */
+  export type SetSectionFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SetSection
+     */
+    select?: SetSectionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SetSection
+     */
+    omit?: SetSectionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SetSectionInclude<ExtArgs> | null
+    /**
+     * Filter, which SetSection to fetch.
+     */
+    where: SetSectionWhereUniqueInput
+  }
+
+  /**
+   * SetSection findFirst
+   */
+  export type SetSectionFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SetSection
+     */
+    select?: SetSectionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SetSection
+     */
+    omit?: SetSectionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SetSectionInclude<ExtArgs> | null
+    /**
+     * Filter, which SetSection to fetch.
+     */
+    where?: SetSectionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of SetSections to fetch.
+     */
+    orderBy?: SetSectionOrderByWithRelationInput | SetSectionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for SetSections.
+     */
+    cursor?: SetSectionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` SetSections from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` SetSections.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of SetSections.
+     */
+    distinct?: SetSectionScalarFieldEnum | SetSectionScalarFieldEnum[]
+  }
+
+  /**
+   * SetSection findFirstOrThrow
+   */
+  export type SetSectionFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SetSection
+     */
+    select?: SetSectionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SetSection
+     */
+    omit?: SetSectionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SetSectionInclude<ExtArgs> | null
+    /**
+     * Filter, which SetSection to fetch.
+     */
+    where?: SetSectionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of SetSections to fetch.
+     */
+    orderBy?: SetSectionOrderByWithRelationInput | SetSectionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for SetSections.
+     */
+    cursor?: SetSectionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` SetSections from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` SetSections.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of SetSections.
+     */
+    distinct?: SetSectionScalarFieldEnum | SetSectionScalarFieldEnum[]
+  }
+
+  /**
+   * SetSection findMany
+   */
+  export type SetSectionFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SetSection
+     */
+    select?: SetSectionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SetSection
+     */
+    omit?: SetSectionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SetSectionInclude<ExtArgs> | null
+    /**
+     * Filter, which SetSections to fetch.
+     */
+    where?: SetSectionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of SetSections to fetch.
+     */
+    orderBy?: SetSectionOrderByWithRelationInput | SetSectionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing SetSections.
+     */
+    cursor?: SetSectionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` SetSections from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` SetSections.
+     */
+    skip?: number
+    distinct?: SetSectionScalarFieldEnum | SetSectionScalarFieldEnum[]
+  }
+
+  /**
+   * SetSection create
+   */
+  export type SetSectionCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SetSection
+     */
+    select?: SetSectionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SetSection
+     */
+    omit?: SetSectionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SetSectionInclude<ExtArgs> | null
+    /**
+     * The data needed to create a SetSection.
+     */
+    data: XOR<SetSectionCreateInput, SetSectionUncheckedCreateInput>
+  }
+
+  /**
+   * SetSection createMany
+   */
+  export type SetSectionCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many SetSections.
+     */
+    data: SetSectionCreateManyInput | SetSectionCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * SetSection createManyAndReturn
+   */
+  export type SetSectionCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SetSection
+     */
+    select?: SetSectionSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the SetSection
+     */
+    omit?: SetSectionOmit<ExtArgs> | null
+    /**
+     * The data used to create many SetSections.
+     */
+    data: SetSectionCreateManyInput | SetSectionCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SetSectionIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * SetSection update
+   */
+  export type SetSectionUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SetSection
+     */
+    select?: SetSectionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SetSection
+     */
+    omit?: SetSectionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SetSectionInclude<ExtArgs> | null
+    /**
+     * The data needed to update a SetSection.
+     */
+    data: XOR<SetSectionUpdateInput, SetSectionUncheckedUpdateInput>
+    /**
+     * Choose, which SetSection to update.
+     */
+    where: SetSectionWhereUniqueInput
+  }
+
+  /**
+   * SetSection updateMany
+   */
+  export type SetSectionUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update SetSections.
+     */
+    data: XOR<SetSectionUpdateManyMutationInput, SetSectionUncheckedUpdateManyInput>
+    /**
+     * Filter which SetSections to update
+     */
+    where?: SetSectionWhereInput
+    /**
+     * Limit how many SetSections to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * SetSection updateManyAndReturn
+   */
+  export type SetSectionUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SetSection
+     */
+    select?: SetSectionSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the SetSection
+     */
+    omit?: SetSectionOmit<ExtArgs> | null
+    /**
+     * The data used to update SetSections.
+     */
+    data: XOR<SetSectionUpdateManyMutationInput, SetSectionUncheckedUpdateManyInput>
+    /**
+     * Filter which SetSections to update
+     */
+    where?: SetSectionWhereInput
+    /**
+     * Limit how many SetSections to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SetSectionIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * SetSection upsert
+   */
+  export type SetSectionUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SetSection
+     */
+    select?: SetSectionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SetSection
+     */
+    omit?: SetSectionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SetSectionInclude<ExtArgs> | null
+    /**
+     * The filter to search for the SetSection to update in case it exists.
+     */
+    where: SetSectionWhereUniqueInput
+    /**
+     * In case the SetSection found by the `where` argument doesn't exist, create a new SetSection with this data.
+     */
+    create: XOR<SetSectionCreateInput, SetSectionUncheckedCreateInput>
+    /**
+     * In case the SetSection was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<SetSectionUpdateInput, SetSectionUncheckedUpdateInput>
+  }
+
+  /**
+   * SetSection delete
+   */
+  export type SetSectionDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SetSection
+     */
+    select?: SetSectionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SetSection
+     */
+    omit?: SetSectionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SetSectionInclude<ExtArgs> | null
+    /**
+     * Filter which SetSection to delete.
+     */
+    where: SetSectionWhereUniqueInput
+  }
+
+  /**
+   * SetSection deleteMany
+   */
+  export type SetSectionDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which SetSections to delete
+     */
+    where?: SetSectionWhereInput
+    /**
+     * Limit how many SetSections to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * SetSection.setItems
+   */
+  export type SetSection$setItemsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SetItem
+     */
+    select?: SetItemSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SetItem
+     */
+    omit?: SetItemOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SetItemInclude<ExtArgs> | null
+    where?: SetItemWhereInput
+    orderBy?: SetItemOrderByWithRelationInput | SetItemOrderByWithRelationInput[]
+    cursor?: SetItemWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: SetItemScalarFieldEnum | SetItemScalarFieldEnum[]
+  }
+
+  /**
+   * SetSection without action
+   */
+  export type SetSectionDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SetSection
+     */
+    select?: SetSectionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SetSection
+     */
+    omit?: SetSectionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SetSectionInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model SetListShare
+   */
+
+  export type AggregateSetListShare = {
+    _count: SetListShareCountAggregateOutputType | null
+    _min: SetListShareMinAggregateOutputType | null
+    _max: SetListShareMaxAggregateOutputType | null
+  }
+
+  export type SetListShareMinAggregateOutputType = {
+    shareId: string | null
+    setListId: string | null
+    shareToken: string | null
+    permission: $Enums.SharePermission | null
+    expiresAt: Date | null
+    createdAt: Date | null
+    createdBy: string | null
+  }
+
+  export type SetListShareMaxAggregateOutputType = {
+    shareId: string | null
+    setListId: string | null
+    shareToken: string | null
+    permission: $Enums.SharePermission | null
+    expiresAt: Date | null
+    createdAt: Date | null
+    createdBy: string | null
+  }
+
+  export type SetListShareCountAggregateOutputType = {
+    shareId: number
+    setListId: number
+    shareToken: number
+    permission: number
+    expiresAt: number
+    createdAt: number
+    createdBy: number
+    _all: number
+  }
+
+
+  export type SetListShareMinAggregateInputType = {
+    shareId?: true
+    setListId?: true
+    shareToken?: true
+    permission?: true
+    expiresAt?: true
+    createdAt?: true
+    createdBy?: true
+  }
+
+  export type SetListShareMaxAggregateInputType = {
+    shareId?: true
+    setListId?: true
+    shareToken?: true
+    permission?: true
+    expiresAt?: true
+    createdAt?: true
+    createdBy?: true
+  }
+
+  export type SetListShareCountAggregateInputType = {
+    shareId?: true
+    setListId?: true
+    shareToken?: true
+    permission?: true
+    expiresAt?: true
+    createdAt?: true
+    createdBy?: true
+    _all?: true
+  }
+
+  export type SetListShareAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which SetListShare to aggregate.
+     */
+    where?: SetListShareWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of SetListShares to fetch.
+     */
+    orderBy?: SetListShareOrderByWithRelationInput | SetListShareOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: SetListShareWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` SetListShares from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` SetListShares.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned SetListShares
+    **/
+    _count?: true | SetListShareCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: SetListShareMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: SetListShareMaxAggregateInputType
+  }
+
+  export type GetSetListShareAggregateType<T extends SetListShareAggregateArgs> = {
+        [P in keyof T & keyof AggregateSetListShare]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateSetListShare[P]>
+      : GetScalarType<T[P], AggregateSetListShare[P]>
+  }
+
+
+
+
+  export type SetListShareGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: SetListShareWhereInput
+    orderBy?: SetListShareOrderByWithAggregationInput | SetListShareOrderByWithAggregationInput[]
+    by: SetListShareScalarFieldEnum[] | SetListShareScalarFieldEnum
+    having?: SetListShareScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: SetListShareCountAggregateInputType | true
+    _min?: SetListShareMinAggregateInputType
+    _max?: SetListShareMaxAggregateInputType
+  }
+
+  export type SetListShareGroupByOutputType = {
+    shareId: string
+    setListId: string
+    shareToken: string
+    permission: $Enums.SharePermission
+    expiresAt: Date | null
+    createdAt: Date
+    createdBy: string
+    _count: SetListShareCountAggregateOutputType | null
+    _min: SetListShareMinAggregateOutputType | null
+    _max: SetListShareMaxAggregateOutputType | null
+  }
+
+  type GetSetListShareGroupByPayload<T extends SetListShareGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<SetListShareGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof SetListShareGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], SetListShareGroupByOutputType[P]>
+            : GetScalarType<T[P], SetListShareGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type SetListShareSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    shareId?: boolean
+    setListId?: boolean
+    shareToken?: boolean
+    permission?: boolean
+    expiresAt?: boolean
+    createdAt?: boolean
+    createdBy?: boolean
+    setList?: boolean | SetListDefaultArgs<ExtArgs>
+    creator?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["setListShare"]>
+
+  export type SetListShareSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    shareId?: boolean
+    setListId?: boolean
+    shareToken?: boolean
+    permission?: boolean
+    expiresAt?: boolean
+    createdAt?: boolean
+    createdBy?: boolean
+    setList?: boolean | SetListDefaultArgs<ExtArgs>
+    creator?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["setListShare"]>
+
+  export type SetListShareSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    shareId?: boolean
+    setListId?: boolean
+    shareToken?: boolean
+    permission?: boolean
+    expiresAt?: boolean
+    createdAt?: boolean
+    createdBy?: boolean
+    setList?: boolean | SetListDefaultArgs<ExtArgs>
+    creator?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["setListShare"]>
+
+  export type SetListShareSelectScalar = {
+    shareId?: boolean
+    setListId?: boolean
+    shareToken?: boolean
+    permission?: boolean
+    expiresAt?: boolean
+    createdAt?: boolean
+    createdBy?: boolean
+  }
+
+  export type SetListShareOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"shareId" | "setListId" | "shareToken" | "permission" | "expiresAt" | "createdAt" | "createdBy", ExtArgs["result"]["setListShare"]>
+  export type SetListShareInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    setList?: boolean | SetListDefaultArgs<ExtArgs>
+    creator?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type SetListShareIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    setList?: boolean | SetListDefaultArgs<ExtArgs>
+    creator?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type SetListShareIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    setList?: boolean | SetListDefaultArgs<ExtArgs>
+    creator?: boolean | UserDefaultArgs<ExtArgs>
+  }
+
+  export type $SetListSharePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "SetListShare"
+    objects: {
+      setList: Prisma.$SetListPayload<ExtArgs>
+      creator: Prisma.$UserPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      shareId: string
+      setListId: string
+      shareToken: string
+      permission: $Enums.SharePermission
+      expiresAt: Date | null
+      createdAt: Date
+      createdBy: string
+    }, ExtArgs["result"]["setListShare"]>
+    composites: {}
+  }
+
+  type SetListShareGetPayload<S extends boolean | null | undefined | SetListShareDefaultArgs> = $Result.GetResult<Prisma.$SetListSharePayload, S>
+
+  type SetListShareCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<SetListShareFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: SetListShareCountAggregateInputType | true
+    }
+
+  export interface SetListShareDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['SetListShare'], meta: { name: 'SetListShare' } }
+    /**
+     * Find zero or one SetListShare that matches the filter.
+     * @param {SetListShareFindUniqueArgs} args - Arguments to find a SetListShare
+     * @example
+     * // Get one SetListShare
+     * const setListShare = await prisma.setListShare.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends SetListShareFindUniqueArgs>(args: SelectSubset<T, SetListShareFindUniqueArgs<ExtArgs>>): Prisma__SetListShareClient<$Result.GetResult<Prisma.$SetListSharePayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one SetListShare that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {SetListShareFindUniqueOrThrowArgs} args - Arguments to find a SetListShare
+     * @example
+     * // Get one SetListShare
+     * const setListShare = await prisma.setListShare.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends SetListShareFindUniqueOrThrowArgs>(args: SelectSubset<T, SetListShareFindUniqueOrThrowArgs<ExtArgs>>): Prisma__SetListShareClient<$Result.GetResult<Prisma.$SetListSharePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first SetListShare that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SetListShareFindFirstArgs} args - Arguments to find a SetListShare
+     * @example
+     * // Get one SetListShare
+     * const setListShare = await prisma.setListShare.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends SetListShareFindFirstArgs>(args?: SelectSubset<T, SetListShareFindFirstArgs<ExtArgs>>): Prisma__SetListShareClient<$Result.GetResult<Prisma.$SetListSharePayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first SetListShare that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SetListShareFindFirstOrThrowArgs} args - Arguments to find a SetListShare
+     * @example
+     * // Get one SetListShare
+     * const setListShare = await prisma.setListShare.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends SetListShareFindFirstOrThrowArgs>(args?: SelectSubset<T, SetListShareFindFirstOrThrowArgs<ExtArgs>>): Prisma__SetListShareClient<$Result.GetResult<Prisma.$SetListSharePayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more SetListShares that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SetListShareFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all SetListShares
+     * const setListShares = await prisma.setListShare.findMany()
+     * 
+     * // Get first 10 SetListShares
+     * const setListShares = await prisma.setListShare.findMany({ take: 10 })
+     * 
+     * // Only select the `shareId`
+     * const setListShareWithShareIdOnly = await prisma.setListShare.findMany({ select: { shareId: true } })
+     * 
+     */
+    findMany<T extends SetListShareFindManyArgs>(args?: SelectSubset<T, SetListShareFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SetListSharePayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a SetListShare.
+     * @param {SetListShareCreateArgs} args - Arguments to create a SetListShare.
+     * @example
+     * // Create one SetListShare
+     * const SetListShare = await prisma.setListShare.create({
+     *   data: {
+     *     // ... data to create a SetListShare
+     *   }
+     * })
+     * 
+     */
+    create<T extends SetListShareCreateArgs>(args: SelectSubset<T, SetListShareCreateArgs<ExtArgs>>): Prisma__SetListShareClient<$Result.GetResult<Prisma.$SetListSharePayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many SetListShares.
+     * @param {SetListShareCreateManyArgs} args - Arguments to create many SetListShares.
+     * @example
+     * // Create many SetListShares
+     * const setListShare = await prisma.setListShare.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends SetListShareCreateManyArgs>(args?: SelectSubset<T, SetListShareCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many SetListShares and returns the data saved in the database.
+     * @param {SetListShareCreateManyAndReturnArgs} args - Arguments to create many SetListShares.
+     * @example
+     * // Create many SetListShares
+     * const setListShare = await prisma.setListShare.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many SetListShares and only return the `shareId`
+     * const setListShareWithShareIdOnly = await prisma.setListShare.createManyAndReturn({
+     *   select: { shareId: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends SetListShareCreateManyAndReturnArgs>(args?: SelectSubset<T, SetListShareCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SetListSharePayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a SetListShare.
+     * @param {SetListShareDeleteArgs} args - Arguments to delete one SetListShare.
+     * @example
+     * // Delete one SetListShare
+     * const SetListShare = await prisma.setListShare.delete({
+     *   where: {
+     *     // ... filter to delete one SetListShare
+     *   }
+     * })
+     * 
+     */
+    delete<T extends SetListShareDeleteArgs>(args: SelectSubset<T, SetListShareDeleteArgs<ExtArgs>>): Prisma__SetListShareClient<$Result.GetResult<Prisma.$SetListSharePayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one SetListShare.
+     * @param {SetListShareUpdateArgs} args - Arguments to update one SetListShare.
+     * @example
+     * // Update one SetListShare
+     * const setListShare = await prisma.setListShare.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends SetListShareUpdateArgs>(args: SelectSubset<T, SetListShareUpdateArgs<ExtArgs>>): Prisma__SetListShareClient<$Result.GetResult<Prisma.$SetListSharePayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more SetListShares.
+     * @param {SetListShareDeleteManyArgs} args - Arguments to filter SetListShares to delete.
+     * @example
+     * // Delete a few SetListShares
+     * const { count } = await prisma.setListShare.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends SetListShareDeleteManyArgs>(args?: SelectSubset<T, SetListShareDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more SetListShares.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SetListShareUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many SetListShares
+     * const setListShare = await prisma.setListShare.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends SetListShareUpdateManyArgs>(args: SelectSubset<T, SetListShareUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more SetListShares and returns the data updated in the database.
+     * @param {SetListShareUpdateManyAndReturnArgs} args - Arguments to update many SetListShares.
+     * @example
+     * // Update many SetListShares
+     * const setListShare = await prisma.setListShare.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more SetListShares and only return the `shareId`
+     * const setListShareWithShareIdOnly = await prisma.setListShare.updateManyAndReturn({
+     *   select: { shareId: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends SetListShareUpdateManyAndReturnArgs>(args: SelectSubset<T, SetListShareUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SetListSharePayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one SetListShare.
+     * @param {SetListShareUpsertArgs} args - Arguments to update or create a SetListShare.
+     * @example
+     * // Update or create a SetListShare
+     * const setListShare = await prisma.setListShare.upsert({
+     *   create: {
+     *     // ... data to create a SetListShare
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the SetListShare we want to update
+     *   }
+     * })
+     */
+    upsert<T extends SetListShareUpsertArgs>(args: SelectSubset<T, SetListShareUpsertArgs<ExtArgs>>): Prisma__SetListShareClient<$Result.GetResult<Prisma.$SetListSharePayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of SetListShares.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SetListShareCountArgs} args - Arguments to filter SetListShares to count.
+     * @example
+     * // Count the number of SetListShares
+     * const count = await prisma.setListShare.count({
+     *   where: {
+     *     // ... the filter for the SetListShares we want to count
+     *   }
+     * })
+    **/
+    count<T extends SetListShareCountArgs>(
+      args?: Subset<T, SetListShareCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], SetListShareCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a SetListShare.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SetListShareAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends SetListShareAggregateArgs>(args: Subset<T, SetListShareAggregateArgs>): Prisma.PrismaPromise<GetSetListShareAggregateType<T>>
+
+    /**
+     * Group by SetListShare.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SetListShareGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends SetListShareGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: SetListShareGroupByArgs['orderBy'] }
+        : { orderBy?: SetListShareGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, SetListShareGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetSetListShareGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the SetListShare model
+   */
+  readonly fields: SetListShareFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for SetListShare.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__SetListShareClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    setList<T extends SetListDefaultArgs<ExtArgs> = {}>(args?: Subset<T, SetListDefaultArgs<ExtArgs>>): Prisma__SetListClient<$Result.GetResult<Prisma.$SetListPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    creator<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the SetListShare model
+   */
+  interface SetListShareFieldRefs {
+    readonly shareId: FieldRef<"SetListShare", 'String'>
+    readonly setListId: FieldRef<"SetListShare", 'String'>
+    readonly shareToken: FieldRef<"SetListShare", 'String'>
+    readonly permission: FieldRef<"SetListShare", 'SharePermission'>
+    readonly expiresAt: FieldRef<"SetListShare", 'DateTime'>
+    readonly createdAt: FieldRef<"SetListShare", 'DateTime'>
+    readonly createdBy: FieldRef<"SetListShare", 'String'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * SetListShare findUnique
+   */
+  export type SetListShareFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SetListShare
+     */
+    select?: SetListShareSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SetListShare
+     */
+    omit?: SetListShareOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SetListShareInclude<ExtArgs> | null
+    /**
+     * Filter, which SetListShare to fetch.
+     */
+    where: SetListShareWhereUniqueInput
+  }
+
+  /**
+   * SetListShare findUniqueOrThrow
+   */
+  export type SetListShareFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SetListShare
+     */
+    select?: SetListShareSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SetListShare
+     */
+    omit?: SetListShareOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SetListShareInclude<ExtArgs> | null
+    /**
+     * Filter, which SetListShare to fetch.
+     */
+    where: SetListShareWhereUniqueInput
+  }
+
+  /**
+   * SetListShare findFirst
+   */
+  export type SetListShareFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SetListShare
+     */
+    select?: SetListShareSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SetListShare
+     */
+    omit?: SetListShareOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SetListShareInclude<ExtArgs> | null
+    /**
+     * Filter, which SetListShare to fetch.
+     */
+    where?: SetListShareWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of SetListShares to fetch.
+     */
+    orderBy?: SetListShareOrderByWithRelationInput | SetListShareOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for SetListShares.
+     */
+    cursor?: SetListShareWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` SetListShares from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` SetListShares.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of SetListShares.
+     */
+    distinct?: SetListShareScalarFieldEnum | SetListShareScalarFieldEnum[]
+  }
+
+  /**
+   * SetListShare findFirstOrThrow
+   */
+  export type SetListShareFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SetListShare
+     */
+    select?: SetListShareSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SetListShare
+     */
+    omit?: SetListShareOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SetListShareInclude<ExtArgs> | null
+    /**
+     * Filter, which SetListShare to fetch.
+     */
+    where?: SetListShareWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of SetListShares to fetch.
+     */
+    orderBy?: SetListShareOrderByWithRelationInput | SetListShareOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for SetListShares.
+     */
+    cursor?: SetListShareWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` SetListShares from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` SetListShares.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of SetListShares.
+     */
+    distinct?: SetListShareScalarFieldEnum | SetListShareScalarFieldEnum[]
+  }
+
+  /**
+   * SetListShare findMany
+   */
+  export type SetListShareFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SetListShare
+     */
+    select?: SetListShareSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SetListShare
+     */
+    omit?: SetListShareOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SetListShareInclude<ExtArgs> | null
+    /**
+     * Filter, which SetListShares to fetch.
+     */
+    where?: SetListShareWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of SetListShares to fetch.
+     */
+    orderBy?: SetListShareOrderByWithRelationInput | SetListShareOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing SetListShares.
+     */
+    cursor?: SetListShareWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` SetListShares from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` SetListShares.
+     */
+    skip?: number
+    distinct?: SetListShareScalarFieldEnum | SetListShareScalarFieldEnum[]
+  }
+
+  /**
+   * SetListShare create
+   */
+  export type SetListShareCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SetListShare
+     */
+    select?: SetListShareSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SetListShare
+     */
+    omit?: SetListShareOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SetListShareInclude<ExtArgs> | null
+    /**
+     * The data needed to create a SetListShare.
+     */
+    data: XOR<SetListShareCreateInput, SetListShareUncheckedCreateInput>
+  }
+
+  /**
+   * SetListShare createMany
+   */
+  export type SetListShareCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many SetListShares.
+     */
+    data: SetListShareCreateManyInput | SetListShareCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * SetListShare createManyAndReturn
+   */
+  export type SetListShareCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SetListShare
+     */
+    select?: SetListShareSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the SetListShare
+     */
+    omit?: SetListShareOmit<ExtArgs> | null
+    /**
+     * The data used to create many SetListShares.
+     */
+    data: SetListShareCreateManyInput | SetListShareCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SetListShareIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * SetListShare update
+   */
+  export type SetListShareUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SetListShare
+     */
+    select?: SetListShareSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SetListShare
+     */
+    omit?: SetListShareOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SetListShareInclude<ExtArgs> | null
+    /**
+     * The data needed to update a SetListShare.
+     */
+    data: XOR<SetListShareUpdateInput, SetListShareUncheckedUpdateInput>
+    /**
+     * Choose, which SetListShare to update.
+     */
+    where: SetListShareWhereUniqueInput
+  }
+
+  /**
+   * SetListShare updateMany
+   */
+  export type SetListShareUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update SetListShares.
+     */
+    data: XOR<SetListShareUpdateManyMutationInput, SetListShareUncheckedUpdateManyInput>
+    /**
+     * Filter which SetListShares to update
+     */
+    where?: SetListShareWhereInput
+    /**
+     * Limit how many SetListShares to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * SetListShare updateManyAndReturn
+   */
+  export type SetListShareUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SetListShare
+     */
+    select?: SetListShareSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the SetListShare
+     */
+    omit?: SetListShareOmit<ExtArgs> | null
+    /**
+     * The data used to update SetListShares.
+     */
+    data: XOR<SetListShareUpdateManyMutationInput, SetListShareUncheckedUpdateManyInput>
+    /**
+     * Filter which SetListShares to update
+     */
+    where?: SetListShareWhereInput
+    /**
+     * Limit how many SetListShares to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SetListShareIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * SetListShare upsert
+   */
+  export type SetListShareUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SetListShare
+     */
+    select?: SetListShareSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SetListShare
+     */
+    omit?: SetListShareOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SetListShareInclude<ExtArgs> | null
+    /**
+     * The filter to search for the SetListShare to update in case it exists.
+     */
+    where: SetListShareWhereUniqueInput
+    /**
+     * In case the SetListShare found by the `where` argument doesn't exist, create a new SetListShare with this data.
+     */
+    create: XOR<SetListShareCreateInput, SetListShareUncheckedCreateInput>
+    /**
+     * In case the SetListShare was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<SetListShareUpdateInput, SetListShareUncheckedUpdateInput>
+  }
+
+  /**
+   * SetListShare delete
+   */
+  export type SetListShareDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SetListShare
+     */
+    select?: SetListShareSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SetListShare
+     */
+    omit?: SetListShareOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SetListShareInclude<ExtArgs> | null
+    /**
+     * Filter which SetListShare to delete.
+     */
+    where: SetListShareWhereUniqueInput
+  }
+
+  /**
+   * SetListShare deleteMany
+   */
+  export type SetListShareDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which SetListShares to delete
+     */
+    where?: SetListShareWhereInput
+    /**
+     * Limit how many SetListShares to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * SetListShare without action
+   */
+  export type SetListShareDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SetListShare
+     */
+    select?: SetListShareSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SetListShare
+     */
+    omit?: SetListShareOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SetListShareInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -15084,6 +20321,61 @@ export namespace Prisma {
   export type GuildInvitationScalarFieldEnum = (typeof GuildInvitationScalarFieldEnum)[keyof typeof GuildInvitationScalarFieldEnum]
 
 
+  export const SetListScalarFieldEnum: {
+    setListId: 'setListId',
+    name: 'name',
+    description: 'description',
+    ownerId: 'ownerId',
+    guildId: 'guildId',
+    isPrivate: 'isPrivate',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type SetListScalarFieldEnum = (typeof SetListScalarFieldEnum)[keyof typeof SetListScalarFieldEnum]
+
+
+  export const SetItemScalarFieldEnum: {
+    setItemId: 'setItemId',
+    setListId: 'setListId',
+    trackId: 'trackId',
+    position: 'position',
+    customTuning: 'customTuning',
+    customNotes: 'customNotes',
+    customDuration: 'customDuration',
+    sectionId: 'sectionId',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type SetItemScalarFieldEnum = (typeof SetItemScalarFieldEnum)[keyof typeof SetItemScalarFieldEnum]
+
+
+  export const SetSectionScalarFieldEnum: {
+    sectionId: 'sectionId',
+    setListId: 'setListId',
+    name: 'name',
+    position: 'position',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type SetSectionScalarFieldEnum = (typeof SetSectionScalarFieldEnum)[keyof typeof SetSectionScalarFieldEnum]
+
+
+  export const SetListShareScalarFieldEnum: {
+    shareId: 'shareId',
+    setListId: 'setListId',
+    shareToken: 'shareToken',
+    permission: 'permission',
+    expiresAt: 'expiresAt',
+    createdAt: 'createdAt',
+    createdBy: 'createdBy'
+  };
+
+  export type SetListShareScalarFieldEnum = (typeof SetListShareScalarFieldEnum)[keyof typeof SetListShareScalarFieldEnum]
+
+
   export const SortOrder: {
     asc: 'asc',
     desc: 'desc'
@@ -15219,6 +20511,20 @@ export namespace Prisma {
 
 
   /**
+   * Reference to a field of type 'SharePermission'
+   */
+  export type EnumSharePermissionFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SharePermission'>
+    
+
+
+  /**
+   * Reference to a field of type 'SharePermission[]'
+   */
+  export type ListEnumSharePermissionFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SharePermission[]'>
+    
+
+
+  /**
    * Reference to a field of type 'Float'
    */
   export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
@@ -15254,6 +20560,8 @@ export namespace Prisma {
     feedActivities?: FeedActivityListRelationFilter
     sentInvitations?: GuildInvitationListRelationFilter
     receivedInvitations?: GuildInvitationListRelationFilter
+    ownedSetLists?: SetListListRelationFilter
+    createdShares?: SetListShareListRelationFilter
   }
 
   export type UserOrderByWithRelationInput = {
@@ -15272,6 +20580,8 @@ export namespace Prisma {
     feedActivities?: FeedActivityOrderByRelationAggregateInput
     sentInvitations?: GuildInvitationOrderByRelationAggregateInput
     receivedInvitations?: GuildInvitationOrderByRelationAggregateInput
+    ownedSetLists?: SetListOrderByRelationAggregateInput
+    createdShares?: SetListShareOrderByRelationAggregateInput
   }
 
   export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -15293,6 +20603,8 @@ export namespace Prisma {
     feedActivities?: FeedActivityListRelationFilter
     sentInvitations?: GuildInvitationListRelationFilter
     receivedInvitations?: GuildInvitationListRelationFilter
+    ownedSetLists?: SetListListRelationFilter
+    createdShares?: SetListShareListRelationFilter
   }, "userId" | "email" | "firebaseUid">
 
   export type UserOrderByWithAggregationInput = {
@@ -15466,6 +20778,7 @@ export namespace Prisma {
     club?: XOR<ClubNullableScalarRelationFilter, ClubWhereInput> | null
     follows?: FollowListRelationFilter
     invitations?: GuildInvitationListRelationFilter
+    setLists?: SetListListRelationFilter
   }
 
   export type GuildOrderByWithRelationInput = {
@@ -15486,6 +20799,7 @@ export namespace Prisma {
     club?: ClubOrderByWithRelationInput
     follows?: FollowOrderByRelationAggregateInput
     invitations?: GuildInvitationOrderByRelationAggregateInput
+    setLists?: SetListOrderByRelationAggregateInput
   }
 
   export type GuildWhereUniqueInput = Prisma.AtLeast<{
@@ -15509,6 +20823,7 @@ export namespace Prisma {
     club?: XOR<ClubNullableScalarRelationFilter, ClubWhereInput> | null
     follows?: FollowListRelationFilter
     invitations?: GuildInvitationListRelationFilter
+    setLists?: SetListListRelationFilter
   }, "guildId" | "actId" | "venueId" | "clubId">
 
   export type GuildOrderByWithAggregationInput = {
@@ -15757,6 +21072,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"Track"> | Date | string
     createdBy?: StringFilter<"Track"> | string
     tags?: TagListRelationFilter
+    setItems?: SetItemListRelationFilter
   }
 
   export type TrackOrderByWithRelationInput = {
@@ -15771,6 +21087,7 @@ export namespace Prisma {
     updatedAt?: SortOrder
     createdBy?: SortOrder
     tags?: TagOrderByRelationAggregateInput
+    setItems?: SetItemOrderByRelationAggregateInput
   }
 
   export type TrackWhereUniqueInput = Prisma.AtLeast<{
@@ -15788,6 +21105,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"Track"> | Date | string
     createdBy?: StringFilter<"Track"> | string
     tags?: TagListRelationFilter
+    setItems?: SetItemListRelationFilter
   }, "trackId">
 
   export type TrackOrderByWithAggregationInput = {
@@ -16047,6 +21365,311 @@ export namespace Prisma {
     respondedAt?: DateTimeNullableWithAggregatesFilter<"GuildInvitation"> | Date | string | null
   }
 
+  export type SetListWhereInput = {
+    AND?: SetListWhereInput | SetListWhereInput[]
+    OR?: SetListWhereInput[]
+    NOT?: SetListWhereInput | SetListWhereInput[]
+    setListId?: StringFilter<"SetList"> | string
+    name?: StringFilter<"SetList"> | string
+    description?: StringNullableFilter<"SetList"> | string | null
+    ownerId?: StringFilter<"SetList"> | string
+    guildId?: StringNullableFilter<"SetList"> | string | null
+    isPrivate?: BoolFilter<"SetList"> | boolean
+    createdAt?: DateTimeFilter<"SetList"> | Date | string
+    updatedAt?: DateTimeFilter<"SetList"> | Date | string
+    owner?: XOR<UserScalarRelationFilter, UserWhereInput>
+    guild?: XOR<GuildNullableScalarRelationFilter, GuildWhereInput> | null
+    setItems?: SetItemListRelationFilter
+    setSections?: SetSectionListRelationFilter
+    shares?: SetListShareListRelationFilter
+  }
+
+  export type SetListOrderByWithRelationInput = {
+    setListId?: SortOrder
+    name?: SortOrder
+    description?: SortOrderInput | SortOrder
+    ownerId?: SortOrder
+    guildId?: SortOrderInput | SortOrder
+    isPrivate?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    owner?: UserOrderByWithRelationInput
+    guild?: GuildOrderByWithRelationInput
+    setItems?: SetItemOrderByRelationAggregateInput
+    setSections?: SetSectionOrderByRelationAggregateInput
+    shares?: SetListShareOrderByRelationAggregateInput
+  }
+
+  export type SetListWhereUniqueInput = Prisma.AtLeast<{
+    setListId?: string
+    AND?: SetListWhereInput | SetListWhereInput[]
+    OR?: SetListWhereInput[]
+    NOT?: SetListWhereInput | SetListWhereInput[]
+    name?: StringFilter<"SetList"> | string
+    description?: StringNullableFilter<"SetList"> | string | null
+    ownerId?: StringFilter<"SetList"> | string
+    guildId?: StringNullableFilter<"SetList"> | string | null
+    isPrivate?: BoolFilter<"SetList"> | boolean
+    createdAt?: DateTimeFilter<"SetList"> | Date | string
+    updatedAt?: DateTimeFilter<"SetList"> | Date | string
+    owner?: XOR<UserScalarRelationFilter, UserWhereInput>
+    guild?: XOR<GuildNullableScalarRelationFilter, GuildWhereInput> | null
+    setItems?: SetItemListRelationFilter
+    setSections?: SetSectionListRelationFilter
+    shares?: SetListShareListRelationFilter
+  }, "setListId">
+
+  export type SetListOrderByWithAggregationInput = {
+    setListId?: SortOrder
+    name?: SortOrder
+    description?: SortOrderInput | SortOrder
+    ownerId?: SortOrder
+    guildId?: SortOrderInput | SortOrder
+    isPrivate?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: SetListCountOrderByAggregateInput
+    _max?: SetListMaxOrderByAggregateInput
+    _min?: SetListMinOrderByAggregateInput
+  }
+
+  export type SetListScalarWhereWithAggregatesInput = {
+    AND?: SetListScalarWhereWithAggregatesInput | SetListScalarWhereWithAggregatesInput[]
+    OR?: SetListScalarWhereWithAggregatesInput[]
+    NOT?: SetListScalarWhereWithAggregatesInput | SetListScalarWhereWithAggregatesInput[]
+    setListId?: StringWithAggregatesFilter<"SetList"> | string
+    name?: StringWithAggregatesFilter<"SetList"> | string
+    description?: StringNullableWithAggregatesFilter<"SetList"> | string | null
+    ownerId?: StringWithAggregatesFilter<"SetList"> | string
+    guildId?: StringNullableWithAggregatesFilter<"SetList"> | string | null
+    isPrivate?: BoolWithAggregatesFilter<"SetList"> | boolean
+    createdAt?: DateTimeWithAggregatesFilter<"SetList"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"SetList"> | Date | string
+  }
+
+  export type SetItemWhereInput = {
+    AND?: SetItemWhereInput | SetItemWhereInput[]
+    OR?: SetItemWhereInput[]
+    NOT?: SetItemWhereInput | SetItemWhereInput[]
+    setItemId?: StringFilter<"SetItem"> | string
+    setListId?: StringFilter<"SetItem"> | string
+    trackId?: StringFilter<"SetItem"> | string
+    position?: IntFilter<"SetItem"> | number
+    customTuning?: StringNullableFilter<"SetItem"> | string | null
+    customNotes?: StringNullableFilter<"SetItem"> | string | null
+    customDuration?: IntNullableFilter<"SetItem"> | number | null
+    sectionId?: StringNullableFilter<"SetItem"> | string | null
+    createdAt?: DateTimeFilter<"SetItem"> | Date | string
+    updatedAt?: DateTimeFilter<"SetItem"> | Date | string
+    setList?: XOR<SetListScalarRelationFilter, SetListWhereInput>
+    track?: XOR<TrackScalarRelationFilter, TrackWhereInput>
+    section?: XOR<SetSectionNullableScalarRelationFilter, SetSectionWhereInput> | null
+  }
+
+  export type SetItemOrderByWithRelationInput = {
+    setItemId?: SortOrder
+    setListId?: SortOrder
+    trackId?: SortOrder
+    position?: SortOrder
+    customTuning?: SortOrderInput | SortOrder
+    customNotes?: SortOrderInput | SortOrder
+    customDuration?: SortOrderInput | SortOrder
+    sectionId?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    setList?: SetListOrderByWithRelationInput
+    track?: TrackOrderByWithRelationInput
+    section?: SetSectionOrderByWithRelationInput
+  }
+
+  export type SetItemWhereUniqueInput = Prisma.AtLeast<{
+    setItemId?: string
+    setListId_position?: SetItemSetListIdPositionCompoundUniqueInput
+    AND?: SetItemWhereInput | SetItemWhereInput[]
+    OR?: SetItemWhereInput[]
+    NOT?: SetItemWhereInput | SetItemWhereInput[]
+    setListId?: StringFilter<"SetItem"> | string
+    trackId?: StringFilter<"SetItem"> | string
+    position?: IntFilter<"SetItem"> | number
+    customTuning?: StringNullableFilter<"SetItem"> | string | null
+    customNotes?: StringNullableFilter<"SetItem"> | string | null
+    customDuration?: IntNullableFilter<"SetItem"> | number | null
+    sectionId?: StringNullableFilter<"SetItem"> | string | null
+    createdAt?: DateTimeFilter<"SetItem"> | Date | string
+    updatedAt?: DateTimeFilter<"SetItem"> | Date | string
+    setList?: XOR<SetListScalarRelationFilter, SetListWhereInput>
+    track?: XOR<TrackScalarRelationFilter, TrackWhereInput>
+    section?: XOR<SetSectionNullableScalarRelationFilter, SetSectionWhereInput> | null
+  }, "setItemId" | "setListId_position">
+
+  export type SetItemOrderByWithAggregationInput = {
+    setItemId?: SortOrder
+    setListId?: SortOrder
+    trackId?: SortOrder
+    position?: SortOrder
+    customTuning?: SortOrderInput | SortOrder
+    customNotes?: SortOrderInput | SortOrder
+    customDuration?: SortOrderInput | SortOrder
+    sectionId?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: SetItemCountOrderByAggregateInput
+    _avg?: SetItemAvgOrderByAggregateInput
+    _max?: SetItemMaxOrderByAggregateInput
+    _min?: SetItemMinOrderByAggregateInput
+    _sum?: SetItemSumOrderByAggregateInput
+  }
+
+  export type SetItemScalarWhereWithAggregatesInput = {
+    AND?: SetItemScalarWhereWithAggregatesInput | SetItemScalarWhereWithAggregatesInput[]
+    OR?: SetItemScalarWhereWithAggregatesInput[]
+    NOT?: SetItemScalarWhereWithAggregatesInput | SetItemScalarWhereWithAggregatesInput[]
+    setItemId?: StringWithAggregatesFilter<"SetItem"> | string
+    setListId?: StringWithAggregatesFilter<"SetItem"> | string
+    trackId?: StringWithAggregatesFilter<"SetItem"> | string
+    position?: IntWithAggregatesFilter<"SetItem"> | number
+    customTuning?: StringNullableWithAggregatesFilter<"SetItem"> | string | null
+    customNotes?: StringNullableWithAggregatesFilter<"SetItem"> | string | null
+    customDuration?: IntNullableWithAggregatesFilter<"SetItem"> | number | null
+    sectionId?: StringNullableWithAggregatesFilter<"SetItem"> | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"SetItem"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"SetItem"> | Date | string
+  }
+
+  export type SetSectionWhereInput = {
+    AND?: SetSectionWhereInput | SetSectionWhereInput[]
+    OR?: SetSectionWhereInput[]
+    NOT?: SetSectionWhereInput | SetSectionWhereInput[]
+    sectionId?: StringFilter<"SetSection"> | string
+    setListId?: StringFilter<"SetSection"> | string
+    name?: StringFilter<"SetSection"> | string
+    position?: IntFilter<"SetSection"> | number
+    createdAt?: DateTimeFilter<"SetSection"> | Date | string
+    updatedAt?: DateTimeFilter<"SetSection"> | Date | string
+    setList?: XOR<SetListScalarRelationFilter, SetListWhereInput>
+    setItems?: SetItemListRelationFilter
+  }
+
+  export type SetSectionOrderByWithRelationInput = {
+    sectionId?: SortOrder
+    setListId?: SortOrder
+    name?: SortOrder
+    position?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    setList?: SetListOrderByWithRelationInput
+    setItems?: SetItemOrderByRelationAggregateInput
+  }
+
+  export type SetSectionWhereUniqueInput = Prisma.AtLeast<{
+    sectionId?: string
+    setListId_position?: SetSectionSetListIdPositionCompoundUniqueInput
+    AND?: SetSectionWhereInput | SetSectionWhereInput[]
+    OR?: SetSectionWhereInput[]
+    NOT?: SetSectionWhereInput | SetSectionWhereInput[]
+    setListId?: StringFilter<"SetSection"> | string
+    name?: StringFilter<"SetSection"> | string
+    position?: IntFilter<"SetSection"> | number
+    createdAt?: DateTimeFilter<"SetSection"> | Date | string
+    updatedAt?: DateTimeFilter<"SetSection"> | Date | string
+    setList?: XOR<SetListScalarRelationFilter, SetListWhereInput>
+    setItems?: SetItemListRelationFilter
+  }, "sectionId" | "setListId_position">
+
+  export type SetSectionOrderByWithAggregationInput = {
+    sectionId?: SortOrder
+    setListId?: SortOrder
+    name?: SortOrder
+    position?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: SetSectionCountOrderByAggregateInput
+    _avg?: SetSectionAvgOrderByAggregateInput
+    _max?: SetSectionMaxOrderByAggregateInput
+    _min?: SetSectionMinOrderByAggregateInput
+    _sum?: SetSectionSumOrderByAggregateInput
+  }
+
+  export type SetSectionScalarWhereWithAggregatesInput = {
+    AND?: SetSectionScalarWhereWithAggregatesInput | SetSectionScalarWhereWithAggregatesInput[]
+    OR?: SetSectionScalarWhereWithAggregatesInput[]
+    NOT?: SetSectionScalarWhereWithAggregatesInput | SetSectionScalarWhereWithAggregatesInput[]
+    sectionId?: StringWithAggregatesFilter<"SetSection"> | string
+    setListId?: StringWithAggregatesFilter<"SetSection"> | string
+    name?: StringWithAggregatesFilter<"SetSection"> | string
+    position?: IntWithAggregatesFilter<"SetSection"> | number
+    createdAt?: DateTimeWithAggregatesFilter<"SetSection"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"SetSection"> | Date | string
+  }
+
+  export type SetListShareWhereInput = {
+    AND?: SetListShareWhereInput | SetListShareWhereInput[]
+    OR?: SetListShareWhereInput[]
+    NOT?: SetListShareWhereInput | SetListShareWhereInput[]
+    shareId?: StringFilter<"SetListShare"> | string
+    setListId?: StringFilter<"SetListShare"> | string
+    shareToken?: StringFilter<"SetListShare"> | string
+    permission?: EnumSharePermissionFilter<"SetListShare"> | $Enums.SharePermission
+    expiresAt?: DateTimeNullableFilter<"SetListShare"> | Date | string | null
+    createdAt?: DateTimeFilter<"SetListShare"> | Date | string
+    createdBy?: StringFilter<"SetListShare"> | string
+    setList?: XOR<SetListScalarRelationFilter, SetListWhereInput>
+    creator?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }
+
+  export type SetListShareOrderByWithRelationInput = {
+    shareId?: SortOrder
+    setListId?: SortOrder
+    shareToken?: SortOrder
+    permission?: SortOrder
+    expiresAt?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    createdBy?: SortOrder
+    setList?: SetListOrderByWithRelationInput
+    creator?: UserOrderByWithRelationInput
+  }
+
+  export type SetListShareWhereUniqueInput = Prisma.AtLeast<{
+    shareId?: string
+    shareToken?: string
+    AND?: SetListShareWhereInput | SetListShareWhereInput[]
+    OR?: SetListShareWhereInput[]
+    NOT?: SetListShareWhereInput | SetListShareWhereInput[]
+    setListId?: StringFilter<"SetListShare"> | string
+    permission?: EnumSharePermissionFilter<"SetListShare"> | $Enums.SharePermission
+    expiresAt?: DateTimeNullableFilter<"SetListShare"> | Date | string | null
+    createdAt?: DateTimeFilter<"SetListShare"> | Date | string
+    createdBy?: StringFilter<"SetListShare"> | string
+    setList?: XOR<SetListScalarRelationFilter, SetListWhereInput>
+    creator?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }, "shareId" | "shareToken">
+
+  export type SetListShareOrderByWithAggregationInput = {
+    shareId?: SortOrder
+    setListId?: SortOrder
+    shareToken?: SortOrder
+    permission?: SortOrder
+    expiresAt?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    createdBy?: SortOrder
+    _count?: SetListShareCountOrderByAggregateInput
+    _max?: SetListShareMaxOrderByAggregateInput
+    _min?: SetListShareMinOrderByAggregateInput
+  }
+
+  export type SetListShareScalarWhereWithAggregatesInput = {
+    AND?: SetListShareScalarWhereWithAggregatesInput | SetListShareScalarWhereWithAggregatesInput[]
+    OR?: SetListShareScalarWhereWithAggregatesInput[]
+    NOT?: SetListShareScalarWhereWithAggregatesInput | SetListShareScalarWhereWithAggregatesInput[]
+    shareId?: StringWithAggregatesFilter<"SetListShare"> | string
+    setListId?: StringWithAggregatesFilter<"SetListShare"> | string
+    shareToken?: StringWithAggregatesFilter<"SetListShare"> | string
+    permission?: EnumSharePermissionWithAggregatesFilter<"SetListShare"> | $Enums.SharePermission
+    expiresAt?: DateTimeNullableWithAggregatesFilter<"SetListShare"> | Date | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"SetListShare"> | Date | string
+    createdBy?: StringWithAggregatesFilter<"SetListShare"> | string
+  }
+
   export type UserCreateInput = {
     userId?: string
     email: string
@@ -16063,6 +21686,8 @@ export namespace Prisma {
     feedActivities?: FeedActivityCreateNestedManyWithoutUserInput
     sentInvitations?: GuildInvitationCreateNestedManyWithoutInvitedByInput
     receivedInvitations?: GuildInvitationCreateNestedManyWithoutInvitedUserInput
+    ownedSetLists?: SetListCreateNestedManyWithoutOwnerInput
+    createdShares?: SetListShareCreateNestedManyWithoutCreatorInput
   }
 
   export type UserUncheckedCreateInput = {
@@ -16081,6 +21706,8 @@ export namespace Prisma {
     feedActivities?: FeedActivityUncheckedCreateNestedManyWithoutUserInput
     sentInvitations?: GuildInvitationUncheckedCreateNestedManyWithoutInvitedByInput
     receivedInvitations?: GuildInvitationUncheckedCreateNestedManyWithoutInvitedUserInput
+    ownedSetLists?: SetListUncheckedCreateNestedManyWithoutOwnerInput
+    createdShares?: SetListShareUncheckedCreateNestedManyWithoutCreatorInput
   }
 
   export type UserUpdateInput = {
@@ -16099,6 +21726,8 @@ export namespace Prisma {
     feedActivities?: FeedActivityUpdateManyWithoutUserNestedInput
     sentInvitations?: GuildInvitationUpdateManyWithoutInvitedByNestedInput
     receivedInvitations?: GuildInvitationUpdateManyWithoutInvitedUserNestedInput
+    ownedSetLists?: SetListUpdateManyWithoutOwnerNestedInput
+    createdShares?: SetListShareUpdateManyWithoutCreatorNestedInput
   }
 
   export type UserUncheckedUpdateInput = {
@@ -16117,6 +21746,8 @@ export namespace Prisma {
     feedActivities?: FeedActivityUncheckedUpdateManyWithoutUserNestedInput
     sentInvitations?: GuildInvitationUncheckedUpdateManyWithoutInvitedByNestedInput
     receivedInvitations?: GuildInvitationUncheckedUpdateManyWithoutInvitedUserNestedInput
+    ownedSetLists?: SetListUncheckedUpdateManyWithoutOwnerNestedInput
+    createdShares?: SetListShareUncheckedUpdateManyWithoutCreatorNestedInput
   }
 
   export type UserCreateManyInput = {
@@ -16278,6 +21909,7 @@ export namespace Prisma {
     club?: ClubCreateNestedOneWithoutGuildInput
     follows?: FollowCreateNestedManyWithoutGuildInput
     invitations?: GuildInvitationCreateNestedManyWithoutGuildInput
+    setLists?: SetListCreateNestedManyWithoutGuildInput
   }
 
   export type GuildUncheckedCreateInput = {
@@ -16293,6 +21925,7 @@ export namespace Prisma {
     members?: UserUncheckedCreateNestedManyWithoutMemberOfGuildsInput
     follows?: FollowUncheckedCreateNestedManyWithoutGuildInput
     invitations?: GuildInvitationUncheckedCreateNestedManyWithoutGuildInput
+    setLists?: SetListUncheckedCreateNestedManyWithoutGuildInput
   }
 
   export type GuildUpdateInput = {
@@ -16308,6 +21941,7 @@ export namespace Prisma {
     club?: ClubUpdateOneWithoutGuildNestedInput
     follows?: FollowUpdateManyWithoutGuildNestedInput
     invitations?: GuildInvitationUpdateManyWithoutGuildNestedInput
+    setLists?: SetListUpdateManyWithoutGuildNestedInput
   }
 
   export type GuildUncheckedUpdateInput = {
@@ -16323,6 +21957,7 @@ export namespace Prisma {
     members?: UserUncheckedUpdateManyWithoutMemberOfGuildsNestedInput
     follows?: FollowUncheckedUpdateManyWithoutGuildNestedInput
     invitations?: GuildInvitationUncheckedUpdateManyWithoutGuildNestedInput
+    setLists?: SetListUncheckedUpdateManyWithoutGuildNestedInput
   }
 
   export type GuildCreateManyInput = {
@@ -16598,6 +22233,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     createdBy: string
     tags?: TagCreateNestedManyWithoutTracksInput
+    setItems?: SetItemCreateNestedManyWithoutTrackInput
   }
 
   export type TrackUncheckedCreateInput = {
@@ -16612,6 +22248,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     createdBy: string
     tags?: TagUncheckedCreateNestedManyWithoutTracksInput
+    setItems?: SetItemUncheckedCreateNestedManyWithoutTrackInput
   }
 
   export type TrackUpdateInput = {
@@ -16626,6 +22263,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: StringFieldUpdateOperationsInput | string
     tags?: TagUpdateManyWithoutTracksNestedInput
+    setItems?: SetItemUpdateManyWithoutTrackNestedInput
   }
 
   export type TrackUncheckedUpdateInput = {
@@ -16640,6 +22278,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: StringFieldUpdateOperationsInput | string
     tags?: TagUncheckedUpdateManyWithoutTracksNestedInput
+    setItems?: SetItemUncheckedUpdateManyWithoutTrackNestedInput
   }
 
   export type TrackCreateManyInput = {
@@ -16907,6 +22546,315 @@ export namespace Prisma {
     respondedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
+  export type SetListCreateInput = {
+    setListId?: string
+    name: string
+    description?: string | null
+    isPrivate?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    owner: UserCreateNestedOneWithoutOwnedSetListsInput
+    guild?: GuildCreateNestedOneWithoutSetListsInput
+    setItems?: SetItemCreateNestedManyWithoutSetListInput
+    setSections?: SetSectionCreateNestedManyWithoutSetListInput
+    shares?: SetListShareCreateNestedManyWithoutSetListInput
+  }
+
+  export type SetListUncheckedCreateInput = {
+    setListId?: string
+    name: string
+    description?: string | null
+    ownerId: string
+    guildId?: string | null
+    isPrivate?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    setItems?: SetItemUncheckedCreateNestedManyWithoutSetListInput
+    setSections?: SetSectionUncheckedCreateNestedManyWithoutSetListInput
+    shares?: SetListShareUncheckedCreateNestedManyWithoutSetListInput
+  }
+
+  export type SetListUpdateInput = {
+    setListId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    isPrivate?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    owner?: UserUpdateOneRequiredWithoutOwnedSetListsNestedInput
+    guild?: GuildUpdateOneWithoutSetListsNestedInput
+    setItems?: SetItemUpdateManyWithoutSetListNestedInput
+    setSections?: SetSectionUpdateManyWithoutSetListNestedInput
+    shares?: SetListShareUpdateManyWithoutSetListNestedInput
+  }
+
+  export type SetListUncheckedUpdateInput = {
+    setListId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    ownerId?: StringFieldUpdateOperationsInput | string
+    guildId?: NullableStringFieldUpdateOperationsInput | string | null
+    isPrivate?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    setItems?: SetItemUncheckedUpdateManyWithoutSetListNestedInput
+    setSections?: SetSectionUncheckedUpdateManyWithoutSetListNestedInput
+    shares?: SetListShareUncheckedUpdateManyWithoutSetListNestedInput
+  }
+
+  export type SetListCreateManyInput = {
+    setListId?: string
+    name: string
+    description?: string | null
+    ownerId: string
+    guildId?: string | null
+    isPrivate?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type SetListUpdateManyMutationInput = {
+    setListId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    isPrivate?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SetListUncheckedUpdateManyInput = {
+    setListId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    ownerId?: StringFieldUpdateOperationsInput | string
+    guildId?: NullableStringFieldUpdateOperationsInput | string | null
+    isPrivate?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SetItemCreateInput = {
+    setItemId?: string
+    position: number
+    customTuning?: string | null
+    customNotes?: string | null
+    customDuration?: number | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    setList: SetListCreateNestedOneWithoutSetItemsInput
+    track: TrackCreateNestedOneWithoutSetItemsInput
+    section?: SetSectionCreateNestedOneWithoutSetItemsInput
+  }
+
+  export type SetItemUncheckedCreateInput = {
+    setItemId?: string
+    setListId: string
+    trackId: string
+    position: number
+    customTuning?: string | null
+    customNotes?: string | null
+    customDuration?: number | null
+    sectionId?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type SetItemUpdateInput = {
+    setItemId?: StringFieldUpdateOperationsInput | string
+    position?: IntFieldUpdateOperationsInput | number
+    customTuning?: NullableStringFieldUpdateOperationsInput | string | null
+    customNotes?: NullableStringFieldUpdateOperationsInput | string | null
+    customDuration?: NullableIntFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    setList?: SetListUpdateOneRequiredWithoutSetItemsNestedInput
+    track?: TrackUpdateOneRequiredWithoutSetItemsNestedInput
+    section?: SetSectionUpdateOneWithoutSetItemsNestedInput
+  }
+
+  export type SetItemUncheckedUpdateInput = {
+    setItemId?: StringFieldUpdateOperationsInput | string
+    setListId?: StringFieldUpdateOperationsInput | string
+    trackId?: StringFieldUpdateOperationsInput | string
+    position?: IntFieldUpdateOperationsInput | number
+    customTuning?: NullableStringFieldUpdateOperationsInput | string | null
+    customNotes?: NullableStringFieldUpdateOperationsInput | string | null
+    customDuration?: NullableIntFieldUpdateOperationsInput | number | null
+    sectionId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SetItemCreateManyInput = {
+    setItemId?: string
+    setListId: string
+    trackId: string
+    position: number
+    customTuning?: string | null
+    customNotes?: string | null
+    customDuration?: number | null
+    sectionId?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type SetItemUpdateManyMutationInput = {
+    setItemId?: StringFieldUpdateOperationsInput | string
+    position?: IntFieldUpdateOperationsInput | number
+    customTuning?: NullableStringFieldUpdateOperationsInput | string | null
+    customNotes?: NullableStringFieldUpdateOperationsInput | string | null
+    customDuration?: NullableIntFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SetItemUncheckedUpdateManyInput = {
+    setItemId?: StringFieldUpdateOperationsInput | string
+    setListId?: StringFieldUpdateOperationsInput | string
+    trackId?: StringFieldUpdateOperationsInput | string
+    position?: IntFieldUpdateOperationsInput | number
+    customTuning?: NullableStringFieldUpdateOperationsInput | string | null
+    customNotes?: NullableStringFieldUpdateOperationsInput | string | null
+    customDuration?: NullableIntFieldUpdateOperationsInput | number | null
+    sectionId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SetSectionCreateInput = {
+    sectionId?: string
+    name: string
+    position: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    setList: SetListCreateNestedOneWithoutSetSectionsInput
+    setItems?: SetItemCreateNestedManyWithoutSectionInput
+  }
+
+  export type SetSectionUncheckedCreateInput = {
+    sectionId?: string
+    setListId: string
+    name: string
+    position: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    setItems?: SetItemUncheckedCreateNestedManyWithoutSectionInput
+  }
+
+  export type SetSectionUpdateInput = {
+    sectionId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    position?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    setList?: SetListUpdateOneRequiredWithoutSetSectionsNestedInput
+    setItems?: SetItemUpdateManyWithoutSectionNestedInput
+  }
+
+  export type SetSectionUncheckedUpdateInput = {
+    sectionId?: StringFieldUpdateOperationsInput | string
+    setListId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    position?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    setItems?: SetItemUncheckedUpdateManyWithoutSectionNestedInput
+  }
+
+  export type SetSectionCreateManyInput = {
+    sectionId?: string
+    setListId: string
+    name: string
+    position: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type SetSectionUpdateManyMutationInput = {
+    sectionId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    position?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SetSectionUncheckedUpdateManyInput = {
+    sectionId?: StringFieldUpdateOperationsInput | string
+    setListId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    position?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SetListShareCreateInput = {
+    shareId?: string
+    shareToken: string
+    permission?: $Enums.SharePermission
+    expiresAt?: Date | string | null
+    createdAt?: Date | string
+    setList: SetListCreateNestedOneWithoutSharesInput
+    creator: UserCreateNestedOneWithoutCreatedSharesInput
+  }
+
+  export type SetListShareUncheckedCreateInput = {
+    shareId?: string
+    setListId: string
+    shareToken: string
+    permission?: $Enums.SharePermission
+    expiresAt?: Date | string | null
+    createdAt?: Date | string
+    createdBy: string
+  }
+
+  export type SetListShareUpdateInput = {
+    shareId?: StringFieldUpdateOperationsInput | string
+    shareToken?: StringFieldUpdateOperationsInput | string
+    permission?: EnumSharePermissionFieldUpdateOperationsInput | $Enums.SharePermission
+    expiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    setList?: SetListUpdateOneRequiredWithoutSharesNestedInput
+    creator?: UserUpdateOneRequiredWithoutCreatedSharesNestedInput
+  }
+
+  export type SetListShareUncheckedUpdateInput = {
+    shareId?: StringFieldUpdateOperationsInput | string
+    setListId?: StringFieldUpdateOperationsInput | string
+    shareToken?: StringFieldUpdateOperationsInput | string
+    permission?: EnumSharePermissionFieldUpdateOperationsInput | $Enums.SharePermission
+    expiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdBy?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type SetListShareCreateManyInput = {
+    shareId?: string
+    setListId: string
+    shareToken: string
+    permission?: $Enums.SharePermission
+    expiresAt?: Date | string | null
+    createdAt?: Date | string
+    createdBy: string
+  }
+
+  export type SetListShareUpdateManyMutationInput = {
+    shareId?: StringFieldUpdateOperationsInput | string
+    shareToken?: StringFieldUpdateOperationsInput | string
+    permission?: EnumSharePermissionFieldUpdateOperationsInput | $Enums.SharePermission
+    expiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SetListShareUncheckedUpdateManyInput = {
+    shareId?: StringFieldUpdateOperationsInput | string
+    setListId?: StringFieldUpdateOperationsInput | string
+    shareToken?: StringFieldUpdateOperationsInput | string
+    permission?: EnumSharePermissionFieldUpdateOperationsInput | $Enums.SharePermission
+    expiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdBy?: StringFieldUpdateOperationsInput | string
+  }
+
   export type StringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -16972,6 +22920,18 @@ export namespace Prisma {
     none?: GuildInvitationWhereInput
   }
 
+  export type SetListListRelationFilter = {
+    every?: SetListWhereInput
+    some?: SetListWhereInput
+    none?: SetListWhereInput
+  }
+
+  export type SetListShareListRelationFilter = {
+    every?: SetListShareWhereInput
+    some?: SetListShareWhereInput
+    none?: SetListShareWhereInput
+  }
+
   export type SortOrderInput = {
     sort: SortOrder
     nulls?: NullsOrder
@@ -16990,6 +22950,14 @@ export namespace Prisma {
   }
 
   export type GuildInvitationOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type SetListOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type SetListShareOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -17388,7 +23356,17 @@ export namespace Prisma {
     none?: TagWhereInput
   }
 
+  export type SetItemListRelationFilter = {
+    every?: SetItemWhereInput
+    some?: SetItemWhereInput
+    none?: SetItemWhereInput
+  }
+
   export type TagOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type SetItemOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -17676,6 +23654,205 @@ export namespace Prisma {
     _max?: NestedDateTimeNullableFilter<$PrismaModel>
   }
 
+  export type SetSectionListRelationFilter = {
+    every?: SetSectionWhereInput
+    some?: SetSectionWhereInput
+    none?: SetSectionWhereInput
+  }
+
+  export type SetSectionOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type SetListCountOrderByAggregateInput = {
+    setListId?: SortOrder
+    name?: SortOrder
+    description?: SortOrder
+    ownerId?: SortOrder
+    guildId?: SortOrder
+    isPrivate?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type SetListMaxOrderByAggregateInput = {
+    setListId?: SortOrder
+    name?: SortOrder
+    description?: SortOrder
+    ownerId?: SortOrder
+    guildId?: SortOrder
+    isPrivate?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type SetListMinOrderByAggregateInput = {
+    setListId?: SortOrder
+    name?: SortOrder
+    description?: SortOrder
+    ownerId?: SortOrder
+    guildId?: SortOrder
+    isPrivate?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type SetListScalarRelationFilter = {
+    is?: SetListWhereInput
+    isNot?: SetListWhereInput
+  }
+
+  export type TrackScalarRelationFilter = {
+    is?: TrackWhereInput
+    isNot?: TrackWhereInput
+  }
+
+  export type SetSectionNullableScalarRelationFilter = {
+    is?: SetSectionWhereInput | null
+    isNot?: SetSectionWhereInput | null
+  }
+
+  export type SetItemSetListIdPositionCompoundUniqueInput = {
+    setListId: string
+    position: number
+  }
+
+  export type SetItemCountOrderByAggregateInput = {
+    setItemId?: SortOrder
+    setListId?: SortOrder
+    trackId?: SortOrder
+    position?: SortOrder
+    customTuning?: SortOrder
+    customNotes?: SortOrder
+    customDuration?: SortOrder
+    sectionId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type SetItemAvgOrderByAggregateInput = {
+    position?: SortOrder
+    customDuration?: SortOrder
+  }
+
+  export type SetItemMaxOrderByAggregateInput = {
+    setItemId?: SortOrder
+    setListId?: SortOrder
+    trackId?: SortOrder
+    position?: SortOrder
+    customTuning?: SortOrder
+    customNotes?: SortOrder
+    customDuration?: SortOrder
+    sectionId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type SetItemMinOrderByAggregateInput = {
+    setItemId?: SortOrder
+    setListId?: SortOrder
+    trackId?: SortOrder
+    position?: SortOrder
+    customTuning?: SortOrder
+    customNotes?: SortOrder
+    customDuration?: SortOrder
+    sectionId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type SetItemSumOrderByAggregateInput = {
+    position?: SortOrder
+    customDuration?: SortOrder
+  }
+
+  export type SetSectionSetListIdPositionCompoundUniqueInput = {
+    setListId: string
+    position: number
+  }
+
+  export type SetSectionCountOrderByAggregateInput = {
+    sectionId?: SortOrder
+    setListId?: SortOrder
+    name?: SortOrder
+    position?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type SetSectionAvgOrderByAggregateInput = {
+    position?: SortOrder
+  }
+
+  export type SetSectionMaxOrderByAggregateInput = {
+    sectionId?: SortOrder
+    setListId?: SortOrder
+    name?: SortOrder
+    position?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type SetSectionMinOrderByAggregateInput = {
+    sectionId?: SortOrder
+    setListId?: SortOrder
+    name?: SortOrder
+    position?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type SetSectionSumOrderByAggregateInput = {
+    position?: SortOrder
+  }
+
+  export type EnumSharePermissionFilter<$PrismaModel = never> = {
+    equals?: $Enums.SharePermission | EnumSharePermissionFieldRefInput<$PrismaModel>
+    in?: $Enums.SharePermission[] | ListEnumSharePermissionFieldRefInput<$PrismaModel>
+    notIn?: $Enums.SharePermission[] | ListEnumSharePermissionFieldRefInput<$PrismaModel>
+    not?: NestedEnumSharePermissionFilter<$PrismaModel> | $Enums.SharePermission
+  }
+
+  export type SetListShareCountOrderByAggregateInput = {
+    shareId?: SortOrder
+    setListId?: SortOrder
+    shareToken?: SortOrder
+    permission?: SortOrder
+    expiresAt?: SortOrder
+    createdAt?: SortOrder
+    createdBy?: SortOrder
+  }
+
+  export type SetListShareMaxOrderByAggregateInput = {
+    shareId?: SortOrder
+    setListId?: SortOrder
+    shareToken?: SortOrder
+    permission?: SortOrder
+    expiresAt?: SortOrder
+    createdAt?: SortOrder
+    createdBy?: SortOrder
+  }
+
+  export type SetListShareMinOrderByAggregateInput = {
+    shareId?: SortOrder
+    setListId?: SortOrder
+    shareToken?: SortOrder
+    permission?: SortOrder
+    expiresAt?: SortOrder
+    createdAt?: SortOrder
+    createdBy?: SortOrder
+  }
+
+  export type EnumSharePermissionWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.SharePermission | EnumSharePermissionFieldRefInput<$PrismaModel>
+    in?: $Enums.SharePermission[] | ListEnumSharePermissionFieldRefInput<$PrismaModel>
+    notIn?: $Enums.SharePermission[] | ListEnumSharePermissionFieldRefInput<$PrismaModel>
+    not?: NestedEnumSharePermissionWithAggregatesFilter<$PrismaModel> | $Enums.SharePermission
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumSharePermissionFilter<$PrismaModel>
+    _max?: NestedEnumSharePermissionFilter<$PrismaModel>
+  }
+
   export type GuildCreateNestedManyWithoutCreatedByInput = {
     create?: XOR<GuildCreateWithoutCreatedByInput, GuildUncheckedCreateWithoutCreatedByInput> | GuildCreateWithoutCreatedByInput[] | GuildUncheckedCreateWithoutCreatedByInput[]
     connectOrCreate?: GuildCreateOrConnectWithoutCreatedByInput | GuildCreateOrConnectWithoutCreatedByInput[]
@@ -17731,6 +23908,20 @@ export namespace Prisma {
     connect?: GuildInvitationWhereUniqueInput | GuildInvitationWhereUniqueInput[]
   }
 
+  export type SetListCreateNestedManyWithoutOwnerInput = {
+    create?: XOR<SetListCreateWithoutOwnerInput, SetListUncheckedCreateWithoutOwnerInput> | SetListCreateWithoutOwnerInput[] | SetListUncheckedCreateWithoutOwnerInput[]
+    connectOrCreate?: SetListCreateOrConnectWithoutOwnerInput | SetListCreateOrConnectWithoutOwnerInput[]
+    createMany?: SetListCreateManyOwnerInputEnvelope
+    connect?: SetListWhereUniqueInput | SetListWhereUniqueInput[]
+  }
+
+  export type SetListShareCreateNestedManyWithoutCreatorInput = {
+    create?: XOR<SetListShareCreateWithoutCreatorInput, SetListShareUncheckedCreateWithoutCreatorInput> | SetListShareCreateWithoutCreatorInput[] | SetListShareUncheckedCreateWithoutCreatorInput[]
+    connectOrCreate?: SetListShareCreateOrConnectWithoutCreatorInput | SetListShareCreateOrConnectWithoutCreatorInput[]
+    createMany?: SetListShareCreateManyCreatorInputEnvelope
+    connect?: SetListShareWhereUniqueInput | SetListShareWhereUniqueInput[]
+  }
+
   export type GuildUncheckedCreateNestedManyWithoutCreatedByInput = {
     create?: XOR<GuildCreateWithoutCreatedByInput, GuildUncheckedCreateWithoutCreatedByInput> | GuildCreateWithoutCreatedByInput[] | GuildUncheckedCreateWithoutCreatedByInput[]
     connectOrCreate?: GuildCreateOrConnectWithoutCreatedByInput | GuildCreateOrConnectWithoutCreatedByInput[]
@@ -17784,6 +23975,20 @@ export namespace Prisma {
     connectOrCreate?: GuildInvitationCreateOrConnectWithoutInvitedUserInput | GuildInvitationCreateOrConnectWithoutInvitedUserInput[]
     createMany?: GuildInvitationCreateManyInvitedUserInputEnvelope
     connect?: GuildInvitationWhereUniqueInput | GuildInvitationWhereUniqueInput[]
+  }
+
+  export type SetListUncheckedCreateNestedManyWithoutOwnerInput = {
+    create?: XOR<SetListCreateWithoutOwnerInput, SetListUncheckedCreateWithoutOwnerInput> | SetListCreateWithoutOwnerInput[] | SetListUncheckedCreateWithoutOwnerInput[]
+    connectOrCreate?: SetListCreateOrConnectWithoutOwnerInput | SetListCreateOrConnectWithoutOwnerInput[]
+    createMany?: SetListCreateManyOwnerInputEnvelope
+    connect?: SetListWhereUniqueInput | SetListWhereUniqueInput[]
+  }
+
+  export type SetListShareUncheckedCreateNestedManyWithoutCreatorInput = {
+    create?: XOR<SetListShareCreateWithoutCreatorInput, SetListShareUncheckedCreateWithoutCreatorInput> | SetListShareCreateWithoutCreatorInput[] | SetListShareUncheckedCreateWithoutCreatorInput[]
+    connectOrCreate?: SetListShareCreateOrConnectWithoutCreatorInput | SetListShareCreateOrConnectWithoutCreatorInput[]
+    createMany?: SetListShareCreateManyCreatorInputEnvelope
+    connect?: SetListShareWhereUniqueInput | SetListShareWhereUniqueInput[]
   }
 
   export type StringFieldUpdateOperationsInput = {
@@ -17909,6 +24114,34 @@ export namespace Prisma {
     deleteMany?: GuildInvitationScalarWhereInput | GuildInvitationScalarWhereInput[]
   }
 
+  export type SetListUpdateManyWithoutOwnerNestedInput = {
+    create?: XOR<SetListCreateWithoutOwnerInput, SetListUncheckedCreateWithoutOwnerInput> | SetListCreateWithoutOwnerInput[] | SetListUncheckedCreateWithoutOwnerInput[]
+    connectOrCreate?: SetListCreateOrConnectWithoutOwnerInput | SetListCreateOrConnectWithoutOwnerInput[]
+    upsert?: SetListUpsertWithWhereUniqueWithoutOwnerInput | SetListUpsertWithWhereUniqueWithoutOwnerInput[]
+    createMany?: SetListCreateManyOwnerInputEnvelope
+    set?: SetListWhereUniqueInput | SetListWhereUniqueInput[]
+    disconnect?: SetListWhereUniqueInput | SetListWhereUniqueInput[]
+    delete?: SetListWhereUniqueInput | SetListWhereUniqueInput[]
+    connect?: SetListWhereUniqueInput | SetListWhereUniqueInput[]
+    update?: SetListUpdateWithWhereUniqueWithoutOwnerInput | SetListUpdateWithWhereUniqueWithoutOwnerInput[]
+    updateMany?: SetListUpdateManyWithWhereWithoutOwnerInput | SetListUpdateManyWithWhereWithoutOwnerInput[]
+    deleteMany?: SetListScalarWhereInput | SetListScalarWhereInput[]
+  }
+
+  export type SetListShareUpdateManyWithoutCreatorNestedInput = {
+    create?: XOR<SetListShareCreateWithoutCreatorInput, SetListShareUncheckedCreateWithoutCreatorInput> | SetListShareCreateWithoutCreatorInput[] | SetListShareUncheckedCreateWithoutCreatorInput[]
+    connectOrCreate?: SetListShareCreateOrConnectWithoutCreatorInput | SetListShareCreateOrConnectWithoutCreatorInput[]
+    upsert?: SetListShareUpsertWithWhereUniqueWithoutCreatorInput | SetListShareUpsertWithWhereUniqueWithoutCreatorInput[]
+    createMany?: SetListShareCreateManyCreatorInputEnvelope
+    set?: SetListShareWhereUniqueInput | SetListShareWhereUniqueInput[]
+    disconnect?: SetListShareWhereUniqueInput | SetListShareWhereUniqueInput[]
+    delete?: SetListShareWhereUniqueInput | SetListShareWhereUniqueInput[]
+    connect?: SetListShareWhereUniqueInput | SetListShareWhereUniqueInput[]
+    update?: SetListShareUpdateWithWhereUniqueWithoutCreatorInput | SetListShareUpdateWithWhereUniqueWithoutCreatorInput[]
+    updateMany?: SetListShareUpdateManyWithWhereWithoutCreatorInput | SetListShareUpdateManyWithWhereWithoutCreatorInput[]
+    deleteMany?: SetListShareScalarWhereInput | SetListShareScalarWhereInput[]
+  }
+
   export type GuildUncheckedUpdateManyWithoutCreatedByNestedInput = {
     create?: XOR<GuildCreateWithoutCreatedByInput, GuildUncheckedCreateWithoutCreatedByInput> | GuildCreateWithoutCreatedByInput[] | GuildUncheckedCreateWithoutCreatedByInput[]
     connectOrCreate?: GuildCreateOrConnectWithoutCreatedByInput | GuildCreateOrConnectWithoutCreatedByInput[]
@@ -18018,6 +24251,34 @@ export namespace Prisma {
     update?: GuildInvitationUpdateWithWhereUniqueWithoutInvitedUserInput | GuildInvitationUpdateWithWhereUniqueWithoutInvitedUserInput[]
     updateMany?: GuildInvitationUpdateManyWithWhereWithoutInvitedUserInput | GuildInvitationUpdateManyWithWhereWithoutInvitedUserInput[]
     deleteMany?: GuildInvitationScalarWhereInput | GuildInvitationScalarWhereInput[]
+  }
+
+  export type SetListUncheckedUpdateManyWithoutOwnerNestedInput = {
+    create?: XOR<SetListCreateWithoutOwnerInput, SetListUncheckedCreateWithoutOwnerInput> | SetListCreateWithoutOwnerInput[] | SetListUncheckedCreateWithoutOwnerInput[]
+    connectOrCreate?: SetListCreateOrConnectWithoutOwnerInput | SetListCreateOrConnectWithoutOwnerInput[]
+    upsert?: SetListUpsertWithWhereUniqueWithoutOwnerInput | SetListUpsertWithWhereUniqueWithoutOwnerInput[]
+    createMany?: SetListCreateManyOwnerInputEnvelope
+    set?: SetListWhereUniqueInput | SetListWhereUniqueInput[]
+    disconnect?: SetListWhereUniqueInput | SetListWhereUniqueInput[]
+    delete?: SetListWhereUniqueInput | SetListWhereUniqueInput[]
+    connect?: SetListWhereUniqueInput | SetListWhereUniqueInput[]
+    update?: SetListUpdateWithWhereUniqueWithoutOwnerInput | SetListUpdateWithWhereUniqueWithoutOwnerInput[]
+    updateMany?: SetListUpdateManyWithWhereWithoutOwnerInput | SetListUpdateManyWithWhereWithoutOwnerInput[]
+    deleteMany?: SetListScalarWhereInput | SetListScalarWhereInput[]
+  }
+
+  export type SetListShareUncheckedUpdateManyWithoutCreatorNestedInput = {
+    create?: XOR<SetListShareCreateWithoutCreatorInput, SetListShareUncheckedCreateWithoutCreatorInput> | SetListShareCreateWithoutCreatorInput[] | SetListShareUncheckedCreateWithoutCreatorInput[]
+    connectOrCreate?: SetListShareCreateOrConnectWithoutCreatorInput | SetListShareCreateOrConnectWithoutCreatorInput[]
+    upsert?: SetListShareUpsertWithWhereUniqueWithoutCreatorInput | SetListShareUpsertWithWhereUniqueWithoutCreatorInput[]
+    createMany?: SetListShareCreateManyCreatorInputEnvelope
+    set?: SetListShareWhereUniqueInput | SetListShareWhereUniqueInput[]
+    disconnect?: SetListShareWhereUniqueInput | SetListShareWhereUniqueInput[]
+    delete?: SetListShareWhereUniqueInput | SetListShareWhereUniqueInput[]
+    connect?: SetListShareWhereUniqueInput | SetListShareWhereUniqueInput[]
+    update?: SetListShareUpdateWithWhereUniqueWithoutCreatorInput | SetListShareUpdateWithWhereUniqueWithoutCreatorInput[]
+    updateMany?: SetListShareUpdateManyWithWhereWithoutCreatorInput | SetListShareUpdateManyWithWhereWithoutCreatorInput[]
+    deleteMany?: SetListShareScalarWhereInput | SetListShareScalarWhereInput[]
   }
 
   export type UserCreateNestedOneWithoutFollowsInput = {
@@ -18216,6 +24477,13 @@ export namespace Prisma {
     connect?: GuildInvitationWhereUniqueInput | GuildInvitationWhereUniqueInput[]
   }
 
+  export type SetListCreateNestedManyWithoutGuildInput = {
+    create?: XOR<SetListCreateWithoutGuildInput, SetListUncheckedCreateWithoutGuildInput> | SetListCreateWithoutGuildInput[] | SetListUncheckedCreateWithoutGuildInput[]
+    connectOrCreate?: SetListCreateOrConnectWithoutGuildInput | SetListCreateOrConnectWithoutGuildInput[]
+    createMany?: SetListCreateManyGuildInputEnvelope
+    connect?: SetListWhereUniqueInput | SetListWhereUniqueInput[]
+  }
+
   export type UserUncheckedCreateNestedManyWithoutMemberOfGuildsInput = {
     create?: XOR<UserCreateWithoutMemberOfGuildsInput, UserUncheckedCreateWithoutMemberOfGuildsInput> | UserCreateWithoutMemberOfGuildsInput[] | UserUncheckedCreateWithoutMemberOfGuildsInput[]
     connectOrCreate?: UserCreateOrConnectWithoutMemberOfGuildsInput | UserCreateOrConnectWithoutMemberOfGuildsInput[]
@@ -18234,6 +24502,13 @@ export namespace Prisma {
     connectOrCreate?: GuildInvitationCreateOrConnectWithoutGuildInput | GuildInvitationCreateOrConnectWithoutGuildInput[]
     createMany?: GuildInvitationCreateManyGuildInputEnvelope
     connect?: GuildInvitationWhereUniqueInput | GuildInvitationWhereUniqueInput[]
+  }
+
+  export type SetListUncheckedCreateNestedManyWithoutGuildInput = {
+    create?: XOR<SetListCreateWithoutGuildInput, SetListUncheckedCreateWithoutGuildInput> | SetListCreateWithoutGuildInput[] | SetListUncheckedCreateWithoutGuildInput[]
+    connectOrCreate?: SetListCreateOrConnectWithoutGuildInput | SetListCreateOrConnectWithoutGuildInput[]
+    createMany?: SetListCreateManyGuildInputEnvelope
+    connect?: SetListWhereUniqueInput | SetListWhereUniqueInput[]
   }
 
   export type EnumGuildTypeFieldUpdateOperationsInput = {
@@ -18329,6 +24604,20 @@ export namespace Prisma {
     deleteMany?: GuildInvitationScalarWhereInput | GuildInvitationScalarWhereInput[]
   }
 
+  export type SetListUpdateManyWithoutGuildNestedInput = {
+    create?: XOR<SetListCreateWithoutGuildInput, SetListUncheckedCreateWithoutGuildInput> | SetListCreateWithoutGuildInput[] | SetListUncheckedCreateWithoutGuildInput[]
+    connectOrCreate?: SetListCreateOrConnectWithoutGuildInput | SetListCreateOrConnectWithoutGuildInput[]
+    upsert?: SetListUpsertWithWhereUniqueWithoutGuildInput | SetListUpsertWithWhereUniqueWithoutGuildInput[]
+    createMany?: SetListCreateManyGuildInputEnvelope
+    set?: SetListWhereUniqueInput | SetListWhereUniqueInput[]
+    disconnect?: SetListWhereUniqueInput | SetListWhereUniqueInput[]
+    delete?: SetListWhereUniqueInput | SetListWhereUniqueInput[]
+    connect?: SetListWhereUniqueInput | SetListWhereUniqueInput[]
+    update?: SetListUpdateWithWhereUniqueWithoutGuildInput | SetListUpdateWithWhereUniqueWithoutGuildInput[]
+    updateMany?: SetListUpdateManyWithWhereWithoutGuildInput | SetListUpdateManyWithWhereWithoutGuildInput[]
+    deleteMany?: SetListScalarWhereInput | SetListScalarWhereInput[]
+  }
+
   export type UserUncheckedUpdateManyWithoutMemberOfGuildsNestedInput = {
     create?: XOR<UserCreateWithoutMemberOfGuildsInput, UserUncheckedCreateWithoutMemberOfGuildsInput> | UserCreateWithoutMemberOfGuildsInput[] | UserUncheckedCreateWithoutMemberOfGuildsInput[]
     connectOrCreate?: UserCreateOrConnectWithoutMemberOfGuildsInput | UserCreateOrConnectWithoutMemberOfGuildsInput[]
@@ -18368,6 +24657,20 @@ export namespace Prisma {
     update?: GuildInvitationUpdateWithWhereUniqueWithoutGuildInput | GuildInvitationUpdateWithWhereUniqueWithoutGuildInput[]
     updateMany?: GuildInvitationUpdateManyWithWhereWithoutGuildInput | GuildInvitationUpdateManyWithWhereWithoutGuildInput[]
     deleteMany?: GuildInvitationScalarWhereInput | GuildInvitationScalarWhereInput[]
+  }
+
+  export type SetListUncheckedUpdateManyWithoutGuildNestedInput = {
+    create?: XOR<SetListCreateWithoutGuildInput, SetListUncheckedCreateWithoutGuildInput> | SetListCreateWithoutGuildInput[] | SetListUncheckedCreateWithoutGuildInput[]
+    connectOrCreate?: SetListCreateOrConnectWithoutGuildInput | SetListCreateOrConnectWithoutGuildInput[]
+    upsert?: SetListUpsertWithWhereUniqueWithoutGuildInput | SetListUpsertWithWhereUniqueWithoutGuildInput[]
+    createMany?: SetListCreateManyGuildInputEnvelope
+    set?: SetListWhereUniqueInput | SetListWhereUniqueInput[]
+    disconnect?: SetListWhereUniqueInput | SetListWhereUniqueInput[]
+    delete?: SetListWhereUniqueInput | SetListWhereUniqueInput[]
+    connect?: SetListWhereUniqueInput | SetListWhereUniqueInput[]
+    update?: SetListUpdateWithWhereUniqueWithoutGuildInput | SetListUpdateWithWhereUniqueWithoutGuildInput[]
+    updateMany?: SetListUpdateManyWithWhereWithoutGuildInput | SetListUpdateManyWithWhereWithoutGuildInput[]
+    deleteMany?: SetListScalarWhereInput | SetListScalarWhereInput[]
   }
 
   export type GuildCreateNestedOneWithoutActInput = {
@@ -18552,10 +24855,24 @@ export namespace Prisma {
     connect?: TagWhereUniqueInput | TagWhereUniqueInput[]
   }
 
+  export type SetItemCreateNestedManyWithoutTrackInput = {
+    create?: XOR<SetItemCreateWithoutTrackInput, SetItemUncheckedCreateWithoutTrackInput> | SetItemCreateWithoutTrackInput[] | SetItemUncheckedCreateWithoutTrackInput[]
+    connectOrCreate?: SetItemCreateOrConnectWithoutTrackInput | SetItemCreateOrConnectWithoutTrackInput[]
+    createMany?: SetItemCreateManyTrackInputEnvelope
+    connect?: SetItemWhereUniqueInput | SetItemWhereUniqueInput[]
+  }
+
   export type TagUncheckedCreateNestedManyWithoutTracksInput = {
     create?: XOR<TagCreateWithoutTracksInput, TagUncheckedCreateWithoutTracksInput> | TagCreateWithoutTracksInput[] | TagUncheckedCreateWithoutTracksInput[]
     connectOrCreate?: TagCreateOrConnectWithoutTracksInput | TagCreateOrConnectWithoutTracksInput[]
     connect?: TagWhereUniqueInput | TagWhereUniqueInput[]
+  }
+
+  export type SetItemUncheckedCreateNestedManyWithoutTrackInput = {
+    create?: XOR<SetItemCreateWithoutTrackInput, SetItemUncheckedCreateWithoutTrackInput> | SetItemCreateWithoutTrackInput[] | SetItemUncheckedCreateWithoutTrackInput[]
+    connectOrCreate?: SetItemCreateOrConnectWithoutTrackInput | SetItemCreateOrConnectWithoutTrackInput[]
+    createMany?: SetItemCreateManyTrackInputEnvelope
+    connect?: SetItemWhereUniqueInput | SetItemWhereUniqueInput[]
   }
 
   export type EnumTrackTypeFieldUpdateOperationsInput = {
@@ -18587,6 +24904,20 @@ export namespace Prisma {
     deleteMany?: TagScalarWhereInput | TagScalarWhereInput[]
   }
 
+  export type SetItemUpdateManyWithoutTrackNestedInput = {
+    create?: XOR<SetItemCreateWithoutTrackInput, SetItemUncheckedCreateWithoutTrackInput> | SetItemCreateWithoutTrackInput[] | SetItemUncheckedCreateWithoutTrackInput[]
+    connectOrCreate?: SetItemCreateOrConnectWithoutTrackInput | SetItemCreateOrConnectWithoutTrackInput[]
+    upsert?: SetItemUpsertWithWhereUniqueWithoutTrackInput | SetItemUpsertWithWhereUniqueWithoutTrackInput[]
+    createMany?: SetItemCreateManyTrackInputEnvelope
+    set?: SetItemWhereUniqueInput | SetItemWhereUniqueInput[]
+    disconnect?: SetItemWhereUniqueInput | SetItemWhereUniqueInput[]
+    delete?: SetItemWhereUniqueInput | SetItemWhereUniqueInput[]
+    connect?: SetItemWhereUniqueInput | SetItemWhereUniqueInput[]
+    update?: SetItemUpdateWithWhereUniqueWithoutTrackInput | SetItemUpdateWithWhereUniqueWithoutTrackInput[]
+    updateMany?: SetItemUpdateManyWithWhereWithoutTrackInput | SetItemUpdateManyWithWhereWithoutTrackInput[]
+    deleteMany?: SetItemScalarWhereInput | SetItemScalarWhereInput[]
+  }
+
   export type TagUncheckedUpdateManyWithoutTracksNestedInput = {
     create?: XOR<TagCreateWithoutTracksInput, TagUncheckedCreateWithoutTracksInput> | TagCreateWithoutTracksInput[] | TagUncheckedCreateWithoutTracksInput[]
     connectOrCreate?: TagCreateOrConnectWithoutTracksInput | TagCreateOrConnectWithoutTracksInput[]
@@ -18598,6 +24929,20 @@ export namespace Prisma {
     update?: TagUpdateWithWhereUniqueWithoutTracksInput | TagUpdateWithWhereUniqueWithoutTracksInput[]
     updateMany?: TagUpdateManyWithWhereWithoutTracksInput | TagUpdateManyWithWhereWithoutTracksInput[]
     deleteMany?: TagScalarWhereInput | TagScalarWhereInput[]
+  }
+
+  export type SetItemUncheckedUpdateManyWithoutTrackNestedInput = {
+    create?: XOR<SetItemCreateWithoutTrackInput, SetItemUncheckedCreateWithoutTrackInput> | SetItemCreateWithoutTrackInput[] | SetItemUncheckedCreateWithoutTrackInput[]
+    connectOrCreate?: SetItemCreateOrConnectWithoutTrackInput | SetItemCreateOrConnectWithoutTrackInput[]
+    upsert?: SetItemUpsertWithWhereUniqueWithoutTrackInput | SetItemUpsertWithWhereUniqueWithoutTrackInput[]
+    createMany?: SetItemCreateManyTrackInputEnvelope
+    set?: SetItemWhereUniqueInput | SetItemWhereUniqueInput[]
+    disconnect?: SetItemWhereUniqueInput | SetItemWhereUniqueInput[]
+    delete?: SetItemWhereUniqueInput | SetItemWhereUniqueInput[]
+    connect?: SetItemWhereUniqueInput | SetItemWhereUniqueInput[]
+    update?: SetItemUpdateWithWhereUniqueWithoutTrackInput | SetItemUpdateWithWhereUniqueWithoutTrackInput[]
+    updateMany?: SetItemUpdateManyWithWhereWithoutTrackInput | SetItemUpdateManyWithWhereWithoutTrackInput[]
+    deleteMany?: SetItemScalarWhereInput | SetItemScalarWhereInput[]
   }
 
   export type VenueCreateNestedOneWithoutCalendarEventsInput = {
@@ -18784,6 +25129,294 @@ export namespace Prisma {
     delete?: UserWhereInput | boolean
     connect?: UserWhereUniqueInput
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutSentInvitationsInput, UserUpdateWithoutSentInvitationsInput>, UserUncheckedUpdateWithoutSentInvitationsInput>
+  }
+
+  export type UserCreateNestedOneWithoutOwnedSetListsInput = {
+    create?: XOR<UserCreateWithoutOwnedSetListsInput, UserUncheckedCreateWithoutOwnedSetListsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutOwnedSetListsInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type GuildCreateNestedOneWithoutSetListsInput = {
+    create?: XOR<GuildCreateWithoutSetListsInput, GuildUncheckedCreateWithoutSetListsInput>
+    connectOrCreate?: GuildCreateOrConnectWithoutSetListsInput
+    connect?: GuildWhereUniqueInput
+  }
+
+  export type SetItemCreateNestedManyWithoutSetListInput = {
+    create?: XOR<SetItemCreateWithoutSetListInput, SetItemUncheckedCreateWithoutSetListInput> | SetItemCreateWithoutSetListInput[] | SetItemUncheckedCreateWithoutSetListInput[]
+    connectOrCreate?: SetItemCreateOrConnectWithoutSetListInput | SetItemCreateOrConnectWithoutSetListInput[]
+    createMany?: SetItemCreateManySetListInputEnvelope
+    connect?: SetItemWhereUniqueInput | SetItemWhereUniqueInput[]
+  }
+
+  export type SetSectionCreateNestedManyWithoutSetListInput = {
+    create?: XOR<SetSectionCreateWithoutSetListInput, SetSectionUncheckedCreateWithoutSetListInput> | SetSectionCreateWithoutSetListInput[] | SetSectionUncheckedCreateWithoutSetListInput[]
+    connectOrCreate?: SetSectionCreateOrConnectWithoutSetListInput | SetSectionCreateOrConnectWithoutSetListInput[]
+    createMany?: SetSectionCreateManySetListInputEnvelope
+    connect?: SetSectionWhereUniqueInput | SetSectionWhereUniqueInput[]
+  }
+
+  export type SetListShareCreateNestedManyWithoutSetListInput = {
+    create?: XOR<SetListShareCreateWithoutSetListInput, SetListShareUncheckedCreateWithoutSetListInput> | SetListShareCreateWithoutSetListInput[] | SetListShareUncheckedCreateWithoutSetListInput[]
+    connectOrCreate?: SetListShareCreateOrConnectWithoutSetListInput | SetListShareCreateOrConnectWithoutSetListInput[]
+    createMany?: SetListShareCreateManySetListInputEnvelope
+    connect?: SetListShareWhereUniqueInput | SetListShareWhereUniqueInput[]
+  }
+
+  export type SetItemUncheckedCreateNestedManyWithoutSetListInput = {
+    create?: XOR<SetItemCreateWithoutSetListInput, SetItemUncheckedCreateWithoutSetListInput> | SetItemCreateWithoutSetListInput[] | SetItemUncheckedCreateWithoutSetListInput[]
+    connectOrCreate?: SetItemCreateOrConnectWithoutSetListInput | SetItemCreateOrConnectWithoutSetListInput[]
+    createMany?: SetItemCreateManySetListInputEnvelope
+    connect?: SetItemWhereUniqueInput | SetItemWhereUniqueInput[]
+  }
+
+  export type SetSectionUncheckedCreateNestedManyWithoutSetListInput = {
+    create?: XOR<SetSectionCreateWithoutSetListInput, SetSectionUncheckedCreateWithoutSetListInput> | SetSectionCreateWithoutSetListInput[] | SetSectionUncheckedCreateWithoutSetListInput[]
+    connectOrCreate?: SetSectionCreateOrConnectWithoutSetListInput | SetSectionCreateOrConnectWithoutSetListInput[]
+    createMany?: SetSectionCreateManySetListInputEnvelope
+    connect?: SetSectionWhereUniqueInput | SetSectionWhereUniqueInput[]
+  }
+
+  export type SetListShareUncheckedCreateNestedManyWithoutSetListInput = {
+    create?: XOR<SetListShareCreateWithoutSetListInput, SetListShareUncheckedCreateWithoutSetListInput> | SetListShareCreateWithoutSetListInput[] | SetListShareUncheckedCreateWithoutSetListInput[]
+    connectOrCreate?: SetListShareCreateOrConnectWithoutSetListInput | SetListShareCreateOrConnectWithoutSetListInput[]
+    createMany?: SetListShareCreateManySetListInputEnvelope
+    connect?: SetListShareWhereUniqueInput | SetListShareWhereUniqueInput[]
+  }
+
+  export type UserUpdateOneRequiredWithoutOwnedSetListsNestedInput = {
+    create?: XOR<UserCreateWithoutOwnedSetListsInput, UserUncheckedCreateWithoutOwnedSetListsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutOwnedSetListsInput
+    upsert?: UserUpsertWithoutOwnedSetListsInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutOwnedSetListsInput, UserUpdateWithoutOwnedSetListsInput>, UserUncheckedUpdateWithoutOwnedSetListsInput>
+  }
+
+  export type GuildUpdateOneWithoutSetListsNestedInput = {
+    create?: XOR<GuildCreateWithoutSetListsInput, GuildUncheckedCreateWithoutSetListsInput>
+    connectOrCreate?: GuildCreateOrConnectWithoutSetListsInput
+    upsert?: GuildUpsertWithoutSetListsInput
+    disconnect?: GuildWhereInput | boolean
+    delete?: GuildWhereInput | boolean
+    connect?: GuildWhereUniqueInput
+    update?: XOR<XOR<GuildUpdateToOneWithWhereWithoutSetListsInput, GuildUpdateWithoutSetListsInput>, GuildUncheckedUpdateWithoutSetListsInput>
+  }
+
+  export type SetItemUpdateManyWithoutSetListNestedInput = {
+    create?: XOR<SetItemCreateWithoutSetListInput, SetItemUncheckedCreateWithoutSetListInput> | SetItemCreateWithoutSetListInput[] | SetItemUncheckedCreateWithoutSetListInput[]
+    connectOrCreate?: SetItemCreateOrConnectWithoutSetListInput | SetItemCreateOrConnectWithoutSetListInput[]
+    upsert?: SetItemUpsertWithWhereUniqueWithoutSetListInput | SetItemUpsertWithWhereUniqueWithoutSetListInput[]
+    createMany?: SetItemCreateManySetListInputEnvelope
+    set?: SetItemWhereUniqueInput | SetItemWhereUniqueInput[]
+    disconnect?: SetItemWhereUniqueInput | SetItemWhereUniqueInput[]
+    delete?: SetItemWhereUniqueInput | SetItemWhereUniqueInput[]
+    connect?: SetItemWhereUniqueInput | SetItemWhereUniqueInput[]
+    update?: SetItemUpdateWithWhereUniqueWithoutSetListInput | SetItemUpdateWithWhereUniqueWithoutSetListInput[]
+    updateMany?: SetItemUpdateManyWithWhereWithoutSetListInput | SetItemUpdateManyWithWhereWithoutSetListInput[]
+    deleteMany?: SetItemScalarWhereInput | SetItemScalarWhereInput[]
+  }
+
+  export type SetSectionUpdateManyWithoutSetListNestedInput = {
+    create?: XOR<SetSectionCreateWithoutSetListInput, SetSectionUncheckedCreateWithoutSetListInput> | SetSectionCreateWithoutSetListInput[] | SetSectionUncheckedCreateWithoutSetListInput[]
+    connectOrCreate?: SetSectionCreateOrConnectWithoutSetListInput | SetSectionCreateOrConnectWithoutSetListInput[]
+    upsert?: SetSectionUpsertWithWhereUniqueWithoutSetListInput | SetSectionUpsertWithWhereUniqueWithoutSetListInput[]
+    createMany?: SetSectionCreateManySetListInputEnvelope
+    set?: SetSectionWhereUniqueInput | SetSectionWhereUniqueInput[]
+    disconnect?: SetSectionWhereUniqueInput | SetSectionWhereUniqueInput[]
+    delete?: SetSectionWhereUniqueInput | SetSectionWhereUniqueInput[]
+    connect?: SetSectionWhereUniqueInput | SetSectionWhereUniqueInput[]
+    update?: SetSectionUpdateWithWhereUniqueWithoutSetListInput | SetSectionUpdateWithWhereUniqueWithoutSetListInput[]
+    updateMany?: SetSectionUpdateManyWithWhereWithoutSetListInput | SetSectionUpdateManyWithWhereWithoutSetListInput[]
+    deleteMany?: SetSectionScalarWhereInput | SetSectionScalarWhereInput[]
+  }
+
+  export type SetListShareUpdateManyWithoutSetListNestedInput = {
+    create?: XOR<SetListShareCreateWithoutSetListInput, SetListShareUncheckedCreateWithoutSetListInput> | SetListShareCreateWithoutSetListInput[] | SetListShareUncheckedCreateWithoutSetListInput[]
+    connectOrCreate?: SetListShareCreateOrConnectWithoutSetListInput | SetListShareCreateOrConnectWithoutSetListInput[]
+    upsert?: SetListShareUpsertWithWhereUniqueWithoutSetListInput | SetListShareUpsertWithWhereUniqueWithoutSetListInput[]
+    createMany?: SetListShareCreateManySetListInputEnvelope
+    set?: SetListShareWhereUniqueInput | SetListShareWhereUniqueInput[]
+    disconnect?: SetListShareWhereUniqueInput | SetListShareWhereUniqueInput[]
+    delete?: SetListShareWhereUniqueInput | SetListShareWhereUniqueInput[]
+    connect?: SetListShareWhereUniqueInput | SetListShareWhereUniqueInput[]
+    update?: SetListShareUpdateWithWhereUniqueWithoutSetListInput | SetListShareUpdateWithWhereUniqueWithoutSetListInput[]
+    updateMany?: SetListShareUpdateManyWithWhereWithoutSetListInput | SetListShareUpdateManyWithWhereWithoutSetListInput[]
+    deleteMany?: SetListShareScalarWhereInput | SetListShareScalarWhereInput[]
+  }
+
+  export type SetItemUncheckedUpdateManyWithoutSetListNestedInput = {
+    create?: XOR<SetItemCreateWithoutSetListInput, SetItemUncheckedCreateWithoutSetListInput> | SetItemCreateWithoutSetListInput[] | SetItemUncheckedCreateWithoutSetListInput[]
+    connectOrCreate?: SetItemCreateOrConnectWithoutSetListInput | SetItemCreateOrConnectWithoutSetListInput[]
+    upsert?: SetItemUpsertWithWhereUniqueWithoutSetListInput | SetItemUpsertWithWhereUniqueWithoutSetListInput[]
+    createMany?: SetItemCreateManySetListInputEnvelope
+    set?: SetItemWhereUniqueInput | SetItemWhereUniqueInput[]
+    disconnect?: SetItemWhereUniqueInput | SetItemWhereUniqueInput[]
+    delete?: SetItemWhereUniqueInput | SetItemWhereUniqueInput[]
+    connect?: SetItemWhereUniqueInput | SetItemWhereUniqueInput[]
+    update?: SetItemUpdateWithWhereUniqueWithoutSetListInput | SetItemUpdateWithWhereUniqueWithoutSetListInput[]
+    updateMany?: SetItemUpdateManyWithWhereWithoutSetListInput | SetItemUpdateManyWithWhereWithoutSetListInput[]
+    deleteMany?: SetItemScalarWhereInput | SetItemScalarWhereInput[]
+  }
+
+  export type SetSectionUncheckedUpdateManyWithoutSetListNestedInput = {
+    create?: XOR<SetSectionCreateWithoutSetListInput, SetSectionUncheckedCreateWithoutSetListInput> | SetSectionCreateWithoutSetListInput[] | SetSectionUncheckedCreateWithoutSetListInput[]
+    connectOrCreate?: SetSectionCreateOrConnectWithoutSetListInput | SetSectionCreateOrConnectWithoutSetListInput[]
+    upsert?: SetSectionUpsertWithWhereUniqueWithoutSetListInput | SetSectionUpsertWithWhereUniqueWithoutSetListInput[]
+    createMany?: SetSectionCreateManySetListInputEnvelope
+    set?: SetSectionWhereUniqueInput | SetSectionWhereUniqueInput[]
+    disconnect?: SetSectionWhereUniqueInput | SetSectionWhereUniqueInput[]
+    delete?: SetSectionWhereUniqueInput | SetSectionWhereUniqueInput[]
+    connect?: SetSectionWhereUniqueInput | SetSectionWhereUniqueInput[]
+    update?: SetSectionUpdateWithWhereUniqueWithoutSetListInput | SetSectionUpdateWithWhereUniqueWithoutSetListInput[]
+    updateMany?: SetSectionUpdateManyWithWhereWithoutSetListInput | SetSectionUpdateManyWithWhereWithoutSetListInput[]
+    deleteMany?: SetSectionScalarWhereInput | SetSectionScalarWhereInput[]
+  }
+
+  export type SetListShareUncheckedUpdateManyWithoutSetListNestedInput = {
+    create?: XOR<SetListShareCreateWithoutSetListInput, SetListShareUncheckedCreateWithoutSetListInput> | SetListShareCreateWithoutSetListInput[] | SetListShareUncheckedCreateWithoutSetListInput[]
+    connectOrCreate?: SetListShareCreateOrConnectWithoutSetListInput | SetListShareCreateOrConnectWithoutSetListInput[]
+    upsert?: SetListShareUpsertWithWhereUniqueWithoutSetListInput | SetListShareUpsertWithWhereUniqueWithoutSetListInput[]
+    createMany?: SetListShareCreateManySetListInputEnvelope
+    set?: SetListShareWhereUniqueInput | SetListShareWhereUniqueInput[]
+    disconnect?: SetListShareWhereUniqueInput | SetListShareWhereUniqueInput[]
+    delete?: SetListShareWhereUniqueInput | SetListShareWhereUniqueInput[]
+    connect?: SetListShareWhereUniqueInput | SetListShareWhereUniqueInput[]
+    update?: SetListShareUpdateWithWhereUniqueWithoutSetListInput | SetListShareUpdateWithWhereUniqueWithoutSetListInput[]
+    updateMany?: SetListShareUpdateManyWithWhereWithoutSetListInput | SetListShareUpdateManyWithWhereWithoutSetListInput[]
+    deleteMany?: SetListShareScalarWhereInput | SetListShareScalarWhereInput[]
+  }
+
+  export type SetListCreateNestedOneWithoutSetItemsInput = {
+    create?: XOR<SetListCreateWithoutSetItemsInput, SetListUncheckedCreateWithoutSetItemsInput>
+    connectOrCreate?: SetListCreateOrConnectWithoutSetItemsInput
+    connect?: SetListWhereUniqueInput
+  }
+
+  export type TrackCreateNestedOneWithoutSetItemsInput = {
+    create?: XOR<TrackCreateWithoutSetItemsInput, TrackUncheckedCreateWithoutSetItemsInput>
+    connectOrCreate?: TrackCreateOrConnectWithoutSetItemsInput
+    connect?: TrackWhereUniqueInput
+  }
+
+  export type SetSectionCreateNestedOneWithoutSetItemsInput = {
+    create?: XOR<SetSectionCreateWithoutSetItemsInput, SetSectionUncheckedCreateWithoutSetItemsInput>
+    connectOrCreate?: SetSectionCreateOrConnectWithoutSetItemsInput
+    connect?: SetSectionWhereUniqueInput
+  }
+
+  export type SetListUpdateOneRequiredWithoutSetItemsNestedInput = {
+    create?: XOR<SetListCreateWithoutSetItemsInput, SetListUncheckedCreateWithoutSetItemsInput>
+    connectOrCreate?: SetListCreateOrConnectWithoutSetItemsInput
+    upsert?: SetListUpsertWithoutSetItemsInput
+    connect?: SetListWhereUniqueInput
+    update?: XOR<XOR<SetListUpdateToOneWithWhereWithoutSetItemsInput, SetListUpdateWithoutSetItemsInput>, SetListUncheckedUpdateWithoutSetItemsInput>
+  }
+
+  export type TrackUpdateOneRequiredWithoutSetItemsNestedInput = {
+    create?: XOR<TrackCreateWithoutSetItemsInput, TrackUncheckedCreateWithoutSetItemsInput>
+    connectOrCreate?: TrackCreateOrConnectWithoutSetItemsInput
+    upsert?: TrackUpsertWithoutSetItemsInput
+    connect?: TrackWhereUniqueInput
+    update?: XOR<XOR<TrackUpdateToOneWithWhereWithoutSetItemsInput, TrackUpdateWithoutSetItemsInput>, TrackUncheckedUpdateWithoutSetItemsInput>
+  }
+
+  export type SetSectionUpdateOneWithoutSetItemsNestedInput = {
+    create?: XOR<SetSectionCreateWithoutSetItemsInput, SetSectionUncheckedCreateWithoutSetItemsInput>
+    connectOrCreate?: SetSectionCreateOrConnectWithoutSetItemsInput
+    upsert?: SetSectionUpsertWithoutSetItemsInput
+    disconnect?: SetSectionWhereInput | boolean
+    delete?: SetSectionWhereInput | boolean
+    connect?: SetSectionWhereUniqueInput
+    update?: XOR<XOR<SetSectionUpdateToOneWithWhereWithoutSetItemsInput, SetSectionUpdateWithoutSetItemsInput>, SetSectionUncheckedUpdateWithoutSetItemsInput>
+  }
+
+  export type SetListCreateNestedOneWithoutSetSectionsInput = {
+    create?: XOR<SetListCreateWithoutSetSectionsInput, SetListUncheckedCreateWithoutSetSectionsInput>
+    connectOrCreate?: SetListCreateOrConnectWithoutSetSectionsInput
+    connect?: SetListWhereUniqueInput
+  }
+
+  export type SetItemCreateNestedManyWithoutSectionInput = {
+    create?: XOR<SetItemCreateWithoutSectionInput, SetItemUncheckedCreateWithoutSectionInput> | SetItemCreateWithoutSectionInput[] | SetItemUncheckedCreateWithoutSectionInput[]
+    connectOrCreate?: SetItemCreateOrConnectWithoutSectionInput | SetItemCreateOrConnectWithoutSectionInput[]
+    createMany?: SetItemCreateManySectionInputEnvelope
+    connect?: SetItemWhereUniqueInput | SetItemWhereUniqueInput[]
+  }
+
+  export type SetItemUncheckedCreateNestedManyWithoutSectionInput = {
+    create?: XOR<SetItemCreateWithoutSectionInput, SetItemUncheckedCreateWithoutSectionInput> | SetItemCreateWithoutSectionInput[] | SetItemUncheckedCreateWithoutSectionInput[]
+    connectOrCreate?: SetItemCreateOrConnectWithoutSectionInput | SetItemCreateOrConnectWithoutSectionInput[]
+    createMany?: SetItemCreateManySectionInputEnvelope
+    connect?: SetItemWhereUniqueInput | SetItemWhereUniqueInput[]
+  }
+
+  export type SetListUpdateOneRequiredWithoutSetSectionsNestedInput = {
+    create?: XOR<SetListCreateWithoutSetSectionsInput, SetListUncheckedCreateWithoutSetSectionsInput>
+    connectOrCreate?: SetListCreateOrConnectWithoutSetSectionsInput
+    upsert?: SetListUpsertWithoutSetSectionsInput
+    connect?: SetListWhereUniqueInput
+    update?: XOR<XOR<SetListUpdateToOneWithWhereWithoutSetSectionsInput, SetListUpdateWithoutSetSectionsInput>, SetListUncheckedUpdateWithoutSetSectionsInput>
+  }
+
+  export type SetItemUpdateManyWithoutSectionNestedInput = {
+    create?: XOR<SetItemCreateWithoutSectionInput, SetItemUncheckedCreateWithoutSectionInput> | SetItemCreateWithoutSectionInput[] | SetItemUncheckedCreateWithoutSectionInput[]
+    connectOrCreate?: SetItemCreateOrConnectWithoutSectionInput | SetItemCreateOrConnectWithoutSectionInput[]
+    upsert?: SetItemUpsertWithWhereUniqueWithoutSectionInput | SetItemUpsertWithWhereUniqueWithoutSectionInput[]
+    createMany?: SetItemCreateManySectionInputEnvelope
+    set?: SetItemWhereUniqueInput | SetItemWhereUniqueInput[]
+    disconnect?: SetItemWhereUniqueInput | SetItemWhereUniqueInput[]
+    delete?: SetItemWhereUniqueInput | SetItemWhereUniqueInput[]
+    connect?: SetItemWhereUniqueInput | SetItemWhereUniqueInput[]
+    update?: SetItemUpdateWithWhereUniqueWithoutSectionInput | SetItemUpdateWithWhereUniqueWithoutSectionInput[]
+    updateMany?: SetItemUpdateManyWithWhereWithoutSectionInput | SetItemUpdateManyWithWhereWithoutSectionInput[]
+    deleteMany?: SetItemScalarWhereInput | SetItemScalarWhereInput[]
+  }
+
+  export type SetItemUncheckedUpdateManyWithoutSectionNestedInput = {
+    create?: XOR<SetItemCreateWithoutSectionInput, SetItemUncheckedCreateWithoutSectionInput> | SetItemCreateWithoutSectionInput[] | SetItemUncheckedCreateWithoutSectionInput[]
+    connectOrCreate?: SetItemCreateOrConnectWithoutSectionInput | SetItemCreateOrConnectWithoutSectionInput[]
+    upsert?: SetItemUpsertWithWhereUniqueWithoutSectionInput | SetItemUpsertWithWhereUniqueWithoutSectionInput[]
+    createMany?: SetItemCreateManySectionInputEnvelope
+    set?: SetItemWhereUniqueInput | SetItemWhereUniqueInput[]
+    disconnect?: SetItemWhereUniqueInput | SetItemWhereUniqueInput[]
+    delete?: SetItemWhereUniqueInput | SetItemWhereUniqueInput[]
+    connect?: SetItemWhereUniqueInput | SetItemWhereUniqueInput[]
+    update?: SetItemUpdateWithWhereUniqueWithoutSectionInput | SetItemUpdateWithWhereUniqueWithoutSectionInput[]
+    updateMany?: SetItemUpdateManyWithWhereWithoutSectionInput | SetItemUpdateManyWithWhereWithoutSectionInput[]
+    deleteMany?: SetItemScalarWhereInput | SetItemScalarWhereInput[]
+  }
+
+  export type SetListCreateNestedOneWithoutSharesInput = {
+    create?: XOR<SetListCreateWithoutSharesInput, SetListUncheckedCreateWithoutSharesInput>
+    connectOrCreate?: SetListCreateOrConnectWithoutSharesInput
+    connect?: SetListWhereUniqueInput
+  }
+
+  export type UserCreateNestedOneWithoutCreatedSharesInput = {
+    create?: XOR<UserCreateWithoutCreatedSharesInput, UserUncheckedCreateWithoutCreatedSharesInput>
+    connectOrCreate?: UserCreateOrConnectWithoutCreatedSharesInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type EnumSharePermissionFieldUpdateOperationsInput = {
+    set?: $Enums.SharePermission
+  }
+
+  export type SetListUpdateOneRequiredWithoutSharesNestedInput = {
+    create?: XOR<SetListCreateWithoutSharesInput, SetListUncheckedCreateWithoutSharesInput>
+    connectOrCreate?: SetListCreateOrConnectWithoutSharesInput
+    upsert?: SetListUpsertWithoutSharesInput
+    connect?: SetListWhereUniqueInput
+    update?: XOR<XOR<SetListUpdateToOneWithWhereWithoutSharesInput, SetListUpdateWithoutSharesInput>, SetListUncheckedUpdateWithoutSharesInput>
+  }
+
+  export type UserUpdateOneRequiredWithoutCreatedSharesNestedInput = {
+    create?: XOR<UserCreateWithoutCreatedSharesInput, UserUncheckedCreateWithoutCreatedSharesInput>
+    connectOrCreate?: UserCreateOrConnectWithoutCreatedSharesInput
+    upsert?: UserUpsertWithoutCreatedSharesInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutCreatedSharesInput, UserUpdateWithoutCreatedSharesInput>, UserUncheckedUpdateWithoutCreatedSharesInput>
   }
 
   export type NestedStringFilter<$PrismaModel = never> = {
@@ -19055,6 +25688,23 @@ export namespace Prisma {
     _max?: NestedDateTimeNullableFilter<$PrismaModel>
   }
 
+  export type NestedEnumSharePermissionFilter<$PrismaModel = never> = {
+    equals?: $Enums.SharePermission | EnumSharePermissionFieldRefInput<$PrismaModel>
+    in?: $Enums.SharePermission[] | ListEnumSharePermissionFieldRefInput<$PrismaModel>
+    notIn?: $Enums.SharePermission[] | ListEnumSharePermissionFieldRefInput<$PrismaModel>
+    not?: NestedEnumSharePermissionFilter<$PrismaModel> | $Enums.SharePermission
+  }
+
+  export type NestedEnumSharePermissionWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.SharePermission | EnumSharePermissionFieldRefInput<$PrismaModel>
+    in?: $Enums.SharePermission[] | ListEnumSharePermissionFieldRefInput<$PrismaModel>
+    notIn?: $Enums.SharePermission[] | ListEnumSharePermissionFieldRefInput<$PrismaModel>
+    not?: NestedEnumSharePermissionWithAggregatesFilter<$PrismaModel> | $Enums.SharePermission
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumSharePermissionFilter<$PrismaModel>
+    _max?: NestedEnumSharePermissionFilter<$PrismaModel>
+  }
+
   export type GuildCreateWithoutCreatedByInput = {
     guildId?: string
     name: string
@@ -19067,6 +25717,7 @@ export namespace Prisma {
     club?: ClubCreateNestedOneWithoutGuildInput
     follows?: FollowCreateNestedManyWithoutGuildInput
     invitations?: GuildInvitationCreateNestedManyWithoutGuildInput
+    setLists?: SetListCreateNestedManyWithoutGuildInput
   }
 
   export type GuildUncheckedCreateWithoutCreatedByInput = {
@@ -19081,6 +25732,7 @@ export namespace Prisma {
     members?: UserUncheckedCreateNestedManyWithoutMemberOfGuildsInput
     follows?: FollowUncheckedCreateNestedManyWithoutGuildInput
     invitations?: GuildInvitationUncheckedCreateNestedManyWithoutGuildInput
+    setLists?: SetListUncheckedCreateNestedManyWithoutGuildInput
   }
 
   export type GuildCreateOrConnectWithoutCreatedByInput = {
@@ -19105,6 +25757,7 @@ export namespace Prisma {
     club?: ClubCreateNestedOneWithoutGuildInput
     follows?: FollowCreateNestedManyWithoutGuildInput
     invitations?: GuildInvitationCreateNestedManyWithoutGuildInput
+    setLists?: SetListCreateNestedManyWithoutGuildInput
   }
 
   export type GuildUncheckedCreateWithoutCurrentOwnerInput = {
@@ -19119,6 +25772,7 @@ export namespace Prisma {
     members?: UserUncheckedCreateNestedManyWithoutMemberOfGuildsInput
     follows?: FollowUncheckedCreateNestedManyWithoutGuildInput
     invitations?: GuildInvitationUncheckedCreateNestedManyWithoutGuildInput
+    setLists?: SetListUncheckedCreateNestedManyWithoutGuildInput
   }
 
   export type GuildCreateOrConnectWithoutCurrentOwnerInput = {
@@ -19143,6 +25797,7 @@ export namespace Prisma {
     club?: ClubCreateNestedOneWithoutGuildInput
     follows?: FollowCreateNestedManyWithoutGuildInput
     invitations?: GuildInvitationCreateNestedManyWithoutGuildInput
+    setLists?: SetListCreateNestedManyWithoutGuildInput
   }
 
   export type GuildUncheckedCreateWithoutMembersInput = {
@@ -19157,6 +25812,7 @@ export namespace Prisma {
     clubId?: string | null
     follows?: FollowUncheckedCreateNestedManyWithoutGuildInput
     invitations?: GuildInvitationUncheckedCreateNestedManyWithoutGuildInput
+    setLists?: SetListUncheckedCreateNestedManyWithoutGuildInput
   }
 
   export type GuildCreateOrConnectWithoutMembersInput = {
@@ -19301,6 +25957,70 @@ export namespace Prisma {
 
   export type GuildInvitationCreateManyInvitedUserInputEnvelope = {
     data: GuildInvitationCreateManyInvitedUserInput | GuildInvitationCreateManyInvitedUserInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type SetListCreateWithoutOwnerInput = {
+    setListId?: string
+    name: string
+    description?: string | null
+    isPrivate?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    guild?: GuildCreateNestedOneWithoutSetListsInput
+    setItems?: SetItemCreateNestedManyWithoutSetListInput
+    setSections?: SetSectionCreateNestedManyWithoutSetListInput
+    shares?: SetListShareCreateNestedManyWithoutSetListInput
+  }
+
+  export type SetListUncheckedCreateWithoutOwnerInput = {
+    setListId?: string
+    name: string
+    description?: string | null
+    guildId?: string | null
+    isPrivate?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    setItems?: SetItemUncheckedCreateNestedManyWithoutSetListInput
+    setSections?: SetSectionUncheckedCreateNestedManyWithoutSetListInput
+    shares?: SetListShareUncheckedCreateNestedManyWithoutSetListInput
+  }
+
+  export type SetListCreateOrConnectWithoutOwnerInput = {
+    where: SetListWhereUniqueInput
+    create: XOR<SetListCreateWithoutOwnerInput, SetListUncheckedCreateWithoutOwnerInput>
+  }
+
+  export type SetListCreateManyOwnerInputEnvelope = {
+    data: SetListCreateManyOwnerInput | SetListCreateManyOwnerInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type SetListShareCreateWithoutCreatorInput = {
+    shareId?: string
+    shareToken: string
+    permission?: $Enums.SharePermission
+    expiresAt?: Date | string | null
+    createdAt?: Date | string
+    setList: SetListCreateNestedOneWithoutSharesInput
+  }
+
+  export type SetListShareUncheckedCreateWithoutCreatorInput = {
+    shareId?: string
+    setListId: string
+    shareToken: string
+    permission?: $Enums.SharePermission
+    expiresAt?: Date | string | null
+    createdAt?: Date | string
+  }
+
+  export type SetListShareCreateOrConnectWithoutCreatorInput = {
+    where: SetListShareWhereUniqueInput
+    create: XOR<SetListShareCreateWithoutCreatorInput, SetListShareUncheckedCreateWithoutCreatorInput>
+  }
+
+  export type SetListShareCreateManyCreatorInputEnvelope = {
+    data: SetListShareCreateManyCreatorInput | SetListShareCreateManyCreatorInput[]
     skipDuplicates?: boolean
   }
 
@@ -19486,6 +26206,65 @@ export namespace Prisma {
     data: XOR<GuildInvitationUpdateManyMutationInput, GuildInvitationUncheckedUpdateManyWithoutInvitedUserInput>
   }
 
+  export type SetListUpsertWithWhereUniqueWithoutOwnerInput = {
+    where: SetListWhereUniqueInput
+    update: XOR<SetListUpdateWithoutOwnerInput, SetListUncheckedUpdateWithoutOwnerInput>
+    create: XOR<SetListCreateWithoutOwnerInput, SetListUncheckedCreateWithoutOwnerInput>
+  }
+
+  export type SetListUpdateWithWhereUniqueWithoutOwnerInput = {
+    where: SetListWhereUniqueInput
+    data: XOR<SetListUpdateWithoutOwnerInput, SetListUncheckedUpdateWithoutOwnerInput>
+  }
+
+  export type SetListUpdateManyWithWhereWithoutOwnerInput = {
+    where: SetListScalarWhereInput
+    data: XOR<SetListUpdateManyMutationInput, SetListUncheckedUpdateManyWithoutOwnerInput>
+  }
+
+  export type SetListScalarWhereInput = {
+    AND?: SetListScalarWhereInput | SetListScalarWhereInput[]
+    OR?: SetListScalarWhereInput[]
+    NOT?: SetListScalarWhereInput | SetListScalarWhereInput[]
+    setListId?: StringFilter<"SetList"> | string
+    name?: StringFilter<"SetList"> | string
+    description?: StringNullableFilter<"SetList"> | string | null
+    ownerId?: StringFilter<"SetList"> | string
+    guildId?: StringNullableFilter<"SetList"> | string | null
+    isPrivate?: BoolFilter<"SetList"> | boolean
+    createdAt?: DateTimeFilter<"SetList"> | Date | string
+    updatedAt?: DateTimeFilter<"SetList"> | Date | string
+  }
+
+  export type SetListShareUpsertWithWhereUniqueWithoutCreatorInput = {
+    where: SetListShareWhereUniqueInput
+    update: XOR<SetListShareUpdateWithoutCreatorInput, SetListShareUncheckedUpdateWithoutCreatorInput>
+    create: XOR<SetListShareCreateWithoutCreatorInput, SetListShareUncheckedCreateWithoutCreatorInput>
+  }
+
+  export type SetListShareUpdateWithWhereUniqueWithoutCreatorInput = {
+    where: SetListShareWhereUniqueInput
+    data: XOR<SetListShareUpdateWithoutCreatorInput, SetListShareUncheckedUpdateWithoutCreatorInput>
+  }
+
+  export type SetListShareUpdateManyWithWhereWithoutCreatorInput = {
+    where: SetListShareScalarWhereInput
+    data: XOR<SetListShareUpdateManyMutationInput, SetListShareUncheckedUpdateManyWithoutCreatorInput>
+  }
+
+  export type SetListShareScalarWhereInput = {
+    AND?: SetListShareScalarWhereInput | SetListShareScalarWhereInput[]
+    OR?: SetListShareScalarWhereInput[]
+    NOT?: SetListShareScalarWhereInput | SetListShareScalarWhereInput[]
+    shareId?: StringFilter<"SetListShare"> | string
+    setListId?: StringFilter<"SetListShare"> | string
+    shareToken?: StringFilter<"SetListShare"> | string
+    permission?: EnumSharePermissionFilter<"SetListShare"> | $Enums.SharePermission
+    expiresAt?: DateTimeNullableFilter<"SetListShare"> | Date | string | null
+    createdAt?: DateTimeFilter<"SetListShare"> | Date | string
+    createdBy?: StringFilter<"SetListShare"> | string
+  }
+
   export type UserCreateWithoutFollowsInput = {
     userId?: string
     email: string
@@ -19501,6 +26280,8 @@ export namespace Prisma {
     feedActivities?: FeedActivityCreateNestedManyWithoutUserInput
     sentInvitations?: GuildInvitationCreateNestedManyWithoutInvitedByInput
     receivedInvitations?: GuildInvitationCreateNestedManyWithoutInvitedUserInput
+    ownedSetLists?: SetListCreateNestedManyWithoutOwnerInput
+    createdShares?: SetListShareCreateNestedManyWithoutCreatorInput
   }
 
   export type UserUncheckedCreateWithoutFollowsInput = {
@@ -19518,6 +26299,8 @@ export namespace Prisma {
     feedActivities?: FeedActivityUncheckedCreateNestedManyWithoutUserInput
     sentInvitations?: GuildInvitationUncheckedCreateNestedManyWithoutInvitedByInput
     receivedInvitations?: GuildInvitationUncheckedCreateNestedManyWithoutInvitedUserInput
+    ownedSetLists?: SetListUncheckedCreateNestedManyWithoutOwnerInput
+    createdShares?: SetListShareUncheckedCreateNestedManyWithoutCreatorInput
   }
 
   export type UserCreateOrConnectWithoutFollowsInput = {
@@ -19540,6 +26323,8 @@ export namespace Prisma {
     feedActivities?: FeedActivityCreateNestedManyWithoutUserInput
     sentInvitations?: GuildInvitationCreateNestedManyWithoutInvitedByInput
     receivedInvitations?: GuildInvitationCreateNestedManyWithoutInvitedUserInput
+    ownedSetLists?: SetListCreateNestedManyWithoutOwnerInput
+    createdShares?: SetListShareCreateNestedManyWithoutCreatorInput
   }
 
   export type UserUncheckedCreateWithoutFollowedByInput = {
@@ -19557,6 +26342,8 @@ export namespace Prisma {
     feedActivities?: FeedActivityUncheckedCreateNestedManyWithoutUserInput
     sentInvitations?: GuildInvitationUncheckedCreateNestedManyWithoutInvitedByInput
     receivedInvitations?: GuildInvitationUncheckedCreateNestedManyWithoutInvitedUserInput
+    ownedSetLists?: SetListUncheckedCreateNestedManyWithoutOwnerInput
+    createdShares?: SetListShareUncheckedCreateNestedManyWithoutCreatorInput
   }
 
   export type UserCreateOrConnectWithoutFollowedByInput = {
@@ -19595,6 +26382,7 @@ export namespace Prisma {
     venue?: VenueCreateNestedOneWithoutGuildInput
     club?: ClubCreateNestedOneWithoutGuildInput
     invitations?: GuildInvitationCreateNestedManyWithoutGuildInput
+    setLists?: SetListCreateNestedManyWithoutGuildInput
   }
 
   export type GuildUncheckedCreateWithoutFollowsInput = {
@@ -19609,6 +26397,7 @@ export namespace Prisma {
     clubId?: string | null
     members?: UserUncheckedCreateNestedManyWithoutMemberOfGuildsInput
     invitations?: GuildInvitationUncheckedCreateNestedManyWithoutGuildInput
+    setLists?: SetListUncheckedCreateNestedManyWithoutGuildInput
   }
 
   export type GuildCreateOrConnectWithoutFollowsInput = {
@@ -19642,6 +26431,8 @@ export namespace Prisma {
     feedActivities?: FeedActivityUpdateManyWithoutUserNestedInput
     sentInvitations?: GuildInvitationUpdateManyWithoutInvitedByNestedInput
     receivedInvitations?: GuildInvitationUpdateManyWithoutInvitedUserNestedInput
+    ownedSetLists?: SetListUpdateManyWithoutOwnerNestedInput
+    createdShares?: SetListShareUpdateManyWithoutCreatorNestedInput
   }
 
   export type UserUncheckedUpdateWithoutFollowsInput = {
@@ -19659,6 +26450,8 @@ export namespace Prisma {
     feedActivities?: FeedActivityUncheckedUpdateManyWithoutUserNestedInput
     sentInvitations?: GuildInvitationUncheckedUpdateManyWithoutInvitedByNestedInput
     receivedInvitations?: GuildInvitationUncheckedUpdateManyWithoutInvitedUserNestedInput
+    ownedSetLists?: SetListUncheckedUpdateManyWithoutOwnerNestedInput
+    createdShares?: SetListShareUncheckedUpdateManyWithoutCreatorNestedInput
   }
 
   export type UserUpsertWithoutFollowedByInput = {
@@ -19687,6 +26480,8 @@ export namespace Prisma {
     feedActivities?: FeedActivityUpdateManyWithoutUserNestedInput
     sentInvitations?: GuildInvitationUpdateManyWithoutInvitedByNestedInput
     receivedInvitations?: GuildInvitationUpdateManyWithoutInvitedUserNestedInput
+    ownedSetLists?: SetListUpdateManyWithoutOwnerNestedInput
+    createdShares?: SetListShareUpdateManyWithoutCreatorNestedInput
   }
 
   export type UserUncheckedUpdateWithoutFollowedByInput = {
@@ -19704,6 +26499,8 @@ export namespace Prisma {
     feedActivities?: FeedActivityUncheckedUpdateManyWithoutUserNestedInput
     sentInvitations?: GuildInvitationUncheckedUpdateManyWithoutInvitedByNestedInput
     receivedInvitations?: GuildInvitationUncheckedUpdateManyWithoutInvitedUserNestedInput
+    ownedSetLists?: SetListUncheckedUpdateManyWithoutOwnerNestedInput
+    createdShares?: SetListShareUncheckedUpdateManyWithoutCreatorNestedInput
   }
 
   export type TagUpsertWithoutFollowsInput = {
@@ -19754,6 +26551,7 @@ export namespace Prisma {
     venue?: VenueUpdateOneWithoutGuildNestedInput
     club?: ClubUpdateOneWithoutGuildNestedInput
     invitations?: GuildInvitationUpdateManyWithoutGuildNestedInput
+    setLists?: SetListUpdateManyWithoutGuildNestedInput
   }
 
   export type GuildUncheckedUpdateWithoutFollowsInput = {
@@ -19768,6 +26566,7 @@ export namespace Prisma {
     clubId?: NullableStringFieldUpdateOperationsInput | string | null
     members?: UserUncheckedUpdateManyWithoutMemberOfGuildsNestedInput
     invitations?: GuildInvitationUncheckedUpdateManyWithoutGuildNestedInput
+    setLists?: SetListUncheckedUpdateManyWithoutGuildNestedInput
   }
 
   export type FollowCreateWithoutTagInput = {
@@ -19809,6 +26608,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     createdBy: string
+    setItems?: SetItemCreateNestedManyWithoutTrackInput
   }
 
   export type TrackUncheckedCreateWithoutTagsInput = {
@@ -19822,6 +26622,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     createdBy: string
+    setItems?: SetItemUncheckedCreateNestedManyWithoutTrackInput
   }
 
   export type TrackCreateOrConnectWithoutTagsInput = {
@@ -19892,6 +26693,8 @@ export namespace Prisma {
     feedActivities?: FeedActivityCreateNestedManyWithoutUserInput
     sentInvitations?: GuildInvitationCreateNestedManyWithoutInvitedByInput
     receivedInvitations?: GuildInvitationCreateNestedManyWithoutInvitedUserInput
+    ownedSetLists?: SetListCreateNestedManyWithoutOwnerInput
+    createdShares?: SetListShareCreateNestedManyWithoutCreatorInput
   }
 
   export type UserUncheckedCreateWithoutCreatedGuildsInput = {
@@ -19909,6 +26712,8 @@ export namespace Prisma {
     feedActivities?: FeedActivityUncheckedCreateNestedManyWithoutUserInput
     sentInvitations?: GuildInvitationUncheckedCreateNestedManyWithoutInvitedByInput
     receivedInvitations?: GuildInvitationUncheckedCreateNestedManyWithoutInvitedUserInput
+    ownedSetLists?: SetListUncheckedCreateNestedManyWithoutOwnerInput
+    createdShares?: SetListShareUncheckedCreateNestedManyWithoutCreatorInput
   }
 
   export type UserCreateOrConnectWithoutCreatedGuildsInput = {
@@ -19931,6 +26736,8 @@ export namespace Prisma {
     feedActivities?: FeedActivityCreateNestedManyWithoutUserInput
     sentInvitations?: GuildInvitationCreateNestedManyWithoutInvitedByInput
     receivedInvitations?: GuildInvitationCreateNestedManyWithoutInvitedUserInput
+    ownedSetLists?: SetListCreateNestedManyWithoutOwnerInput
+    createdShares?: SetListShareCreateNestedManyWithoutCreatorInput
   }
 
   export type UserUncheckedCreateWithoutOwnedGuildsInput = {
@@ -19948,6 +26755,8 @@ export namespace Prisma {
     feedActivities?: FeedActivityUncheckedCreateNestedManyWithoutUserInput
     sentInvitations?: GuildInvitationUncheckedCreateNestedManyWithoutInvitedByInput
     receivedInvitations?: GuildInvitationUncheckedCreateNestedManyWithoutInvitedUserInput
+    ownedSetLists?: SetListUncheckedCreateNestedManyWithoutOwnerInput
+    createdShares?: SetListShareUncheckedCreateNestedManyWithoutCreatorInput
   }
 
   export type UserCreateOrConnectWithoutOwnedGuildsInput = {
@@ -19970,6 +26779,8 @@ export namespace Prisma {
     feedActivities?: FeedActivityCreateNestedManyWithoutUserInput
     sentInvitations?: GuildInvitationCreateNestedManyWithoutInvitedByInput
     receivedInvitations?: GuildInvitationCreateNestedManyWithoutInvitedUserInput
+    ownedSetLists?: SetListCreateNestedManyWithoutOwnerInput
+    createdShares?: SetListShareCreateNestedManyWithoutCreatorInput
   }
 
   export type UserUncheckedCreateWithoutMemberOfGuildsInput = {
@@ -19987,6 +26798,8 @@ export namespace Prisma {
     feedActivities?: FeedActivityUncheckedCreateNestedManyWithoutUserInput
     sentInvitations?: GuildInvitationUncheckedCreateNestedManyWithoutInvitedByInput
     receivedInvitations?: GuildInvitationUncheckedCreateNestedManyWithoutInvitedUserInput
+    ownedSetLists?: SetListUncheckedCreateNestedManyWithoutOwnerInput
+    createdShares?: SetListShareUncheckedCreateNestedManyWithoutCreatorInput
   }
 
   export type UserCreateOrConnectWithoutMemberOfGuildsInput = {
@@ -20129,6 +26942,42 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type SetListCreateWithoutGuildInput = {
+    setListId?: string
+    name: string
+    description?: string | null
+    isPrivate?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    owner: UserCreateNestedOneWithoutOwnedSetListsInput
+    setItems?: SetItemCreateNestedManyWithoutSetListInput
+    setSections?: SetSectionCreateNestedManyWithoutSetListInput
+    shares?: SetListShareCreateNestedManyWithoutSetListInput
+  }
+
+  export type SetListUncheckedCreateWithoutGuildInput = {
+    setListId?: string
+    name: string
+    description?: string | null
+    ownerId: string
+    isPrivate?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    setItems?: SetItemUncheckedCreateNestedManyWithoutSetListInput
+    setSections?: SetSectionUncheckedCreateNestedManyWithoutSetListInput
+    shares?: SetListShareUncheckedCreateNestedManyWithoutSetListInput
+  }
+
+  export type SetListCreateOrConnectWithoutGuildInput = {
+    where: SetListWhereUniqueInput
+    create: XOR<SetListCreateWithoutGuildInput, SetListUncheckedCreateWithoutGuildInput>
+  }
+
+  export type SetListCreateManyGuildInputEnvelope = {
+    data: SetListCreateManyGuildInput | SetListCreateManyGuildInput[]
+    skipDuplicates?: boolean
+  }
+
   export type UserUpsertWithoutCreatedGuildsInput = {
     update: XOR<UserUpdateWithoutCreatedGuildsInput, UserUncheckedUpdateWithoutCreatedGuildsInput>
     create: XOR<UserCreateWithoutCreatedGuildsInput, UserUncheckedCreateWithoutCreatedGuildsInput>
@@ -20155,6 +27004,8 @@ export namespace Prisma {
     feedActivities?: FeedActivityUpdateManyWithoutUserNestedInput
     sentInvitations?: GuildInvitationUpdateManyWithoutInvitedByNestedInput
     receivedInvitations?: GuildInvitationUpdateManyWithoutInvitedUserNestedInput
+    ownedSetLists?: SetListUpdateManyWithoutOwnerNestedInput
+    createdShares?: SetListShareUpdateManyWithoutCreatorNestedInput
   }
 
   export type UserUncheckedUpdateWithoutCreatedGuildsInput = {
@@ -20172,6 +27023,8 @@ export namespace Prisma {
     feedActivities?: FeedActivityUncheckedUpdateManyWithoutUserNestedInput
     sentInvitations?: GuildInvitationUncheckedUpdateManyWithoutInvitedByNestedInput
     receivedInvitations?: GuildInvitationUncheckedUpdateManyWithoutInvitedUserNestedInput
+    ownedSetLists?: SetListUncheckedUpdateManyWithoutOwnerNestedInput
+    createdShares?: SetListShareUncheckedUpdateManyWithoutCreatorNestedInput
   }
 
   export type UserUpsertWithoutOwnedGuildsInput = {
@@ -20200,6 +27053,8 @@ export namespace Prisma {
     feedActivities?: FeedActivityUpdateManyWithoutUserNestedInput
     sentInvitations?: GuildInvitationUpdateManyWithoutInvitedByNestedInput
     receivedInvitations?: GuildInvitationUpdateManyWithoutInvitedUserNestedInput
+    ownedSetLists?: SetListUpdateManyWithoutOwnerNestedInput
+    createdShares?: SetListShareUpdateManyWithoutCreatorNestedInput
   }
 
   export type UserUncheckedUpdateWithoutOwnedGuildsInput = {
@@ -20217,6 +27072,8 @@ export namespace Prisma {
     feedActivities?: FeedActivityUncheckedUpdateManyWithoutUserNestedInput
     sentInvitations?: GuildInvitationUncheckedUpdateManyWithoutInvitedByNestedInput
     receivedInvitations?: GuildInvitationUncheckedUpdateManyWithoutInvitedUserNestedInput
+    ownedSetLists?: SetListUncheckedUpdateManyWithoutOwnerNestedInput
+    createdShares?: SetListShareUncheckedUpdateManyWithoutCreatorNestedInput
   }
 
   export type UserUpsertWithWhereUniqueWithoutMemberOfGuildsInput = {
@@ -20377,6 +27234,22 @@ export namespace Prisma {
     data: XOR<GuildInvitationUpdateManyMutationInput, GuildInvitationUncheckedUpdateManyWithoutGuildInput>
   }
 
+  export type SetListUpsertWithWhereUniqueWithoutGuildInput = {
+    where: SetListWhereUniqueInput
+    update: XOR<SetListUpdateWithoutGuildInput, SetListUncheckedUpdateWithoutGuildInput>
+    create: XOR<SetListCreateWithoutGuildInput, SetListUncheckedCreateWithoutGuildInput>
+  }
+
+  export type SetListUpdateWithWhereUniqueWithoutGuildInput = {
+    where: SetListWhereUniqueInput
+    data: XOR<SetListUpdateWithoutGuildInput, SetListUncheckedUpdateWithoutGuildInput>
+  }
+
+  export type SetListUpdateManyWithWhereWithoutGuildInput = {
+    where: SetListScalarWhereInput
+    data: XOR<SetListUpdateManyMutationInput, SetListUncheckedUpdateManyWithoutGuildInput>
+  }
+
   export type GuildCreateWithoutActInput = {
     guildId?: string
     name: string
@@ -20389,6 +27262,7 @@ export namespace Prisma {
     club?: ClubCreateNestedOneWithoutGuildInput
     follows?: FollowCreateNestedManyWithoutGuildInput
     invitations?: GuildInvitationCreateNestedManyWithoutGuildInput
+    setLists?: SetListCreateNestedManyWithoutGuildInput
   }
 
   export type GuildUncheckedCreateWithoutActInput = {
@@ -20403,6 +27277,7 @@ export namespace Prisma {
     members?: UserUncheckedCreateNestedManyWithoutMemberOfGuildsInput
     follows?: FollowUncheckedCreateNestedManyWithoutGuildInput
     invitations?: GuildInvitationUncheckedCreateNestedManyWithoutGuildInput
+    setLists?: SetListUncheckedCreateNestedManyWithoutGuildInput
   }
 
   export type GuildCreateOrConnectWithoutActInput = {
@@ -20464,6 +27339,7 @@ export namespace Prisma {
     club?: ClubUpdateOneWithoutGuildNestedInput
     follows?: FollowUpdateManyWithoutGuildNestedInput
     invitations?: GuildInvitationUpdateManyWithoutGuildNestedInput
+    setLists?: SetListUpdateManyWithoutGuildNestedInput
   }
 
   export type GuildUncheckedUpdateWithoutActInput = {
@@ -20478,6 +27354,7 @@ export namespace Prisma {
     members?: UserUncheckedUpdateManyWithoutMemberOfGuildsNestedInput
     follows?: FollowUncheckedUpdateManyWithoutGuildNestedInput
     invitations?: GuildInvitationUncheckedUpdateManyWithoutGuildNestedInput
+    setLists?: SetListUncheckedUpdateManyWithoutGuildNestedInput
   }
 
   export type CalendarEventUpsertWithWhereUniqueWithoutActsInput = {
@@ -20523,6 +27400,7 @@ export namespace Prisma {
     club?: ClubCreateNestedOneWithoutGuildInput
     follows?: FollowCreateNestedManyWithoutGuildInput
     invitations?: GuildInvitationCreateNestedManyWithoutGuildInput
+    setLists?: SetListCreateNestedManyWithoutGuildInput
   }
 
   export type GuildUncheckedCreateWithoutVenueInput = {
@@ -20537,6 +27415,7 @@ export namespace Prisma {
     members?: UserUncheckedCreateNestedManyWithoutMemberOfGuildsInput
     follows?: FollowUncheckedCreateNestedManyWithoutGuildInput
     invitations?: GuildInvitationUncheckedCreateNestedManyWithoutGuildInput
+    setLists?: SetListUncheckedCreateNestedManyWithoutGuildInput
   }
 
   export type GuildCreateOrConnectWithoutVenueInput = {
@@ -20603,6 +27482,7 @@ export namespace Prisma {
     club?: ClubUpdateOneWithoutGuildNestedInput
     follows?: FollowUpdateManyWithoutGuildNestedInput
     invitations?: GuildInvitationUpdateManyWithoutGuildNestedInput
+    setLists?: SetListUpdateManyWithoutGuildNestedInput
   }
 
   export type GuildUncheckedUpdateWithoutVenueInput = {
@@ -20617,6 +27497,7 @@ export namespace Prisma {
     members?: UserUncheckedUpdateManyWithoutMemberOfGuildsNestedInput
     follows?: FollowUncheckedUpdateManyWithoutGuildNestedInput
     invitations?: GuildInvitationUncheckedUpdateManyWithoutGuildNestedInput
+    setLists?: SetListUncheckedUpdateManyWithoutGuildNestedInput
   }
 
   export type CalendarEventUpsertWithWhereUniqueWithoutVenueInput = {
@@ -20647,6 +27528,7 @@ export namespace Prisma {
     venue?: VenueCreateNestedOneWithoutGuildInput
     follows?: FollowCreateNestedManyWithoutGuildInput
     invitations?: GuildInvitationCreateNestedManyWithoutGuildInput
+    setLists?: SetListCreateNestedManyWithoutGuildInput
   }
 
   export type GuildUncheckedCreateWithoutClubInput = {
@@ -20661,6 +27543,7 @@ export namespace Prisma {
     members?: UserUncheckedCreateNestedManyWithoutMemberOfGuildsInput
     follows?: FollowUncheckedCreateNestedManyWithoutGuildInput
     invitations?: GuildInvitationUncheckedCreateNestedManyWithoutGuildInput
+    setLists?: SetListUncheckedCreateNestedManyWithoutGuildInput
   }
 
   export type GuildCreateOrConnectWithoutClubInput = {
@@ -20691,6 +27574,7 @@ export namespace Prisma {
     venue?: VenueUpdateOneWithoutGuildNestedInput
     follows?: FollowUpdateManyWithoutGuildNestedInput
     invitations?: GuildInvitationUpdateManyWithoutGuildNestedInput
+    setLists?: SetListUpdateManyWithoutGuildNestedInput
   }
 
   export type GuildUncheckedUpdateWithoutClubInput = {
@@ -20705,6 +27589,7 @@ export namespace Prisma {
     members?: UserUncheckedUpdateManyWithoutMemberOfGuildsNestedInput
     follows?: FollowUncheckedUpdateManyWithoutGuildNestedInput
     invitations?: GuildInvitationUncheckedUpdateManyWithoutGuildNestedInput
+    setLists?: SetListUncheckedUpdateManyWithoutGuildNestedInput
   }
 
   export type TagCreateWithoutTracksInput = {
@@ -20724,6 +27609,40 @@ export namespace Prisma {
   export type TagCreateOrConnectWithoutTracksInput = {
     where: TagWhereUniqueInput
     create: XOR<TagCreateWithoutTracksInput, TagUncheckedCreateWithoutTracksInput>
+  }
+
+  export type SetItemCreateWithoutTrackInput = {
+    setItemId?: string
+    position: number
+    customTuning?: string | null
+    customNotes?: string | null
+    customDuration?: number | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    setList: SetListCreateNestedOneWithoutSetItemsInput
+    section?: SetSectionCreateNestedOneWithoutSetItemsInput
+  }
+
+  export type SetItemUncheckedCreateWithoutTrackInput = {
+    setItemId?: string
+    setListId: string
+    position: number
+    customTuning?: string | null
+    customNotes?: string | null
+    customDuration?: number | null
+    sectionId?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type SetItemCreateOrConnectWithoutTrackInput = {
+    where: SetItemWhereUniqueInput
+    create: XOR<SetItemCreateWithoutTrackInput, SetItemUncheckedCreateWithoutTrackInput>
+  }
+
+  export type SetItemCreateManyTrackInputEnvelope = {
+    data: SetItemCreateManyTrackInput | SetItemCreateManyTrackInput[]
+    skipDuplicates?: boolean
   }
 
   export type TagUpsertWithWhereUniqueWithoutTracksInput = {
@@ -20749,6 +27668,38 @@ export namespace Prisma {
     tagId?: StringFilter<"Tag"> | string
     category?: StringFilter<"Tag"> | string
     value?: StringFilter<"Tag"> | string
+  }
+
+  export type SetItemUpsertWithWhereUniqueWithoutTrackInput = {
+    where: SetItemWhereUniqueInput
+    update: XOR<SetItemUpdateWithoutTrackInput, SetItemUncheckedUpdateWithoutTrackInput>
+    create: XOR<SetItemCreateWithoutTrackInput, SetItemUncheckedCreateWithoutTrackInput>
+  }
+
+  export type SetItemUpdateWithWhereUniqueWithoutTrackInput = {
+    where: SetItemWhereUniqueInput
+    data: XOR<SetItemUpdateWithoutTrackInput, SetItemUncheckedUpdateWithoutTrackInput>
+  }
+
+  export type SetItemUpdateManyWithWhereWithoutTrackInput = {
+    where: SetItemScalarWhereInput
+    data: XOR<SetItemUpdateManyMutationInput, SetItemUncheckedUpdateManyWithoutTrackInput>
+  }
+
+  export type SetItemScalarWhereInput = {
+    AND?: SetItemScalarWhereInput | SetItemScalarWhereInput[]
+    OR?: SetItemScalarWhereInput[]
+    NOT?: SetItemScalarWhereInput | SetItemScalarWhereInput[]
+    setItemId?: StringFilter<"SetItem"> | string
+    setListId?: StringFilter<"SetItem"> | string
+    trackId?: StringFilter<"SetItem"> | string
+    position?: IntFilter<"SetItem"> | number
+    customTuning?: StringNullableFilter<"SetItem"> | string | null
+    customNotes?: StringNullableFilter<"SetItem"> | string | null
+    customDuration?: IntNullableFilter<"SetItem"> | number | null
+    sectionId?: StringNullableFilter<"SetItem"> | string | null
+    createdAt?: DateTimeFilter<"SetItem"> | Date | string
+    updatedAt?: DateTimeFilter<"SetItem"> | Date | string
   }
 
   export type VenueCreateWithoutCalendarEventsInput = {
@@ -20962,6 +27913,8 @@ export namespace Prisma {
     followedBy?: FollowCreateNestedManyWithoutFollowedUserInput
     sentInvitations?: GuildInvitationCreateNestedManyWithoutInvitedByInput
     receivedInvitations?: GuildInvitationCreateNestedManyWithoutInvitedUserInput
+    ownedSetLists?: SetListCreateNestedManyWithoutOwnerInput
+    createdShares?: SetListShareCreateNestedManyWithoutCreatorInput
   }
 
   export type UserUncheckedCreateWithoutFeedActivitiesInput = {
@@ -20979,6 +27932,8 @@ export namespace Prisma {
     followedBy?: FollowUncheckedCreateNestedManyWithoutFollowedUserInput
     sentInvitations?: GuildInvitationUncheckedCreateNestedManyWithoutInvitedByInput
     receivedInvitations?: GuildInvitationUncheckedCreateNestedManyWithoutInvitedUserInput
+    ownedSetLists?: SetListUncheckedCreateNestedManyWithoutOwnerInput
+    createdShares?: SetListShareUncheckedCreateNestedManyWithoutCreatorInput
   }
 
   export type UserCreateOrConnectWithoutFeedActivitiesInput = {
@@ -21049,6 +28004,8 @@ export namespace Prisma {
     followedBy?: FollowUpdateManyWithoutFollowedUserNestedInput
     sentInvitations?: GuildInvitationUpdateManyWithoutInvitedByNestedInput
     receivedInvitations?: GuildInvitationUpdateManyWithoutInvitedUserNestedInput
+    ownedSetLists?: SetListUpdateManyWithoutOwnerNestedInput
+    createdShares?: SetListShareUpdateManyWithoutCreatorNestedInput
   }
 
   export type UserUncheckedUpdateWithoutFeedActivitiesInput = {
@@ -21066,6 +28023,8 @@ export namespace Prisma {
     followedBy?: FollowUncheckedUpdateManyWithoutFollowedUserNestedInput
     sentInvitations?: GuildInvitationUncheckedUpdateManyWithoutInvitedByNestedInput
     receivedInvitations?: GuildInvitationUncheckedUpdateManyWithoutInvitedUserNestedInput
+    ownedSetLists?: SetListUncheckedUpdateManyWithoutOwnerNestedInput
+    createdShares?: SetListShareUncheckedUpdateManyWithoutCreatorNestedInput
   }
 
   export type GuildCreateWithoutInvitationsInput = {
@@ -21080,6 +28039,7 @@ export namespace Prisma {
     venue?: VenueCreateNestedOneWithoutGuildInput
     club?: ClubCreateNestedOneWithoutGuildInput
     follows?: FollowCreateNestedManyWithoutGuildInput
+    setLists?: SetListCreateNestedManyWithoutGuildInput
   }
 
   export type GuildUncheckedCreateWithoutInvitationsInput = {
@@ -21094,6 +28054,7 @@ export namespace Prisma {
     clubId?: string | null
     members?: UserUncheckedCreateNestedManyWithoutMemberOfGuildsInput
     follows?: FollowUncheckedCreateNestedManyWithoutGuildInput
+    setLists?: SetListUncheckedCreateNestedManyWithoutGuildInput
   }
 
   export type GuildCreateOrConnectWithoutInvitationsInput = {
@@ -21116,6 +28077,8 @@ export namespace Prisma {
     followedBy?: FollowCreateNestedManyWithoutFollowedUserInput
     feedActivities?: FeedActivityCreateNestedManyWithoutUserInput
     sentInvitations?: GuildInvitationCreateNestedManyWithoutInvitedByInput
+    ownedSetLists?: SetListCreateNestedManyWithoutOwnerInput
+    createdShares?: SetListShareCreateNestedManyWithoutCreatorInput
   }
 
   export type UserUncheckedCreateWithoutReceivedInvitationsInput = {
@@ -21133,6 +28096,8 @@ export namespace Prisma {
     followedBy?: FollowUncheckedCreateNestedManyWithoutFollowedUserInput
     feedActivities?: FeedActivityUncheckedCreateNestedManyWithoutUserInput
     sentInvitations?: GuildInvitationUncheckedCreateNestedManyWithoutInvitedByInput
+    ownedSetLists?: SetListUncheckedCreateNestedManyWithoutOwnerInput
+    createdShares?: SetListShareUncheckedCreateNestedManyWithoutCreatorInput
   }
 
   export type UserCreateOrConnectWithoutReceivedInvitationsInput = {
@@ -21155,6 +28120,8 @@ export namespace Prisma {
     followedBy?: FollowCreateNestedManyWithoutFollowedUserInput
     feedActivities?: FeedActivityCreateNestedManyWithoutUserInput
     receivedInvitations?: GuildInvitationCreateNestedManyWithoutInvitedUserInput
+    ownedSetLists?: SetListCreateNestedManyWithoutOwnerInput
+    createdShares?: SetListShareCreateNestedManyWithoutCreatorInput
   }
 
   export type UserUncheckedCreateWithoutSentInvitationsInput = {
@@ -21172,6 +28139,8 @@ export namespace Prisma {
     followedBy?: FollowUncheckedCreateNestedManyWithoutFollowedUserInput
     feedActivities?: FeedActivityUncheckedCreateNestedManyWithoutUserInput
     receivedInvitations?: GuildInvitationUncheckedCreateNestedManyWithoutInvitedUserInput
+    ownedSetLists?: SetListUncheckedCreateNestedManyWithoutOwnerInput
+    createdShares?: SetListShareUncheckedCreateNestedManyWithoutCreatorInput
   }
 
   export type UserCreateOrConnectWithoutSentInvitationsInput = {
@@ -21202,6 +28171,7 @@ export namespace Prisma {
     venue?: VenueUpdateOneWithoutGuildNestedInput
     club?: ClubUpdateOneWithoutGuildNestedInput
     follows?: FollowUpdateManyWithoutGuildNestedInput
+    setLists?: SetListUpdateManyWithoutGuildNestedInput
   }
 
   export type GuildUncheckedUpdateWithoutInvitationsInput = {
@@ -21216,6 +28186,7 @@ export namespace Prisma {
     clubId?: NullableStringFieldUpdateOperationsInput | string | null
     members?: UserUncheckedUpdateManyWithoutMemberOfGuildsNestedInput
     follows?: FollowUncheckedUpdateManyWithoutGuildNestedInput
+    setLists?: SetListUncheckedUpdateManyWithoutGuildNestedInput
   }
 
   export type UserUpsertWithoutReceivedInvitationsInput = {
@@ -21244,6 +28215,8 @@ export namespace Prisma {
     followedBy?: FollowUpdateManyWithoutFollowedUserNestedInput
     feedActivities?: FeedActivityUpdateManyWithoutUserNestedInput
     sentInvitations?: GuildInvitationUpdateManyWithoutInvitedByNestedInput
+    ownedSetLists?: SetListUpdateManyWithoutOwnerNestedInput
+    createdShares?: SetListShareUpdateManyWithoutCreatorNestedInput
   }
 
   export type UserUncheckedUpdateWithoutReceivedInvitationsInput = {
@@ -21261,6 +28234,8 @@ export namespace Prisma {
     followedBy?: FollowUncheckedUpdateManyWithoutFollowedUserNestedInput
     feedActivities?: FeedActivityUncheckedUpdateManyWithoutUserNestedInput
     sentInvitations?: GuildInvitationUncheckedUpdateManyWithoutInvitedByNestedInput
+    ownedSetLists?: SetListUncheckedUpdateManyWithoutOwnerNestedInput
+    createdShares?: SetListShareUncheckedUpdateManyWithoutCreatorNestedInput
   }
 
   export type UserUpsertWithoutSentInvitationsInput = {
@@ -21289,6 +28264,8 @@ export namespace Prisma {
     followedBy?: FollowUpdateManyWithoutFollowedUserNestedInput
     feedActivities?: FeedActivityUpdateManyWithoutUserNestedInput
     receivedInvitations?: GuildInvitationUpdateManyWithoutInvitedUserNestedInput
+    ownedSetLists?: SetListUpdateManyWithoutOwnerNestedInput
+    createdShares?: SetListShareUpdateManyWithoutCreatorNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSentInvitationsInput = {
@@ -21306,6 +28283,796 @@ export namespace Prisma {
     followedBy?: FollowUncheckedUpdateManyWithoutFollowedUserNestedInput
     feedActivities?: FeedActivityUncheckedUpdateManyWithoutUserNestedInput
     receivedInvitations?: GuildInvitationUncheckedUpdateManyWithoutInvitedUserNestedInput
+    ownedSetLists?: SetListUncheckedUpdateManyWithoutOwnerNestedInput
+    createdShares?: SetListShareUncheckedUpdateManyWithoutCreatorNestedInput
+  }
+
+  export type UserCreateWithoutOwnedSetListsInput = {
+    userId?: string
+    email: string
+    displayName?: string | null
+    avatar?: string | null
+    firebaseUid?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    createdGuilds?: GuildCreateNestedManyWithoutCreatedByInput
+    ownedGuilds?: GuildCreateNestedManyWithoutCurrentOwnerInput
+    memberOfGuilds?: GuildCreateNestedManyWithoutMembersInput
+    follows?: FollowCreateNestedManyWithoutUserInput
+    followedBy?: FollowCreateNestedManyWithoutFollowedUserInput
+    feedActivities?: FeedActivityCreateNestedManyWithoutUserInput
+    sentInvitations?: GuildInvitationCreateNestedManyWithoutInvitedByInput
+    receivedInvitations?: GuildInvitationCreateNestedManyWithoutInvitedUserInput
+    createdShares?: SetListShareCreateNestedManyWithoutCreatorInput
+  }
+
+  export type UserUncheckedCreateWithoutOwnedSetListsInput = {
+    userId?: string
+    email: string
+    displayName?: string | null
+    avatar?: string | null
+    firebaseUid?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    createdGuilds?: GuildUncheckedCreateNestedManyWithoutCreatedByInput
+    ownedGuilds?: GuildUncheckedCreateNestedManyWithoutCurrentOwnerInput
+    memberOfGuilds?: GuildUncheckedCreateNestedManyWithoutMembersInput
+    follows?: FollowUncheckedCreateNestedManyWithoutUserInput
+    followedBy?: FollowUncheckedCreateNestedManyWithoutFollowedUserInput
+    feedActivities?: FeedActivityUncheckedCreateNestedManyWithoutUserInput
+    sentInvitations?: GuildInvitationUncheckedCreateNestedManyWithoutInvitedByInput
+    receivedInvitations?: GuildInvitationUncheckedCreateNestedManyWithoutInvitedUserInput
+    createdShares?: SetListShareUncheckedCreateNestedManyWithoutCreatorInput
+  }
+
+  export type UserCreateOrConnectWithoutOwnedSetListsInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutOwnedSetListsInput, UserUncheckedCreateWithoutOwnedSetListsInput>
+  }
+
+  export type GuildCreateWithoutSetListsInput = {
+    guildId?: string
+    name: string
+    guildType: $Enums.GuildType
+    createdAt?: Date | string
+    createdBy?: UserCreateNestedOneWithoutCreatedGuildsInput
+    currentOwner: UserCreateNestedOneWithoutOwnedGuildsInput
+    members?: UserCreateNestedManyWithoutMemberOfGuildsInput
+    act?: ActCreateNestedOneWithoutGuildInput
+    venue?: VenueCreateNestedOneWithoutGuildInput
+    club?: ClubCreateNestedOneWithoutGuildInput
+    follows?: FollowCreateNestedManyWithoutGuildInput
+    invitations?: GuildInvitationCreateNestedManyWithoutGuildInput
+  }
+
+  export type GuildUncheckedCreateWithoutSetListsInput = {
+    guildId?: string
+    name: string
+    guildType: $Enums.GuildType
+    createdAt?: Date | string
+    createdById?: string | null
+    currentOwnerId: string
+    actId?: string | null
+    venueId?: string | null
+    clubId?: string | null
+    members?: UserUncheckedCreateNestedManyWithoutMemberOfGuildsInput
+    follows?: FollowUncheckedCreateNestedManyWithoutGuildInput
+    invitations?: GuildInvitationUncheckedCreateNestedManyWithoutGuildInput
+  }
+
+  export type GuildCreateOrConnectWithoutSetListsInput = {
+    where: GuildWhereUniqueInput
+    create: XOR<GuildCreateWithoutSetListsInput, GuildUncheckedCreateWithoutSetListsInput>
+  }
+
+  export type SetItemCreateWithoutSetListInput = {
+    setItemId?: string
+    position: number
+    customTuning?: string | null
+    customNotes?: string | null
+    customDuration?: number | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    track: TrackCreateNestedOneWithoutSetItemsInput
+    section?: SetSectionCreateNestedOneWithoutSetItemsInput
+  }
+
+  export type SetItemUncheckedCreateWithoutSetListInput = {
+    setItemId?: string
+    trackId: string
+    position: number
+    customTuning?: string | null
+    customNotes?: string | null
+    customDuration?: number | null
+    sectionId?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type SetItemCreateOrConnectWithoutSetListInput = {
+    where: SetItemWhereUniqueInput
+    create: XOR<SetItemCreateWithoutSetListInput, SetItemUncheckedCreateWithoutSetListInput>
+  }
+
+  export type SetItemCreateManySetListInputEnvelope = {
+    data: SetItemCreateManySetListInput | SetItemCreateManySetListInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type SetSectionCreateWithoutSetListInput = {
+    sectionId?: string
+    name: string
+    position: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    setItems?: SetItemCreateNestedManyWithoutSectionInput
+  }
+
+  export type SetSectionUncheckedCreateWithoutSetListInput = {
+    sectionId?: string
+    name: string
+    position: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    setItems?: SetItemUncheckedCreateNestedManyWithoutSectionInput
+  }
+
+  export type SetSectionCreateOrConnectWithoutSetListInput = {
+    where: SetSectionWhereUniqueInput
+    create: XOR<SetSectionCreateWithoutSetListInput, SetSectionUncheckedCreateWithoutSetListInput>
+  }
+
+  export type SetSectionCreateManySetListInputEnvelope = {
+    data: SetSectionCreateManySetListInput | SetSectionCreateManySetListInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type SetListShareCreateWithoutSetListInput = {
+    shareId?: string
+    shareToken: string
+    permission?: $Enums.SharePermission
+    expiresAt?: Date | string | null
+    createdAt?: Date | string
+    creator: UserCreateNestedOneWithoutCreatedSharesInput
+  }
+
+  export type SetListShareUncheckedCreateWithoutSetListInput = {
+    shareId?: string
+    shareToken: string
+    permission?: $Enums.SharePermission
+    expiresAt?: Date | string | null
+    createdAt?: Date | string
+    createdBy: string
+  }
+
+  export type SetListShareCreateOrConnectWithoutSetListInput = {
+    where: SetListShareWhereUniqueInput
+    create: XOR<SetListShareCreateWithoutSetListInput, SetListShareUncheckedCreateWithoutSetListInput>
+  }
+
+  export type SetListShareCreateManySetListInputEnvelope = {
+    data: SetListShareCreateManySetListInput | SetListShareCreateManySetListInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type UserUpsertWithoutOwnedSetListsInput = {
+    update: XOR<UserUpdateWithoutOwnedSetListsInput, UserUncheckedUpdateWithoutOwnedSetListsInput>
+    create: XOR<UserCreateWithoutOwnedSetListsInput, UserUncheckedCreateWithoutOwnedSetListsInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutOwnedSetListsInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutOwnedSetListsInput, UserUncheckedUpdateWithoutOwnedSetListsInput>
+  }
+
+  export type UserUpdateWithoutOwnedSetListsInput = {
+    userId?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    displayName?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar?: NullableStringFieldUpdateOperationsInput | string | null
+    firebaseUid?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdGuilds?: GuildUpdateManyWithoutCreatedByNestedInput
+    ownedGuilds?: GuildUpdateManyWithoutCurrentOwnerNestedInput
+    memberOfGuilds?: GuildUpdateManyWithoutMembersNestedInput
+    follows?: FollowUpdateManyWithoutUserNestedInput
+    followedBy?: FollowUpdateManyWithoutFollowedUserNestedInput
+    feedActivities?: FeedActivityUpdateManyWithoutUserNestedInput
+    sentInvitations?: GuildInvitationUpdateManyWithoutInvitedByNestedInput
+    receivedInvitations?: GuildInvitationUpdateManyWithoutInvitedUserNestedInput
+    createdShares?: SetListShareUpdateManyWithoutCreatorNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutOwnedSetListsInput = {
+    userId?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    displayName?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar?: NullableStringFieldUpdateOperationsInput | string | null
+    firebaseUid?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdGuilds?: GuildUncheckedUpdateManyWithoutCreatedByNestedInput
+    ownedGuilds?: GuildUncheckedUpdateManyWithoutCurrentOwnerNestedInput
+    memberOfGuilds?: GuildUncheckedUpdateManyWithoutMembersNestedInput
+    follows?: FollowUncheckedUpdateManyWithoutUserNestedInput
+    followedBy?: FollowUncheckedUpdateManyWithoutFollowedUserNestedInput
+    feedActivities?: FeedActivityUncheckedUpdateManyWithoutUserNestedInput
+    sentInvitations?: GuildInvitationUncheckedUpdateManyWithoutInvitedByNestedInput
+    receivedInvitations?: GuildInvitationUncheckedUpdateManyWithoutInvitedUserNestedInput
+    createdShares?: SetListShareUncheckedUpdateManyWithoutCreatorNestedInput
+  }
+
+  export type GuildUpsertWithoutSetListsInput = {
+    update: XOR<GuildUpdateWithoutSetListsInput, GuildUncheckedUpdateWithoutSetListsInput>
+    create: XOR<GuildCreateWithoutSetListsInput, GuildUncheckedCreateWithoutSetListsInput>
+    where?: GuildWhereInput
+  }
+
+  export type GuildUpdateToOneWithWhereWithoutSetListsInput = {
+    where?: GuildWhereInput
+    data: XOR<GuildUpdateWithoutSetListsInput, GuildUncheckedUpdateWithoutSetListsInput>
+  }
+
+  export type GuildUpdateWithoutSetListsInput = {
+    guildId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    guildType?: EnumGuildTypeFieldUpdateOperationsInput | $Enums.GuildType
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdBy?: UserUpdateOneWithoutCreatedGuildsNestedInput
+    currentOwner?: UserUpdateOneRequiredWithoutOwnedGuildsNestedInput
+    members?: UserUpdateManyWithoutMemberOfGuildsNestedInput
+    act?: ActUpdateOneWithoutGuildNestedInput
+    venue?: VenueUpdateOneWithoutGuildNestedInput
+    club?: ClubUpdateOneWithoutGuildNestedInput
+    follows?: FollowUpdateManyWithoutGuildNestedInput
+    invitations?: GuildInvitationUpdateManyWithoutGuildNestedInput
+  }
+
+  export type GuildUncheckedUpdateWithoutSetListsInput = {
+    guildId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    guildType?: EnumGuildTypeFieldUpdateOperationsInput | $Enums.GuildType
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
+    currentOwnerId?: StringFieldUpdateOperationsInput | string
+    actId?: NullableStringFieldUpdateOperationsInput | string | null
+    venueId?: NullableStringFieldUpdateOperationsInput | string | null
+    clubId?: NullableStringFieldUpdateOperationsInput | string | null
+    members?: UserUncheckedUpdateManyWithoutMemberOfGuildsNestedInput
+    follows?: FollowUncheckedUpdateManyWithoutGuildNestedInput
+    invitations?: GuildInvitationUncheckedUpdateManyWithoutGuildNestedInput
+  }
+
+  export type SetItemUpsertWithWhereUniqueWithoutSetListInput = {
+    where: SetItemWhereUniqueInput
+    update: XOR<SetItemUpdateWithoutSetListInput, SetItemUncheckedUpdateWithoutSetListInput>
+    create: XOR<SetItemCreateWithoutSetListInput, SetItemUncheckedCreateWithoutSetListInput>
+  }
+
+  export type SetItemUpdateWithWhereUniqueWithoutSetListInput = {
+    where: SetItemWhereUniqueInput
+    data: XOR<SetItemUpdateWithoutSetListInput, SetItemUncheckedUpdateWithoutSetListInput>
+  }
+
+  export type SetItemUpdateManyWithWhereWithoutSetListInput = {
+    where: SetItemScalarWhereInput
+    data: XOR<SetItemUpdateManyMutationInput, SetItemUncheckedUpdateManyWithoutSetListInput>
+  }
+
+  export type SetSectionUpsertWithWhereUniqueWithoutSetListInput = {
+    where: SetSectionWhereUniqueInput
+    update: XOR<SetSectionUpdateWithoutSetListInput, SetSectionUncheckedUpdateWithoutSetListInput>
+    create: XOR<SetSectionCreateWithoutSetListInput, SetSectionUncheckedCreateWithoutSetListInput>
+  }
+
+  export type SetSectionUpdateWithWhereUniqueWithoutSetListInput = {
+    where: SetSectionWhereUniqueInput
+    data: XOR<SetSectionUpdateWithoutSetListInput, SetSectionUncheckedUpdateWithoutSetListInput>
+  }
+
+  export type SetSectionUpdateManyWithWhereWithoutSetListInput = {
+    where: SetSectionScalarWhereInput
+    data: XOR<SetSectionUpdateManyMutationInput, SetSectionUncheckedUpdateManyWithoutSetListInput>
+  }
+
+  export type SetSectionScalarWhereInput = {
+    AND?: SetSectionScalarWhereInput | SetSectionScalarWhereInput[]
+    OR?: SetSectionScalarWhereInput[]
+    NOT?: SetSectionScalarWhereInput | SetSectionScalarWhereInput[]
+    sectionId?: StringFilter<"SetSection"> | string
+    setListId?: StringFilter<"SetSection"> | string
+    name?: StringFilter<"SetSection"> | string
+    position?: IntFilter<"SetSection"> | number
+    createdAt?: DateTimeFilter<"SetSection"> | Date | string
+    updatedAt?: DateTimeFilter<"SetSection"> | Date | string
+  }
+
+  export type SetListShareUpsertWithWhereUniqueWithoutSetListInput = {
+    where: SetListShareWhereUniqueInput
+    update: XOR<SetListShareUpdateWithoutSetListInput, SetListShareUncheckedUpdateWithoutSetListInput>
+    create: XOR<SetListShareCreateWithoutSetListInput, SetListShareUncheckedCreateWithoutSetListInput>
+  }
+
+  export type SetListShareUpdateWithWhereUniqueWithoutSetListInput = {
+    where: SetListShareWhereUniqueInput
+    data: XOR<SetListShareUpdateWithoutSetListInput, SetListShareUncheckedUpdateWithoutSetListInput>
+  }
+
+  export type SetListShareUpdateManyWithWhereWithoutSetListInput = {
+    where: SetListShareScalarWhereInput
+    data: XOR<SetListShareUpdateManyMutationInput, SetListShareUncheckedUpdateManyWithoutSetListInput>
+  }
+
+  export type SetListCreateWithoutSetItemsInput = {
+    setListId?: string
+    name: string
+    description?: string | null
+    isPrivate?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    owner: UserCreateNestedOneWithoutOwnedSetListsInput
+    guild?: GuildCreateNestedOneWithoutSetListsInput
+    setSections?: SetSectionCreateNestedManyWithoutSetListInput
+    shares?: SetListShareCreateNestedManyWithoutSetListInput
+  }
+
+  export type SetListUncheckedCreateWithoutSetItemsInput = {
+    setListId?: string
+    name: string
+    description?: string | null
+    ownerId: string
+    guildId?: string | null
+    isPrivate?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    setSections?: SetSectionUncheckedCreateNestedManyWithoutSetListInput
+    shares?: SetListShareUncheckedCreateNestedManyWithoutSetListInput
+  }
+
+  export type SetListCreateOrConnectWithoutSetItemsInput = {
+    where: SetListWhereUniqueInput
+    create: XOR<SetListCreateWithoutSetItemsInput, SetListUncheckedCreateWithoutSetItemsInput>
+  }
+
+  export type TrackCreateWithoutSetItemsInput = {
+    trackId?: string
+    type?: $Enums.TrackType
+    title: string
+    artist: string
+    defaultDuration?: number | null
+    defaultTuning?: string | null
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    createdBy: string
+    tags?: TagCreateNestedManyWithoutTracksInput
+  }
+
+  export type TrackUncheckedCreateWithoutSetItemsInput = {
+    trackId?: string
+    type?: $Enums.TrackType
+    title: string
+    artist: string
+    defaultDuration?: number | null
+    defaultTuning?: string | null
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    createdBy: string
+    tags?: TagUncheckedCreateNestedManyWithoutTracksInput
+  }
+
+  export type TrackCreateOrConnectWithoutSetItemsInput = {
+    where: TrackWhereUniqueInput
+    create: XOR<TrackCreateWithoutSetItemsInput, TrackUncheckedCreateWithoutSetItemsInput>
+  }
+
+  export type SetSectionCreateWithoutSetItemsInput = {
+    sectionId?: string
+    name: string
+    position: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    setList: SetListCreateNestedOneWithoutSetSectionsInput
+  }
+
+  export type SetSectionUncheckedCreateWithoutSetItemsInput = {
+    sectionId?: string
+    setListId: string
+    name: string
+    position: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type SetSectionCreateOrConnectWithoutSetItemsInput = {
+    where: SetSectionWhereUniqueInput
+    create: XOR<SetSectionCreateWithoutSetItemsInput, SetSectionUncheckedCreateWithoutSetItemsInput>
+  }
+
+  export type SetListUpsertWithoutSetItemsInput = {
+    update: XOR<SetListUpdateWithoutSetItemsInput, SetListUncheckedUpdateWithoutSetItemsInput>
+    create: XOR<SetListCreateWithoutSetItemsInput, SetListUncheckedCreateWithoutSetItemsInput>
+    where?: SetListWhereInput
+  }
+
+  export type SetListUpdateToOneWithWhereWithoutSetItemsInput = {
+    where?: SetListWhereInput
+    data: XOR<SetListUpdateWithoutSetItemsInput, SetListUncheckedUpdateWithoutSetItemsInput>
+  }
+
+  export type SetListUpdateWithoutSetItemsInput = {
+    setListId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    isPrivate?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    owner?: UserUpdateOneRequiredWithoutOwnedSetListsNestedInput
+    guild?: GuildUpdateOneWithoutSetListsNestedInput
+    setSections?: SetSectionUpdateManyWithoutSetListNestedInput
+    shares?: SetListShareUpdateManyWithoutSetListNestedInput
+  }
+
+  export type SetListUncheckedUpdateWithoutSetItemsInput = {
+    setListId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    ownerId?: StringFieldUpdateOperationsInput | string
+    guildId?: NullableStringFieldUpdateOperationsInput | string | null
+    isPrivate?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    setSections?: SetSectionUncheckedUpdateManyWithoutSetListNestedInput
+    shares?: SetListShareUncheckedUpdateManyWithoutSetListNestedInput
+  }
+
+  export type TrackUpsertWithoutSetItemsInput = {
+    update: XOR<TrackUpdateWithoutSetItemsInput, TrackUncheckedUpdateWithoutSetItemsInput>
+    create: XOR<TrackCreateWithoutSetItemsInput, TrackUncheckedCreateWithoutSetItemsInput>
+    where?: TrackWhereInput
+  }
+
+  export type TrackUpdateToOneWithWhereWithoutSetItemsInput = {
+    where?: TrackWhereInput
+    data: XOR<TrackUpdateWithoutSetItemsInput, TrackUncheckedUpdateWithoutSetItemsInput>
+  }
+
+  export type TrackUpdateWithoutSetItemsInput = {
+    trackId?: StringFieldUpdateOperationsInput | string
+    type?: EnumTrackTypeFieldUpdateOperationsInput | $Enums.TrackType
+    title?: StringFieldUpdateOperationsInput | string
+    artist?: StringFieldUpdateOperationsInput | string
+    defaultDuration?: NullableIntFieldUpdateOperationsInput | number | null
+    defaultTuning?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdBy?: StringFieldUpdateOperationsInput | string
+    tags?: TagUpdateManyWithoutTracksNestedInput
+  }
+
+  export type TrackUncheckedUpdateWithoutSetItemsInput = {
+    trackId?: StringFieldUpdateOperationsInput | string
+    type?: EnumTrackTypeFieldUpdateOperationsInput | $Enums.TrackType
+    title?: StringFieldUpdateOperationsInput | string
+    artist?: StringFieldUpdateOperationsInput | string
+    defaultDuration?: NullableIntFieldUpdateOperationsInput | number | null
+    defaultTuning?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdBy?: StringFieldUpdateOperationsInput | string
+    tags?: TagUncheckedUpdateManyWithoutTracksNestedInput
+  }
+
+  export type SetSectionUpsertWithoutSetItemsInput = {
+    update: XOR<SetSectionUpdateWithoutSetItemsInput, SetSectionUncheckedUpdateWithoutSetItemsInput>
+    create: XOR<SetSectionCreateWithoutSetItemsInput, SetSectionUncheckedCreateWithoutSetItemsInput>
+    where?: SetSectionWhereInput
+  }
+
+  export type SetSectionUpdateToOneWithWhereWithoutSetItemsInput = {
+    where?: SetSectionWhereInput
+    data: XOR<SetSectionUpdateWithoutSetItemsInput, SetSectionUncheckedUpdateWithoutSetItemsInput>
+  }
+
+  export type SetSectionUpdateWithoutSetItemsInput = {
+    sectionId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    position?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    setList?: SetListUpdateOneRequiredWithoutSetSectionsNestedInput
+  }
+
+  export type SetSectionUncheckedUpdateWithoutSetItemsInput = {
+    sectionId?: StringFieldUpdateOperationsInput | string
+    setListId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    position?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SetListCreateWithoutSetSectionsInput = {
+    setListId?: string
+    name: string
+    description?: string | null
+    isPrivate?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    owner: UserCreateNestedOneWithoutOwnedSetListsInput
+    guild?: GuildCreateNestedOneWithoutSetListsInput
+    setItems?: SetItemCreateNestedManyWithoutSetListInput
+    shares?: SetListShareCreateNestedManyWithoutSetListInput
+  }
+
+  export type SetListUncheckedCreateWithoutSetSectionsInput = {
+    setListId?: string
+    name: string
+    description?: string | null
+    ownerId: string
+    guildId?: string | null
+    isPrivate?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    setItems?: SetItemUncheckedCreateNestedManyWithoutSetListInput
+    shares?: SetListShareUncheckedCreateNestedManyWithoutSetListInput
+  }
+
+  export type SetListCreateOrConnectWithoutSetSectionsInput = {
+    where: SetListWhereUniqueInput
+    create: XOR<SetListCreateWithoutSetSectionsInput, SetListUncheckedCreateWithoutSetSectionsInput>
+  }
+
+  export type SetItemCreateWithoutSectionInput = {
+    setItemId?: string
+    position: number
+    customTuning?: string | null
+    customNotes?: string | null
+    customDuration?: number | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    setList: SetListCreateNestedOneWithoutSetItemsInput
+    track: TrackCreateNestedOneWithoutSetItemsInput
+  }
+
+  export type SetItemUncheckedCreateWithoutSectionInput = {
+    setItemId?: string
+    setListId: string
+    trackId: string
+    position: number
+    customTuning?: string | null
+    customNotes?: string | null
+    customDuration?: number | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type SetItemCreateOrConnectWithoutSectionInput = {
+    where: SetItemWhereUniqueInput
+    create: XOR<SetItemCreateWithoutSectionInput, SetItemUncheckedCreateWithoutSectionInput>
+  }
+
+  export type SetItemCreateManySectionInputEnvelope = {
+    data: SetItemCreateManySectionInput | SetItemCreateManySectionInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type SetListUpsertWithoutSetSectionsInput = {
+    update: XOR<SetListUpdateWithoutSetSectionsInput, SetListUncheckedUpdateWithoutSetSectionsInput>
+    create: XOR<SetListCreateWithoutSetSectionsInput, SetListUncheckedCreateWithoutSetSectionsInput>
+    where?: SetListWhereInput
+  }
+
+  export type SetListUpdateToOneWithWhereWithoutSetSectionsInput = {
+    where?: SetListWhereInput
+    data: XOR<SetListUpdateWithoutSetSectionsInput, SetListUncheckedUpdateWithoutSetSectionsInput>
+  }
+
+  export type SetListUpdateWithoutSetSectionsInput = {
+    setListId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    isPrivate?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    owner?: UserUpdateOneRequiredWithoutOwnedSetListsNestedInput
+    guild?: GuildUpdateOneWithoutSetListsNestedInput
+    setItems?: SetItemUpdateManyWithoutSetListNestedInput
+    shares?: SetListShareUpdateManyWithoutSetListNestedInput
+  }
+
+  export type SetListUncheckedUpdateWithoutSetSectionsInput = {
+    setListId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    ownerId?: StringFieldUpdateOperationsInput | string
+    guildId?: NullableStringFieldUpdateOperationsInput | string | null
+    isPrivate?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    setItems?: SetItemUncheckedUpdateManyWithoutSetListNestedInput
+    shares?: SetListShareUncheckedUpdateManyWithoutSetListNestedInput
+  }
+
+  export type SetItemUpsertWithWhereUniqueWithoutSectionInput = {
+    where: SetItemWhereUniqueInput
+    update: XOR<SetItemUpdateWithoutSectionInput, SetItemUncheckedUpdateWithoutSectionInput>
+    create: XOR<SetItemCreateWithoutSectionInput, SetItemUncheckedCreateWithoutSectionInput>
+  }
+
+  export type SetItemUpdateWithWhereUniqueWithoutSectionInput = {
+    where: SetItemWhereUniqueInput
+    data: XOR<SetItemUpdateWithoutSectionInput, SetItemUncheckedUpdateWithoutSectionInput>
+  }
+
+  export type SetItemUpdateManyWithWhereWithoutSectionInput = {
+    where: SetItemScalarWhereInput
+    data: XOR<SetItemUpdateManyMutationInput, SetItemUncheckedUpdateManyWithoutSectionInput>
+  }
+
+  export type SetListCreateWithoutSharesInput = {
+    setListId?: string
+    name: string
+    description?: string | null
+    isPrivate?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    owner: UserCreateNestedOneWithoutOwnedSetListsInput
+    guild?: GuildCreateNestedOneWithoutSetListsInput
+    setItems?: SetItemCreateNestedManyWithoutSetListInput
+    setSections?: SetSectionCreateNestedManyWithoutSetListInput
+  }
+
+  export type SetListUncheckedCreateWithoutSharesInput = {
+    setListId?: string
+    name: string
+    description?: string | null
+    ownerId: string
+    guildId?: string | null
+    isPrivate?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    setItems?: SetItemUncheckedCreateNestedManyWithoutSetListInput
+    setSections?: SetSectionUncheckedCreateNestedManyWithoutSetListInput
+  }
+
+  export type SetListCreateOrConnectWithoutSharesInput = {
+    where: SetListWhereUniqueInput
+    create: XOR<SetListCreateWithoutSharesInput, SetListUncheckedCreateWithoutSharesInput>
+  }
+
+  export type UserCreateWithoutCreatedSharesInput = {
+    userId?: string
+    email: string
+    displayName?: string | null
+    avatar?: string | null
+    firebaseUid?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    createdGuilds?: GuildCreateNestedManyWithoutCreatedByInput
+    ownedGuilds?: GuildCreateNestedManyWithoutCurrentOwnerInput
+    memberOfGuilds?: GuildCreateNestedManyWithoutMembersInput
+    follows?: FollowCreateNestedManyWithoutUserInput
+    followedBy?: FollowCreateNestedManyWithoutFollowedUserInput
+    feedActivities?: FeedActivityCreateNestedManyWithoutUserInput
+    sentInvitations?: GuildInvitationCreateNestedManyWithoutInvitedByInput
+    receivedInvitations?: GuildInvitationCreateNestedManyWithoutInvitedUserInput
+    ownedSetLists?: SetListCreateNestedManyWithoutOwnerInput
+  }
+
+  export type UserUncheckedCreateWithoutCreatedSharesInput = {
+    userId?: string
+    email: string
+    displayName?: string | null
+    avatar?: string | null
+    firebaseUid?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    createdGuilds?: GuildUncheckedCreateNestedManyWithoutCreatedByInput
+    ownedGuilds?: GuildUncheckedCreateNestedManyWithoutCurrentOwnerInput
+    memberOfGuilds?: GuildUncheckedCreateNestedManyWithoutMembersInput
+    follows?: FollowUncheckedCreateNestedManyWithoutUserInput
+    followedBy?: FollowUncheckedCreateNestedManyWithoutFollowedUserInput
+    feedActivities?: FeedActivityUncheckedCreateNestedManyWithoutUserInput
+    sentInvitations?: GuildInvitationUncheckedCreateNestedManyWithoutInvitedByInput
+    receivedInvitations?: GuildInvitationUncheckedCreateNestedManyWithoutInvitedUserInput
+    ownedSetLists?: SetListUncheckedCreateNestedManyWithoutOwnerInput
+  }
+
+  export type UserCreateOrConnectWithoutCreatedSharesInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutCreatedSharesInput, UserUncheckedCreateWithoutCreatedSharesInput>
+  }
+
+  export type SetListUpsertWithoutSharesInput = {
+    update: XOR<SetListUpdateWithoutSharesInput, SetListUncheckedUpdateWithoutSharesInput>
+    create: XOR<SetListCreateWithoutSharesInput, SetListUncheckedCreateWithoutSharesInput>
+    where?: SetListWhereInput
+  }
+
+  export type SetListUpdateToOneWithWhereWithoutSharesInput = {
+    where?: SetListWhereInput
+    data: XOR<SetListUpdateWithoutSharesInput, SetListUncheckedUpdateWithoutSharesInput>
+  }
+
+  export type SetListUpdateWithoutSharesInput = {
+    setListId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    isPrivate?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    owner?: UserUpdateOneRequiredWithoutOwnedSetListsNestedInput
+    guild?: GuildUpdateOneWithoutSetListsNestedInput
+    setItems?: SetItemUpdateManyWithoutSetListNestedInput
+    setSections?: SetSectionUpdateManyWithoutSetListNestedInput
+  }
+
+  export type SetListUncheckedUpdateWithoutSharesInput = {
+    setListId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    ownerId?: StringFieldUpdateOperationsInput | string
+    guildId?: NullableStringFieldUpdateOperationsInput | string | null
+    isPrivate?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    setItems?: SetItemUncheckedUpdateManyWithoutSetListNestedInput
+    setSections?: SetSectionUncheckedUpdateManyWithoutSetListNestedInput
+  }
+
+  export type UserUpsertWithoutCreatedSharesInput = {
+    update: XOR<UserUpdateWithoutCreatedSharesInput, UserUncheckedUpdateWithoutCreatedSharesInput>
+    create: XOR<UserCreateWithoutCreatedSharesInput, UserUncheckedCreateWithoutCreatedSharesInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutCreatedSharesInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutCreatedSharesInput, UserUncheckedUpdateWithoutCreatedSharesInput>
+  }
+
+  export type UserUpdateWithoutCreatedSharesInput = {
+    userId?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    displayName?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar?: NullableStringFieldUpdateOperationsInput | string | null
+    firebaseUid?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdGuilds?: GuildUpdateManyWithoutCreatedByNestedInput
+    ownedGuilds?: GuildUpdateManyWithoutCurrentOwnerNestedInput
+    memberOfGuilds?: GuildUpdateManyWithoutMembersNestedInput
+    follows?: FollowUpdateManyWithoutUserNestedInput
+    followedBy?: FollowUpdateManyWithoutFollowedUserNestedInput
+    feedActivities?: FeedActivityUpdateManyWithoutUserNestedInput
+    sentInvitations?: GuildInvitationUpdateManyWithoutInvitedByNestedInput
+    receivedInvitations?: GuildInvitationUpdateManyWithoutInvitedUserNestedInput
+    ownedSetLists?: SetListUpdateManyWithoutOwnerNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutCreatedSharesInput = {
+    userId?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    displayName?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar?: NullableStringFieldUpdateOperationsInput | string | null
+    firebaseUid?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdGuilds?: GuildUncheckedUpdateManyWithoutCreatedByNestedInput
+    ownedGuilds?: GuildUncheckedUpdateManyWithoutCurrentOwnerNestedInput
+    memberOfGuilds?: GuildUncheckedUpdateManyWithoutMembersNestedInput
+    follows?: FollowUncheckedUpdateManyWithoutUserNestedInput
+    followedBy?: FollowUncheckedUpdateManyWithoutFollowedUserNestedInput
+    feedActivities?: FeedActivityUncheckedUpdateManyWithoutUserNestedInput
+    sentInvitations?: GuildInvitationUncheckedUpdateManyWithoutInvitedByNestedInput
+    receivedInvitations?: GuildInvitationUncheckedUpdateManyWithoutInvitedUserNestedInput
+    ownedSetLists?: SetListUncheckedUpdateManyWithoutOwnerNestedInput
   }
 
   export type GuildCreateManyCreatedByInput = {
@@ -21375,6 +29142,25 @@ export namespace Prisma {
     respondedAt?: Date | string | null
   }
 
+  export type SetListCreateManyOwnerInput = {
+    setListId?: string
+    name: string
+    description?: string | null
+    guildId?: string | null
+    isPrivate?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type SetListShareCreateManyCreatorInput = {
+    shareId?: string
+    setListId: string
+    shareToken: string
+    permission?: $Enums.SharePermission
+    expiresAt?: Date | string | null
+    createdAt?: Date | string
+  }
+
   export type GuildUpdateWithoutCreatedByInput = {
     guildId?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
@@ -21387,6 +29173,7 @@ export namespace Prisma {
     club?: ClubUpdateOneWithoutGuildNestedInput
     follows?: FollowUpdateManyWithoutGuildNestedInput
     invitations?: GuildInvitationUpdateManyWithoutGuildNestedInput
+    setLists?: SetListUpdateManyWithoutGuildNestedInput
   }
 
   export type GuildUncheckedUpdateWithoutCreatedByInput = {
@@ -21401,6 +29188,7 @@ export namespace Prisma {
     members?: UserUncheckedUpdateManyWithoutMemberOfGuildsNestedInput
     follows?: FollowUncheckedUpdateManyWithoutGuildNestedInput
     invitations?: GuildInvitationUncheckedUpdateManyWithoutGuildNestedInput
+    setLists?: SetListUncheckedUpdateManyWithoutGuildNestedInput
   }
 
   export type GuildUncheckedUpdateManyWithoutCreatedByInput = {
@@ -21426,6 +29214,7 @@ export namespace Prisma {
     club?: ClubUpdateOneWithoutGuildNestedInput
     follows?: FollowUpdateManyWithoutGuildNestedInput
     invitations?: GuildInvitationUpdateManyWithoutGuildNestedInput
+    setLists?: SetListUpdateManyWithoutGuildNestedInput
   }
 
   export type GuildUncheckedUpdateWithoutCurrentOwnerInput = {
@@ -21440,6 +29229,7 @@ export namespace Prisma {
     members?: UserUncheckedUpdateManyWithoutMemberOfGuildsNestedInput
     follows?: FollowUncheckedUpdateManyWithoutGuildNestedInput
     invitations?: GuildInvitationUncheckedUpdateManyWithoutGuildNestedInput
+    setLists?: SetListUncheckedUpdateManyWithoutGuildNestedInput
   }
 
   export type GuildUncheckedUpdateManyWithoutCurrentOwnerInput = {
@@ -21465,6 +29255,7 @@ export namespace Prisma {
     club?: ClubUpdateOneWithoutGuildNestedInput
     follows?: FollowUpdateManyWithoutGuildNestedInput
     invitations?: GuildInvitationUpdateManyWithoutGuildNestedInput
+    setLists?: SetListUpdateManyWithoutGuildNestedInput
   }
 
   export type GuildUncheckedUpdateWithoutMembersInput = {
@@ -21479,6 +29270,7 @@ export namespace Prisma {
     clubId?: NullableStringFieldUpdateOperationsInput | string | null
     follows?: FollowUncheckedUpdateManyWithoutGuildNestedInput
     invitations?: GuildInvitationUncheckedUpdateManyWithoutGuildNestedInput
+    setLists?: SetListUncheckedUpdateManyWithoutGuildNestedInput
   }
 
   export type GuildUncheckedUpdateManyWithoutMembersInput = {
@@ -21628,6 +29420,69 @@ export namespace Prisma {
     respondedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
+  export type SetListUpdateWithoutOwnerInput = {
+    setListId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    isPrivate?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    guild?: GuildUpdateOneWithoutSetListsNestedInput
+    setItems?: SetItemUpdateManyWithoutSetListNestedInput
+    setSections?: SetSectionUpdateManyWithoutSetListNestedInput
+    shares?: SetListShareUpdateManyWithoutSetListNestedInput
+  }
+
+  export type SetListUncheckedUpdateWithoutOwnerInput = {
+    setListId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    guildId?: NullableStringFieldUpdateOperationsInput | string | null
+    isPrivate?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    setItems?: SetItemUncheckedUpdateManyWithoutSetListNestedInput
+    setSections?: SetSectionUncheckedUpdateManyWithoutSetListNestedInput
+    shares?: SetListShareUncheckedUpdateManyWithoutSetListNestedInput
+  }
+
+  export type SetListUncheckedUpdateManyWithoutOwnerInput = {
+    setListId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    guildId?: NullableStringFieldUpdateOperationsInput | string | null
+    isPrivate?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SetListShareUpdateWithoutCreatorInput = {
+    shareId?: StringFieldUpdateOperationsInput | string
+    shareToken?: StringFieldUpdateOperationsInput | string
+    permission?: EnumSharePermissionFieldUpdateOperationsInput | $Enums.SharePermission
+    expiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    setList?: SetListUpdateOneRequiredWithoutSharesNestedInput
+  }
+
+  export type SetListShareUncheckedUpdateWithoutCreatorInput = {
+    shareId?: StringFieldUpdateOperationsInput | string
+    setListId?: StringFieldUpdateOperationsInput | string
+    shareToken?: StringFieldUpdateOperationsInput | string
+    permission?: EnumSharePermissionFieldUpdateOperationsInput | $Enums.SharePermission
+    expiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SetListShareUncheckedUpdateManyWithoutCreatorInput = {
+    shareId?: StringFieldUpdateOperationsInput | string
+    setListId?: StringFieldUpdateOperationsInput | string
+    shareToken?: StringFieldUpdateOperationsInput | string
+    permission?: EnumSharePermissionFieldUpdateOperationsInput | $Enums.SharePermission
+    expiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type FollowCreateManyTagInput = {
     followId?: string
     userId: string
@@ -21675,6 +29530,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: StringFieldUpdateOperationsInput | string
+    setItems?: SetItemUpdateManyWithoutTrackNestedInput
   }
 
   export type TrackUncheckedUpdateWithoutTagsInput = {
@@ -21688,6 +29544,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: StringFieldUpdateOperationsInput | string
+    setItems?: SetItemUncheckedUpdateManyWithoutTrackNestedInput
   }
 
   export type TrackUncheckedUpdateManyWithoutTagsInput = {
@@ -21721,6 +29578,16 @@ export namespace Prisma {
     respondedAt?: Date | string | null
   }
 
+  export type SetListCreateManyGuildInput = {
+    setListId?: string
+    name: string
+    description?: string | null
+    ownerId: string
+    isPrivate?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
   export type UserUpdateWithoutMemberOfGuildsInput = {
     userId?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
@@ -21736,6 +29603,8 @@ export namespace Prisma {
     feedActivities?: FeedActivityUpdateManyWithoutUserNestedInput
     sentInvitations?: GuildInvitationUpdateManyWithoutInvitedByNestedInput
     receivedInvitations?: GuildInvitationUpdateManyWithoutInvitedUserNestedInput
+    ownedSetLists?: SetListUpdateManyWithoutOwnerNestedInput
+    createdShares?: SetListShareUpdateManyWithoutCreatorNestedInput
   }
 
   export type UserUncheckedUpdateWithoutMemberOfGuildsInput = {
@@ -21753,6 +29622,8 @@ export namespace Prisma {
     feedActivities?: FeedActivityUncheckedUpdateManyWithoutUserNestedInput
     sentInvitations?: GuildInvitationUncheckedUpdateManyWithoutInvitedByNestedInput
     receivedInvitations?: GuildInvitationUncheckedUpdateManyWithoutInvitedUserNestedInput
+    ownedSetLists?: SetListUncheckedUpdateManyWithoutOwnerNestedInput
+    createdShares?: SetListShareUncheckedUpdateManyWithoutCreatorNestedInput
   }
 
   export type UserUncheckedUpdateManyWithoutMemberOfGuildsInput = {
@@ -21817,6 +29688,42 @@ export namespace Prisma {
     status?: EnumGuildInvitationStatusFieldUpdateOperationsInput | $Enums.GuildInvitationStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     respondedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type SetListUpdateWithoutGuildInput = {
+    setListId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    isPrivate?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    owner?: UserUpdateOneRequiredWithoutOwnedSetListsNestedInput
+    setItems?: SetItemUpdateManyWithoutSetListNestedInput
+    setSections?: SetSectionUpdateManyWithoutSetListNestedInput
+    shares?: SetListShareUpdateManyWithoutSetListNestedInput
+  }
+
+  export type SetListUncheckedUpdateWithoutGuildInput = {
+    setListId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    ownerId?: StringFieldUpdateOperationsInput | string
+    isPrivate?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    setItems?: SetItemUncheckedUpdateManyWithoutSetListNestedInput
+    setSections?: SetSectionUncheckedUpdateManyWithoutSetListNestedInput
+    shares?: SetListShareUncheckedUpdateManyWithoutSetListNestedInput
+  }
+
+  export type SetListUncheckedUpdateManyWithoutGuildInput = {
+    setListId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    ownerId?: StringFieldUpdateOperationsInput | string
+    isPrivate?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type CalendarEventUpdateWithoutActsInput = {
@@ -21905,6 +29812,18 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type SetItemCreateManyTrackInput = {
+    setItemId?: string
+    setListId: string
+    position: number
+    customTuning?: string | null
+    customNotes?: string | null
+    customDuration?: number | null
+    sectionId?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
   export type TagUpdateWithoutTracksInput = {
     tagId?: StringFieldUpdateOperationsInput | string
     category?: StringFieldUpdateOperationsInput | string
@@ -21923,6 +29842,42 @@ export namespace Prisma {
     tagId?: StringFieldUpdateOperationsInput | string
     category?: StringFieldUpdateOperationsInput | string
     value?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type SetItemUpdateWithoutTrackInput = {
+    setItemId?: StringFieldUpdateOperationsInput | string
+    position?: IntFieldUpdateOperationsInput | number
+    customTuning?: NullableStringFieldUpdateOperationsInput | string | null
+    customNotes?: NullableStringFieldUpdateOperationsInput | string | null
+    customDuration?: NullableIntFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    setList?: SetListUpdateOneRequiredWithoutSetItemsNestedInput
+    section?: SetSectionUpdateOneWithoutSetItemsNestedInput
+  }
+
+  export type SetItemUncheckedUpdateWithoutTrackInput = {
+    setItemId?: StringFieldUpdateOperationsInput | string
+    setListId?: StringFieldUpdateOperationsInput | string
+    position?: IntFieldUpdateOperationsInput | number
+    customTuning?: NullableStringFieldUpdateOperationsInput | string | null
+    customNotes?: NullableStringFieldUpdateOperationsInput | string | null
+    customDuration?: NullableIntFieldUpdateOperationsInput | number | null
+    sectionId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SetItemUncheckedUpdateManyWithoutTrackInput = {
+    setItemId?: StringFieldUpdateOperationsInput | string
+    setListId?: StringFieldUpdateOperationsInput | string
+    position?: IntFieldUpdateOperationsInput | number
+    customTuning?: NullableStringFieldUpdateOperationsInput | string | null
+    customNotes?: NullableStringFieldUpdateOperationsInput | string | null
+    customDuration?: NullableIntFieldUpdateOperationsInput | number | null
+    sectionId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type FeedActivityCreateManyCalendarEventInput = {
@@ -21988,6 +29943,172 @@ export namespace Prisma {
     subjectType?: StringFieldUpdateOperationsInput | string
     subjectId?: StringFieldUpdateOperationsInput | string
     userId?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type SetItemCreateManySetListInput = {
+    setItemId?: string
+    trackId: string
+    position: number
+    customTuning?: string | null
+    customNotes?: string | null
+    customDuration?: number | null
+    sectionId?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type SetSectionCreateManySetListInput = {
+    sectionId?: string
+    name: string
+    position: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type SetListShareCreateManySetListInput = {
+    shareId?: string
+    shareToken: string
+    permission?: $Enums.SharePermission
+    expiresAt?: Date | string | null
+    createdAt?: Date | string
+    createdBy: string
+  }
+
+  export type SetItemUpdateWithoutSetListInput = {
+    setItemId?: StringFieldUpdateOperationsInput | string
+    position?: IntFieldUpdateOperationsInput | number
+    customTuning?: NullableStringFieldUpdateOperationsInput | string | null
+    customNotes?: NullableStringFieldUpdateOperationsInput | string | null
+    customDuration?: NullableIntFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    track?: TrackUpdateOneRequiredWithoutSetItemsNestedInput
+    section?: SetSectionUpdateOneWithoutSetItemsNestedInput
+  }
+
+  export type SetItemUncheckedUpdateWithoutSetListInput = {
+    setItemId?: StringFieldUpdateOperationsInput | string
+    trackId?: StringFieldUpdateOperationsInput | string
+    position?: IntFieldUpdateOperationsInput | number
+    customTuning?: NullableStringFieldUpdateOperationsInput | string | null
+    customNotes?: NullableStringFieldUpdateOperationsInput | string | null
+    customDuration?: NullableIntFieldUpdateOperationsInput | number | null
+    sectionId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SetItemUncheckedUpdateManyWithoutSetListInput = {
+    setItemId?: StringFieldUpdateOperationsInput | string
+    trackId?: StringFieldUpdateOperationsInput | string
+    position?: IntFieldUpdateOperationsInput | number
+    customTuning?: NullableStringFieldUpdateOperationsInput | string | null
+    customNotes?: NullableStringFieldUpdateOperationsInput | string | null
+    customDuration?: NullableIntFieldUpdateOperationsInput | number | null
+    sectionId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SetSectionUpdateWithoutSetListInput = {
+    sectionId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    position?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    setItems?: SetItemUpdateManyWithoutSectionNestedInput
+  }
+
+  export type SetSectionUncheckedUpdateWithoutSetListInput = {
+    sectionId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    position?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    setItems?: SetItemUncheckedUpdateManyWithoutSectionNestedInput
+  }
+
+  export type SetSectionUncheckedUpdateManyWithoutSetListInput = {
+    sectionId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    position?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SetListShareUpdateWithoutSetListInput = {
+    shareId?: StringFieldUpdateOperationsInput | string
+    shareToken?: StringFieldUpdateOperationsInput | string
+    permission?: EnumSharePermissionFieldUpdateOperationsInput | $Enums.SharePermission
+    expiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    creator?: UserUpdateOneRequiredWithoutCreatedSharesNestedInput
+  }
+
+  export type SetListShareUncheckedUpdateWithoutSetListInput = {
+    shareId?: StringFieldUpdateOperationsInput | string
+    shareToken?: StringFieldUpdateOperationsInput | string
+    permission?: EnumSharePermissionFieldUpdateOperationsInput | $Enums.SharePermission
+    expiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdBy?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type SetListShareUncheckedUpdateManyWithoutSetListInput = {
+    shareId?: StringFieldUpdateOperationsInput | string
+    shareToken?: StringFieldUpdateOperationsInput | string
+    permission?: EnumSharePermissionFieldUpdateOperationsInput | $Enums.SharePermission
+    expiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdBy?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type SetItemCreateManySectionInput = {
+    setItemId?: string
+    setListId: string
+    trackId: string
+    position: number
+    customTuning?: string | null
+    customNotes?: string | null
+    customDuration?: number | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type SetItemUpdateWithoutSectionInput = {
+    setItemId?: StringFieldUpdateOperationsInput | string
+    position?: IntFieldUpdateOperationsInput | number
+    customTuning?: NullableStringFieldUpdateOperationsInput | string | null
+    customNotes?: NullableStringFieldUpdateOperationsInput | string | null
+    customDuration?: NullableIntFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    setList?: SetListUpdateOneRequiredWithoutSetItemsNestedInput
+    track?: TrackUpdateOneRequiredWithoutSetItemsNestedInput
+  }
+
+  export type SetItemUncheckedUpdateWithoutSectionInput = {
+    setItemId?: StringFieldUpdateOperationsInput | string
+    setListId?: StringFieldUpdateOperationsInput | string
+    trackId?: StringFieldUpdateOperationsInput | string
+    position?: IntFieldUpdateOperationsInput | number
+    customTuning?: NullableStringFieldUpdateOperationsInput | string | null
+    customNotes?: NullableStringFieldUpdateOperationsInput | string | null
+    customDuration?: NullableIntFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SetItemUncheckedUpdateManyWithoutSectionInput = {
+    setItemId?: StringFieldUpdateOperationsInput | string
+    setListId?: StringFieldUpdateOperationsInput | string
+    trackId?: StringFieldUpdateOperationsInput | string
+    position?: IntFieldUpdateOperationsInput | number
+    customTuning?: NullableStringFieldUpdateOperationsInput | string | null
+    customNotes?: NullableStringFieldUpdateOperationsInput | string | null
+    customDuration?: NullableIntFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
 

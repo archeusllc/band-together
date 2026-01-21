@@ -7,3 +7,8 @@ export * from './Track';
 export * from './CalendarEvent';
 export * from './Follow';
 export * from './GuildInvitation';
+export * from './SetList';
+export * from './SetItem';
+export * from './SetSection';
+export * from './SetListShare';
+export * from './SharePermission';

@@ -233,6 +233,49 @@ exports.Prisma.GuildInvitationScalarFieldEnum = {
   respondedAt: 'respondedAt'
 };
 
+exports.Prisma.SetListScalarFieldEnum = {
+  setListId: 'setListId',
+  name: 'name',
+  description: 'description',
+  ownerId: 'ownerId',
+  guildId: 'guildId',
+  isPrivate: 'isPrivate',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.SetItemScalarFieldEnum = {
+  setItemId: 'setItemId',
+  setListId: 'setListId',
+  trackId: 'trackId',
+  position: 'position',
+  customTuning: 'customTuning',
+  customNotes: 'customNotes',
+  customDuration: 'customDuration',
+  sectionId: 'sectionId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.SetSectionScalarFieldEnum = {
+  sectionId: 'sectionId',
+  setListId: 'setListId',
+  name: 'name',
+  position: 'position',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.SetListShareScalarFieldEnum = {
+  shareId: 'shareId',
+  setListId: 'setListId',
+  shareToken: 'shareToken',
+  permission: 'permission',
+  expiresAt: 'expiresAt',
+  createdAt: 'createdAt',
+  createdBy: 'createdBy'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -271,6 +314,11 @@ exports.GuildInvitationStatus = exports.$Enums.GuildInvitationStatus = {
   CANCELLED: 'CANCELLED'
 };
 
+exports.SharePermission = exports.$Enums.SharePermission = {
+  VIEW_ONLY: 'VIEW_ONLY',
+  CAN_EDIT: 'CAN_EDIT'
+};
+
 exports.Prisma.ModelName = {
   User: 'User',
   Follow: 'Follow',
@@ -282,7 +330,11 @@ exports.Prisma.ModelName = {
   Track: 'Track',
   CalendarEvent: 'CalendarEvent',
   FeedActivity: 'FeedActivity',
-  GuildInvitation: 'GuildInvitation'
+  GuildInvitation: 'GuildInvitation',
+  SetList: 'SetList',
+  SetItem: 'SetItem',
+  SetSection: 'SetSection',
+  SetListShare: 'SetListShare'
 };
 
 /**
