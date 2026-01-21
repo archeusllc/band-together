@@ -54,9 +54,9 @@ export interface UpdateClubBody {
 export interface GuildResponse extends Guild {
   currentOwner?: Pick<User, 'userId' | 'displayName' | 'avatar'>;
   members?: Pick<User, 'userId' | 'displayName' | 'avatar'>[];
-  act?: Act;
-  venue?: Venue;
-  club?: Club;
+  act: Act | null;
+  venue: Venue | null;
+  club: Club | null;
 }
 
 export interface GuildsListResponse {

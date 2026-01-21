@@ -6,6 +6,7 @@
   "type": "module",
   "scripts": {
     "start": "bun run --watch src/index.ts",
+    "typecheck": "bun tsc --noEmit",
     "clean": "rm -rf node_modules bun.lock package-lock.json",
     "reset": "bun clean && bun install",
     "generate": "curl -o ../shared/generated/api-types/server.d.ts http://localhost:3000/server.d.ts"

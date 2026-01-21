@@ -49,7 +49,7 @@ export const trackRoutes = new Elysia().group('/tracks', (track) =>
                           type: { type: 'string', enum: ['SONG', 'OTHER'] },
                           title: { type: 'string' },
                           artist: { type: 'string' },
-                          defaultDuration: { type: ['number', 'null'] }
+                          defaultDuration: { type: 'number', nullable: true }
                         }
                       }
                     },

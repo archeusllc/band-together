@@ -70,7 +70,7 @@ export const ClubDetailsScreen = ({ route, navigation }: Props) => {
 
   const handleFollow = async () => {
     if (!isAuthenticated) {
-      navigation.navigate('Login');
+      navigation.getParent()?.navigate('Login');
       return;
     }
 

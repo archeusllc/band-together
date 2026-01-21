@@ -1,8 +1,6 @@
 import { Elysia } from 'elysia';
 declare const app: Elysia<"", {
-    decorator: {
-        user: {};
-    };
+    decorator: {};
     store: {};
     derive: {};
     resolve: {};
@@ -158,41 +156,6 @@ declare const app: Elysia<"", {
         };
     };
 } & {
-    auth: {};
-} & {
-    auth: {
-        me: {
-            get: {
-                body: unknown;
-                params: {};
-                query: unknown;
-                headers: unknown;
-                response: {
-                    200: {
-                        email: string;
-                        displayName: string | null;
-                        firebaseUid: string | null;
-                        userId: string;
-                        avatar: string | null;
-                        createdAt: Date;
-                        updatedAt: Date;
-                    } | {
-                        error: string;
-                    };
-                    422: {
-                        type: "validation";
-                        on: string;
-                        summary?: string;
-                        message?: string;
-                        found?: unknown;
-                        property?: string;
-                        expected?: string;
-                    };
-                };
-            };
-        };
-    };
-} & {
     auth: {
         logout: {
             get: {
@@ -245,22 +208,34 @@ declare const app: Elysia<"", {
         };
     };
 } & {
-    profile: {
-        get: {
-            body: unknown;
-            params: {};
-            query: unknown;
-            headers: unknown;
-            response: {
-                200: "OK";
-                422: {
-                    type: "validation";
-                    on: string;
-                    summary?: string;
-                    message?: string;
-                    found?: unknown;
-                    property?: string;
-                    expected?: string;
+    auth: {};
+} & {
+    auth: {
+        me: {
+            get: {
+                body: unknown;
+                params: {};
+                query: unknown;
+                headers: unknown;
+                response: {
+                    200: {
+                        email: string;
+                        displayName: string | null;
+                        firebaseUid: string | null;
+                        userId: string;
+                        avatar: string | null;
+                        createdAt: Date;
+                        updatedAt: Date;
+                    };
+                    422: {
+                        type: "validation";
+                        on: string;
+                        summary?: string;
+                        message?: string;
+                        found?: unknown;
+                        property?: string;
+                        expected?: string;
+                    };
                 };
             };
         };
@@ -338,7 +313,7 @@ declare const app: Elysia<"", {
                                 venueId: string | null;
                                 actId: string | null;
                                 guildId: string;
-                                guildType: import("node_modules/@band-together/shared/generated/prisma-client").$Enums.GuildType;
+                                guildType: import("../generated/prisma-client").$Enums.GuildType;
                                 createdById: string | null;
                                 currentOwnerId: string;
                                 clubId: string | null;
@@ -361,7 +336,7 @@ declare const app: Elysia<"", {
                                 venueId: string | null;
                                 actId: string | null;
                                 guildId: string;
-                                guildType: import("node_modules/@band-together/shared/generated/prisma-client").$Enums.GuildType;
+                                guildType: import("../generated/prisma-client").$Enums.GuildType;
                                 createdById: string | null;
                                 currentOwnerId: string;
                                 clubId: string | null;
@@ -470,7 +445,7 @@ declare const app: Elysia<"", {
                         venueId: string | null;
                         actId: string | null;
                         guildId: string;
-                        guildType: import("node_modules/@band-together/shared/generated/prisma-client").$Enums.GuildType;
+                        guildType: import("../generated/prisma-client").$Enums.GuildType;
                         createdById: string | null;
                         currentOwnerId: string;
                         clubId: string | null;
@@ -485,15 +460,15 @@ declare const app: Elysia<"", {
                         updatedAt: Date;
                     } | null;
                     tag: {
-                        value: string;
                         tagId: string;
                         category: string;
+                        value: string;
                     } | null;
                 } & {
                     userId: string;
                     createdAt: Date;
                     followId: string;
-                    entityType: import("node_modules/@band-together/shared/generated/prisma-client").$Enums.FollowEntityType;
+                    entityType: import("../generated/prisma-client").$Enums.FollowEntityType;
                     followedUserId: string | null;
                     tagId: string | null;
                     guildId: string | null;
@@ -519,6 +494,629 @@ declare const app: Elysia<"", {
                 body: unknown;
                 params: {
                     followId: string;
+                };
+                query: unknown;
+                headers: unknown;
+                response: {
+                    200: {
+                        success: boolean;
+                    } | {
+                        error: string;
+                    };
+                    422: {
+                        type: "validation";
+                        on: string;
+                        summary?: string;
+                        message?: string;
+                        found?: unknown;
+                        property?: string;
+                        expected?: string;
+                    };
+                };
+            };
+        };
+    };
+} & {
+    tracks: {
+        search: {
+            get: {
+                body: unknown;
+                params: {};
+                query: {
+                    query?: string | undefined;
+                    type?: string | undefined;
+                    limit?: number | undefined;
+                    offset?: number | undefined;
+                    sortBy?: string | undefined;
+                    sortOrder?: string | undefined;
+                };
+                headers: unknown;
+                response: {
+                    422: {
+                        type: "validation";
+                        on: string;
+                        summary?: string;
+                        message?: string;
+                        found?: unknown;
+                        property?: string;
+                        expected?: string;
+                    };
+                };
+            };
+        };
+    };
+} & {
+    acts: {
+        get: {
+            body: unknown;
+            params: {};
+            query: {
+                search?: string | undefined;
+                page?: number | undefined;
+                limit?: number | undefined;
+            };
+            headers: unknown;
+            response: {
+                200: {
+                    guilds: ({
+                        venue: {
+                            avatar: string | null;
+                            createdAt: Date;
+                            updatedAt: Date;
+                            name: string;
+                            venueId: string;
+                            address: string | null;
+                            city: string | null;
+                            state: string | null;
+                            zipCode: string | null;
+                        } | null;
+                        act: {
+                            avatar: string | null;
+                            createdAt: Date;
+                            updatedAt: Date;
+                            name: string;
+                            actId: string;
+                            bio: string | null;
+                        } | null;
+                        club: {
+                            description: string | null;
+                            avatar: string | null;
+                            createdAt: Date;
+                            updatedAt: Date;
+                            name: string;
+                            clubId: string;
+                        } | null;
+                        currentOwner: {
+                            displayName: string | null;
+                            userId: string;
+                            avatar: string | null;
+                        };
+                        members: {
+                            displayName: string | null;
+                            userId: string;
+                            avatar: string | null;
+                        }[];
+                    } & {
+                        createdAt: Date;
+                        name: string;
+                        venueId: string | null;
+                        actId: string | null;
+                        guildId: string;
+                        guildType: import("../generated/prisma-client").$Enums.GuildType;
+                        createdById: string | null;
+                        currentOwnerId: string;
+                        clubId: string | null;
+                    })[];
+                    total: number;
+                    page: number;
+                    limit: number;
+                } | {
+                    error: string;
+                };
+                422: {
+                    type: "validation";
+                    on: string;
+                    summary?: string;
+                    message?: string;
+                    found?: unknown;
+                    property?: string;
+                    expected?: string;
+                };
+            };
+        };
+    };
+} & {
+    acts: {
+        ":actId": {
+            get: {
+                body: unknown;
+                params: {
+                    actId: string;
+                };
+                query: unknown;
+                headers: unknown;
+                response: {
+                    200: import("./types").GuildResponse | {
+                        error: string;
+                    };
+                    422: {
+                        type: "validation";
+                        on: string;
+                        summary?: string;
+                        message?: string;
+                        found?: unknown;
+                        property?: string;
+                        expected?: string;
+                    };
+                };
+            };
+        };
+    };
+} & {
+    acts: {};
+} & {
+    acts: {
+        post: {
+            body: {
+                avatar?: string | undefined;
+                bio?: string | undefined;
+                name: string;
+            };
+            params: {};
+            query: unknown;
+            headers: unknown;
+            response: {
+                200: import("./types").GuildResponse | {
+                    error: string;
+                };
+                422: {
+                    type: "validation";
+                    on: string;
+                    summary?: string;
+                    message?: string;
+                    found?: unknown;
+                    property?: string;
+                    expected?: string;
+                };
+            };
+        };
+    };
+} & {
+    acts: {
+        ":actId": {
+            patch: {
+                body: {
+                    avatar?: string | undefined;
+                    name?: string | undefined;
+                    bio?: string | undefined;
+                };
+                params: {
+                    actId: string;
+                };
+                query: unknown;
+                headers: unknown;
+                response: {
+                    200: import("./types").GuildResponse | {
+                        error: string;
+                    };
+                    422: {
+                        type: "validation";
+                        on: string;
+                        summary?: string;
+                        message?: string;
+                        found?: unknown;
+                        property?: string;
+                        expected?: string;
+                    };
+                };
+            };
+        };
+    };
+} & {
+    acts: {
+        ":actId": {
+            delete: {
+                body: unknown;
+                params: {
+                    actId: string;
+                };
+                query: unknown;
+                headers: unknown;
+                response: {
+                    200: {
+                        success: boolean;
+                    } | {
+                        error: string;
+                    };
+                    422: {
+                        type: "validation";
+                        on: string;
+                        summary?: string;
+                        message?: string;
+                        found?: unknown;
+                        property?: string;
+                        expected?: string;
+                    };
+                };
+            };
+        };
+    };
+} & {
+    clubs: {
+        get: {
+            body: unknown;
+            params: {};
+            query: {
+                search?: string | undefined;
+                page?: number | undefined;
+                limit?: number | undefined;
+            };
+            headers: unknown;
+            response: {
+                200: {
+                    guilds: ({
+                        venue: {
+                            avatar: string | null;
+                            createdAt: Date;
+                            updatedAt: Date;
+                            name: string;
+                            venueId: string;
+                            address: string | null;
+                            city: string | null;
+                            state: string | null;
+                            zipCode: string | null;
+                        } | null;
+                        act: {
+                            avatar: string | null;
+                            createdAt: Date;
+                            updatedAt: Date;
+                            name: string;
+                            actId: string;
+                            bio: string | null;
+                        } | null;
+                        club: {
+                            description: string | null;
+                            avatar: string | null;
+                            createdAt: Date;
+                            updatedAt: Date;
+                            name: string;
+                            clubId: string;
+                        } | null;
+                        currentOwner: {
+                            displayName: string | null;
+                            userId: string;
+                            avatar: string | null;
+                        };
+                        members: {
+                            displayName: string | null;
+                            userId: string;
+                            avatar: string | null;
+                        }[];
+                    } & {
+                        createdAt: Date;
+                        name: string;
+                        venueId: string | null;
+                        actId: string | null;
+                        guildId: string;
+                        guildType: import("../generated/prisma-client").$Enums.GuildType;
+                        createdById: string | null;
+                        currentOwnerId: string;
+                        clubId: string | null;
+                    })[];
+                    total: number;
+                    page: number;
+                    limit: number;
+                } | {
+                    error: string;
+                };
+                422: {
+                    type: "validation";
+                    on: string;
+                    summary?: string;
+                    message?: string;
+                    found?: unknown;
+                    property?: string;
+                    expected?: string;
+                };
+            };
+        };
+    };
+} & {
+    clubs: {
+        ":clubId": {
+            get: {
+                body: unknown;
+                params: {
+                    clubId: string;
+                };
+                query: unknown;
+                headers: unknown;
+                response: {
+                    200: import("./types").GuildResponse | {
+                        error: string;
+                    };
+                    422: {
+                        type: "validation";
+                        on: string;
+                        summary?: string;
+                        message?: string;
+                        found?: unknown;
+                        property?: string;
+                        expected?: string;
+                    };
+                };
+            };
+        };
+    };
+} & {
+    clubs: {};
+} & {
+    clubs: {
+        post: {
+            body: {
+                description?: string | undefined;
+                avatar?: string | undefined;
+                name: string;
+            };
+            params: {};
+            query: unknown;
+            headers: unknown;
+            response: {
+                200: import("./types").GuildResponse | {
+                    error: string;
+                };
+                422: {
+                    type: "validation";
+                    on: string;
+                    summary?: string;
+                    message?: string;
+                    found?: unknown;
+                    property?: string;
+                    expected?: string;
+                };
+            };
+        };
+    };
+} & {
+    clubs: {
+        ":clubId": {
+            patch: {
+                body: {
+                    description?: string | undefined;
+                    avatar?: string | undefined;
+                    name?: string | undefined;
+                };
+                params: {
+                    clubId: string;
+                };
+                query: unknown;
+                headers: unknown;
+                response: {
+                    200: import("./types").GuildResponse | {
+                        error: string;
+                    };
+                    422: {
+                        type: "validation";
+                        on: string;
+                        summary?: string;
+                        message?: string;
+                        found?: unknown;
+                        property?: string;
+                        expected?: string;
+                    };
+                };
+            };
+        };
+    };
+} & {
+    clubs: {
+        ":clubId": {
+            delete: {
+                body: unknown;
+                params: {
+                    clubId: string;
+                };
+                query: unknown;
+                headers: unknown;
+                response: {
+                    200: {
+                        success: boolean;
+                    } | {
+                        error: string;
+                    };
+                    422: {
+                        type: "validation";
+                        on: string;
+                        summary?: string;
+                        message?: string;
+                        found?: unknown;
+                        property?: string;
+                        expected?: string;
+                    };
+                };
+            };
+        };
+    };
+} & {
+    venues: {
+        get: {
+            body: unknown;
+            params: {};
+            query: {
+                search?: string | undefined;
+                page?: number | undefined;
+                limit?: number | undefined;
+            };
+            headers: unknown;
+            response: {
+                200: {
+                    guilds: ({
+                        venue: {
+                            avatar: string | null;
+                            createdAt: Date;
+                            updatedAt: Date;
+                            name: string;
+                            venueId: string;
+                            address: string | null;
+                            city: string | null;
+                            state: string | null;
+                            zipCode: string | null;
+                        } | null;
+                        act: {
+                            avatar: string | null;
+                            createdAt: Date;
+                            updatedAt: Date;
+                            name: string;
+                            actId: string;
+                            bio: string | null;
+                        } | null;
+                        club: {
+                            description: string | null;
+                            avatar: string | null;
+                            createdAt: Date;
+                            updatedAt: Date;
+                            name: string;
+                            clubId: string;
+                        } | null;
+                        currentOwner: {
+                            displayName: string | null;
+                            userId: string;
+                            avatar: string | null;
+                        };
+                        members: {
+                            displayName: string | null;
+                            userId: string;
+                            avatar: string | null;
+                        }[];
+                    } & {
+                        createdAt: Date;
+                        name: string;
+                        venueId: string | null;
+                        actId: string | null;
+                        guildId: string;
+                        guildType: import("../generated/prisma-client").$Enums.GuildType;
+                        createdById: string | null;
+                        currentOwnerId: string;
+                        clubId: string | null;
+                    })[];
+                    total: number;
+                    page: number;
+                    limit: number;
+                } | {
+                    error: string;
+                };
+                422: {
+                    type: "validation";
+                    on: string;
+                    summary?: string;
+                    message?: string;
+                    found?: unknown;
+                    property?: string;
+                    expected?: string;
+                };
+            };
+        };
+    };
+} & {
+    venues: {
+        ":venueId": {
+            get: {
+                body: unknown;
+                params: {
+                    venueId: string;
+                };
+                query: unknown;
+                headers: unknown;
+                response: {
+                    200: import("./types").GuildResponse | {
+                        error: string;
+                    };
+                    422: {
+                        type: "validation";
+                        on: string;
+                        summary?: string;
+                        message?: string;
+                        found?: unknown;
+                        property?: string;
+                        expected?: string;
+                    };
+                };
+            };
+        };
+    };
+} & {
+    venues: {};
+} & {
+    venues: {
+        post: {
+            body: {
+                avatar?: string | undefined;
+                address?: string | undefined;
+                city?: string | undefined;
+                state?: string | undefined;
+                zipCode?: string | undefined;
+                name: string;
+            };
+            params: {};
+            query: unknown;
+            headers: unknown;
+            response: {
+                200: import("./types").GuildResponse | {
+                    error: string;
+                };
+                422: {
+                    type: "validation";
+                    on: string;
+                    summary?: string;
+                    message?: string;
+                    found?: unknown;
+                    property?: string;
+                    expected?: string;
+                };
+            };
+        };
+    };
+} & {
+    venues: {
+        ":venueId": {
+            patch: {
+                body: {
+                    avatar?: string | undefined;
+                    name?: string | undefined;
+                    address?: string | undefined;
+                    city?: string | undefined;
+                    state?: string | undefined;
+                    zipCode?: string | undefined;
+                };
+                params: {
+                    venueId: string;
+                };
+                query: unknown;
+                headers: unknown;
+                response: {
+                    200: import("./types").GuildResponse | {
+                        error: string;
+                    };
+                    422: {
+                        type: "validation";
+                        on: string;
+                        summary?: string;
+                        message?: string;
+                        found?: unknown;
+                        property?: string;
+                        expected?: string;
+                    };
+                };
+            };
+        };
+    };
+} & {
+    venues: {
+        ":venueId": {
+            delete: {
+                body: unknown;
+                params: {
+                    venueId: string;
                 };
                 query: unknown;
                 headers: unknown;

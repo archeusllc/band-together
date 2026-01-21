@@ -5,7 +5,10 @@
   "private": true,
   "scripts": {
     "preinstall": "cd shared && bun install && cd ../api && bun install && cd ../client && bun install && cd ../db && bun install",
-    "postinstall": "rm -rf node_modules bun.lock package-lock.json"
+    "postinstall": "rm -rf node_modules bun.lock package-lock.json",
+    "typecheck": "bun run typecheck:client && bun run typecheck:api",
+    "typecheck:client": "cd client && bun run typecheck",
+    "typecheck:api": "cd api && bun run typecheck"
   },
   "keywords": [
     "band",

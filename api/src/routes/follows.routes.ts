@@ -24,7 +24,7 @@ export const followsRoutes = new Elysia().group('/follows', (followsRoute) =>
                   schema: {
                     type: 'object',
                     properties: {
-                      follows: { type: 'array' },
+                      follows: { type: 'array', items: { type: 'object' } },
                       total: { type: 'number' }
                     }
                   }

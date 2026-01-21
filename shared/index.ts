@@ -47,3 +47,6 @@ export {
 // Export custom types and input DTOs
 export * from './types/index';
 export * from './generated/api-types/index';
+
+// Explicit re-export of API types for better IDE support
+export type { App } from './generated/api-types/index';

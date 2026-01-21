@@ -34,7 +34,7 @@ export const feedRoutes = new Elysia().group('/feed', (feedRoute) =>
                   schema: {
                     type: 'object',
                     properties: {
-                      events: { type: 'array' },
+                      events: { type: 'array', items: { type: 'object' } },
                       total: { type: 'number' },
                       page: { type: 'number' },
                       limit: { type: 'number' }

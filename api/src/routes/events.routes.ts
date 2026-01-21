@@ -34,7 +34,7 @@ export const eventsRoutes = new Elysia()
                     schema: {
                       type: 'object',
                       properties: {
-                        events: { type: 'array' },
+                        events: { type: 'array', items: { type: 'object' } },
                         total: { type: 'number' },
                         page: { type: 'number' },
                         limit: { type: 'number' }

@@ -36,7 +36,7 @@ export const venuesRoutes = new Elysia()
                     schema: {
                       type: 'object',
                       properties: {
-                        guilds: { type: 'array' },
+                        guilds: { type: 'array', items: { type: 'object' } },
                         total: { type: 'number' },
                         page: { type: 'number' },
                         limit: { type: 'number' }
