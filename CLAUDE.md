@@ -179,6 +179,12 @@ bun clean                # Clean node_modules and lock files
 bun reset                # Clean and reinstall dependencies
 ```
 
+**CRITICAL**: After running `bun push` or `bun generate` in db/, you MUST reinstall the shared module in client and api:
+```bash
+cd ../client && bun install
+cd ../api && bun install
+```
+
 ### API Commands (from `api/` directory)
 ```bash
 cd api
@@ -188,6 +194,30 @@ bun generate             # Generate API types from running server
 bun clean                # Clean node_modules and lock files
 bun reset                # Clean and reinstall dependencies
 ```
+
+**CRITICAL**: After running `bun generate` in api/, you MUST reinstall the shared module in client and api:
+```bash
+cd ../client && bun install
+cd ../api && bun install
+```
+
+### Shared Module Workflow
+
+After ANY changes to files in `shared/` (especially generated types), you must reinstall the shared module in dependent workspaces:
+
+```bash
+# After changes in shared/
+cd client && bun install
+cd ../api && bun install
+```
+
+**Why this matters**: Bun symlinks workspace dependencies. When generated files change in shared/, the symlink doesn't automatically update - you must reinstall to refresh the dependency link.
+
+**When to reinstall**:
+- After `bun generate` in api/ (updates shared/generated/api-types/server.d.ts)
+- After `bun push` or `bun generate` in db/ (updates shared/generated/prisma-client/)
+- After manually editing shared/types/* files
+- After ANY changes to shared/index.ts or other shared source files
 
 ### Local Database Setup
 ```bash

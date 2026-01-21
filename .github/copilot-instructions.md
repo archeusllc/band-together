@@ -37,6 +37,24 @@ docker-compose up -d  # Start PostgreSQL + Adminer
 
 **Schema changes workflow**: Edit `db/prisma/schema.prisma` → `cd db && bun push` → API auto-restarts with new types.
 
+**CRITICAL - Shared Module Workflow**: After ANY changes to files in `shared/` (especially generated types), you MUST reinstall the shared module in dependent workspaces:
+
+```bash
+# After bun generate in api/ (generates shared/generated/api-types/server.d.ts)
+cd client && bun install
+cd ../api && bun install
+
+# After bun push in db/ (generates shared/generated/prisma-client/)
+cd ../client && bun install
+cd ../api && bun install
+
+# After ANY changes to shared/types/* or shared/index.ts
+cd client && bun install
+cd ../api && bun install
+```
+
+**Why this matters**: Bun symlinks workspace dependencies. Simply generating files is not enough - the symlink doesn't automatically update. You must reinstall to refresh the dependency link in client/ and api/.
+
 ## Package Manager
 
 **ALWAYS use `bun`** - never npm. Examples: `bun install`, `bun add package`, `bun run script`.
