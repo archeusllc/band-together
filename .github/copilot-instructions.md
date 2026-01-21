@@ -145,7 +145,7 @@ Always include `detail` object with tags, summary, responses for auto-generated 
 })
 ```
 
-Both use `.derive({ as: 'scoped' })` to add `firebase` context to request.
+`firebaseMiddleware` uses `.derive({ as: 'global' })` to make context available to downstream middleware, while `firebaseGate` uses `.derive({ as: 'scoped' })` as the final authentication guard.
 
 ## Eden Treaty Client Patterns
 

@@ -447,7 +447,7 @@ export const firebaseMiddleware = new Elysia({
   name: 'firebase'
 })
   .derive({
-    as: 'scoped'
+    as: 'global'
   }, async ({ request }) => {
     const authHeader = request.headers.get('authorization');
     if (!authHeader || !authHeader.startsWith('Bearer ')) return;
@@ -463,6 +463,7 @@ export const firebaseMiddleware = new Elysia({
 ```
 
 Key characteristics:
+- Uses `.derive({ as: 'global' })` to make `firebase` context available to dependent middleware (like `firebaseGate`)
 - Returns early if no Bearer token is present (no error thrown)
 - Makes `firebase` context object available when token is valid
 - `firebase` will be `undefined` if no token was provided
@@ -525,7 +526,8 @@ export const authRoutes = new Elysia().group('/auth', (authRoute) =>
 ```
 
 **Key Points**:
-- `.derive({ as: 'scoped' })` makes the returned object available in request context
+- **Base middleware (`firebaseMiddleware`)** uses `.derive({ as: 'global' })` so the `firebase` context is available to dependent middleware like `firebaseGate`
+- **Gate middleware (`firebaseGate`)** uses `.derive({ as: 'scoped' })` as the final authentication guard
 - Middleware placement within `.group()` callback determines which routes it applies to
 - Routes defined before `.use(firebaseGate)` are public
 - Routes defined after `.use(firebaseGate)` require authentication
@@ -614,15 +616,19 @@ export const authRoutes = new Elysia().group('/auth', (authRoute) =>
 
 ---
 
-**Last Updated**: 2026-01-20
+**Last Updated**: 2026-01-21
 
 **Recent Changes**:
 - Completed Guild CRUD MVP with type-specific endpoints (/acts, /venues, /clubs)
-- Implemented Firebase authentication using Elysia `.derive({ as: 'scoped' })` pattern
-- Documented correct Firebase authentication middleware pattern with scoped context extension
+- Implemented Firebase authentication using a two-tier Elysia middleware pattern
+- **CRITICAL FIX**: `firebaseMiddleware` uses `.derive({ as: 'global' })` to make context available to dependent middleware (like `firebaseGate`)
+- Documented correct Firebase authentication middleware pattern with proper global/scoped context extension
 - Fixed Bearer token transmission in client service with proper `$headers` handling
 - Clarified that authentication middleware is optional - only applies to routes that use it
 
-**Key Learning**: The correct Elysia pattern for Firebase authentication is using `.derive({ as: 'scoped' })` to create a reusable middleware that makes a `firebase` context object available to routes that opt-in via `.use(firebaseMiddleware)`. This is cleaner and more composable than trying to mix public/private routes with sequential guards.
+**Key Learning**: The correct Elysia pattern for Firebase authentication uses a two-tier approach:
+- `firebaseMiddleware`: Uses `.derive({ as: 'global' })` to create reusable base middleware that makes `firebase` context available to dependent middleware
+- `firebaseGate`: Uses `.derive({ as: 'scoped' })` as a final guard that requires authentication
+This is more composable than scoped-only approach and prevents context loss when middleware chains use routes in different scopes.
 
 Happy coding! 🎵

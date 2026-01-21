@@ -6,7 +6,7 @@ export const firebaseMiddleware = new Elysia({
   name: 'firebase'
 })
   .derive({
-    as: 'scoped'
+    as: 'global'
   }, async ({ request }) => {
     const authHeader = request.headers.get('authorization');
     if (!authHeader || !authHeader.startsWith('Bearer ')) return;
@@ -27,7 +27,7 @@ export const firebaseGate = new Elysia()
     as: 'scoped'
   }, async ({ firebase }) => {
     if (!firebase) {
-      throw new Error('Unauthorized: No valid Firebase token provided');
+      throw new Response('Unauthorized: No valid Firebase token provided', { status: 401 });
     }
     return { firebase }
   })
