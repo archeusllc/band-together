@@ -10,7 +10,7 @@ import { IconSymbol } from '@ui';
 
 type Props = DrawerScreenProps<DrawerParamList, 'ClubDetails'>;
 
-export default function ClubDetailsScreen({ route, navigation }: Props) {
+export const ClubDetailsScreen = ({ route, navigation }: Props) => {
   const { clubId } = route.params;
   const { user, isAuthenticated } = useAuth();
 

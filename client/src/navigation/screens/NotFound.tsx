@@ -5,7 +5,7 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 type NavigationProp = NativeStackNavigationProp<any>;
 
-export default function NotFoundScreen() {
+export const NotFoundScreen = () => {
   const navigation = useNavigation<NavigationProp>();
 
   return (

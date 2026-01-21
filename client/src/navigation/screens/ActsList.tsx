@@ -11,7 +11,7 @@ import { IconSymbol } from '@ui';
 
 type NavigationProp = DrawerNavigationProp<DrawerParamList>;
 
-export default function ActsListScreen() {
+export const ActsListScreen = () => {
   const navigation = useNavigation<NavigationProp>();
   const { isAuthenticated } = useAuth();
 
@@ -123,4 +123,4 @@ export default function ActsListScreen() {
       />
     </View>
   );
-}
+};

@@ -9,7 +9,7 @@ import { tailwind } from '@theme';
 
 type NavigationProp = DrawerNavigationProp<DrawerParamList>;
 
-export default function HomeScreen() {
+export const HomeScreen = () => {
   const navigation = useNavigation<NavigationProp>();
   const { events, loading, refreshing, hasMore, error, fetchFeed, refreshFeed, loadMore } = useFeed();
 
@@ -89,6 +89,6 @@ export default function HomeScreen() {
       />
     </View>
   );
-}
+};
 
 

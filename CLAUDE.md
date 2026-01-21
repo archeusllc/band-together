@@ -35,9 +35,14 @@ When working on Band Together, please follow these conventions:
 ### React Native Client
 
 **Component Syntax**
-- Use arrow functions for all component exports (except screen default exports)
+- Use arrow functions for all component exports, including screen components
+- Export directly with `export const` pattern
 - ```typescript
   export const MyComponent = () => {
+    return <View>Content</View>;
+  };
+
+  export const HomeScreen = () => {
     return <View>Content</View>;
   };
   ```

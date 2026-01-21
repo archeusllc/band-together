@@ -7,7 +7,7 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 type NavigationProp = NativeStackNavigationProp<any>;
 
-export default function ProfileScreen() {
+export const ProfileScreen = () => {
   const { user, isAuthenticated, loading } = useAuth();
   const navigation = useNavigation<NavigationProp>();
 

@@ -8,7 +8,7 @@ import { GuildForm } from '@components';
 
 type NavigationProp = DrawerNavigationProp<DrawerParamList>;
 
-export default function CreateClubScreen() {
+export const CreateClubScreen = () => {
   const navigation = useNavigation<NavigationProp>();
   const [loading, setLoading] = useState(false);
 

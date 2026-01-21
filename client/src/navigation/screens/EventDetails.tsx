@@ -17,7 +17,7 @@ type EventDetails = CalendarEvent & {
   acts?: (Act & { guild?: Guild })[];
 };
 
-export default function EventDetailsScreen({ route, navigation: drawerNavigation }: Props) {
+export const EventDetailsScreen = ({ route, navigation: drawerNavigation }: Props) => {
   const { eventId } = route.params;
   const { isAuthenticated } = useAuth();
   const rootNavigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();

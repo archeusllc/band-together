@@ -11,7 +11,7 @@ import { IconSymbol } from '@ui';
 
 type NavigationProp = DrawerNavigationProp<DrawerParamList>;
 
-export default function ClubsListScreen() {
+export const ClubsListScreen = () => {
   const navigation = useNavigation<NavigationProp>();
   const { isAuthenticated } = useAuth();
 

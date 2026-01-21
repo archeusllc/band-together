@@ -25,4 +25,6 @@ export type DrawerParamList = {
   ClubDetails: { clubId: string };
   CreateClub: undefined;
   EditClub: { clubId: string };
+  // Tools
+  SetlistManager: undefined;
 };

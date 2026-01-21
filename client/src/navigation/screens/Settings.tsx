@@ -5,7 +5,7 @@ import { tailwind } from '@theme';
 
 type ApiStatus = 'checking' | 'online' | 'offline';
 
-export default function SettingsScreen() {
+export const SettingsScreen = () => {
   const [apiStatus, setApiStatus] = React.useState<ApiStatus>('checking');
 
   React.useEffect(() => {

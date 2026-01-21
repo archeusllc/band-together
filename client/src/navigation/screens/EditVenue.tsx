@@ -9,7 +9,7 @@ import { tailwind, colors } from '@theme';
 
 type Props = DrawerScreenProps<DrawerParamList, 'EditVenue'>;
 
-export default function EditVenueScreen({ route, navigation }: Props) {
+export const EditVenueScreen = ({ route, navigation }: Props) => {
   const { venueId } = route.params;
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);

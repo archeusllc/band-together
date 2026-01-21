@@ -27,6 +27,8 @@ import {
   ClubDetailsScreen,
   CreateClubScreen,
   EditClubScreen,
+  // Tools
+  SetlistManagerScreen,
 } from '@screens';
 import { lightTheme, darkTheme } from './themes';
 import type { RootStackParamList, DrawerParamList } from './types';
@@ -188,6 +190,16 @@ const MainDrawer = createDrawerNavigator({
       options: {
         header: () => <AppHeader />,
         drawerItemStyle: { display: 'none' },
+      },
+    },
+    // Tools
+    SetlistManager: {
+      screen: SetlistManagerScreen,
+      linking: {
+        path: 'tools/setlists',
+      },
+      options: {
+        header: () => <AppHeader />,
       },
     },
   },

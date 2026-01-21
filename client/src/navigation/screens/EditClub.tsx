@@ -9,7 +9,7 @@ import { tailwind, colors } from '@theme';
 
 type Props = DrawerScreenProps<DrawerParamList, 'EditClub'>;
 
-export default function EditClubScreen({ route, navigation }: Props) {
+export const EditClubScreen = ({ route, navigation }: Props) => {
   const { clubId } = route.params;
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);

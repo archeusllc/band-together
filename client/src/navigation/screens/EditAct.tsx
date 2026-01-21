@@ -9,7 +9,7 @@ import { tailwind, colors } from '@theme';
 
 type Props = DrawerScreenProps<DrawerParamList, 'EditAct'>;
 
-export default function EditActScreen({ route, navigation }: Props) {
+export const EditActScreen = ({ route, navigation }: Props) => {
   const { actId } = route.params;
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
