@@ -196,7 +196,7 @@ const MainDrawer = createDrawerNavigator({
     SetlistManager: {
       screen: SetlistManagerScreen,
       linking: {
-        path: 'tools/setlists',
+        path: 'setlists',
       },
       options: {
         header: () => <AppHeader />,
