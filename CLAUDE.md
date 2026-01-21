@@ -11,6 +11,19 @@ For comprehensive project context, see the **[AI Context Guide](wiki/AI-Context.
 - Development workflow
 - Coding standards
 
+## Design Philosophy
+
+**"Cool and Useful Without Install"**
+
+Band Together is designed to be fully functional for users who access it via web browser, without requiring app installation or account registration. This philosophy applies to the entire application:
+
+- **No Feature Walls** - Features should work without login whenever possible; authentication should be reserved for natural security boundaries (editing, creating content)
+- **Web-First Functionality** - Web version should have full real-time capabilities, not be a degraded experience
+- **Organic Adoption** - Demonstrate value before asking for signup; avoid "nag screens" or forced registrations
+- **Natural Security** - Editing and content creation require authentication as a security measure, not an engagement tactic
+
+This approach creates viral sharing opportunities and reduces friction for new users while maintaining security and data integrity.
+
 ## Key Preferences
 
 When working on Band Together, please follow these conventions:
@@ -79,6 +92,11 @@ When working on Band Together, please follow these conventions:
 - **Read existing code before proposing modifications** - understand patterns first
 - **Ask clarifying questions** when requirements are ambiguous
 - **Avoid premature abstractions** - three similar lines is better than an unnecessary helper
+- **Implementation plan phases** - When creating implementation plans, use many small phases instead of few large ones:
+  - Each phase should touch only ONE submodule (api, db, client) at a time
+  - Each phase should focus on ONE feature/entity at a time
+  - Build dependencies sequentially (e.g., SetItem models → SetItem endpoints → SetItem UI → SetList models → SetList endpoints → SetList UI)
+  - Prefer 6 small focused phases over 3 large multi-entity phases
 
 ## Project Essentials
 
