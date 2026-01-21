@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Pressable, Alert, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, Text, TextInput, Pressable, Alert, ScrollView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useAuth } from '@contexts';
 import { colors, tailwind } from '@theme';
@@ -47,76 +47,74 @@ export default function RegisterScreen() {
   };
 
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+    <ScrollView
       className={`flex-1 ${tailwind.background.both}`}
+      contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', paddingHorizontal: 20 }}
     >
-      <View className="flex-1 justify-center px-5">
-        <Text className={`text-4xl font-bold mb-8 text-center ${tailwind.text.both}`}>Create Account</Text>
+      <Text className={`text-4xl font-bold mb-8 text-center ${tailwind.text.both}`}>Create Account</Text>
 
-        <View className={`${tailwind.card.both} rounded-xl p-5`}>
-          <View className="mb-5">
-            <Text className={`text-base font-semibold mb-2 ${tailwind.text.both}`}>Email</Text>
-            <TextInput
-              className={`border rounded-lg px-4 py-3 text-base ${tailwind.border.both} ${tailwind.card.both} ${tailwind.text.both}`}
-              value={email}
-              onChangeText={setEmail}
-              placeholder="Enter your email"
-              placeholderTextColor={colors.light.muted}
-              keyboardType="email-address"
-              autoCapitalize="none"
-              autoComplete="email"
-              editable={!loading}
-            />
-          </View>
+      <View className={`${tailwind.card.both} rounded-xl p-5`}>
+        <View className="mb-5">
+          <Text className={`text-base font-semibold mb-2 ${tailwind.text.both}`}>Email</Text>
+          <TextInput
+            className={`border rounded-lg px-4 py-3 text-base ${tailwind.border.both} ${tailwind.card.both} ${tailwind.text.both}`}
+            value={email}
+            onChangeText={setEmail}
+            placeholder="Enter your email"
+            placeholderTextColor={colors.light.muted}
+            keyboardType="email-address"
+            autoCapitalize="none"
+            autoComplete="email"
+            editable={!loading}
+          />
+        </View>
 
-          <View className="mb-5">
-            <Text className={`text-base font-semibold mb-2 ${tailwind.text.both}`}>Password</Text>
-            <TextInput
-              className={`border rounded-lg px-4 py-3 text-base ${tailwind.border.both} ${tailwind.card.both} ${tailwind.text.both}`}
-              value={password}
-              onChangeText={setPassword}
-              placeholder="Enter your password"
-              placeholderTextColor={colors.light.muted}
-              secureTextEntry
-              autoCapitalize="none"
-              autoComplete="password"
-              editable={!loading}
-            />
-          </View>
+        <View className="mb-5">
+          <Text className={`text-base font-semibold mb-2 ${tailwind.text.both}`}>Password</Text>
+          <TextInput
+            className={`border rounded-lg px-4 py-3 text-base ${tailwind.border.both} ${tailwind.card.both} ${tailwind.text.both}`}
+            value={password}
+            onChangeText={setPassword}
+            placeholder="Enter your password"
+            placeholderTextColor={colors.light.muted}
+            secureTextEntry
+            autoCapitalize="none"
+            autoComplete="password"
+            editable={!loading}
+          />
+        </View>
 
-          <View className="mb-5">
-            <Text className={`text-base font-semibold mb-2 ${tailwind.text.both}`}>Confirm Password</Text>
-            <TextInput
-              className={`border rounded-lg px-4 py-3 text-base ${tailwind.border.both} ${tailwind.card.both} ${tailwind.text.both}`}
-              value={confirmPassword}
-              onChangeText={setConfirmPassword}
-              placeholder="Confirm your password"
-              placeholderTextColor={colors.light.muted}
-              secureTextEntry
-              autoCapitalize="none"
-              editable={!loading}
-            />
-          </View>
+        <View className="mb-5">
+          <Text className={`text-base font-semibold mb-2 ${tailwind.text.both}`}>Confirm Password</Text>
+          <TextInput
+            className={`border rounded-lg px-4 py-3 text-base ${tailwind.border.both} ${tailwind.card.both} ${tailwind.text.both}`}
+            value={confirmPassword}
+            onChangeText={setConfirmPassword}
+            placeholder="Confirm your password"
+            placeholderTextColor={colors.light.muted}
+            secureTextEntry
+            autoCapitalize="none"
+            editable={!loading}
+          />
+        </View>
 
-          <Pressable
-            className={`bg-blue-500 py-3 px-6 rounded-lg items-center mt-2 ${loading ? 'opacity-60' : ''}`}
-            onPress={handleRegister}
-            disabled={loading}
-          >
-            <Text className="text-white text-base font-semibold">
-              {loading ? 'Creating Account...' : 'Create Account'}
-            </Text>
+        <Pressable
+          className={`bg-blue-500 py-3 px-6 rounded-lg items-center mt-2 ${loading ? 'opacity-60' : ''}`}
+          onPress={handleRegister}
+          disabled={loading}
+        >
+          <Text className="text-white text-base font-semibold">
+            {loading ? 'Creating Account...' : 'Create Account'}
+          </Text>
+        </Pressable>
+
+        <View className="flex-row justify-center mt-5">
+          <Text className={`text-sm ${tailwind.textMuted.both}`}>Already have an account? </Text>
+          <Pressable onPress={() => navigation.navigate('Login')}>
+            <Text className={`text-sm ${tailwind.primary} font-semibold`}>Login</Text>
           </Pressable>
-
-          <View className="flex-row justify-center mt-5">
-            <Text className={`text-sm ${tailwind.textMuted.both}`}>Already have an account? </Text>
-            <Pressable onPress={() => navigation.navigate('Login')}>
-              <Text className={`text-sm ${tailwind.primary} font-semibold`}>Login</Text>
-            </Pressable>
-          </View>
         </View>
       </View>
-    </KeyboardAvoidingView>
+    </ScrollView>
   );
 }
