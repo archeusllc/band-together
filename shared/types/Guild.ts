@@ -1,13 +1,4 @@
-export enum GuildType {
-  ACT = 'ACT',
-  VENUE = 'VENUE',
-  CLUB = 'CLUB',
-}
+// Base Guild type and GuildType enum are exported from Prisma-generated types
+// Only define custom DTOs and extended types here
 
-export interface Guild {
-  guildId: string;
-  name: string;
-  guildType: GuildType;
-  createdAt: string;
-  currentOwnerId: string;
-}
+export { };

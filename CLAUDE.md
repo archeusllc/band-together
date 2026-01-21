@@ -104,6 +104,50 @@ When working on Band Together, please follow these conventions:
   - Build dependencies sequentially (e.g., SetItem models → SetItem endpoints → SetItem UI → SetList models → SetList endpoints → SetList UI)
   - Prefer 6 small focused phases over 3 large multi-entity phases
 
+### Type System & Prisma
+
+**Prisma Schema is the Single Source of Truth**
+
+Never manually define base model types - Prisma auto-generates types from the schema that are always in sync.
+
+**Correct Pattern:**
+```typescript
+// shared/index.ts - Export Prisma-generated types
+export type {
+  User, Guild, Track, CalendarEvent,  // Base models
+} from './generated/prisma-client/index.js';
+
+export {
+  GuildType, TrackType, SharePermission,  // Enums (as values)
+} from './generated/prisma-client/index.js';
+
+// Also export custom DTOs from manual types
+export * from './types/index';
+```
+
+**What to Keep in shared/types/:**
+- Custom DTOs: `CreateInput`, `UpdateInput`, `SearchResult`
+- Extended types: `WithDetails`, `WithRelations`
+- Business logic types not in schema
+- **Never** redefine base models (User, Guild, etc.)
+
+**Schema Change Workflow:**
+```bash
+# 1. Edit schema
+vim db/prisma/schema.prisma
+
+# 2. Push to database (auto-regenerates types)
+cd db && bun push
+
+# 3. Types updated everywhere - zero manual sync!
+```
+
+**Benefits:**
+- ✅ Schema changes instantly reflected in TypeScript
+- ✅ No manual type maintenance or drift
+- ✅ Compile-time errors if using wrong field names
+- ✅ Enums work as both types and runtime values
+
 ## Project Essentials
 
 | Aspect | Details |

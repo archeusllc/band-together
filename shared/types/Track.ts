@@ -1,20 +1,8 @@
-export enum TrackType {
-  SONG = 'SONG',
-  OTHER = 'OTHER',
-}
+// Base Track type and TrackType enum are exported from Prisma-generated types
+// Custom DTOs and extended types below
 
-export interface Track {
-  trackId: string;
-  type: TrackType;
-  title: string;
-  artist: string;
-  defaultDuration: number | null;
-  defaultTuning: string | null;
-  isActive: boolean;
-  createdAt: string;
-  updatedAt: string;
-  createdBy: string;
-}
+import type { TrackType } from '../generated/prisma-client/index.js';
+export type { Track, TrackType } from '../generated/prisma-client/index.js';
 
 export interface CreateTrackInput {
   type: TrackType;

@@ -1,11 +1,9 @@
-export interface SetSection {
-  sectionId: string;
-  setListId: string;
-  name: string;
-  position: number;
-  createdAt: string;
-  updatedAt: string;
-}
+// Base SetSection type is exported from Prisma-generated types
+// Custom DTOs and extended types below
+
+import type { SetSection } from '../generated/prisma-client/index.js';
+
+export type { SetSection };
 
 export interface CreateSetSectionInput {
   name: string;

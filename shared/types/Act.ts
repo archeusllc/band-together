@@ -1,8 +1,4 @@
-export interface Act {
-  actId: string;
-  name: string;
-  bio: string | null;
-  avatar: string | null;
-  createdAt: string;
-  updatedAt: string;
-}
+// Base Act type is exported from Prisma-generated types
+// Only define custom DTOs and extended types here
+
+export { };

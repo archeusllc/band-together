@@ -1,15 +1,4 @@
-export enum FollowEntityType {
-  USER = 'USER',
-  TAG = 'TAG',
-  GUILD = 'GUILD',
-}
+// Base Follow type and FollowEntityType enum are exported from Prisma-generated types
+// Only define custom DTOs and extended types here
 
-export interface Follow {
-  followId: string;
-  userId: string;
-  entityType: FollowEntityType;
-  followedUserId: string | null;
-  tagId: string | null;
-  guildId: string | null;
-  createdAt: string;
-}
+export { };

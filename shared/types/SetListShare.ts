@@ -1,14 +1,9 @@
-import { SharePermission } from './SharePermission';
+// Base SetListShare type and SharePermission enum are exported from Prisma-generated types
+// Custom DTOs and extended types below
 
-export interface SetListShare {
-  shareId: string;
-  setListId: string;
-  shareToken: string;
-  permission: SharePermission;
-  expiresAt: string | null;
-  createdAt: string;
-  createdBy: string;
-}
+import type { SetListShare, SharePermission } from '../generated/prisma-client/index.js';
+
+export type { SetListShare, SharePermission };
 
 export interface CreateSetListShareInput {
   permission: SharePermission;

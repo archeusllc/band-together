@@ -1,17 +1,11 @@
-import { SharePermission } from './SharePermission';
+// Base SetList type is exported from Prisma-generated types
+// Custom DTOs and extended types below
+
+import type { SetList, SharePermission } from '../generated/prisma-client/index.js';
 import { SetItem } from './SetItem';
 import { SetSection } from './SetSection';
 
-export interface SetList {
-  setListId: string;
-  name: string;
-  description: string | null;
-  ownerId: string;
-  guildId: string | null;
-  isPrivate: boolean;
-  createdAt: string;
-  updatedAt: string;
-}
+export type { SetList };
 
 export interface CreateSetListInput {
   name: string;

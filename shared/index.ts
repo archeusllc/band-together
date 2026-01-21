@@ -16,6 +16,34 @@ export const PrismaClient = (options?: Prisma.PrismaClientOptions) => new _Prism
   ...options
 });
 
-// Export all shared modules
-export * from './types/index.ts';
-export * from './generated/api-types/index.ts';
+// Export Prisma-generated types (always in sync with schema)
+export type {
+  User,
+  Follow,
+  Tag,
+  Guild,
+  Act,
+  Venue,
+  Club,
+  Track,
+  CalendarEvent,
+  FeedActivity,
+  GuildInvitation,
+  SetList,
+  SetItem,
+  SetSection,
+  SetListShare,
+} from './generated/prisma-client/index.js';
+
+// Export enums as values (not just types)
+export {
+  GuildType,
+  GuildInvitationStatus,
+  FollowEntityType,
+  TrackType,
+  SharePermission,
+} from './generated/prisma-client/index.js';
+
+// Export custom types and input DTOs
+export * from './types/index';
+export * from './generated/api-types/index';

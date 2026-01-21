@@ -1,8 +1,4 @@
-export interface Club {
-  clubId: string;
-  name: string;
-  description: string | null;
-  avatar: string | null;
-  createdAt: string;
-  updatedAt: string;
-}
+// Base Club type is exported from Prisma-generated types
+// Only define custom DTOs and extended types here
+
+export { };

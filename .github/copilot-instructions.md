@@ -180,6 +180,36 @@ Use `$headers` within the request object to properly merge headers with body.
 - Read existing code before proposing modifications
 - TypeScript strict mode - no `any` types
 
+## Type System & Prisma
+
+**Prisma Schema = Single Source of Truth**
+
+Base model types (User, Guild, Track, etc.) are **auto-generated from Prisma schema** - never define them manually.
+
+**Pattern in shared/index.ts**:
+```typescript
+// Export Prisma types (always in sync with schema)
+export type { User, Guild, Track, CalendarEvent } from './generated/prisma-client/index.js';
+export { GuildType, TrackType, SharePermission } from './generated/prisma-client/index.js';  // Enums as values
+
+// Export custom DTOs
+export * from './types/index';
+```
+
+**Keep in shared/types/ ONLY**:
+- Custom DTOs (`CreateTrackInput`, `UpdateSetListInput`)
+- Extended types (`SetListWithDetails`, `TrackSearchResult`)
+- Business logic types not in schema
+
+**Never redefine**: Base models, primary keys, or Prisma enums
+
+**Workflow**:
+```bash
+Edit db/prisma/schema.prisma → cd db && bun push → Types auto-update everywhere
+```
+
+**Benefits**: Zero type drift, instant schema sync, compile-time safety
+
 ## Reference Files
 
 - [CLAUDE.md](../CLAUDE.md) - Full AI assistant guide with patterns and examples

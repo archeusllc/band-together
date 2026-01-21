@@ -1,4 +1,4 @@
-export enum SharePermission {
-  VIEW_ONLY = 'VIEW_ONLY',
-  CAN_EDIT = 'CAN_EDIT',
-}
+// SharePermission enum is exported from Prisma-generated types
+// Re-export here for backwards compatibility
+
+export type { SharePermission } from '../generated/prisma-client/index.js';

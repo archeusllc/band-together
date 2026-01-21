@@ -1,16 +1,4 @@
-export enum GuildInvitationStatus {
-  PENDING = 'PENDING',
-  ACCEPTED = 'ACCEPTED',
-  REJECTED = 'REJECTED',
-  CANCELLED = 'CANCELLED',
-}
+// Base GuildInvitation type and GuildInvitationStatus enum are exported from Prisma-generated types
+// Only define custom DTOs and extended types here
 
-export interface GuildInvitation {
-  invitationId: string;
-  guildId: string;
-  invitedUserId: string;
-  invitedById: string | null;
-  status: GuildInvitationStatus;
-  createdAt: string;
-  respondedAt: string | null;
-}
+export { };
