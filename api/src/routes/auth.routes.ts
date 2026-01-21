@@ -56,10 +56,10 @@ export const authRoutes = new Elysia().group('/auth', (authRoute) =>
         detail: {
           tags: ['Authentication'],
           summary: 'User Login',
-          description: 'Authenticate an existing user using Firebase UID and ID token. Returns authenticated user object on success.',
+          description: 'Authenticate a user using Firebase UID and ID token. If the user exists in Firebase but not in the database, a database record is automatically created. Returns authenticated user object on success.',
           responses: {
             200: {
-              description: 'User successfully authenticated',
+              description: 'User successfully authenticated. Returns existing user or creates new database record for valid Firebase user.',
             },
             401: {
               description: 'Unauthorized - invalid Firebase credentials',

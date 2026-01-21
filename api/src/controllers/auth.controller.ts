@@ -46,6 +46,7 @@ export const authController = {
 
   /**
    * Login user (verify token and return user data)
+   * Creates a database record for Firebase-registered users if missing
    */
   login: async (data: { firebaseUid: string; idToken: string }) => {
     try {
@@ -57,12 +58,19 @@ export const authController = {
       }
 
       // Find user in database
-      const user = await prisma.user.findUnique({
+      let user = await prisma.user.findUnique({
         where: { firebaseUid: data.firebaseUid },
       });
 
+      // If user doesn't exist, create from verified Firebase token
       if (!user) {
-        throw new Error('User not found');
+        user = await prisma.user.create({
+          data: {
+            email: decodedToken.email!,
+            displayName: decodedToken.name || decodedToken.email!.split('@')[0],
+            firebaseUid: data.firebaseUid,
+          },
+        });
       }
 
       return user;
