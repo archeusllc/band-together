@@ -14,7 +14,6 @@ export function DrawerContent(props: DrawerContentComponentProps) {
   const colorScheme = useColorScheme();
 
   const drawerItems = [
-    { name: 'Home', icon: 'house.fill', route: 'Home' },
     { name: 'Acts', icon: 'music.note', route: 'ActsList' },
     { name: 'Venues', icon: 'building.2', route: 'VenuesList' },
     { name: 'Clubs', icon: 'person.3.fill', route: 'ClubsList' },
@@ -24,12 +23,15 @@ export function DrawerContent(props: DrawerContentComponentProps) {
 
   return (
     <DrawerContentScrollView {...props} className={`flex-1 ${tailwind.card.dark}`}>
-      <View className={`p-5 border-b ${tailwind.border.both}`}>
+      <Pressable
+        onPress={() => navigation.navigate('Home')}
+        className={`p-5 border-b ${tailwind.border.both}`}
+      >
         <Text className={`text-2xl font-bold mb-1 ${tailwind.text.dark}`}>Band Together</Text>
         {isAuthenticated && user && (
           <Text className={`text-sm ${tailwind.textMuted.both}`}>{user.email}</Text>
         )}
-      </View>
+      </Pressable>
 
       <View className="flex-1 pt-5">
         {drawerItems.map((item) => {
