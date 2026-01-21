@@ -188,6 +188,19 @@ exports.Prisma.ClubScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.TrackScalarFieldEnum = {
+  trackId: 'trackId',
+  type: 'type',
+  title: 'title',
+  artist: 'artist',
+  defaultDuration: 'defaultDuration',
+  defaultTuning: 'defaultTuning',
+  isActive: 'isActive',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  createdBy: 'createdBy'
+};
+
 exports.Prisma.CalendarEventScalarFieldEnum = {
   eventId: 'eventId',
   title: 'title',
@@ -246,6 +259,11 @@ exports.GuildType = exports.$Enums.GuildType = {
   CLUB: 'CLUB'
 };
 
+exports.TrackType = exports.$Enums.TrackType = {
+  SONG: 'SONG',
+  OTHER: 'OTHER'
+};
+
 exports.GuildInvitationStatus = exports.$Enums.GuildInvitationStatus = {
   PENDING: 'PENDING',
   ACCEPTED: 'ACCEPTED',
@@ -261,6 +279,7 @@ exports.Prisma.ModelName = {
   Act: 'Act',
   Venue: 'Venue',
   Club: 'Club',
+  Track: 'Track',
   CalendarEvent: 'CalendarEvent',
   FeedActivity: 'FeedActivity',
   GuildInvitation: 'GuildInvitation'

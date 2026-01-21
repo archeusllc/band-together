@@ -49,6 +49,11 @@ export type Venue = $Result.DefaultSelection<Prisma.$VenuePayload>
  */
 export type Club = $Result.DefaultSelection<Prisma.$ClubPayload>
 /**
+ * Model Track
+ * 
+ */
+export type Track = $Result.DefaultSelection<Prisma.$TrackPayload>
+/**
  * Model CalendarEvent
  * 
  */
@@ -95,6 +100,14 @@ export const FollowEntityType: {
 
 export type FollowEntityType = (typeof FollowEntityType)[keyof typeof FollowEntityType]
 
+
+export const TrackType: {
+  SONG: 'SONG',
+  OTHER: 'OTHER'
+};
+
+export type TrackType = (typeof TrackType)[keyof typeof TrackType]
+
 }
 
 export type GuildType = $Enums.GuildType
@@ -108,6 +121,10 @@ export const GuildInvitationStatus: typeof $Enums.GuildInvitationStatus
 export type FollowEntityType = $Enums.FollowEntityType
 
 export const FollowEntityType: typeof $Enums.FollowEntityType
+
+export type TrackType = $Enums.TrackType
+
+export const TrackType: typeof $Enums.TrackType
 
 /**
  * ##  Prisma Client ʲˢ
@@ -295,6 +312,16 @@ export class PrismaClient<
     * ```
     */
   get club(): Prisma.ClubDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.track`: Exposes CRUD operations for the **Track** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Tracks
+    * const tracks = await prisma.track.findMany()
+    * ```
+    */
+  get track(): Prisma.TrackDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.calendarEvent`: Exposes CRUD operations for the **CalendarEvent** model.
@@ -766,6 +793,7 @@ export namespace Prisma {
     Act: 'Act',
     Venue: 'Venue',
     Club: 'Club',
+    Track: 'Track',
     CalendarEvent: 'CalendarEvent',
     FeedActivity: 'FeedActivity',
     GuildInvitation: 'GuildInvitation'
@@ -784,7 +812,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "follow" | "tag" | "guild" | "act" | "venue" | "club" | "calendarEvent" | "feedActivity" | "guildInvitation"
+      modelProps: "user" | "follow" | "tag" | "guild" | "act" | "venue" | "club" | "track" | "calendarEvent" | "feedActivity" | "guildInvitation"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1306,6 +1334,80 @@ export namespace Prisma {
           }
         }
       }
+      Track: {
+        payload: Prisma.$TrackPayload<ExtArgs>
+        fields: Prisma.TrackFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.TrackFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TrackPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.TrackFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TrackPayload>
+          }
+          findFirst: {
+            args: Prisma.TrackFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TrackPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.TrackFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TrackPayload>
+          }
+          findMany: {
+            args: Prisma.TrackFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TrackPayload>[]
+          }
+          create: {
+            args: Prisma.TrackCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TrackPayload>
+          }
+          createMany: {
+            args: Prisma.TrackCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.TrackCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TrackPayload>[]
+          }
+          delete: {
+            args: Prisma.TrackDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TrackPayload>
+          }
+          update: {
+            args: Prisma.TrackUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TrackPayload>
+          }
+          deleteMany: {
+            args: Prisma.TrackDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.TrackUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.TrackUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TrackPayload>[]
+          }
+          upsert: {
+            args: Prisma.TrackUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TrackPayload>
+          }
+          aggregate: {
+            args: Prisma.TrackAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateTrack>
+          }
+          groupBy: {
+            args: Prisma.TrackGroupByArgs<ExtArgs>
+            result: $Utils.Optional<TrackGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.TrackCountArgs<ExtArgs>
+            result: $Utils.Optional<TrackCountAggregateOutputType> | number
+          }
+        }
+      }
       CalendarEvent: {
         payload: Prisma.$CalendarEventPayload<ExtArgs>
         fields: Prisma.CalendarEventFieldRefs
@@ -1643,6 +1745,7 @@ export namespace Prisma {
     act?: ActOmit
     venue?: VenueOmit
     club?: ClubOmit
+    track?: TrackOmit
     calendarEvent?: CalendarEventOmit
     feedActivity?: FeedActivityOmit
     guildInvitation?: GuildInvitationOmit
@@ -1821,10 +1924,12 @@ export namespace Prisma {
 
   export type TagCountOutputType = {
     follows: number
+    tracks: number
   }
 
   export type TagCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     follows?: boolean | TagCountOutputTypeCountFollowsArgs
+    tracks?: boolean | TagCountOutputTypeCountTracksArgs
   }
 
   // Custom InputTypes
@@ -1843,6 +1948,13 @@ export namespace Prisma {
    */
   export type TagCountOutputTypeCountFollowsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: FollowWhereInput
+  }
+
+  /**
+   * TagCountOutputType without action
+   */
+  export type TagCountOutputTypeCountTracksArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: TrackWhereInput
   }
 
 
@@ -1954,6 +2066,37 @@ export namespace Prisma {
    */
   export type VenueCountOutputTypeCountCalendarEventsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: CalendarEventWhereInput
+  }
+
+
+  /**
+   * Count Type TrackCountOutputType
+   */
+
+  export type TrackCountOutputType = {
+    tags: number
+  }
+
+  export type TrackCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    tags?: boolean | TrackCountOutputTypeCountTagsArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * TrackCountOutputType without action
+   */
+  export type TrackCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TrackCountOutputType
+     */
+    select?: TrackCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * TrackCountOutputType without action
+   */
+  export type TrackCountOutputTypeCountTagsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: TagWhereInput
   }
 
 
@@ -4607,6 +4750,7 @@ export namespace Prisma {
     category?: boolean
     value?: boolean
     follows?: boolean | Tag$followsArgs<ExtArgs>
+    tracks?: boolean | Tag$tracksArgs<ExtArgs>
     _count?: boolean | TagCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["tag"]>
 
@@ -4631,6 +4775,7 @@ export namespace Prisma {
   export type TagOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"tagId" | "category" | "value", ExtArgs["result"]["tag"]>
   export type TagInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     follows?: boolean | Tag$followsArgs<ExtArgs>
+    tracks?: boolean | Tag$tracksArgs<ExtArgs>
     _count?: boolean | TagCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type TagIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -4640,6 +4785,7 @@ export namespace Prisma {
     name: "Tag"
     objects: {
       follows: Prisma.$FollowPayload<ExtArgs>[]
+      tracks: Prisma.$TrackPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       tagId: string
@@ -5040,6 +5186,7 @@ export namespace Prisma {
   export interface Prisma__TagClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     follows<T extends Tag$followsArgs<ExtArgs> = {}>(args?: Subset<T, Tag$followsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FollowPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    tracks<T extends Tag$tracksArgs<ExtArgs> = {}>(args?: Subset<T, Tag$tracksArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TrackPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -5481,6 +5628,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: FollowScalarFieldEnum | FollowScalarFieldEnum[]
+  }
+
+  /**
+   * Tag.tracks
+   */
+  export type Tag$tracksArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Track
+     */
+    select?: TrackSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Track
+     */
+    omit?: TrackOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TrackInclude<ExtArgs> | null
+    where?: TrackWhereInput
+    orderBy?: TrackOrderByWithRelationInput | TrackOrderByWithRelationInput[]
+    cursor?: TrackWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: TrackScalarFieldEnum | TrackScalarFieldEnum[]
   }
 
   /**
@@ -10134,6 +10305,1175 @@ export namespace Prisma {
 
 
   /**
+   * Model Track
+   */
+
+  export type AggregateTrack = {
+    _count: TrackCountAggregateOutputType | null
+    _avg: TrackAvgAggregateOutputType | null
+    _sum: TrackSumAggregateOutputType | null
+    _min: TrackMinAggregateOutputType | null
+    _max: TrackMaxAggregateOutputType | null
+  }
+
+  export type TrackAvgAggregateOutputType = {
+    defaultDuration: number | null
+  }
+
+  export type TrackSumAggregateOutputType = {
+    defaultDuration: number | null
+  }
+
+  export type TrackMinAggregateOutputType = {
+    trackId: string | null
+    type: $Enums.TrackType | null
+    title: string | null
+    artist: string | null
+    defaultDuration: number | null
+    defaultTuning: string | null
+    isActive: boolean | null
+    createdAt: Date | null
+    updatedAt: Date | null
+    createdBy: string | null
+  }
+
+  export type TrackMaxAggregateOutputType = {
+    trackId: string | null
+    type: $Enums.TrackType | null
+    title: string | null
+    artist: string | null
+    defaultDuration: number | null
+    defaultTuning: string | null
+    isActive: boolean | null
+    createdAt: Date | null
+    updatedAt: Date | null
+    createdBy: string | null
+  }
+
+  export type TrackCountAggregateOutputType = {
+    trackId: number
+    type: number
+    title: number
+    artist: number
+    defaultDuration: number
+    defaultTuning: number
+    isActive: number
+    createdAt: number
+    updatedAt: number
+    createdBy: number
+    _all: number
+  }
+
+
+  export type TrackAvgAggregateInputType = {
+    defaultDuration?: true
+  }
+
+  export type TrackSumAggregateInputType = {
+    defaultDuration?: true
+  }
+
+  export type TrackMinAggregateInputType = {
+    trackId?: true
+    type?: true
+    title?: true
+    artist?: true
+    defaultDuration?: true
+    defaultTuning?: true
+    isActive?: true
+    createdAt?: true
+    updatedAt?: true
+    createdBy?: true
+  }
+
+  export type TrackMaxAggregateInputType = {
+    trackId?: true
+    type?: true
+    title?: true
+    artist?: true
+    defaultDuration?: true
+    defaultTuning?: true
+    isActive?: true
+    createdAt?: true
+    updatedAt?: true
+    createdBy?: true
+  }
+
+  export type TrackCountAggregateInputType = {
+    trackId?: true
+    type?: true
+    title?: true
+    artist?: true
+    defaultDuration?: true
+    defaultTuning?: true
+    isActive?: true
+    createdAt?: true
+    updatedAt?: true
+    createdBy?: true
+    _all?: true
+  }
+
+  export type TrackAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Track to aggregate.
+     */
+    where?: TrackWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Tracks to fetch.
+     */
+    orderBy?: TrackOrderByWithRelationInput | TrackOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: TrackWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Tracks from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Tracks.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned Tracks
+    **/
+    _count?: true | TrackCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: TrackAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: TrackSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: TrackMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: TrackMaxAggregateInputType
+  }
+
+  export type GetTrackAggregateType<T extends TrackAggregateArgs> = {
+        [P in keyof T & keyof AggregateTrack]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateTrack[P]>
+      : GetScalarType<T[P], AggregateTrack[P]>
+  }
+
+
+
+
+  export type TrackGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: TrackWhereInput
+    orderBy?: TrackOrderByWithAggregationInput | TrackOrderByWithAggregationInput[]
+    by: TrackScalarFieldEnum[] | TrackScalarFieldEnum
+    having?: TrackScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: TrackCountAggregateInputType | true
+    _avg?: TrackAvgAggregateInputType
+    _sum?: TrackSumAggregateInputType
+    _min?: TrackMinAggregateInputType
+    _max?: TrackMaxAggregateInputType
+  }
+
+  export type TrackGroupByOutputType = {
+    trackId: string
+    type: $Enums.TrackType
+    title: string
+    artist: string
+    defaultDuration: number | null
+    defaultTuning: string | null
+    isActive: boolean
+    createdAt: Date
+    updatedAt: Date
+    createdBy: string
+    _count: TrackCountAggregateOutputType | null
+    _avg: TrackAvgAggregateOutputType | null
+    _sum: TrackSumAggregateOutputType | null
+    _min: TrackMinAggregateOutputType | null
+    _max: TrackMaxAggregateOutputType | null
+  }
+
+  type GetTrackGroupByPayload<T extends TrackGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<TrackGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof TrackGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], TrackGroupByOutputType[P]>
+            : GetScalarType<T[P], TrackGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type TrackSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    trackId?: boolean
+    type?: boolean
+    title?: boolean
+    artist?: boolean
+    defaultDuration?: boolean
+    defaultTuning?: boolean
+    isActive?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    createdBy?: boolean
+    tags?: boolean | Track$tagsArgs<ExtArgs>
+    _count?: boolean | TrackCountOutputTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["track"]>
+
+  export type TrackSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    trackId?: boolean
+    type?: boolean
+    title?: boolean
+    artist?: boolean
+    defaultDuration?: boolean
+    defaultTuning?: boolean
+    isActive?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    createdBy?: boolean
+  }, ExtArgs["result"]["track"]>
+
+  export type TrackSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    trackId?: boolean
+    type?: boolean
+    title?: boolean
+    artist?: boolean
+    defaultDuration?: boolean
+    defaultTuning?: boolean
+    isActive?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    createdBy?: boolean
+  }, ExtArgs["result"]["track"]>
+
+  export type TrackSelectScalar = {
+    trackId?: boolean
+    type?: boolean
+    title?: boolean
+    artist?: boolean
+    defaultDuration?: boolean
+    defaultTuning?: boolean
+    isActive?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    createdBy?: boolean
+  }
+
+  export type TrackOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"trackId" | "type" | "title" | "artist" | "defaultDuration" | "defaultTuning" | "isActive" | "createdAt" | "updatedAt" | "createdBy", ExtArgs["result"]["track"]>
+  export type TrackInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    tags?: boolean | Track$tagsArgs<ExtArgs>
+    _count?: boolean | TrackCountOutputTypeDefaultArgs<ExtArgs>
+  }
+  export type TrackIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
+  export type TrackIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
+
+  export type $TrackPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "Track"
+    objects: {
+      tags: Prisma.$TagPayload<ExtArgs>[]
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      trackId: string
+      type: $Enums.TrackType
+      title: string
+      artist: string
+      defaultDuration: number | null
+      defaultTuning: string | null
+      isActive: boolean
+      createdAt: Date
+      updatedAt: Date
+      createdBy: string
+    }, ExtArgs["result"]["track"]>
+    composites: {}
+  }
+
+  type TrackGetPayload<S extends boolean | null | undefined | TrackDefaultArgs> = $Result.GetResult<Prisma.$TrackPayload, S>
+
+  type TrackCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<TrackFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: TrackCountAggregateInputType | true
+    }
+
+  export interface TrackDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Track'], meta: { name: 'Track' } }
+    /**
+     * Find zero or one Track that matches the filter.
+     * @param {TrackFindUniqueArgs} args - Arguments to find a Track
+     * @example
+     * // Get one Track
+     * const track = await prisma.track.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends TrackFindUniqueArgs>(args: SelectSubset<T, TrackFindUniqueArgs<ExtArgs>>): Prisma__TrackClient<$Result.GetResult<Prisma.$TrackPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one Track that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {TrackFindUniqueOrThrowArgs} args - Arguments to find a Track
+     * @example
+     * // Get one Track
+     * const track = await prisma.track.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends TrackFindUniqueOrThrowArgs>(args: SelectSubset<T, TrackFindUniqueOrThrowArgs<ExtArgs>>): Prisma__TrackClient<$Result.GetResult<Prisma.$TrackPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Track that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TrackFindFirstArgs} args - Arguments to find a Track
+     * @example
+     * // Get one Track
+     * const track = await prisma.track.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends TrackFindFirstArgs>(args?: SelectSubset<T, TrackFindFirstArgs<ExtArgs>>): Prisma__TrackClient<$Result.GetResult<Prisma.$TrackPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Track that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TrackFindFirstOrThrowArgs} args - Arguments to find a Track
+     * @example
+     * // Get one Track
+     * const track = await prisma.track.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends TrackFindFirstOrThrowArgs>(args?: SelectSubset<T, TrackFindFirstOrThrowArgs<ExtArgs>>): Prisma__TrackClient<$Result.GetResult<Prisma.$TrackPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more Tracks that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TrackFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Tracks
+     * const tracks = await prisma.track.findMany()
+     * 
+     * // Get first 10 Tracks
+     * const tracks = await prisma.track.findMany({ take: 10 })
+     * 
+     * // Only select the `trackId`
+     * const trackWithTrackIdOnly = await prisma.track.findMany({ select: { trackId: true } })
+     * 
+     */
+    findMany<T extends TrackFindManyArgs>(args?: SelectSubset<T, TrackFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TrackPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a Track.
+     * @param {TrackCreateArgs} args - Arguments to create a Track.
+     * @example
+     * // Create one Track
+     * const Track = await prisma.track.create({
+     *   data: {
+     *     // ... data to create a Track
+     *   }
+     * })
+     * 
+     */
+    create<T extends TrackCreateArgs>(args: SelectSubset<T, TrackCreateArgs<ExtArgs>>): Prisma__TrackClient<$Result.GetResult<Prisma.$TrackPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many Tracks.
+     * @param {TrackCreateManyArgs} args - Arguments to create many Tracks.
+     * @example
+     * // Create many Tracks
+     * const track = await prisma.track.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends TrackCreateManyArgs>(args?: SelectSubset<T, TrackCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many Tracks and returns the data saved in the database.
+     * @param {TrackCreateManyAndReturnArgs} args - Arguments to create many Tracks.
+     * @example
+     * // Create many Tracks
+     * const track = await prisma.track.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many Tracks and only return the `trackId`
+     * const trackWithTrackIdOnly = await prisma.track.createManyAndReturn({
+     *   select: { trackId: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends TrackCreateManyAndReturnArgs>(args?: SelectSubset<T, TrackCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TrackPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a Track.
+     * @param {TrackDeleteArgs} args - Arguments to delete one Track.
+     * @example
+     * // Delete one Track
+     * const Track = await prisma.track.delete({
+     *   where: {
+     *     // ... filter to delete one Track
+     *   }
+     * })
+     * 
+     */
+    delete<T extends TrackDeleteArgs>(args: SelectSubset<T, TrackDeleteArgs<ExtArgs>>): Prisma__TrackClient<$Result.GetResult<Prisma.$TrackPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one Track.
+     * @param {TrackUpdateArgs} args - Arguments to update one Track.
+     * @example
+     * // Update one Track
+     * const track = await prisma.track.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends TrackUpdateArgs>(args: SelectSubset<T, TrackUpdateArgs<ExtArgs>>): Prisma__TrackClient<$Result.GetResult<Prisma.$TrackPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more Tracks.
+     * @param {TrackDeleteManyArgs} args - Arguments to filter Tracks to delete.
+     * @example
+     * // Delete a few Tracks
+     * const { count } = await prisma.track.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends TrackDeleteManyArgs>(args?: SelectSubset<T, TrackDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Tracks.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TrackUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Tracks
+     * const track = await prisma.track.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends TrackUpdateManyArgs>(args: SelectSubset<T, TrackUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Tracks and returns the data updated in the database.
+     * @param {TrackUpdateManyAndReturnArgs} args - Arguments to update many Tracks.
+     * @example
+     * // Update many Tracks
+     * const track = await prisma.track.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more Tracks and only return the `trackId`
+     * const trackWithTrackIdOnly = await prisma.track.updateManyAndReturn({
+     *   select: { trackId: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends TrackUpdateManyAndReturnArgs>(args: SelectSubset<T, TrackUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TrackPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one Track.
+     * @param {TrackUpsertArgs} args - Arguments to update or create a Track.
+     * @example
+     * // Update or create a Track
+     * const track = await prisma.track.upsert({
+     *   create: {
+     *     // ... data to create a Track
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Track we want to update
+     *   }
+     * })
+     */
+    upsert<T extends TrackUpsertArgs>(args: SelectSubset<T, TrackUpsertArgs<ExtArgs>>): Prisma__TrackClient<$Result.GetResult<Prisma.$TrackPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of Tracks.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TrackCountArgs} args - Arguments to filter Tracks to count.
+     * @example
+     * // Count the number of Tracks
+     * const count = await prisma.track.count({
+     *   where: {
+     *     // ... the filter for the Tracks we want to count
+     *   }
+     * })
+    **/
+    count<T extends TrackCountArgs>(
+      args?: Subset<T, TrackCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], TrackCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Track.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TrackAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends TrackAggregateArgs>(args: Subset<T, TrackAggregateArgs>): Prisma.PrismaPromise<GetTrackAggregateType<T>>
+
+    /**
+     * Group by Track.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TrackGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends TrackGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: TrackGroupByArgs['orderBy'] }
+        : { orderBy?: TrackGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, TrackGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetTrackGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the Track model
+   */
+  readonly fields: TrackFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for Track.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__TrackClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    tags<T extends Track$tagsArgs<ExtArgs> = {}>(args?: Subset<T, Track$tagsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TagPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the Track model
+   */
+  interface TrackFieldRefs {
+    readonly trackId: FieldRef<"Track", 'String'>
+    readonly type: FieldRef<"Track", 'TrackType'>
+    readonly title: FieldRef<"Track", 'String'>
+    readonly artist: FieldRef<"Track", 'String'>
+    readonly defaultDuration: FieldRef<"Track", 'Int'>
+    readonly defaultTuning: FieldRef<"Track", 'String'>
+    readonly isActive: FieldRef<"Track", 'Boolean'>
+    readonly createdAt: FieldRef<"Track", 'DateTime'>
+    readonly updatedAt: FieldRef<"Track", 'DateTime'>
+    readonly createdBy: FieldRef<"Track", 'String'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * Track findUnique
+   */
+  export type TrackFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Track
+     */
+    select?: TrackSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Track
+     */
+    omit?: TrackOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TrackInclude<ExtArgs> | null
+    /**
+     * Filter, which Track to fetch.
+     */
+    where: TrackWhereUniqueInput
+  }
+
+  /**
+   * Track findUniqueOrThrow
+   */
+  export type TrackFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Track
+     */
+    select?: TrackSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Track
+     */
+    omit?: TrackOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TrackInclude<ExtArgs> | null
+    /**
+     * Filter, which Track to fetch.
+     */
+    where: TrackWhereUniqueInput
+  }
+
+  /**
+   * Track findFirst
+   */
+  export type TrackFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Track
+     */
+    select?: TrackSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Track
+     */
+    omit?: TrackOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TrackInclude<ExtArgs> | null
+    /**
+     * Filter, which Track to fetch.
+     */
+    where?: TrackWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Tracks to fetch.
+     */
+    orderBy?: TrackOrderByWithRelationInput | TrackOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Tracks.
+     */
+    cursor?: TrackWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Tracks from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Tracks.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Tracks.
+     */
+    distinct?: TrackScalarFieldEnum | TrackScalarFieldEnum[]
+  }
+
+  /**
+   * Track findFirstOrThrow
+   */
+  export type TrackFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Track
+     */
+    select?: TrackSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Track
+     */
+    omit?: TrackOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TrackInclude<ExtArgs> | null
+    /**
+     * Filter, which Track to fetch.
+     */
+    where?: TrackWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Tracks to fetch.
+     */
+    orderBy?: TrackOrderByWithRelationInput | TrackOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Tracks.
+     */
+    cursor?: TrackWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Tracks from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Tracks.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Tracks.
+     */
+    distinct?: TrackScalarFieldEnum | TrackScalarFieldEnum[]
+  }
+
+  /**
+   * Track findMany
+   */
+  export type TrackFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Track
+     */
+    select?: TrackSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Track
+     */
+    omit?: TrackOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TrackInclude<ExtArgs> | null
+    /**
+     * Filter, which Tracks to fetch.
+     */
+    where?: TrackWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Tracks to fetch.
+     */
+    orderBy?: TrackOrderByWithRelationInput | TrackOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing Tracks.
+     */
+    cursor?: TrackWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Tracks from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Tracks.
+     */
+    skip?: number
+    distinct?: TrackScalarFieldEnum | TrackScalarFieldEnum[]
+  }
+
+  /**
+   * Track create
+   */
+  export type TrackCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Track
+     */
+    select?: TrackSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Track
+     */
+    omit?: TrackOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TrackInclude<ExtArgs> | null
+    /**
+     * The data needed to create a Track.
+     */
+    data: XOR<TrackCreateInput, TrackUncheckedCreateInput>
+  }
+
+  /**
+   * Track createMany
+   */
+  export type TrackCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many Tracks.
+     */
+    data: TrackCreateManyInput | TrackCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * Track createManyAndReturn
+   */
+  export type TrackCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Track
+     */
+    select?: TrackSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Track
+     */
+    omit?: TrackOmit<ExtArgs> | null
+    /**
+     * The data used to create many Tracks.
+     */
+    data: TrackCreateManyInput | TrackCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * Track update
+   */
+  export type TrackUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Track
+     */
+    select?: TrackSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Track
+     */
+    omit?: TrackOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TrackInclude<ExtArgs> | null
+    /**
+     * The data needed to update a Track.
+     */
+    data: XOR<TrackUpdateInput, TrackUncheckedUpdateInput>
+    /**
+     * Choose, which Track to update.
+     */
+    where: TrackWhereUniqueInput
+  }
+
+  /**
+   * Track updateMany
+   */
+  export type TrackUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update Tracks.
+     */
+    data: XOR<TrackUpdateManyMutationInput, TrackUncheckedUpdateManyInput>
+    /**
+     * Filter which Tracks to update
+     */
+    where?: TrackWhereInput
+    /**
+     * Limit how many Tracks to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * Track updateManyAndReturn
+   */
+  export type TrackUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Track
+     */
+    select?: TrackSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Track
+     */
+    omit?: TrackOmit<ExtArgs> | null
+    /**
+     * The data used to update Tracks.
+     */
+    data: XOR<TrackUpdateManyMutationInput, TrackUncheckedUpdateManyInput>
+    /**
+     * Filter which Tracks to update
+     */
+    where?: TrackWhereInput
+    /**
+     * Limit how many Tracks to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * Track upsert
+   */
+  export type TrackUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Track
+     */
+    select?: TrackSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Track
+     */
+    omit?: TrackOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TrackInclude<ExtArgs> | null
+    /**
+     * The filter to search for the Track to update in case it exists.
+     */
+    where: TrackWhereUniqueInput
+    /**
+     * In case the Track found by the `where` argument doesn't exist, create a new Track with this data.
+     */
+    create: XOR<TrackCreateInput, TrackUncheckedCreateInput>
+    /**
+     * In case the Track was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<TrackUpdateInput, TrackUncheckedUpdateInput>
+  }
+
+  /**
+   * Track delete
+   */
+  export type TrackDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Track
+     */
+    select?: TrackSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Track
+     */
+    omit?: TrackOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TrackInclude<ExtArgs> | null
+    /**
+     * Filter which Track to delete.
+     */
+    where: TrackWhereUniqueInput
+  }
+
+  /**
+   * Track deleteMany
+   */
+  export type TrackDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Tracks to delete
+     */
+    where?: TrackWhereInput
+    /**
+     * Limit how many Tracks to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * Track.tags
+   */
+  export type Track$tagsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Tag
+     */
+    select?: TagSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Tag
+     */
+    omit?: TagOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TagInclude<ExtArgs> | null
+    where?: TagWhereInput
+    orderBy?: TagOrderByWithRelationInput | TagOrderByWithRelationInput[]
+    cursor?: TagWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: TagScalarFieldEnum | TagScalarFieldEnum[]
+  }
+
+  /**
+   * Track without action
+   */
+  export type TrackDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Track
+     */
+    select?: TrackSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Track
+     */
+    omit?: TrackOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TrackInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Model CalendarEvent
    */
 
@@ -13687,6 +15027,22 @@ export namespace Prisma {
   export type ClubScalarFieldEnum = (typeof ClubScalarFieldEnum)[keyof typeof ClubScalarFieldEnum]
 
 
+  export const TrackScalarFieldEnum: {
+    trackId: 'trackId',
+    type: 'type',
+    title: 'title',
+    artist: 'artist',
+    defaultDuration: 'defaultDuration',
+    defaultTuning: 'defaultTuning',
+    isActive: 'isActive',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt',
+    createdBy: 'createdBy'
+  };
+
+  export type TrackScalarFieldEnum = (typeof TrackScalarFieldEnum)[keyof typeof TrackScalarFieldEnum]
+
+
   export const CalendarEventScalarFieldEnum: {
     eventId: 'eventId',
     title: 'title',
@@ -13814,6 +15170,20 @@ export namespace Prisma {
 
 
   /**
+   * Reference to a field of type 'TrackType'
+   */
+  export type EnumTrackTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'TrackType'>
+    
+
+
+  /**
+   * Reference to a field of type 'TrackType[]'
+   */
+  export type ListEnumTrackTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'TrackType[]'>
+    
+
+
+  /**
    * Reference to a field of type 'Int'
    */
   export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
@@ -13824,6 +15194,13 @@ export namespace Prisma {
    * Reference to a field of type 'Int[]'
    */
   export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'Boolean'
+   */
+  export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
     
 
 
@@ -14027,6 +15404,7 @@ export namespace Prisma {
     category?: StringFilter<"Tag"> | string
     value?: StringFilter<"Tag"> | string
     follows?: FollowListRelationFilter
+    tracks?: TrackListRelationFilter
   }
 
   export type TagOrderByWithRelationInput = {
@@ -14034,6 +15412,7 @@ export namespace Prisma {
     category?: SortOrder
     value?: SortOrder
     follows?: FollowOrderByRelationAggregateInput
+    tracks?: TrackOrderByRelationAggregateInput
   }
 
   export type TagWhereUniqueInput = Prisma.AtLeast<{
@@ -14045,6 +15424,7 @@ export namespace Prisma {
     category?: StringFilter<"Tag"> | string
     value?: StringFilter<"Tag"> | string
     follows?: FollowListRelationFilter
+    tracks?: TrackListRelationFilter
   }, "tagId" | "category_value">
 
   export type TagOrderByWithAggregationInput = {
@@ -14360,6 +15740,88 @@ export namespace Prisma {
     avatar?: StringNullableWithAggregatesFilter<"Club"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"Club"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Club"> | Date | string
+  }
+
+  export type TrackWhereInput = {
+    AND?: TrackWhereInput | TrackWhereInput[]
+    OR?: TrackWhereInput[]
+    NOT?: TrackWhereInput | TrackWhereInput[]
+    trackId?: StringFilter<"Track"> | string
+    type?: EnumTrackTypeFilter<"Track"> | $Enums.TrackType
+    title?: StringFilter<"Track"> | string
+    artist?: StringFilter<"Track"> | string
+    defaultDuration?: IntNullableFilter<"Track"> | number | null
+    defaultTuning?: StringNullableFilter<"Track"> | string | null
+    isActive?: BoolFilter<"Track"> | boolean
+    createdAt?: DateTimeFilter<"Track"> | Date | string
+    updatedAt?: DateTimeFilter<"Track"> | Date | string
+    createdBy?: StringFilter<"Track"> | string
+    tags?: TagListRelationFilter
+  }
+
+  export type TrackOrderByWithRelationInput = {
+    trackId?: SortOrder
+    type?: SortOrder
+    title?: SortOrder
+    artist?: SortOrder
+    defaultDuration?: SortOrderInput | SortOrder
+    defaultTuning?: SortOrderInput | SortOrder
+    isActive?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    createdBy?: SortOrder
+    tags?: TagOrderByRelationAggregateInput
+  }
+
+  export type TrackWhereUniqueInput = Prisma.AtLeast<{
+    trackId?: string
+    AND?: TrackWhereInput | TrackWhereInput[]
+    OR?: TrackWhereInput[]
+    NOT?: TrackWhereInput | TrackWhereInput[]
+    type?: EnumTrackTypeFilter<"Track"> | $Enums.TrackType
+    title?: StringFilter<"Track"> | string
+    artist?: StringFilter<"Track"> | string
+    defaultDuration?: IntNullableFilter<"Track"> | number | null
+    defaultTuning?: StringNullableFilter<"Track"> | string | null
+    isActive?: BoolFilter<"Track"> | boolean
+    createdAt?: DateTimeFilter<"Track"> | Date | string
+    updatedAt?: DateTimeFilter<"Track"> | Date | string
+    createdBy?: StringFilter<"Track"> | string
+    tags?: TagListRelationFilter
+  }, "trackId">
+
+  export type TrackOrderByWithAggregationInput = {
+    trackId?: SortOrder
+    type?: SortOrder
+    title?: SortOrder
+    artist?: SortOrder
+    defaultDuration?: SortOrderInput | SortOrder
+    defaultTuning?: SortOrderInput | SortOrder
+    isActive?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    createdBy?: SortOrder
+    _count?: TrackCountOrderByAggregateInput
+    _avg?: TrackAvgOrderByAggregateInput
+    _max?: TrackMaxOrderByAggregateInput
+    _min?: TrackMinOrderByAggregateInput
+    _sum?: TrackSumOrderByAggregateInput
+  }
+
+  export type TrackScalarWhereWithAggregatesInput = {
+    AND?: TrackScalarWhereWithAggregatesInput | TrackScalarWhereWithAggregatesInput[]
+    OR?: TrackScalarWhereWithAggregatesInput[]
+    NOT?: TrackScalarWhereWithAggregatesInput | TrackScalarWhereWithAggregatesInput[]
+    trackId?: StringWithAggregatesFilter<"Track"> | string
+    type?: EnumTrackTypeWithAggregatesFilter<"Track"> | $Enums.TrackType
+    title?: StringWithAggregatesFilter<"Track"> | string
+    artist?: StringWithAggregatesFilter<"Track"> | string
+    defaultDuration?: IntNullableWithAggregatesFilter<"Track"> | number | null
+    defaultTuning?: StringNullableWithAggregatesFilter<"Track"> | string | null
+    isActive?: BoolWithAggregatesFilter<"Track"> | boolean
+    createdAt?: DateTimeWithAggregatesFilter<"Track"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"Track"> | Date | string
+    createdBy?: StringWithAggregatesFilter<"Track"> | string
   }
 
   export type CalendarEventWhereInput = {
@@ -14758,6 +16220,7 @@ export namespace Prisma {
     category: string
     value: string
     follows?: FollowCreateNestedManyWithoutTagInput
+    tracks?: TrackCreateNestedManyWithoutTagsInput
   }
 
   export type TagUncheckedCreateInput = {
@@ -14765,6 +16228,7 @@ export namespace Prisma {
     category: string
     value: string
     follows?: FollowUncheckedCreateNestedManyWithoutTagInput
+    tracks?: TrackUncheckedCreateNestedManyWithoutTagsInput
   }
 
   export type TagUpdateInput = {
@@ -14772,6 +16236,7 @@ export namespace Prisma {
     category?: StringFieldUpdateOperationsInput | string
     value?: StringFieldUpdateOperationsInput | string
     follows?: FollowUpdateManyWithoutTagNestedInput
+    tracks?: TrackUpdateManyWithoutTagsNestedInput
   }
 
   export type TagUncheckedUpdateInput = {
@@ -14779,6 +16244,7 @@ export namespace Prisma {
     category?: StringFieldUpdateOperationsInput | string
     value?: StringFieldUpdateOperationsInput | string
     follows?: FollowUncheckedUpdateManyWithoutTagNestedInput
+    tracks?: TrackUncheckedUpdateManyWithoutTagsNestedInput
   }
 
   export type TagCreateManyInput = {
@@ -15118,6 +16584,101 @@ export namespace Prisma {
     avatar?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type TrackCreateInput = {
+    trackId?: string
+    type?: $Enums.TrackType
+    title: string
+    artist: string
+    defaultDuration?: number | null
+    defaultTuning?: string | null
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    createdBy: string
+    tags?: TagCreateNestedManyWithoutTracksInput
+  }
+
+  export type TrackUncheckedCreateInput = {
+    trackId?: string
+    type?: $Enums.TrackType
+    title: string
+    artist: string
+    defaultDuration?: number | null
+    defaultTuning?: string | null
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    createdBy: string
+    tags?: TagUncheckedCreateNestedManyWithoutTracksInput
+  }
+
+  export type TrackUpdateInput = {
+    trackId?: StringFieldUpdateOperationsInput | string
+    type?: EnumTrackTypeFieldUpdateOperationsInput | $Enums.TrackType
+    title?: StringFieldUpdateOperationsInput | string
+    artist?: StringFieldUpdateOperationsInput | string
+    defaultDuration?: NullableIntFieldUpdateOperationsInput | number | null
+    defaultTuning?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdBy?: StringFieldUpdateOperationsInput | string
+    tags?: TagUpdateManyWithoutTracksNestedInput
+  }
+
+  export type TrackUncheckedUpdateInput = {
+    trackId?: StringFieldUpdateOperationsInput | string
+    type?: EnumTrackTypeFieldUpdateOperationsInput | $Enums.TrackType
+    title?: StringFieldUpdateOperationsInput | string
+    artist?: StringFieldUpdateOperationsInput | string
+    defaultDuration?: NullableIntFieldUpdateOperationsInput | number | null
+    defaultTuning?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdBy?: StringFieldUpdateOperationsInput | string
+    tags?: TagUncheckedUpdateManyWithoutTracksNestedInput
+  }
+
+  export type TrackCreateManyInput = {
+    trackId?: string
+    type?: $Enums.TrackType
+    title: string
+    artist: string
+    defaultDuration?: number | null
+    defaultTuning?: string | null
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    createdBy: string
+  }
+
+  export type TrackUpdateManyMutationInput = {
+    trackId?: StringFieldUpdateOperationsInput | string
+    type?: EnumTrackTypeFieldUpdateOperationsInput | $Enums.TrackType
+    title?: StringFieldUpdateOperationsInput | string
+    artist?: StringFieldUpdateOperationsInput | string
+    defaultDuration?: NullableIntFieldUpdateOperationsInput | number | null
+    defaultTuning?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdBy?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type TrackUncheckedUpdateManyInput = {
+    trackId?: StringFieldUpdateOperationsInput | string
+    type?: EnumTrackTypeFieldUpdateOperationsInput | $Enums.TrackType
+    title?: StringFieldUpdateOperationsInput | string
+    artist?: StringFieldUpdateOperationsInput | string
+    defaultDuration?: NullableIntFieldUpdateOperationsInput | number | null
+    defaultTuning?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdBy?: StringFieldUpdateOperationsInput | string
   }
 
   export type CalendarEventCreateInput = {
@@ -15587,6 +17148,16 @@ export namespace Prisma {
     _max?: NestedEnumFollowEntityTypeFilter<$PrismaModel>
   }
 
+  export type TrackListRelationFilter = {
+    every?: TrackWhereInput
+    some?: TrackWhereInput
+    none?: TrackWhereInput
+  }
+
+  export type TrackOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
   export type TagCategoryValueCompoundUniqueInput = {
     category: string
     value: string
@@ -15786,6 +17357,120 @@ export namespace Prisma {
     avatar?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+  }
+
+  export type EnumTrackTypeFilter<$PrismaModel = never> = {
+    equals?: $Enums.TrackType | EnumTrackTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.TrackType[] | ListEnumTrackTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.TrackType[] | ListEnumTrackTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumTrackTypeFilter<$PrismaModel> | $Enums.TrackType
+  }
+
+  export type IntNullableFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableFilter<$PrismaModel> | number | null
+  }
+
+  export type BoolFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolFilter<$PrismaModel> | boolean
+  }
+
+  export type TagListRelationFilter = {
+    every?: TagWhereInput
+    some?: TagWhereInput
+    none?: TagWhereInput
+  }
+
+  export type TagOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type TrackCountOrderByAggregateInput = {
+    trackId?: SortOrder
+    type?: SortOrder
+    title?: SortOrder
+    artist?: SortOrder
+    defaultDuration?: SortOrder
+    defaultTuning?: SortOrder
+    isActive?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    createdBy?: SortOrder
+  }
+
+  export type TrackAvgOrderByAggregateInput = {
+    defaultDuration?: SortOrder
+  }
+
+  export type TrackMaxOrderByAggregateInput = {
+    trackId?: SortOrder
+    type?: SortOrder
+    title?: SortOrder
+    artist?: SortOrder
+    defaultDuration?: SortOrder
+    defaultTuning?: SortOrder
+    isActive?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    createdBy?: SortOrder
+  }
+
+  export type TrackMinOrderByAggregateInput = {
+    trackId?: SortOrder
+    type?: SortOrder
+    title?: SortOrder
+    artist?: SortOrder
+    defaultDuration?: SortOrder
+    defaultTuning?: SortOrder
+    isActive?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    createdBy?: SortOrder
+  }
+
+  export type TrackSumOrderByAggregateInput = {
+    defaultDuration?: SortOrder
+  }
+
+  export type EnumTrackTypeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.TrackType | EnumTrackTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.TrackType[] | ListEnumTrackTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.TrackType[] | ListEnumTrackTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumTrackTypeWithAggregatesFilter<$PrismaModel> | $Enums.TrackType
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumTrackTypeFilter<$PrismaModel>
+    _max?: NestedEnumTrackTypeFilter<$PrismaModel>
+  }
+
+  export type IntNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedIntNullableFilter<$PrismaModel>
+    _max?: NestedIntNullableFilter<$PrismaModel>
+  }
+
+  export type BoolWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedBoolFilter<$PrismaModel>
+    _max?: NestedBoolFilter<$PrismaModel>
   }
 
   export type IntFilter<$PrismaModel = never> = {
@@ -16408,11 +18093,23 @@ export namespace Prisma {
     connect?: FollowWhereUniqueInput | FollowWhereUniqueInput[]
   }
 
+  export type TrackCreateNestedManyWithoutTagsInput = {
+    create?: XOR<TrackCreateWithoutTagsInput, TrackUncheckedCreateWithoutTagsInput> | TrackCreateWithoutTagsInput[] | TrackUncheckedCreateWithoutTagsInput[]
+    connectOrCreate?: TrackCreateOrConnectWithoutTagsInput | TrackCreateOrConnectWithoutTagsInput[]
+    connect?: TrackWhereUniqueInput | TrackWhereUniqueInput[]
+  }
+
   export type FollowUncheckedCreateNestedManyWithoutTagInput = {
     create?: XOR<FollowCreateWithoutTagInput, FollowUncheckedCreateWithoutTagInput> | FollowCreateWithoutTagInput[] | FollowUncheckedCreateWithoutTagInput[]
     connectOrCreate?: FollowCreateOrConnectWithoutTagInput | FollowCreateOrConnectWithoutTagInput[]
     createMany?: FollowCreateManyTagInputEnvelope
     connect?: FollowWhereUniqueInput | FollowWhereUniqueInput[]
+  }
+
+  export type TrackUncheckedCreateNestedManyWithoutTagsInput = {
+    create?: XOR<TrackCreateWithoutTagsInput, TrackUncheckedCreateWithoutTagsInput> | TrackCreateWithoutTagsInput[] | TrackUncheckedCreateWithoutTagsInput[]
+    connectOrCreate?: TrackCreateOrConnectWithoutTagsInput | TrackCreateOrConnectWithoutTagsInput[]
+    connect?: TrackWhereUniqueInput | TrackWhereUniqueInput[]
   }
 
   export type FollowUpdateManyWithoutTagNestedInput = {
@@ -16429,6 +18126,19 @@ export namespace Prisma {
     deleteMany?: FollowScalarWhereInput | FollowScalarWhereInput[]
   }
 
+  export type TrackUpdateManyWithoutTagsNestedInput = {
+    create?: XOR<TrackCreateWithoutTagsInput, TrackUncheckedCreateWithoutTagsInput> | TrackCreateWithoutTagsInput[] | TrackUncheckedCreateWithoutTagsInput[]
+    connectOrCreate?: TrackCreateOrConnectWithoutTagsInput | TrackCreateOrConnectWithoutTagsInput[]
+    upsert?: TrackUpsertWithWhereUniqueWithoutTagsInput | TrackUpsertWithWhereUniqueWithoutTagsInput[]
+    set?: TrackWhereUniqueInput | TrackWhereUniqueInput[]
+    disconnect?: TrackWhereUniqueInput | TrackWhereUniqueInput[]
+    delete?: TrackWhereUniqueInput | TrackWhereUniqueInput[]
+    connect?: TrackWhereUniqueInput | TrackWhereUniqueInput[]
+    update?: TrackUpdateWithWhereUniqueWithoutTagsInput | TrackUpdateWithWhereUniqueWithoutTagsInput[]
+    updateMany?: TrackUpdateManyWithWhereWithoutTagsInput | TrackUpdateManyWithWhereWithoutTagsInput[]
+    deleteMany?: TrackScalarWhereInput | TrackScalarWhereInput[]
+  }
+
   export type FollowUncheckedUpdateManyWithoutTagNestedInput = {
     create?: XOR<FollowCreateWithoutTagInput, FollowUncheckedCreateWithoutTagInput> | FollowCreateWithoutTagInput[] | FollowUncheckedCreateWithoutTagInput[]
     connectOrCreate?: FollowCreateOrConnectWithoutTagInput | FollowCreateOrConnectWithoutTagInput[]
@@ -16441,6 +18151,19 @@ export namespace Prisma {
     update?: FollowUpdateWithWhereUniqueWithoutTagInput | FollowUpdateWithWhereUniqueWithoutTagInput[]
     updateMany?: FollowUpdateManyWithWhereWithoutTagInput | FollowUpdateManyWithWhereWithoutTagInput[]
     deleteMany?: FollowScalarWhereInput | FollowScalarWhereInput[]
+  }
+
+  export type TrackUncheckedUpdateManyWithoutTagsNestedInput = {
+    create?: XOR<TrackCreateWithoutTagsInput, TrackUncheckedCreateWithoutTagsInput> | TrackCreateWithoutTagsInput[] | TrackUncheckedCreateWithoutTagsInput[]
+    connectOrCreate?: TrackCreateOrConnectWithoutTagsInput | TrackCreateOrConnectWithoutTagsInput[]
+    upsert?: TrackUpsertWithWhereUniqueWithoutTagsInput | TrackUpsertWithWhereUniqueWithoutTagsInput[]
+    set?: TrackWhereUniqueInput | TrackWhereUniqueInput[]
+    disconnect?: TrackWhereUniqueInput | TrackWhereUniqueInput[]
+    delete?: TrackWhereUniqueInput | TrackWhereUniqueInput[]
+    connect?: TrackWhereUniqueInput | TrackWhereUniqueInput[]
+    update?: TrackUpdateWithWhereUniqueWithoutTagsInput | TrackUpdateWithWhereUniqueWithoutTagsInput[]
+    updateMany?: TrackUpdateManyWithWhereWithoutTagsInput | TrackUpdateManyWithWhereWithoutTagsInput[]
+    deleteMany?: TrackScalarWhereInput | TrackScalarWhereInput[]
   }
 
   export type UserCreateNestedOneWithoutCreatedGuildsInput = {
@@ -16823,6 +18546,60 @@ export namespace Prisma {
     update?: XOR<XOR<GuildUpdateToOneWithWhereWithoutClubInput, GuildUpdateWithoutClubInput>, GuildUncheckedUpdateWithoutClubInput>
   }
 
+  export type TagCreateNestedManyWithoutTracksInput = {
+    create?: XOR<TagCreateWithoutTracksInput, TagUncheckedCreateWithoutTracksInput> | TagCreateWithoutTracksInput[] | TagUncheckedCreateWithoutTracksInput[]
+    connectOrCreate?: TagCreateOrConnectWithoutTracksInput | TagCreateOrConnectWithoutTracksInput[]
+    connect?: TagWhereUniqueInput | TagWhereUniqueInput[]
+  }
+
+  export type TagUncheckedCreateNestedManyWithoutTracksInput = {
+    create?: XOR<TagCreateWithoutTracksInput, TagUncheckedCreateWithoutTracksInput> | TagCreateWithoutTracksInput[] | TagUncheckedCreateWithoutTracksInput[]
+    connectOrCreate?: TagCreateOrConnectWithoutTracksInput | TagCreateOrConnectWithoutTracksInput[]
+    connect?: TagWhereUniqueInput | TagWhereUniqueInput[]
+  }
+
+  export type EnumTrackTypeFieldUpdateOperationsInput = {
+    set?: $Enums.TrackType
+  }
+
+  export type NullableIntFieldUpdateOperationsInput = {
+    set?: number | null
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
+  }
+
+  export type BoolFieldUpdateOperationsInput = {
+    set?: boolean
+  }
+
+  export type TagUpdateManyWithoutTracksNestedInput = {
+    create?: XOR<TagCreateWithoutTracksInput, TagUncheckedCreateWithoutTracksInput> | TagCreateWithoutTracksInput[] | TagUncheckedCreateWithoutTracksInput[]
+    connectOrCreate?: TagCreateOrConnectWithoutTracksInput | TagCreateOrConnectWithoutTracksInput[]
+    upsert?: TagUpsertWithWhereUniqueWithoutTracksInput | TagUpsertWithWhereUniqueWithoutTracksInput[]
+    set?: TagWhereUniqueInput | TagWhereUniqueInput[]
+    disconnect?: TagWhereUniqueInput | TagWhereUniqueInput[]
+    delete?: TagWhereUniqueInput | TagWhereUniqueInput[]
+    connect?: TagWhereUniqueInput | TagWhereUniqueInput[]
+    update?: TagUpdateWithWhereUniqueWithoutTracksInput | TagUpdateWithWhereUniqueWithoutTracksInput[]
+    updateMany?: TagUpdateManyWithWhereWithoutTracksInput | TagUpdateManyWithWhereWithoutTracksInput[]
+    deleteMany?: TagScalarWhereInput | TagScalarWhereInput[]
+  }
+
+  export type TagUncheckedUpdateManyWithoutTracksNestedInput = {
+    create?: XOR<TagCreateWithoutTracksInput, TagUncheckedCreateWithoutTracksInput> | TagCreateWithoutTracksInput[] | TagUncheckedCreateWithoutTracksInput[]
+    connectOrCreate?: TagCreateOrConnectWithoutTracksInput | TagCreateOrConnectWithoutTracksInput[]
+    upsert?: TagUpsertWithWhereUniqueWithoutTracksInput | TagUpsertWithWhereUniqueWithoutTracksInput[]
+    set?: TagWhereUniqueInput | TagWhereUniqueInput[]
+    disconnect?: TagWhereUniqueInput | TagWhereUniqueInput[]
+    delete?: TagWhereUniqueInput | TagWhereUniqueInput[]
+    connect?: TagWhereUniqueInput | TagWhereUniqueInput[]
+    update?: TagUpdateWithWhereUniqueWithoutTracksInput | TagUpdateWithWhereUniqueWithoutTracksInput[]
+    updateMany?: TagUpdateManyWithWhereWithoutTracksInput | TagUpdateManyWithWhereWithoutTracksInput[]
+    deleteMany?: TagScalarWhereInput | TagScalarWhereInput[]
+  }
+
   export type VenueCreateNestedOneWithoutCalendarEventsInput = {
     create?: XOR<VenueCreateWithoutCalendarEventsInput, VenueUncheckedCreateWithoutCalendarEventsInput>
     connectOrCreate?: VenueCreateOrConnectWithoutCalendarEventsInput
@@ -17150,6 +18927,63 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumGuildTypeFilter<$PrismaModel>
     _max?: NestedEnumGuildTypeFilter<$PrismaModel>
+  }
+
+  export type NestedEnumTrackTypeFilter<$PrismaModel = never> = {
+    equals?: $Enums.TrackType | EnumTrackTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.TrackType[] | ListEnumTrackTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.TrackType[] | ListEnumTrackTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumTrackTypeFilter<$PrismaModel> | $Enums.TrackType
+  }
+
+  export type NestedBoolFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolFilter<$PrismaModel> | boolean
+  }
+
+  export type NestedEnumTrackTypeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.TrackType | EnumTrackTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.TrackType[] | ListEnumTrackTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.TrackType[] | ListEnumTrackTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumTrackTypeWithAggregatesFilter<$PrismaModel> | $Enums.TrackType
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumTrackTypeFilter<$PrismaModel>
+    _max?: NestedEnumTrackTypeFilter<$PrismaModel>
+  }
+
+  export type NestedIntNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedIntNullableFilter<$PrismaModel>
+    _max?: NestedIntNullableFilter<$PrismaModel>
+  }
+
+  export type NestedFloatNullableFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatNullableFilter<$PrismaModel> | number | null
+  }
+
+  export type NestedBoolWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedBoolFilter<$PrismaModel>
+    _max?: NestedBoolFilter<$PrismaModel>
   }
 
   export type NestedIntWithAggregatesFilter<$PrismaModel = never> = {
@@ -17734,12 +19568,14 @@ export namespace Prisma {
     tagId?: string
     category: string
     value: string
+    tracks?: TrackCreateNestedManyWithoutTagsInput
   }
 
   export type TagUncheckedCreateWithoutFollowsInput = {
     tagId?: string
     category: string
     value: string
+    tracks?: TrackUncheckedCreateNestedManyWithoutTagsInput
   }
 
   export type TagCreateOrConnectWithoutFollowsInput = {
@@ -17885,12 +19721,14 @@ export namespace Prisma {
     tagId?: StringFieldUpdateOperationsInput | string
     category?: StringFieldUpdateOperationsInput | string
     value?: StringFieldUpdateOperationsInput | string
+    tracks?: TrackUpdateManyWithoutTagsNestedInput
   }
 
   export type TagUncheckedUpdateWithoutFollowsInput = {
     tagId?: StringFieldUpdateOperationsInput | string
     category?: StringFieldUpdateOperationsInput | string
     value?: StringFieldUpdateOperationsInput | string
+    tracks?: TrackUncheckedUpdateManyWithoutTagsNestedInput
   }
 
   export type GuildUpsertWithoutFollowsInput = {
@@ -17960,6 +19798,37 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type TrackCreateWithoutTagsInput = {
+    trackId?: string
+    type?: $Enums.TrackType
+    title: string
+    artist: string
+    defaultDuration?: number | null
+    defaultTuning?: string | null
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    createdBy: string
+  }
+
+  export type TrackUncheckedCreateWithoutTagsInput = {
+    trackId?: string
+    type?: $Enums.TrackType
+    title: string
+    artist: string
+    defaultDuration?: number | null
+    defaultTuning?: string | null
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    createdBy: string
+  }
+
+  export type TrackCreateOrConnectWithoutTagsInput = {
+    where: TrackWhereUniqueInput
+    create: XOR<TrackCreateWithoutTagsInput, TrackUncheckedCreateWithoutTagsInput>
+  }
+
   export type FollowUpsertWithWhereUniqueWithoutTagInput = {
     where: FollowWhereUniqueInput
     update: XOR<FollowUpdateWithoutTagInput, FollowUncheckedUpdateWithoutTagInput>
@@ -17974,6 +19843,38 @@ export namespace Prisma {
   export type FollowUpdateManyWithWhereWithoutTagInput = {
     where: FollowScalarWhereInput
     data: XOR<FollowUpdateManyMutationInput, FollowUncheckedUpdateManyWithoutTagInput>
+  }
+
+  export type TrackUpsertWithWhereUniqueWithoutTagsInput = {
+    where: TrackWhereUniqueInput
+    update: XOR<TrackUpdateWithoutTagsInput, TrackUncheckedUpdateWithoutTagsInput>
+    create: XOR<TrackCreateWithoutTagsInput, TrackUncheckedCreateWithoutTagsInput>
+  }
+
+  export type TrackUpdateWithWhereUniqueWithoutTagsInput = {
+    where: TrackWhereUniqueInput
+    data: XOR<TrackUpdateWithoutTagsInput, TrackUncheckedUpdateWithoutTagsInput>
+  }
+
+  export type TrackUpdateManyWithWhereWithoutTagsInput = {
+    where: TrackScalarWhereInput
+    data: XOR<TrackUpdateManyMutationInput, TrackUncheckedUpdateManyWithoutTagsInput>
+  }
+
+  export type TrackScalarWhereInput = {
+    AND?: TrackScalarWhereInput | TrackScalarWhereInput[]
+    OR?: TrackScalarWhereInput[]
+    NOT?: TrackScalarWhereInput | TrackScalarWhereInput[]
+    trackId?: StringFilter<"Track"> | string
+    type?: EnumTrackTypeFilter<"Track"> | $Enums.TrackType
+    title?: StringFilter<"Track"> | string
+    artist?: StringFilter<"Track"> | string
+    defaultDuration?: IntNullableFilter<"Track"> | number | null
+    defaultTuning?: StringNullableFilter<"Track"> | string | null
+    isActive?: BoolFilter<"Track"> | boolean
+    createdAt?: DateTimeFilter<"Track"> | Date | string
+    updatedAt?: DateTimeFilter<"Track"> | Date | string
+    createdBy?: StringFilter<"Track"> | string
   }
 
   export type UserCreateWithoutCreatedGuildsInput = {
@@ -18804,6 +20705,50 @@ export namespace Prisma {
     members?: UserUncheckedUpdateManyWithoutMemberOfGuildsNestedInput
     follows?: FollowUncheckedUpdateManyWithoutGuildNestedInput
     invitations?: GuildInvitationUncheckedUpdateManyWithoutGuildNestedInput
+  }
+
+  export type TagCreateWithoutTracksInput = {
+    tagId?: string
+    category: string
+    value: string
+    follows?: FollowCreateNestedManyWithoutTagInput
+  }
+
+  export type TagUncheckedCreateWithoutTracksInput = {
+    tagId?: string
+    category: string
+    value: string
+    follows?: FollowUncheckedCreateNestedManyWithoutTagInput
+  }
+
+  export type TagCreateOrConnectWithoutTracksInput = {
+    where: TagWhereUniqueInput
+    create: XOR<TagCreateWithoutTracksInput, TagUncheckedCreateWithoutTracksInput>
+  }
+
+  export type TagUpsertWithWhereUniqueWithoutTracksInput = {
+    where: TagWhereUniqueInput
+    update: XOR<TagUpdateWithoutTracksInput, TagUncheckedUpdateWithoutTracksInput>
+    create: XOR<TagCreateWithoutTracksInput, TagUncheckedCreateWithoutTracksInput>
+  }
+
+  export type TagUpdateWithWhereUniqueWithoutTracksInput = {
+    where: TagWhereUniqueInput
+    data: XOR<TagUpdateWithoutTracksInput, TagUncheckedUpdateWithoutTracksInput>
+  }
+
+  export type TagUpdateManyWithWhereWithoutTracksInput = {
+    where: TagScalarWhereInput
+    data: XOR<TagUpdateManyMutationInput, TagUncheckedUpdateManyWithoutTracksInput>
+  }
+
+  export type TagScalarWhereInput = {
+    AND?: TagScalarWhereInput | TagScalarWhereInput[]
+    OR?: TagScalarWhereInput[]
+    NOT?: TagScalarWhereInput | TagScalarWhereInput[]
+    tagId?: StringFilter<"Tag"> | string
+    category?: StringFilter<"Tag"> | string
+    value?: StringFilter<"Tag"> | string
   }
 
   export type VenueCreateWithoutCalendarEventsInput = {
@@ -19719,6 +21664,45 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type TrackUpdateWithoutTagsInput = {
+    trackId?: StringFieldUpdateOperationsInput | string
+    type?: EnumTrackTypeFieldUpdateOperationsInput | $Enums.TrackType
+    title?: StringFieldUpdateOperationsInput | string
+    artist?: StringFieldUpdateOperationsInput | string
+    defaultDuration?: NullableIntFieldUpdateOperationsInput | number | null
+    defaultTuning?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdBy?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type TrackUncheckedUpdateWithoutTagsInput = {
+    trackId?: StringFieldUpdateOperationsInput | string
+    type?: EnumTrackTypeFieldUpdateOperationsInput | $Enums.TrackType
+    title?: StringFieldUpdateOperationsInput | string
+    artist?: StringFieldUpdateOperationsInput | string
+    defaultDuration?: NullableIntFieldUpdateOperationsInput | number | null
+    defaultTuning?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdBy?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type TrackUncheckedUpdateManyWithoutTagsInput = {
+    trackId?: StringFieldUpdateOperationsInput | string
+    type?: EnumTrackTypeFieldUpdateOperationsInput | $Enums.TrackType
+    title?: StringFieldUpdateOperationsInput | string
+    artist?: StringFieldUpdateOperationsInput | string
+    defaultDuration?: NullableIntFieldUpdateOperationsInput | number | null
+    defaultTuning?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdBy?: StringFieldUpdateOperationsInput | string
+  }
+
   export type FollowCreateManyGuildInput = {
     followId?: string
     userId: string
@@ -19919,6 +21903,26 @@ export namespace Prisma {
     duration?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type TagUpdateWithoutTracksInput = {
+    tagId?: StringFieldUpdateOperationsInput | string
+    category?: StringFieldUpdateOperationsInput | string
+    value?: StringFieldUpdateOperationsInput | string
+    follows?: FollowUpdateManyWithoutTagNestedInput
+  }
+
+  export type TagUncheckedUpdateWithoutTracksInput = {
+    tagId?: StringFieldUpdateOperationsInput | string
+    category?: StringFieldUpdateOperationsInput | string
+    value?: StringFieldUpdateOperationsInput | string
+    follows?: FollowUncheckedUpdateManyWithoutTagNestedInput
+  }
+
+  export type TagUncheckedUpdateManyWithoutTracksInput = {
+    tagId?: StringFieldUpdateOperationsInput | string
+    category?: StringFieldUpdateOperationsInput | string
+    value?: StringFieldUpdateOperationsInput | string
   }
 
   export type FeedActivityCreateManyCalendarEventInput = {

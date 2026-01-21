@@ -3,6 +3,7 @@ export * from './Guild';
 export * from './Act';
 export * from './Venue';
 export * from './Club';
+export * from './Track';
 export * from './CalendarEvent';
 export * from './Follow';
 export * from './GuildInvitation';

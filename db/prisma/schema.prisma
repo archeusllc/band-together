@@ -32,6 +32,11 @@ enum FollowEntityType {
   GUILD
 }
 
+enum TrackType {
+  SONG
+  OTHER
+}
+
 model User {
   userId                String             @id @default(cuid())
   email                 String             @unique
@@ -85,6 +90,7 @@ model Tag {
   category String
   value    String
   follows  Follow[]
+  tracks   Track[]  @relation("TrackTags")
 
   @@unique([category, value])
 }
@@ -148,6 +154,28 @@ model Club {
   updatedAt   DateTime @updatedAt
 
   guild       Guild?
+}
+
+model Track {
+  trackId          String     @id @default(cuid())
+  type             TrackType  @default(SONG)
+  title            String
+  artist           String
+  defaultDuration  Int?
+  defaultTuning    String?
+  isActive         Boolean    @default(true)
+  createdAt        DateTime   @default(now())
+  updatedAt        DateTime   @updatedAt
+  createdBy        String
+
+  tags             Tag[]      @relation("TrackTags")
+  // setItems relation will be added in Phase 5 when SetItem model is created
+
+  @@index([title])
+  @@index([artist])
+  @@index([type])
+  @@index([isActive])
+  @@index([createdBy])
 }
 
 model CalendarEvent {
