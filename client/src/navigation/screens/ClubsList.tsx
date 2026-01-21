@@ -121,16 +121,6 @@ export default function ClubsListScreen() {
           ) : null
         }
       />
-
-      {/* Create FAB */}
-      {isAuthenticated && (
-        <Pressable
-          className="absolute bottom-6 right-6 bg-blue-500 w-14 h-14 rounded-full items-center justify-center shadow-lg"
-          onPress={() => navigation.navigate('CreateClub')}
-        >
-          <IconSymbol name="plus" size={28} color="#fff" />
-        </Pressable>
-      )}
     </View>
   );
 }
