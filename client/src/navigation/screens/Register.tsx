@@ -49,11 +49,13 @@ export default function RegisterScreen() {
   return (
     <ScrollView
       className={`flex-1 ${tailwind.background.both}`}
-      contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', paddingHorizontal: 20 }}
+      scrollEnabled={true}
+      keyboardShouldPersistTaps="handled"
     >
-      <Text className={`text-4xl font-bold mb-8 text-center ${tailwind.text.both}`}>Create Account</Text>
+      <View className="flex-1 justify-center px-5 py-12">
+        <Text className={`text-4xl font-bold mb-8 text-center ${tailwind.text.both}`}>Create Account</Text>
 
-      <View className={`${tailwind.card.both} rounded-xl p-5`}>
+        <View className={`${tailwind.card.both} rounded-xl p-5`}>
         <View className="mb-5">
           <Text className={`text-base font-semibold mb-2 ${tailwind.text.both}`}>Email</Text>
           <TextInput
@@ -114,6 +116,7 @@ export default function RegisterScreen() {
             <Text className={`text-sm ${tailwind.primary} font-semibold`}>Login</Text>
           </Pressable>
         </View>
+      </View>
       </View>
     </ScrollView>
   );
