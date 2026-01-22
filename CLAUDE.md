@@ -260,6 +260,28 @@ cd db && bun push        # Apply schema migrations
 cd db && bun start       # Open Prisma Studio for visual management
 ```
 
+### OpenAPI/Swagger Testing
+
+The API includes Swagger UI for interactive testing. Access it at `http://localhost:3000/openapi` when the API is running.
+
+**Testing Protected Endpoints**:
+1. Run the client app in development mode: `cd client && bun start`
+2. Log in with a test account (or register a new one)
+3. Navigate to Settings screen (only visible in development - tap your profile avatar, then scroll to Settings)
+4. Find the "Firebase Token" section with a truncated token preview
+5. Click the "Copy" button to copy the full token to clipboard
+6. In Swagger UI, click the "Authorize" button
+7. Paste the token (no "Bearer" prefix needed - Swagger adds it automatically)
+8. Click "Authorize" to save
+
+**Token Details**:
+- Tap the token display to expand/collapse the full token value
+- The truncated view shows first 10 and last 10 characters
+- Copy button provides visual feedback (turns green with checkmark)
+- Firebase ID tokens expire after 1 hour - refresh Settings screen to get a new token if you get 401 errors
+
+**Why this approach**: Uses real Firebase authentication without any environment-specific bypass code. The tokens work identically to production tokens.
+
 ## Path Aliases
 
 ### Client (`client/src/`)
