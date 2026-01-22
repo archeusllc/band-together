@@ -1,4 +1,4 @@
-import { prisma } from './prisma.service';
+import { prisma } from '@services';
 import type { TrackSearchResult } from '@band-together/shared';
 
 interface SearchTracksOptions {
@@ -10,7 +10,7 @@ interface SearchTracksOptions {
   sortOrder: 'asc' | 'desc';
 }
 
-export const trackService = {
+export const tracksService = {
   searchTracks: async (options: SearchTracksOptions) => {
     const { query, type, limit, offset, sortBy, sortOrder } = options;
 

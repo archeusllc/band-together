@@ -8,6 +8,7 @@ bun.lockb
 # Environment variables
 .env*
 !.env.development
+!.env.test
 
 # Build output
 dist/

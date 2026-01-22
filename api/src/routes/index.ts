@@ -1,11 +1,12 @@
 import Elysia from "elysia";
 import { healthRoutes } from "./health.routes";
-import { authRoutes } from "./auth.routes";
-import { feedRoutes } from "./feed.routes";
-import { eventsRoutes } from "./events.routes";
-import { followsRoutes } from "./follows.routes";
-import { guildsRoutes } from "./guilds.routes";
-import { trackRoutes } from "./track.routes";
+import { authRoutes } from "./auth";
+import { feedRoutes } from "./feed";
+import { eventsRoutes } from "./events";
+import { followsRoutes } from "./follows";
+import { guildsRoutes } from "./guilds";
+import { tracksRoutes } from "./tracks";
+import { setlistRoutes } from "./setlists";
 
 export const routes = new Elysia()
   .use(healthRoutes)
@@ -13,5 +14,6 @@ export const routes = new Elysia()
   .use(feedRoutes)
   .use(eventsRoutes)
   .use(followsRoutes)
-  .use(trackRoutes)
+  .use(tracksRoutes)
   .use(guildsRoutes)
+  .use(setlistRoutes)

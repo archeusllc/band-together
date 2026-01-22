@@ -72,11 +72,30 @@ When working on Band Together, please follow these conventions:
 
 ### API Layer (api/)
 
+**Route Organization - Subdirectory Pattern**
+
+Each route group must follow this structure in `api/src/routes/<name>/`:
+```
+routes/auth/
+├── index.ts                 # Barrel export: export { authRoutes }
+├── auth.routes.ts           # Route definitions with Elysia
+├── auth.controller.ts       # Business logic
+├── auth.service.ts          # Data access layer (Prisma)
+└── auth.test.ts             # Test suite (REQUIRED)
+```
+
+All routes must:
+1. **Create a dedicated subdirectory** with co-located files
+2. **Export controller/service locally** - use `from './auth.controller'` not `@controllers`
+3. **Include test file** - `<name>.test.ts` with comprehensive coverage
+4. **Create barrel export** - `index.ts` exporting only the routes
+
 **Endpoint Development**
-- Use Elysia framework patterns (controllers, services, middleware)
+- Use Elysia framework patterns with layered architecture (routes → controller → service)
 - Always include OpenAPI documentation for new endpoints using JSDoc comments
-- Export route handlers as named functions with proper types
-- Place route definitions in `@routes`, handlers in `@controllers`
+- Service layer handles all Prisma operations
+- Controller handles business logic and validation
+- Routes handle HTTP concerns and middleware
 
 **OpenAPI Documentation**
 - Add JSDoc comments to all endpoint handlers with `@summary`, `@description`, `@param`, `@returns` tags
@@ -91,6 +110,18 @@ When working on Band Together, please follow these conventions:
    */
   export const getFeed = async (userId: string) => { /* ... */ }
   ```
+
+**Testing Requirements**
+- Every route MUST have comprehensive tests in `<name>.test.ts`
+- Use Bun test framework (`describe`, `test`, `expect`, `mock`)
+- Coverage must include:
+  - Happy path (successful requests)
+  - Authentication (protected endpoints reject unauthorized)
+  - Validation (invalid input returns 422)
+  - Not found (non-existent resources return 404)
+  - Edge cases (duplicate data, authorization failures)
+- Tests are in global preload `api/src/test/index.ts` with Firebase mocks
+- Run with: `bun run test` (not `bun test` - uses package.json script)
 
 ### Planning & Execution
 

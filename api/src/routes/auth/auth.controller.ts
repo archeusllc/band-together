@@ -1,5 +1,5 @@
-import { prisma } from '@services';
 import { firebaseAuth } from '@config/firebase-admin.config';
+import { authService } from './auth.service';
 
 export const authController = {
   /**
@@ -20,21 +20,17 @@ export const authController = {
       }
 
       // Check if user already exists
-      const existingUser = await prisma.user.findUnique({
-        where: { firebaseUid: data.firebaseUid },
-      });
+      const existingUser = await authService.findByFirebaseUid(data.firebaseUid);
 
       if (existingUser) {
         return existingUser;
       }
 
       // Create new user
-      const user = await prisma.user.create({
-        data: {
-          email: data.email,
-          displayName: data.displayName || data.email.split('@')[0],
-          firebaseUid: data.firebaseUid,
-        },
+      const user = await authService.createUser({
+        email: data.email,
+        displayName: data.displayName || data.email.split('@')[0],
+        firebaseUid: data.firebaseUid,
       });
 
       return user;
@@ -58,18 +54,14 @@ export const authController = {
       }
 
       // Find user in database
-      let user = await prisma.user.findUnique({
-        where: { firebaseUid: data.firebaseUid },
-      });
+      let user = await authService.findByFirebaseUid(data.firebaseUid);
 
       // If user doesn't exist, create from verified Firebase token
       if (!user) {
-        user = await prisma.user.create({
-          data: {
-            email: decodedToken.email!,
-            displayName: decodedToken.name || decodedToken.email!.split('@')[0],
-            firebaseUid: data.firebaseUid,
-          },
+        user = await authService.createUser({
+          email: decodedToken.email!,
+          displayName: decodedToken.name || decodedToken.email!.split('@')[0],
+          firebaseUid: data.firebaseUid,
         });
       }
 
@@ -85,9 +77,7 @@ export const authController = {
    */
   me: async (firebaseUid: string) => {
     try {
-      const user = await prisma.user.findUnique({
-        where: { firebaseUid },
-      });
+      const user = await authService.findByFirebaseUid(firebaseUid);
 
       if (!user) {
         throw new Error('User not found');
@@ -115,9 +105,7 @@ export const authController = {
     try {
       // Firebase password reset is handled client-side
       // This endpoint can be used to verify email exists
-      const user = await prisma.user.findUnique({
-        where: { email },
-      });
+      const user = await authService.findByEmail(email);
 
       return !!user;
     } catch (error) {

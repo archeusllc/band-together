@@ -1,4 +1,4 @@
-import { trackService } from '@services/track.service';
+import { tracksService } from './tracks.service';
 
 interface SearchParams {
   query?: string;
@@ -9,7 +9,7 @@ interface SearchParams {
   sortOrder: string;
 }
 
-export const trackController = {
+export const tracksController = {
   searchTracks: async (params: SearchParams) => {
     const { query, type, limit, offset, sortBy, sortOrder } = params;
 
@@ -45,7 +45,7 @@ export const trackController = {
     }
 
     // Call service
-    return trackService.searchTracks({
+    return tracksService.searchTracks({
       query: query?.trim(),
       type: typeFilter,
       limit,

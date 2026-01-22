@@ -11,13 +11,9 @@ import type {
 } from '@types';
 import { GuildType } from '@band-together/shared';
 
-export const guildController = {
+export const guildsService = {
   /**
-   * @summary Get paginated list of guilds by type
-   * @description Returns paginated list of guilds (acts, venues, or clubs) with optional search
-   * @param {string} guildType - Guild type (ACT, VENUE, or CLUB)
-   * @param {GetGuildsQuery} query - Query parameters (page, limit, search)
-   * @returns {Object} Paginated list of guilds
+   * Get paginated list of guilds by type
    */
   getGuilds: async (guildType: GuildType, query: GetGuildsQuery) => {
     const page = query.page || 1;
@@ -65,10 +61,7 @@ export const guildController = {
   },
 
   /**
-   * @summary Get single guild by ID
-   * @description Returns complete guild details including owner, members, and associated entity
-   * @param {string} guildId - Guild ID
-   * @returns {Object} Guild with all relations
+   * Get single guild by ID
    */
   getGuildById: async (guildId: string): Promise<GuildResponse> => {
     const guild = await prisma.guild.findUnique({
@@ -102,19 +95,9 @@ export const guildController = {
   },
 
   /**
-   * @summary Create new act guild
-   * @description Creates new act and associated guild in transaction
-   * @param {string} firebaseUid - Creator's Firebase UID
-   * @param {CreateActBody} data - Act data (name, bio, avatar)
-   * @returns {Object} Newly created guild
+   * Create new act guild
    */
-  createAct: async (firebaseUid: string, data: CreateActBody): Promise<GuildResponse> => {
-
-    const user = await prisma.user.findUnique({
-      where: { firebaseUid }
-    });
-    if (!user) throw new Error('User not found');
-
+  createAct: async (userId: string, data: CreateActBody): Promise<GuildResponse> => {
     if (!data.name || data.name.length < 2 || data.name.length > 100) {
       throw new Error('Act name must be between 2 and 100 characters');
     }
@@ -132,11 +115,11 @@ export const guildController = {
         data: {
           name: data.name,
           guildType: GuildType.ACT,
-          createdById: user.userId,
-          currentOwnerId: user.userId,
+          createdById: userId,
+          currentOwnerId: userId,
           actId: act.actId,
           members: {
-            connect: [{ userId: user.userId }]
+            connect: [{ userId }]
           }
         },
         include: {
@@ -167,18 +150,9 @@ export const guildController = {
   },
 
   /**
-   * @summary Create new venue guild
-   * @description Creates new venue and associated guild in transaction
-   * @param {string} firebaseUid - Creator's Firebase UID
-   * @param {CreateVenueBody} data - Venue data (name, address, city, state, zipCode, avatar)
-   * @returns {Object} Newly created guild
+   * Create new venue guild
    */
-  createVenue: async (firebaseUid: string, data: CreateVenueBody): Promise<GuildResponse> => {
-    const user = await prisma.user.findUnique({
-      where: { firebaseUid }
-    });
-    if (!user) throw new Error('User not found');
-
+  createVenue: async (userId: string, data: CreateVenueBody): Promise<GuildResponse> => {
     if (!data.name || data.name.length < 2 || data.name.length > 100) {
       throw new Error('Venue name must be between 2 and 100 characters');
     }
@@ -199,11 +173,11 @@ export const guildController = {
         data: {
           name: data.name,
           guildType: GuildType.VENUE,
-          createdById: user.userId,
-          currentOwnerId: user.userId,
+          createdById: userId,
+          currentOwnerId: userId,
           venueId: venue.venueId,
           members: {
-            connect: [{ userId: user.userId }]
+            connect: [{ userId }]
           }
         },
         include: {
@@ -234,18 +208,9 @@ export const guildController = {
   },
 
   /**
-   * @summary Create new club guild
-   * @description Creates new club and associated guild in transaction
-   * @param {string} firebaseUid - Creator's Firebase UID
-   * @param {CreateClubBody} data - Club data (name, description, avatar)
-   * @returns {Object} Newly created guild
+   * Create new club guild
    */
-  createClub: async (firebaseUid: string, data: CreateClubBody): Promise<GuildResponse> => {
-    const user = await prisma.user.findUnique({
-      where: { firebaseUid }
-    });
-    if (!user) throw new Error('User not found');
-
+  createClub: async (userId: string, data: CreateClubBody): Promise<GuildResponse> => {
     if (!data.name || data.name.length < 2 || data.name.length > 100) {
       throw new Error('Club name must be between 2 and 100 characters');
     }
@@ -263,11 +228,11 @@ export const guildController = {
         data: {
           name: data.name,
           guildType: GuildType.CLUB,
-          createdById: user.userId,
-          currentOwnerId: user.userId,
+          createdById: userId,
+          currentOwnerId: userId,
           clubId: club.clubId,
           members: {
-            connect: [{ userId: user.userId }]
+            connect: [{ userId }]
           }
         },
         include: {
@@ -298,26 +263,16 @@ export const guildController = {
   },
 
   /**
-   * @summary Update act
-   * @description Update act and guild details (owner only)
-   * @param {string} firebaseUid - User's Firebase UID
-   * @param {string} guildId - Guild ID
-   * @param {UpdateActBody} data - Update data
-   * @returns {Object} Updated guild
+   * Update act
    */
-  updateAct: async (firebaseUid: string, guildId: string, data: UpdateActBody): Promise<GuildResponse> => {
-    const user = await prisma.user.findUnique({
-      where: { firebaseUid }
-    });
-    if (!user) throw new Error('User not found');
-
+  updateAct: async (userId: string, guildId: string, data: UpdateActBody): Promise<GuildResponse> => {
     const guild = await prisma.guild.findUnique({
       where: { guildId },
       include: { act: true }
     });
 
     if (!guild) throw new Error('Guild not found');
-    if (guild.currentOwnerId !== user.userId) {
+    if (guild.currentOwnerId !== userId) {
       throw new Error('Unauthorized: Only guild owner can update');
     }
     if (guild.guildType !== GuildType.ACT) {
@@ -376,26 +331,16 @@ export const guildController = {
   },
 
   /**
-   * @summary Update venue
-   * @description Update venue and guild details (owner only)
-   * @param {string} firebaseUid - User's Firebase UID
-   * @param {string} guildId - Guild ID
-   * @param {UpdateVenueBody} data - Update data
-   * @returns {Object} Updated guild
+   * Update venue
    */
-  updateVenue: async (firebaseUid: string, guildId: string, data: UpdateVenueBody): Promise<GuildResponse> => {
-    const user = await prisma.user.findUnique({
-      where: { firebaseUid }
-    });
-    if (!user) throw new Error('User not found');
-
+  updateVenue: async (userId: string, guildId: string, data: UpdateVenueBody): Promise<GuildResponse> => {
     const guild = await prisma.guild.findUnique({
       where: { guildId },
       include: { venue: true }
     });
 
     if (!guild) throw new Error('Guild not found');
-    if (guild.currentOwnerId !== user.userId) {
+    if (guild.currentOwnerId !== userId) {
       throw new Error('Unauthorized: Only guild owner can update');
     }
     if (guild.guildType !== GuildType.VENUE) {
@@ -457,26 +402,16 @@ export const guildController = {
   },
 
   /**
-   * @summary Update club
-   * @description Update club and guild details (owner only)
-   * @param {string} firebaseUid - User's Firebase UID
-   * @param {string} guildId - Guild ID
-   * @param {UpdateClubBody} data - Update data
-   * @returns {Object} Updated guild
+   * Update club
    */
-  updateClub: async (firebaseUid: string, guildId: string, data: UpdateClubBody): Promise<GuildResponse> => {
-    const user = await prisma.user.findUnique({
-      where: { firebaseUid }
-    });
-    if (!user) throw new Error('User not found');
-
+  updateClub: async (userId: string, guildId: string, data: UpdateClubBody): Promise<GuildResponse> => {
     const guild = await prisma.guild.findUnique({
       where: { guildId },
       include: { club: true }
     });
 
     if (!guild) throw new Error('Guild not found');
-    if (guild.currentOwnerId !== user.userId) {
+    if (guild.currentOwnerId !== userId) {
       throw new Error('Unauthorized: Only guild owner can update');
     }
     if (guild.guildType !== GuildType.CLUB) {
@@ -535,24 +470,15 @@ export const guildController = {
   },
 
   /**
-   * @summary Delete guild
-   * @description Delete guild and associated entity (owner only)
-   * @param {string} firebaseUid - User's Firebase UID
-   * @param {string} guildId - Guild ID
-   * @returns {Object} Success response
+   * Delete guild
    */
-  deleteGuild: async (firebaseUid: string, guildId: string) => {
-    const user = await prisma.user.findUnique({
-      where: { firebaseUid }
-    });
-    if (!user) throw new Error('User not found');
-
+  deleteGuild: async (userId: string, guildId: string) => {
     const guild = await prisma.guild.findUnique({
       where: { guildId }
     });
 
     if (!guild) throw new Error('Guild not found');
-    if (guild.currentOwnerId !== user.userId) {
+    if (guild.currentOwnerId !== userId) {
       throw new Error('Unauthorized: Only guild owner can delete');
     }
 

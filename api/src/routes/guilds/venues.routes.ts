@@ -1,17 +1,17 @@
 import Elysia, { t } from 'elysia';
-import { guildController } from '@controllers';
+import { guildsController } from './guilds.controller';
 import { GuildType } from '@band-together/shared';
 import { firebaseGate } from '@middleware';
 
-export const clubsRoutes = new Elysia()
-  .group('/clubs', (route) =>
+export const venuesRoutes = new Elysia()
+  .group('/venues', (route) =>
     route
-      // GET /clubs - List all clubs (public)
+      // GET /venues - List all venues (public)
       .get(
         '/',
         async ({ set, query }: any) => {
           try {
-            const result = await guildController.getGuilds(GuildType.CLUB, query);
+            const result = await guildsController.getGuilds(GuildType.VENUE, query);
             return result;
           } catch (error) {
             set.status = 500;
@@ -25,12 +25,12 @@ export const clubsRoutes = new Elysia()
             search: t.Optional(t.String({ minLength: 1 }))
           }),
           detail: {
-            tags: ['Clubs'],
-            summary: 'List Clubs',
-            description: 'Retrieve paginated list of clubs with optional search. Public endpoint.',
+            tags: ['Venues'],
+            summary: 'List Venues',
+            description: 'Retrieve paginated list of venues with optional search. Public endpoint.',
             responses: {
               200: {
-                description: 'Clubs retrieved successfully',
+                description: 'Venues retrieved successfully',
                 content: {
                   'application/json': {
                     schema: {
@@ -50,12 +50,12 @@ export const clubsRoutes = new Elysia()
           }
         }
       )
-      // GET /clubs/:clubId - Get single club (public)
+      // GET /venues/:venueId - Get single venue (public)
       .get(
-        '/:clubId',
+        '/:venueId',
         async ({ set, params }: any) => {
           try {
-            const result = await guildController.getGuildById(params.clubId);
+            const result = await guildsController.getGuildById(params.venueId);
             return result;
           } catch (error) {
             const message = (error as Error).message;
@@ -69,15 +69,15 @@ export const clubsRoutes = new Elysia()
         },
         {
           params: t.Object({
-            clubId: t.String()
+            venueId: t.String()
           }),
           detail: {
-            tags: ['Clubs'],
-            summary: 'Get Club by ID',
-            description: 'Retrieve a single club with full details including owner and members. Public endpoint.',
+            tags: ['Venues'],
+            summary: 'Get Venue by ID',
+            description: 'Retrieve a single venue with full details including owner and members. Public endpoint.',
             responses: {
-              200: { description: 'Club retrieved successfully' },
-              404: { description: 'Club not found' },
+              200: { description: 'Venue retrieved successfully' },
+              404: { description: 'Venue not found' },
               500: { description: 'Server error' }
             }
           }
@@ -85,12 +85,12 @@ export const clubsRoutes = new Elysia()
       )
       // Authenticated routes - require valid Firebase token
       .use(firebaseGate)
-      // POST /clubs - Create new club (authenticated)
+      // POST /venues - Create new venue (authenticated)
       .post(
         '/',
         async ({ firebase, set, body }: any) => {
           try {
-            const result = await guildController.createClub(firebase.uid, body);
+            const result = await guildsController.createVenue(firebase.uid, body);
             set.status = 201;
             return result;
           } catch (error) {
@@ -108,16 +108,19 @@ export const clubsRoutes = new Elysia()
         {
           body: t.Object({
             name: t.String({ minLength: 2, maxLength: 100 }),
-            description: t.Optional(t.String({ maxLength: 1000 })),
+            address: t.Optional(t.String({ maxLength: 200 })),
+            city: t.Optional(t.String({ maxLength: 100 })),
+            state: t.Optional(t.String({ maxLength: 50 })),
+            zipCode: t.Optional(t.String({ maxLength: 20 })),
             avatar: t.Optional(t.String())
           }),
           detail: {
-            tags: ['Clubs'],
-            summary: 'Create Club',
-            description: 'Create a new club with associated guild. Creator becomes owner. Requires authentication.',
+            tags: ['Venues'],
+            summary: 'Create Venue',
+            description: 'Create a new venue with associated guild. Creator becomes owner. Requires authentication.',
             security: [{ bearerAuth: [] }],
             responses: {
-              201: { description: 'Club created successfully' },
+              201: { description: 'Venue created successfully' },
               400: { description: 'Invalid input data' },
               401: { description: 'Unauthorized' },
               500: { description: 'Server error' }
@@ -125,12 +128,12 @@ export const clubsRoutes = new Elysia()
           }
         }
       )
-      // PATCH /clubs/:clubId - Update club (owner only)
+      // PATCH /venues/:venueId - Update venue (owner only)
       .patch(
-        '/:clubId',
+        '/:venueId',
         async ({ firebase, set, params, body }: any) => {
           try {
-            const result = await guildController.updateClub(firebase.uid, params.clubId, body);
+            const result = await guildsController.updateVenue(firebase.uid, params.venueId, body);
             return result;
           } catch (error) {
             const message = (error as Error).message;
@@ -148,34 +151,37 @@ export const clubsRoutes = new Elysia()
         },
         {
           params: t.Object({
-            clubId: t.String()
+            venueId: t.String()
           }),
           body: t.Object({
             name: t.Optional(t.String({ minLength: 2, maxLength: 100 })),
-            description: t.Optional(t.String({ maxLength: 1000 })),
+            address: t.Optional(t.String({ maxLength: 200 })),
+            city: t.Optional(t.String({ maxLength: 100 })),
+            state: t.Optional(t.String({ maxLength: 50 })),
+            zipCode: t.Optional(t.String({ maxLength: 20 })),
             avatar: t.Optional(t.String())
           }),
           detail: {
-            tags: ['Clubs'],
-            summary: 'Update Club',
-            description: 'Update club details. Only club owner can update. Requires authentication.',
+            tags: ['Venues'],
+            summary: 'Update Venue',
+            description: 'Update venue details. Only venue owner can update. Requires authentication.',
             security: [{ bearerAuth: [] }],
             responses: {
-              200: { description: 'Club updated successfully' },
+              200: { description: 'Venue updated successfully' },
               400: { description: 'Invalid input data' },
-              403: { description: 'Forbidden - not club owner' },
-              404: { description: 'Club not found' },
+              403: { description: 'Forbidden - not venue owner' },
+              404: { description: 'Venue not found' },
               500: { description: 'Server error' }
             }
           }
         }
       )
-      // DELETE /clubs/:clubId - Delete club (owner only)
+      // DELETE /venues/:venueId - Delete venue (owner only)
       .delete(
-        '/:clubId',
+        '/:venueId',
         async ({ firebase, set, params }: any) => {
           try {
-            const result = await guildController.deleteGuild(firebase.uid, params.clubId);
+            const result = await guildsController.deleteGuild(firebase.uid, params.venueId);
             return result;
           } catch (error) {
             const message = (error as Error).message;
@@ -191,17 +197,17 @@ export const clubsRoutes = new Elysia()
         },
         {
           params: t.Object({
-            clubId: t.String()
+            venueId: t.String()
           }),
           detail: {
-            tags: ['Clubs'],
-            summary: 'Delete Club',
-            description: 'Delete club and associated guild. Only club owner can delete. This action cannot be undone. Requires authentication.',
+            tags: ['Venues'],
+            summary: 'Delete Venue',
+            description: 'Delete venue and associated guild. Only venue owner can delete. This action cannot be undone. Requires authentication.',
             security: [{ bearerAuth: [] }],
             responses: {
-              200: { description: 'Club deleted successfully' },
-              403: { description: 'Forbidden - not club owner' },
-              404: { description: 'Club not found' },
+              200: { description: 'Venue deleted successfully' },
+              403: { description: 'Forbidden - not venue owner' },
+              404: { description: 'Venue not found' },
               500: { description: 'Server error' }
             }
           }
