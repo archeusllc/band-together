@@ -8,4 +8,7 @@ export default defineConfig({
   datasource: {
     url: DATABASE_URL,
   },
+  migrations: {
+    seed: 'bun ./prisma/seed.js',
+  },
 });

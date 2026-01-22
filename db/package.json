@@ -9,7 +9,8 @@
     "clean": "rm -rf node_modules bun.lock package-lock.json generated",
     "reset": "bun clean && bunx --bun bun install",
     "push": "bunx --bun prisma db push",
-    "generate": "bunx --bun prisma generate"
+    "generate": "bunx --bun prisma generate",
+    "seed": "node prisma/seed.js"
   },
   "dependencies": {
     "@prisma/client": "latest"
