@@ -34,13 +34,28 @@ export const ShareModal = ({ visible, setlistId, setlistName, onClose }: ShareMo
   const [copyFeedback, setCopyFeedback] = useState<string>('');
   const [revokeConfirming, setRevokeConfirming] = useState<string | null>(null);
   const [revokeLoading, setRevokeLoading] = useState(false);
+  const [showQrModal, setShowQrModal] = useState(false);
 
   // Load existing shares when modal opens
   useEffect(() => {
     if (visible) {
       loadShares();
+      // Generate a default share link immediately on open
+      generateDefaultShare();
     }
   }, [visible]);
+
+  // Generate a share link whenever permission or expiration changes
+  useEffect(() => {
+    if (visible && generatedShare) {
+      // Only regenerate if the permission or expiration actually changed significantly
+      // Debounce to avoid generating on every keystroke
+      const timer = setTimeout(() => {
+        generateNewShareWithSettings();
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+  }, [permission, expiresAt, visible]);
 
   const loadShares = async () => {
     setListLoading(true);
@@ -69,6 +84,62 @@ export const ShareModal = ({ visible, setlistId, setlistName, onClose }: ShareMo
     return `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(shareUrl)}`;
   };
 
+  const generateDefaultShare = async () => {
+    // Skip if we already have a generated share
+    if (generatedShare) return;
+
+    setLoading(true);
+    try {
+      const { data, error } = await setlistService.createShare(setlistId, {
+        permission: 'VIEW_ONLY',
+        expiresAt: undefined,
+      });
+
+      if (error || !data) {
+        // Silent fail - user can generate manually if needed
+        return;
+      }
+
+      const qrUrl = generateQrCodeUrl(data.shareToken);
+      setGeneratedShare(data);
+      setQrCodeUrl(qrUrl);
+      setPermission('VIEW_ONLY');
+      setExpiresAt('');
+    } catch (err) {
+      // Silent fail - user can generate manually if needed
+      console.error('Failed to generate default share:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const generateNewShareWithSettings = async () => {
+    // If expiration field is empty, skip regeneration
+    if (!expiresAt) return;
+
+    setLoading(true);
+    try {
+      const { data, error } = await setlistService.createShare(setlistId, {
+        permission,
+        expiresAt: expiresAt || undefined,
+      });
+
+      if (error || !data) {
+        // Show error for intentional regeneration
+        Alert.alert('Error', 'Failed to create share link');
+        return;
+      }
+
+      const qrUrl = generateQrCodeUrl(data.shareToken);
+      setGeneratedShare(data);
+      setQrCodeUrl(qrUrl);
+    } catch (err) {
+      Alert.alert('Error', `Failed to create share: ${err instanceof Error ? err.message : 'Unknown error'}`);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleGenerateShare = async () => {
     setLoading(true);
     try {
@@ -87,7 +158,6 @@ export const ShareModal = ({ visible, setlistId, setlistName, onClose }: ShareMo
       setGeneratedShare(data);
       setQrCodeUrl(qrUrl);
       setExpiresAt('');
-      setPermission('VIEW_ONLY');
 
       // Reload shares list
       await loadShares();
@@ -168,10 +238,63 @@ export const ShareModal = ({ visible, setlistId, setlistName, onClose }: ShareMo
         </View>
 
         <ScrollView showsVerticalScrollIndicator={false} className="flex-1 p-4">
-          {/* Generate New Share Section */}
+          {/* Generated Share Display - MOVED TO TOP */}
+          {generatedShare && qrCodeUrl && (
+            <View className={`${tailwind.card.both} border ${tailwind.border.both} rounded-lg p-4 mb-6`}>
+              <Text className={`text-base font-semibold ${tailwind.text.both} mb-4`}>
+                Your Share Link
+              </Text>
+
+              {/* QR Code */}
+              <Pressable
+                className="items-center mb-4 active:opacity-75"
+                onPress={() => setShowQrModal(true)}
+              >
+                <Image
+                  source={{ uri: qrCodeUrl }}
+                  style={{ width: 250, height: 250 }}
+                  className="rounded-lg"
+                />
+                <Text className={`text-xs ${tailwind.textMuted.both} mt-2`}>
+                  Tap to enlarge
+                </Text>
+              </Pressable>
+
+              {/* Share URL */}
+              <View className={`${tailwind.activeBackground.both} rounded-lg p-3 mb-3`}>
+                <Text className={`text-xs font-semibold ${tailwind.textMuted.both} mb-1`}>
+                  SHARE URL
+                </Text>
+                <Text className={`text-xs ${tailwind.text.both} mb-2 font-mono`} numberOfLines={2}>
+                  {generateShareUrl(generatedShare.shareToken)}
+                </Text>
+              </View>
+
+              {/* Copy Button */}
+              <Pressable
+                className={`py-3 rounded-lg border ${tailwind.border.both} flex-row items-center justify-center gap-2 ${
+                  copyFeedback ? 'bg-green-500' : tailwind.activeBackground.both
+                }`}
+                onPress={handleCopyLink}
+              >
+                <IconSymbol
+                  name={copyFeedback ? 'checkmark.circle.fill' : 'doc.on.doc'}
+                  size={16}
+                  color={copyFeedback ? '#FFFFFF' : colors.brand.primary}
+                />
+                <Text
+                  className={`font-semibold ${copyFeedback ? 'text-white' : tailwind.text.both}`}
+                >
+                  {copyFeedback || 'Copy Link'}
+                </Text>
+              </Pressable>
+            </View>
+          )}
+
+          {/* Generate New Share Section - MOVED BELOW */}
           <View className={`${tailwind.card.both} border ${tailwind.border.both} rounded-lg p-4 mb-6`}>
             <Text className={`text-base font-semibold ${tailwind.text.both} mb-4`}>
-              Generate New Share Link
+              Share Settings
             </Text>
 
             {/* Permission Selector */}
@@ -218,67 +341,13 @@ export const ShareModal = ({ visible, setlistId, setlistName, onClose }: ShareMo
               </Text>
             </View>
 
-            {/* Generate Button */}
-            <Pressable
-              className={`py-3 rounded-lg ${loading ? 'opacity-50' : ''}`}
-              style={{ backgroundColor: colors.brand.primary }}
-              onPress={handleGenerateShare}
-              disabled={loading}
-            >
-              {loading ? (
-                <ActivityIndicator color="white" />
-              ) : (
-                <Text className="text-center font-semibold text-white">Generate Link</Text>
-              )}
-            </Pressable>
-          </View>
-
-          {/* Generated Share Display */}
-          {generatedShare && qrCodeUrl && (
-            <View className={`${tailwind.card.both} border ${tailwind.border.both} rounded-lg p-4 mb-6`}>
-              <Text className={`text-base font-semibold ${tailwind.text.both} mb-4`}>
-                Your Share Link
+            {/* Notes about auto-generation */}
+            <View className={`${tailwind.activeBackground.both} rounded-lg p-3`}>
+              <Text className={`text-xs ${tailwind.textMuted.both} text-center`}>
+                Changes to settings will generate a new share link
               </Text>
-
-              {/* QR Code */}
-              <View className="items-center mb-4">
-                <Image
-                  source={{ uri: qrCodeUrl }}
-                  style={{ width: 250, height: 250 }}
-                  className="rounded-lg"
-                />
-              </View>
-
-              {/* Share URL */}
-              <View className={`${tailwind.activeBackground.both} rounded-lg p-3 mb-3`}>
-                <Text className={`text-xs font-semibold ${tailwind.textMuted.both} mb-1`}>
-                  SHARE URL
-                </Text>
-                <Text className={`text-xs ${tailwind.text.both} mb-2 font-mono`} numberOfLines={2}>
-                  {generateShareUrl(generatedShare.shareToken)}
-                </Text>
-              </View>
-
-              {/* Copy Button */}
-              <Pressable
-                className={`py-3 rounded-lg border ${tailwind.border.both} flex-row items-center justify-center gap-2 ${
-                  copyFeedback ? 'bg-green-500' : tailwind.activeBackground.both
-                }`}
-                onPress={handleCopyLink}
-              >
-                <IconSymbol
-                  name={copyFeedback ? 'checkmark.circle.fill' : 'doc.on.doc'}
-                  size={16}
-                  color={copyFeedback ? '#FFFFFF' : colors.brand.primary}
-                />
-                <Text
-                  className={`font-semibold ${copyFeedback ? 'text-white' : tailwind.text.both}`}
-                >
-                  {copyFeedback || 'Copy Link'}
-                </Text>
-              </Pressable>
             </View>
-          )}
+          </View>
 
           {/* Existing Shares Section */}
           <View>
@@ -381,6 +450,34 @@ export const ShareModal = ({ visible, setlistId, setlistName, onClose }: ShareMo
                 </Pressable>
               </View>
             </View>
+          </View>
+        )}
+
+        {/* QR Code Enlarged Modal */}
+        {showQrModal && qrCodeUrl && (
+          <View
+            className="absolute inset-0 bg-black/75 flex items-center justify-center z-50"
+            style={{ pointerEvents: 'box-none' }}
+          >
+            <Pressable
+              className="flex-1 items-center justify-center"
+              onPress={() => setShowQrModal(false)}
+              style={{ pointerEvents: 'auto' }}
+            >
+              <View
+                className={`${tailwind.card.both} rounded-lg p-4 mx-4`}
+                style={{ pointerEvents: 'box-only' }}
+              >
+                <Image
+                  source={{ uri: qrCodeUrl }}
+                  style={{ width: 320, height: 320 }}
+                  className="rounded-lg"
+                />
+                <Text className={`text-xs ${tailwind.textMuted.both} mt-3 text-center`}>
+                  Tap outside to close
+                </Text>
+              </View>
+            </Pressable>
           </View>
         )}
       </View>

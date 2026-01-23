@@ -92,7 +92,17 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
       const { data, error: fetchError } = await setlistService.getSetlistById(setlistId);
 
       if (fetchError || !data) {
-        setError('Failed to load setlist');
+        // Provide more specific error message based on error content
+        let errorMsg = 'Failed to load setlist';
+        if (fetchError) {
+          const errorStr = String(fetchError).toLowerCase();
+          if (errorStr.includes('not found') || errorStr.includes('404')) {
+            errorMsg = 'This setlist doesn\'t exist or has been deleted';
+          } else if (errorStr.includes('unauthorized') || errorStr.includes('forbidden') || errorStr.includes('permission') || errorStr.includes('403')) {
+            errorMsg = 'You don\'t have permission to view this setlist';
+          }
+        }
+        setError(errorMsg);
         return;
       }
 
