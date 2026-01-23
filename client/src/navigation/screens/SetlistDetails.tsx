@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   View,
   Text,
@@ -36,7 +36,6 @@ interface DisplayItem {
 export const SetlistDetailsScreen = ({ route, navigation }: Props) => {
   const { setlistId } = route.params;
   const { user, loading: authLoading } = useAuth();
-  const historySetupRef = useRef(false);
   const [setlist, setSetlist] = useState<SetList & { setItems?: Array<SetItem & { track?: any }>; setSections?: SetSection[] } | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -79,63 +78,19 @@ export const SetlistDetailsScreen = ({ route, navigation }: Props) => {
     }
   }, [isEditing, isOwner, wsConnected]);
 
-  // Handle /setlist/:id/* URLs - set up proper history and detect modal states
+  // Detect which modal should be open based on the current pathname
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
     const pathname = window.location.pathname;
-    const baseUrl = `/setlist/${setlistId}`;
 
-    // If we're accessing a subpath (e.g., /setlist/:id/share), set it up in history
-    if (pathname !== baseUrl) {
-      // Detect which modal should be open based on the path
-      if (pathname.endsWith('/share')) {
-        setShowShare(true);
-      }
-
-      // On first mount (history.length <= 1), set up the history stack
-      if (!historySetupRef.current && window.history.length <= 1) {
-        historySetupRef.current = true;
-        // Push the base setlist URL to history
-        window.history.pushState(
-          { page: 'setlist', setlistId },
-          '',
-          baseUrl
-        );
-        // Replace to the current subpath
-        window.history.replaceState(
-          { modal: pathname.slice(baseUrl.length + 1), setlistId },
-          '',
-          pathname
-        );
-      }
-    }
-  }, [setlistId]);
-
-  // Sync Share modal state with browser history for proper back button support
-  useEffect(() => {
-    if (typeof window === 'undefined') return; // Skip on non-web platforms
-
-    const handlePopState = () => {
-      setShowShare(false);
-    };
-
-    if (showShare) {
-      // Push a new history entry when share modal opens
-      const currentUrl = window.location.href;
-      const shareUrl = currentUrl.endsWith('/')
-        ? currentUrl.slice(0, -1) + '/share'
-        : currentUrl + '/share';
-      window.history.pushState({ modal: 'share', setlistId }, '', shareUrl);
+    // If pathname ends with /share, open the share modal
+    if (pathname.endsWith('/share')) {
+      setShowShare(true);
     } else {
-      // Don't pop state here - let the browser back button trigger handlePopState
+      setShowShare(false);
     }
-
-    window.addEventListener('popstate', handlePopState);
-    return () => {
-      window.removeEventListener('popstate', handlePopState);
-    };
-  }, [showShare]);
+  }, []);
 
   const fetchSetlistDetails = async () => {
     setLoading(true);
@@ -549,14 +504,7 @@ export const SetlistDetailsScreen = ({ route, navigation }: Props) => {
         {isOwner && (
           <View className="flex-row gap-2">
             <Pressable
-              onPress={() => {
-                setShowShare(true);
-                // Update URL when Share button is clicked
-                if (typeof window !== 'undefined') {
-                  const shareUrl = `/setlist/${setlistId}/share`;
-                  window.history.pushState({ modal: 'share', setlistId }, '', shareUrl);
-                }
-              }}
+              onPress={() => setShowShare(true)}
               disabled={operationLoading}
               className={`py-2 px-3 rounded-lg ${tailwind.activeBackground.both} flex-row items-center gap-1`}
             >
