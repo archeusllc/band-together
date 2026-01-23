@@ -141,10 +141,13 @@ export const setlistService = {
 
   /**
    * Get a setlist by ID with permission checks
+   * @param setlistId - ID of the setlist to retrieve
+   * @param firebaseUid - Firebase UID of the authenticated user (optional)
+   * @param shareToken - Share token for accessing shared setlists (optional)
    */
   getSetlistById: async (
     setlistId: string,
-    userId?: string,
+    firebaseUid?: string,
     shareToken?: string
   ) => {
     const setlist = await prisma.setList.findUnique({
@@ -173,17 +176,28 @@ export const setlistService = {
 
     if (!setlist) return null;
 
+    // Look up database userId from Firebase UID if authenticated
+    let databaseUserId: string | undefined;
+    if (firebaseUid) {
+      try {
+        databaseUserId = await getUserIdByFirebaseUid(firebaseUid);
+      } catch {
+        // User not found in database - continue without authentication
+        databaseUserId = undefined;
+      }
+    }
+
     // Check permissions
-    const isOwner = userId && setlist.ownerId === userId;
+    const isOwner = databaseUserId && setlist.ownerId === databaseUserId;
     const isGuildMember =
-      userId &&
+      databaseUserId &&
       setlist.guildId &&
       (await prisma.guild.findFirst({
         where: {
           guildId: setlist.guildId,
           members: {
             some: {
-              userId,
+              userId: databaseUserId,
             },
           },
         },

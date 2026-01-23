@@ -36,10 +36,11 @@ export const setlistController = {
 
   /**
    * Get a setlist by ID with permission checks
+   * @param firebaseUid - Firebase UID of the authenticated user (optional)
    */
   getSetlistById: async (
     setlistId: string,
-    userId?: string,
+    firebaseUid?: string,
     shareToken?: string
   ) => {
     if (!setlistId || setlistId.trim().length === 0) {
@@ -48,7 +49,7 @@ export const setlistController = {
 
     const setlist = await setlistService.getSetlistById(
       setlistId,
-      userId,
+      firebaseUid,
       shareToken
     );
 
