@@ -315,7 +315,7 @@ export const SetlistDetailsScreen = ({ route, navigation }: Props) => {
       console.log('[SetlistDetails] Setlist deleted successfully, navigating back');
       // Navigate back to setlist manager
       setShowDeleteConfirm(false);
-      navigation.goBack();
+      navigation.navigate('SetlistManager' as any);
     } catch (err) {
       console.error('[SetlistDetails] Delete exception:', err);
       const errorMsg = err instanceof Error ? err.message : 'Unknown error';
