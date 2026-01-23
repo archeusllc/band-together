@@ -83,6 +83,7 @@ class SetlistWebSocketService {
   private userId: string | null = null;
   private userName: string = 'Guest';
   private currentPresence: UserPresence[] = [];
+  private intentionalDisconnect = false; // Track if disconnect was user-initiated
 
   /**
    * Connect to WebSocket for a setlist
@@ -90,6 +91,15 @@ class SetlistWebSocketService {
   connect(setlistId: string, userId?: string, userName?: string): Promise<void> {
     return new Promise((resolve, reject) => {
       try {
+        // Reset intentional disconnect flag when connecting
+        this.intentionalDisconnect = false;
+
+        // Close any existing connection first
+        if (this.ws) {
+          this.ws.close();
+          this.ws = null;
+        }
+
         this.setlistId = setlistId;
         this.userId = userId || null;
         this.userName = userName || 'Guest';
@@ -122,7 +132,10 @@ class SetlistWebSocketService {
         this.ws.onclose = () => {
           console.log('[WebSocket] Connection closed');
           this.ws = null;
-          this.attemptReconnect();
+          // Only attempt reconnect if disconnect was not intentional
+          if (!this.intentionalDisconnect) {
+            this.attemptReconnect();
+          }
         };
       } catch (error) {
         reject(error);
@@ -134,6 +147,7 @@ class SetlistWebSocketService {
    * Disconnect WebSocket
    */
   disconnect(): void {
+    this.intentionalDisconnect = true;
     if (this.ws) {
       this.ws.close();
       this.ws = null;
