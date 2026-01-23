@@ -210,24 +210,24 @@ export const SharedSetlist = ({ route, navigation }: Props) => {
 
   const handleAddItem = useCallback(
     async (trackId: string) => {
-      if (!setlist) return;
+      if (!setlist || !canEdit) return;
 
-      // TODO: Implement mutation via shareToken
-      // For now, show a message that editing requires authentication
-      if (!user) {
-        Alert.alert(
-          'Authentication Required',
-          'Please sign in to edit this setlist.'
-        );
-        return;
+      const { error } = await setlistService.addSetItem(
+        setlist.setListId,
+        { trackId },
+        shareToken
+      );
+
+      if (error) {
+        Alert.alert('Error', 'Failed to add track to setlist');
       }
     },
-    [setlist, user]
+    [setlist, canEdit, shareToken]
   );
 
   const handleDeleteItem = useCallback(
     async (setItemId: string) => {
-      if (!setlist) return;
+      if (!setlist || !canEdit) return;
 
       Alert.alert('Delete Track', 'Remove this track from the setlist?', [
         { text: 'Cancel', style: 'cancel' },
@@ -235,19 +235,45 @@ export const SharedSetlist = ({ route, navigation }: Props) => {
           text: 'Delete',
           style: 'destructive',
           onPress: async () => {
-            // TODO: Implement mutation via shareToken
+            const { error } = await setlistService.deleteSetItem(
+              setlist.setListId,
+              setItemId,
+              shareToken
+            );
+
+            if (error) {
+              Alert.alert('Error', 'Failed to delete track');
+            }
           },
         },
       ]);
     },
-    [setlist]
+    [setlist, canEdit, shareToken]
   );
 
   const handleReorder = useCallback(
     async (newData: DisplayItem[]) => {
-      // TODO: Implement reorder mutation via shareToken
+      if (!setlist || !canEdit) return;
+
+      const itemPositions = newData
+        .filter((d) => d.type === 'item')
+        .map((d, index) => ({
+          setItemId: (d.data as SetItem).setItemId,
+          position: index,
+        }));
+
+      const { error } = await setlistService.reorderSetItems(
+        setlist.setListId,
+        itemPositions,
+        shareToken
+      );
+
+      if (error) {
+        Alert.alert('Error', 'Failed to reorder tracks');
+        fetchSetlist();
+      }
     },
-    []
+    [setlist, canEdit, shareToken]
   );
 
   // Render item for FlatList
@@ -257,7 +283,7 @@ export const SharedSetlist = ({ route, navigation }: Props) => {
         return (
           <SetSectionHeader
             section={item.data as SetSection}
-            isEditing={false}
+            isEditing={isEditing}
           />
         );
       }
@@ -265,23 +291,24 @@ export const SharedSetlist = ({ route, navigation }: Props) => {
       return (
         <SetItemRow
           item={item.data as SetItem & { track?: Track }}
-          isEditing={false}
+          isEditing={isEditing}
+          onDelete={() => handleDeleteItem((item.data as SetItem).setItemId)}
         />
       );
     },
-    []
+    [isEditing, handleDeleteItem]
   );
 
   // Render item for DraggableFlatList
   const renderDraggableItem = useCallback(
     (props: RenderItemParams<DisplayItem>) => {
-      const { item } = props;
+      const { item, drag, isActive } = props;
 
       if (item.type === 'header') {
         return (
           <SetSectionHeader
             section={item.data as SetSection}
-            isEditing={false}
+            isEditing={isEditing}
           />
         );
       }
@@ -289,11 +316,13 @@ export const SharedSetlist = ({ route, navigation }: Props) => {
       return (
         <SetItemRow
           item={item.data as SetItem & { track?: Track }}
-          isEditing={false}
+          isEditing={isEditing}
+          isDragging={isActive}
+          onDelete={() => handleDeleteItem((item.data as SetItem).setItemId)}
         />
       );
     },
-    []
+    [isEditing, handleDeleteItem]
   );
 
   // Loading state

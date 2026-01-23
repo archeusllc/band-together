@@ -257,7 +257,7 @@ export const setlistRoutes = new Elysia()
       // Add track to setlist
       .post(
         '/:setlistId/items',
-        async ({ firebase, params, body, set }) => {
+        async ({ firebase, params, query, body, set }) => {
           try {
             const result = await setlistController.addSetItem(
               params.setlistId,
@@ -269,7 +269,8 @@ export const setlistRoutes = new Elysia()
                 customDuration: body.customDuration,
                 position: body.position,
                 sectionId: body.sectionId,
-              }
+              },
+              query.shareToken
             );
             set.status = 201;
             return result;
@@ -288,6 +289,9 @@ export const setlistRoutes = new Elysia()
         {
           params: t.Object({
             setlistId: t.String(),
+          }),
+          query: t.Object({
+            shareToken: t.Optional(t.String()),
           }),
           body: t.Object({
             trackId: t.String(),
@@ -301,7 +305,7 @@ export const setlistRoutes = new Elysia()
             tags: ['Setlists'],
             summary: 'Add Track to Setlist',
             description:
-              'Add a track to a setlist with optional custom overrides (tuning, notes, duration). If position is not provided, track will be appended to the end of the setlist.',
+              'Add a track to a setlist with optional custom overrides (tuning, notes, duration). If position is not provided, track will be appended to the end of the setlist. Requires authentication and ownership or CAN_EDIT share permission.',
             security: [{ bearerAuth: [] }],
             responses: {
               201: { description: 'Track added to setlist successfully' },
@@ -309,7 +313,7 @@ export const setlistRoutes = new Elysia()
                 description:
                   'Unauthorized - missing or invalid Firebase token',
               },
-              403: { description: 'Forbidden - only the setlist owner can add tracks' },
+              403: { description: 'Forbidden - must be owner or have CAN_EDIT share access' },
               404: { description: 'Setlist or track not found' },
               422: {
                 description:
@@ -322,7 +326,7 @@ export const setlistRoutes = new Elysia()
       // Update item custom overrides
       .patch(
         '/:setlistId/items/:setItemId',
-        async ({ firebase, params, body, set }) => {
+        async ({ firebase, params, query, body, set }) => {
           try {
             return await setlistController.updateSetItem(
               params.setItemId,
@@ -332,7 +336,8 @@ export const setlistRoutes = new Elysia()
                 customNotes: body.customNotes,
                 customDuration: body.customDuration,
                 sectionId: body.sectionId,
-              }
+              },
+              query.shareToken
             );
           } catch (error) {
             const message = (error as Error).message;
@@ -351,6 +356,9 @@ export const setlistRoutes = new Elysia()
             setlistId: t.String(),
             setItemId: t.String(),
           }),
+          query: t.Object({
+            shareToken: t.Optional(t.String()),
+          }),
           body: t.Object({
             customTuning: t.Optional(t.String()),
             customNotes: t.Optional(t.String()),
@@ -361,7 +369,7 @@ export const setlistRoutes = new Elysia()
             tags: ['Setlists'],
             summary: 'Update SetItem Custom Overrides',
             description:
-              'Update custom overrides (tuning, notes, duration) or section assignment for a track in a setlist. Cannot change position (use reorder endpoint) or track (delete and add new instead).',
+              'Update custom overrides (tuning, notes, duration) or section assignment for a track in a setlist. Cannot change position (use reorder endpoint) or track (delete and add new instead). Requires authentication and ownership or CAN_EDIT share permission.',
             security: [{ bearerAuth: [] }],
             responses: {
               200: { description: 'SetItem updated successfully' },
@@ -369,7 +377,7 @@ export const setlistRoutes = new Elysia()
                 description:
                   'Unauthorized - missing or invalid Firebase token',
               },
-              403: { description: 'Forbidden - only the setlist owner can update items' },
+              403: { description: 'Forbidden - must be owner or have CAN_EDIT share access' },
               404: { description: 'SetItem not found' },
               422: {
                 description:
@@ -382,11 +390,12 @@ export const setlistRoutes = new Elysia()
       // Remove track from setlist
       .delete(
         '/:setlistId/items/:setItemId',
-        async ({ firebase, params, set }) => {
+        async ({ firebase, params, query, set }) => {
           try {
             return await setlistController.removeSetItem(
               params.setItemId,
-              firebase.uid
+              firebase.uid,
+              query.shareToken
             );
           } catch (error) {
             const message = (error as Error).message;
@@ -405,11 +414,14 @@ export const setlistRoutes = new Elysia()
             setlistId: t.String(),
             setItemId: t.String(),
           }),
+          query: t.Object({
+            shareToken: t.Optional(t.String()),
+          }),
           detail: {
             tags: ['Setlists'],
             summary: 'Remove Track from Setlist',
             description:
-              'Remove a track from a setlist. Only the setlist owner can remove tracks.',
+              'Remove a track from a setlist. Requires authentication and ownership or CAN_EDIT share permission.',
             security: [{ bearerAuth: [] }],
             responses: {
               200: { description: 'Track removed from setlist successfully' },
@@ -417,7 +429,7 @@ export const setlistRoutes = new Elysia()
                 description:
                   'Unauthorized - missing or invalid Firebase token',
               },
-              403: { description: 'Forbidden - only the setlist owner can remove tracks' },
+              403: { description: 'Forbidden - must be owner or have CAN_EDIT share access' },
               404: { description: 'SetItem not found' },
               500: { description: 'Server error' },
             },
@@ -427,12 +439,13 @@ export const setlistRoutes = new Elysia()
       // Reorder tracks in setlist
       .post(
         '/:setlistId/reorder',
-        async ({ firebase, params, body, set }) => {
+        async ({ firebase, params, query, body, set }) => {
           try {
             return await setlistController.reorderSetItems(
               params.setlistId,
               firebase.uid,
-              body.itemPositions
+              body.itemPositions,
+              query.shareToken
             );
           } catch (error) {
             const message = (error as Error).message;
@@ -450,6 +463,9 @@ export const setlistRoutes = new Elysia()
           params: t.Object({
             setlistId: t.String(),
           }),
+          query: t.Object({
+            shareToken: t.Optional(t.String()),
+          }),
           body: t.Object({
             itemPositions: t.Array(
               t.Object({
@@ -462,7 +478,7 @@ export const setlistRoutes = new Elysia()
             tags: ['Setlists'],
             summary: 'Reorder Tracks in Setlist',
             description:
-              'Update the positions of tracks in a setlist. Provide an array of {setItemId, position} objects. All items must belong to the specified setlist.',
+              'Update the positions of tracks in a setlist. Provide an array of {setItemId, position} objects. All items must belong to the specified setlist. Requires authentication and ownership or CAN_EDIT share permission.',
             security: [{ bearerAuth: [] }],
             responses: {
               200: { description: 'Tracks reordered successfully' },
@@ -470,7 +486,7 @@ export const setlistRoutes = new Elysia()
                 description:
                   'Unauthorized - missing or invalid Firebase token',
               },
-              403: { description: 'Forbidden - only the setlist owner can reorder tracks' },
+              403: { description: 'Forbidden - must be owner or have CAN_EDIT share access' },
               404: { description: 'Setlist not found' },
               422: {
                 description:
@@ -483,7 +499,7 @@ export const setlistRoutes = new Elysia()
       // Add section to setlist
       .post(
         '/:setlistId/sections',
-        async ({ firebase, params, body, set }) => {
+        async ({ firebase, params, query, body, set }) => {
           try {
             const result = await setlistController.addSection(
               params.setlistId,
@@ -491,7 +507,8 @@ export const setlistRoutes = new Elysia()
               {
                 name: body.name,
                 position: body.position,
-              }
+              },
+              query.shareToken
             );
             set.status = 201;
             return result;
@@ -511,6 +528,9 @@ export const setlistRoutes = new Elysia()
           params: t.Object({
             setlistId: t.String(),
           }),
+          query: t.Object({
+            shareToken: t.Optional(t.String()),
+          }),
           body: t.Object({
             name: t.String(),
             position: t.Optional(t.Number()),
@@ -519,7 +539,7 @@ export const setlistRoutes = new Elysia()
             tags: ['Setlists'],
             summary: 'Add Section to Setlist',
             description:
-              'Add a new section to a setlist for organizing tracks. If position is not provided, section will be appended to the end.',
+              'Add a new section to a setlist for organizing tracks. If position is not provided, section will be appended to the end. Requires authentication and ownership or CAN_EDIT share permission.',
             security: [{ bearerAuth: [] }],
             responses: {
               201: { description: 'Section added to setlist successfully' },
@@ -527,7 +547,7 @@ export const setlistRoutes = new Elysia()
                 description:
                   'Unauthorized - missing or invalid Firebase token',
               },
-              403: { description: 'Forbidden - only the setlist owner can add sections' },
+              403: { description: 'Forbidden - must be owner or have CAN_EDIT share access' },
               404: { description: 'Setlist not found' },
               422: {
                 description:
@@ -540,7 +560,7 @@ export const setlistRoutes = new Elysia()
       // Update section name
       .patch(
         '/:setlistId/sections/:sectionId',
-        async ({ firebase, params, body, set }) => {
+        async ({ firebase, params, query, body, set }) => {
           try {
             return await setlistController.updateSection(
               params.setlistId,
@@ -548,7 +568,8 @@ export const setlistRoutes = new Elysia()
               firebase.uid,
               {
                 name: body.name,
-              }
+              },
+              query.shareToken
             );
           } catch (error) {
             const message = (error as Error).message;
@@ -567,6 +588,9 @@ export const setlistRoutes = new Elysia()
             setlistId: t.String(),
             sectionId: t.String(),
           }),
+          query: t.Object({
+            shareToken: t.Optional(t.String()),
+          }),
           body: t.Object({
             name: t.Optional(t.String()),
           }),
@@ -574,7 +598,7 @@ export const setlistRoutes = new Elysia()
             tags: ['Setlists'],
             summary: 'Update Section',
             description:
-              'Update a section name. Only the setlist owner can update sections.',
+              'Update a section name. Requires authentication and ownership or CAN_EDIT share permission.',
             security: [{ bearerAuth: [] }],
             responses: {
               200: { description: 'Section updated successfully' },
@@ -582,7 +606,7 @@ export const setlistRoutes = new Elysia()
                 description:
                   'Unauthorized - missing or invalid Firebase token',
               },
-              403: { description: 'Forbidden - only the setlist owner can update sections' },
+              403: { description: 'Forbidden - must be owner or have CAN_EDIT share access' },
               404: { description: 'Section not found or does not belong to setlist' },
               422: {
                 description:
@@ -595,12 +619,13 @@ export const setlistRoutes = new Elysia()
       // Delete section from setlist
       .delete(
         '/:setlistId/sections/:sectionId',
-        async ({ firebase, params, set }) => {
+        async ({ firebase, params, query, set }) => {
           try {
             return await setlistController.deleteSection(
               params.setlistId,
               params.sectionId,
-              firebase.uid
+              firebase.uid,
+              query.shareToken
             );
           } catch (error) {
             const message = (error as Error).message;
@@ -619,11 +644,14 @@ export const setlistRoutes = new Elysia()
             setlistId: t.String(),
             sectionId: t.String(),
           }),
+          query: t.Object({
+            shareToken: t.Optional(t.String()),
+          }),
           detail: {
             tags: ['Setlists'],
             summary: 'Delete Section',
             description:
-              'Delete a section from a setlist. Items in the section will be unassigned (sectionId set to null). Only the setlist owner can delete sections.',
+              'Delete a section from a setlist. Items in the section will be unassigned (sectionId set to null). Requires authentication and ownership or CAN_EDIT share permission.',
             security: [{ bearerAuth: [] }],
             responses: {
               200: { description: 'Section deleted successfully' },
@@ -631,7 +659,7 @@ export const setlistRoutes = new Elysia()
                 description:
                   'Unauthorized - missing or invalid Firebase token',
               },
-              403: { description: 'Forbidden - only the setlist owner can delete sections' },
+              403: { description: 'Forbidden - must be owner or have CAN_EDIT share access' },
               404: { description: 'Section not found or does not belong to setlist' },
               500: { description: 'Server error' },
             },

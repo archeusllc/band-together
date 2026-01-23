@@ -1,7 +1,6 @@
-import pkg from '@prisma/client';
-const { PrismaClient } = pkg;
+import { PrismaClient } from '../../shared/index.js';
 
-const prisma = new PrismaClient();
+const prisma = PrismaClient();
 
 // Default admin/system user ID for seeding
 const SYSTEM_USER_ID = "system";

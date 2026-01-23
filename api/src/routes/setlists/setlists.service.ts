@@ -41,6 +41,29 @@ const getUserDetailsFromFirebaseUid = async (
   };
 };
 
+/**
+ * Helper function to check if user has CAN_EDIT permission via share token
+ * Used in conjunction with ownership check for mutations
+ */
+const hasValidCAN_EDITShare = async (
+  setlistId: string,
+  shareToken: string
+): Promise<boolean> => {
+  const share = await prisma.setListShare.findFirst({
+    where: {
+      shareToken,
+      setListId: setlistId,
+      permission: 'CAN_EDIT',
+      OR: [
+        { expiresAt: null },
+        { expiresAt: { gt: new Date() } }
+      ]
+    }
+  });
+
+  return !!share;
+};
+
 export const setlistService = {
   /**
    * Create a new setlist for the authenticated user
@@ -445,6 +468,7 @@ export const setlistService = {
   /**
    * Add a track to a setlist with optional custom overrides
    * @param firebaseUid - Firebase UID of the authenticated user
+   * @param shareToken - Optional share token for permission validation
    * @param app - Elysia app instance for broadcasting WebSocket events
    */
   addSetItem: async (
@@ -458,11 +482,12 @@ export const setlistService = {
       position?: number;
       sectionId?: string;
     },
+    shareToken?: string,
     app?: Elysia<any, any, any, any, any, any>
   ) => {
     const { userId, displayName } = await getUserDetailsFromFirebaseUid(firebaseUid);
 
-    // 1. Verify setlist exists and user has edit permission
+    // 1. Verify setlist exists
     const setlist = await prisma.setList.findUnique({
       where: { setListId: setlistId },
     });
@@ -471,11 +496,17 @@ export const setlistService = {
       throw new Error('Setlist not found');
     }
 
-    if (setlist.ownerId !== userId) {
-      throw new Error('Unauthorized: only the setlist owner can modify items');
+    // 2. Check permission: owner OR valid CAN_EDIT share
+    const isOwner = setlist.ownerId === userId;
+    const hasShareAccess = shareToken
+      ? await hasValidCAN_EDITShare(setlistId, shareToken)
+      : false;
+
+    if (!isOwner && !hasShareAccess) {
+      throw new Error('Unauthorized: You must be the owner or have CAN_EDIT access');
     }
 
-    // 2. Verify track exists
+    // 3. Verify track exists
     const track = await prisma.track.findUnique({
       where: { trackId: data.trackId },
     });
@@ -484,7 +515,7 @@ export const setlistService = {
       throw new Error('Track not found');
     }
 
-    // 3. If position not provided, get max position + 1
+    // 4. If position not provided, get max position + 1
     let position = data.position;
     if (position === undefined) {
       const maxItem = await prisma.setItem.findFirst({
@@ -494,7 +525,7 @@ export const setlistService = {
       position = maxItem ? maxItem.position + 1 : 0;
     }
 
-    // 4. Create SetItem
+    // 5. Create SetItem
     const newItem = await prisma.setItem.create({
       data: {
         setListId: setlistId,
@@ -511,7 +542,7 @@ export const setlistService = {
       },
     });
 
-    // 5. Broadcast item-added event
+    // 6. Broadcast item-added event
     if (app) {
       broadcastService.itemAdded(app, setlistId, newItem, userId, displayName);
     }
@@ -522,6 +553,7 @@ export const setlistService = {
   /**
    * Update a SetItem's custom overrides
    * @param firebaseUid - Firebase UID of the authenticated user
+   * @param shareToken - Optional share token for permission validation
    * @param app - Elysia app instance for broadcasting WebSocket events
    */
   updateSetItem: async (
@@ -533,6 +565,7 @@ export const setlistService = {
       customDuration?: number;
       sectionId?: string | null;
     },
+    shareToken?: string,
     app?: Elysia<any, any, any, any, any, any>
   ) => {
     const { userId, displayName } = await getUserDetailsFromFirebaseUid(firebaseUid);
@@ -547,9 +580,14 @@ export const setlistService = {
       throw new Error('SetItem not found');
     }
 
-    // 2. Check ownership
-    if (item.setList.ownerId !== userId) {
-      throw new Error('Unauthorized: only the setlist owner can update items');
+    // 2. Check permission: owner OR valid CAN_EDIT share
+    const isOwner = item.setList.ownerId === userId;
+    const hasShareAccess = shareToken
+      ? await hasValidCAN_EDITShare(item.setListId, shareToken)
+      : false;
+
+    if (!isOwner && !hasShareAccess) {
+      throw new Error('Unauthorized: You must be the owner or have CAN_EDIT access');
     }
 
     // 3. Update
@@ -573,11 +611,13 @@ export const setlistService = {
   /**
    * Remove a track from a setlist
    * @param firebaseUid - Firebase UID of the authenticated user
+   * @param shareToken - Optional share token for permission validation
    * @param app - Elysia app instance for broadcasting WebSocket events
    */
   removeSetItem: async (
     setItemId: string,
     firebaseUid: string,
+    shareToken?: string,
     app?: Elysia<any, any, any, any, any, any>
   ) => {
     const { userId, displayName } = await getUserDetailsFromFirebaseUid(firebaseUid);
@@ -592,12 +632,17 @@ export const setlistService = {
       throw new Error('SetItem not found');
     }
 
-    // 2. Check ownership
-    if (item.setList.ownerId !== userId) {
-      throw new Error('Unauthorized: only the setlist owner can delete items');
+    // 2. Check permission: owner OR valid CAN_EDIT share
+    const isOwner = item.setList.ownerId === userId;
+    const hasShareAccess = shareToken
+      ? await hasValidCAN_EDITShare(item.setListId, shareToken)
+      : false;
+
+    if (!isOwner && !hasShareAccess) {
+      throw new Error('Unauthorized: You must be the owner or have CAN_EDIT access');
     }
 
-    // 3. Delete
+    // 3. Delete the item
     await prisma.setItem.delete({
       where: { setItemId },
     });
@@ -613,6 +658,7 @@ export const setlistService = {
   /**
    * Reorder tracks in a setlist
    * @param firebaseUid - Firebase UID of the authenticated user
+   * @param shareToken - Optional share token for permission validation
    * @param app - Elysia app instance for broadcasting WebSocket events
    */
   reorderSetItems: async (
@@ -622,11 +668,12 @@ export const setlistService = {
       setItemId: string;
       position: number;
     }>,
+    shareToken?: string,
     app?: Elysia<any, any, any, any, any, any>
   ) => {
     const { userId, displayName } = await getUserDetailsFromFirebaseUid(firebaseUid);
 
-    // 1. Verify setlist exists and user has edit permission
+    // 1. Verify setlist exists
     const setlist = await prisma.setList.findUnique({
       where: { setListId: setlistId },
     });
@@ -635,11 +682,17 @@ export const setlistService = {
       throw new Error('Setlist not found');
     }
 
-    if (setlist.ownerId !== userId) {
-      throw new Error('Unauthorized: only the setlist owner can reorder items');
+    // 2. Check permission: owner OR valid CAN_EDIT share
+    const isOwner = setlist.ownerId === userId;
+    const hasShareAccess = shareToken
+      ? await hasValidCAN_EDITShare(setlistId, shareToken)
+      : false;
+
+    if (!isOwner && !hasShareAccess) {
+      throw new Error('Unauthorized: You must be the owner or have CAN_EDIT access');
     }
 
-    // 2. Use transaction to update all positions atomically
+    // 3. Use transaction to update all positions atomically
     await prisma.$transaction(async (tx) => {
       // Step 1: Move all items to temporary negative positions to avoid unique constraint violations
       for (let i = 0; i < itemPositions.length; i++) {
@@ -658,7 +711,7 @@ export const setlistService = {
       }
     });
 
-    // 3. Return updated setlist with items
+    // 4. Return updated setlist with items
     const updatedSetlist = await prisma.setList.findUnique({
       where: { setListId: setlistId },
       include: {
@@ -683,6 +736,7 @@ export const setlistService = {
   /**
    * Add a section to a setlist
    * @param firebaseUid - Firebase UID of the authenticated user
+   * @param shareToken - Optional share token for permission validation
    * @param app - Elysia app instance for broadcasting WebSocket events
    */
   addSection: async (
@@ -692,11 +746,12 @@ export const setlistService = {
       name: string;
       position?: number;
     },
+    shareToken?: string,
     app?: Elysia<any, any, any, any, any, any>
   ) => {
     const { userId, displayName } = await getUserDetailsFromFirebaseUid(firebaseUid);
 
-    // 1. Verify setlist exists and user has edit permission
+    // 1. Verify setlist exists
     const setlist = await prisma.setList.findUnique({
       where: { setListId: setlistId },
     });
@@ -705,11 +760,17 @@ export const setlistService = {
       throw new Error('Setlist not found');
     }
 
-    if (setlist.ownerId !== userId) {
-      throw new Error('Unauthorized: only the setlist owner can add sections');
+    // 2. Check permission: owner OR valid CAN_EDIT share
+    const isOwner = setlist.ownerId === userId;
+    const hasShareAccess = shareToken
+      ? await hasValidCAN_EDITShare(setlistId, shareToken)
+      : false;
+
+    if (!isOwner && !hasShareAccess) {
+      throw new Error('Unauthorized: You must be the owner or have CAN_EDIT access');
     }
 
-    // 2. If position not provided, get max position + 1
+    // 3. If position not provided, get max position + 1
     let position = data.position;
     if (position === undefined) {
       const maxSection = await prisma.setSection.findFirst({
@@ -719,7 +780,7 @@ export const setlistService = {
       position = maxSection ? maxSection.position + 1 : 0;
     }
 
-    // 3. Create SetSection
+    // 4. Create SetSection
     const newSection = await prisma.setSection.create({
       data: {
         setListId: setlistId,
@@ -728,7 +789,7 @@ export const setlistService = {
       },
     });
 
-    // 4. Broadcast section-added event
+    // 5. Broadcast section-added event
     if (app) {
       broadcastService.sectionAdded(app, setlistId, newSection, userId, displayName);
     }
@@ -739,6 +800,7 @@ export const setlistService = {
   /**
    * Update a section (name only)
    * @param firebaseUid - Firebase UID of the authenticated user
+   * @param shareToken - Optional share token for permission validation
    * @param app - Elysia app instance for broadcasting WebSocket events
    */
   updateSection: async (
@@ -748,6 +810,7 @@ export const setlistService = {
     data: {
       name?: string;
     },
+    shareToken?: string,
     app?: Elysia<any, any, any, any, any, any>
   ) => {
     const { userId, displayName } = await getUserDetailsFromFirebaseUid(firebaseUid);
@@ -767,12 +830,17 @@ export const setlistService = {
       throw new Error('Section does not belong to this setlist');
     }
 
-    // 3. Check ownership
-    if (section.setList.ownerId !== userId) {
-      throw new Error('Unauthorized: only the setlist owner can update sections');
+    // 3. Check permission: owner OR valid CAN_EDIT share
+    const isOwner = section.setList.ownerId === userId;
+    const hasShareAccess = shareToken
+      ? await hasValidCAN_EDITShare(setlistId, shareToken)
+      : false;
+
+    if (!isOwner && !hasShareAccess) {
+      throw new Error('Unauthorized: You must be the owner or have CAN_EDIT access');
     }
 
-    // 4. Update
+    // 4. Update section name if provided
     const updateData: { name?: string } = {};
     if (data.name !== undefined) {
       if (data.name.trim().length === 0) {
@@ -797,12 +865,14 @@ export const setlistService = {
   /**
    * Delete a section (unassigns items from the section)
    * @param firebaseUid - Firebase UID of the authenticated user
+   * @param shareToken - Optional share token for permission validation
    * @param app - Elysia app instance for broadcasting WebSocket events
    */
   deleteSection: async (
     setlistId: string,
     sectionId: string,
     firebaseUid: string,
+    shareToken?: string,
     app?: Elysia<any, any, any, any, any, any>
   ) => {
     const { userId, displayName } = await getUserDetailsFromFirebaseUid(firebaseUid);
@@ -822,9 +892,14 @@ export const setlistService = {
       throw new Error('Section does not belong to this setlist');
     }
 
-    // 3. Check ownership
-    if (section.setList.ownerId !== userId) {
-      throw new Error('Unauthorized: only the setlist owner can delete sections');
+    // 3. Check permission: owner OR valid CAN_EDIT share
+    const isOwner = section.setList.ownerId === userId;
+    const hasShareAccess = shareToken
+      ? await hasValidCAN_EDITShare(setlistId, shareToken)
+      : false;
+
+    if (!isOwner && !hasShareAccess) {
+      throw new Error('Unauthorized: You must be the owner or have CAN_EDIT access');
     }
 
     // 4. Unassign items in this section

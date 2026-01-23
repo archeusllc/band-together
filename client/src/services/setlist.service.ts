@@ -214,7 +214,8 @@ export const setlistService = {
       customDuration?: number;
       position?: number;
       sectionId?: string;
-    }
+    },
+    shareToken?: string
   ) => {
     try {
       const idToken = await firebaseAuthService.getIdToken();
@@ -222,10 +223,13 @@ export const setlistService = {
         return { data: null, error: 'Authentication required' };
       }
 
+      const query = shareToken ? { $query: { shareToken } } : {};
+
       const { data: result, error } = await api.setlist[setlistId].items.post({
         $headers: {
           authorization: `Bearer ${idToken}`,
         },
+        ...query,
         trackId: data.trackId,
         customTuning: data.customTuning,
         customNotes: data.customNotes,
@@ -251,7 +255,8 @@ export const setlistService = {
       customNotes?: string;
       customDuration?: number;
       sectionId?: string | null;
-    }
+    },
+    shareToken?: string
   ) => {
     try {
       const idToken = await firebaseAuthService.getIdToken();
@@ -259,12 +264,15 @@ export const setlistService = {
         return { data: null, error: 'Authentication required' };
       }
 
+      const query = shareToken ? { $query: { shareToken } } : {};
+
       const { data: result, error } = await api.setlist[setlistId].items[
         setItemId
       ].patch({
         $headers: {
           authorization: `Bearer ${idToken}`,
         },
+        ...query,
         customTuning: data.customTuning,
         customNotes: data.customNotes,
         customDuration: data.customDuration,
@@ -280,12 +288,14 @@ export const setlistService = {
   /**
    * Remove a track from a setlist
    */
-  deleteSetItem: async (setlistId: string, setItemId: string) => {
+  deleteSetItem: async (setlistId: string, setItemId: string, shareToken?: string) => {
     try {
       const idToken = await firebaseAuthService.getIdToken();
       if (!idToken) {
         return { data: null, error: 'Authentication required' };
       }
+
+      const query = shareToken ? { $query: { shareToken } } : {};
 
       const { data, error } = await api.setlist[setlistId].items[
         setItemId
@@ -293,6 +303,7 @@ export const setlistService = {
         $headers: {
           authorization: `Bearer ${idToken}`,
         },
+        ...query,
       })
 
       return { data, error };
@@ -309,7 +320,8 @@ export const setlistService = {
     itemPositions: Array<{
       setItemId: string;
       position: number;
-    }>
+    }>,
+    shareToken?: string
   ) => {
     try {
       const idToken = await firebaseAuthService.getIdToken();
@@ -317,10 +329,13 @@ export const setlistService = {
         return { data: null, error: 'Authentication required' };
       }
 
+      const query = shareToken ? { $query: { shareToken } } : {};
+
       const { data, error } = await api.setlist[setlistId].reorder.post({
         $headers: {
           authorization: `Bearer ${idToken}`,
         },
+        ...query,
         itemPositions,
       });
 
@@ -338,7 +353,8 @@ export const setlistService = {
     data: {
       name: string;
       position?: number;
-    }
+    },
+    shareToken?: string
   ) => {
     try {
       const idToken = await firebaseAuthService.getIdToken();
@@ -346,10 +362,13 @@ export const setlistService = {
         return { data: null, error: 'Authentication required' };
       }
 
+      const query = shareToken ? { $query: { shareToken } } : {};
+
       const { data: result, error } = await api.setlist[setlistId].sections.post({
         $headers: {
           authorization: `Bearer ${idToken}`,
         },
+        ...query,
         name: data.name,
         position: data.position,
       });
@@ -368,7 +387,8 @@ export const setlistService = {
     sectionId: string,
     data: {
       name?: string;
-    }
+    },
+    shareToken?: string
   ) => {
     try {
       const idToken = await firebaseAuthService.getIdToken();
@@ -376,12 +396,15 @@ export const setlistService = {
         return { data: null, error: 'Authentication required' };
       }
 
+      const query = shareToken ? { $query: { shareToken } } : {};
+
       const { data: result, error } = await api.setlist[setlistId].sections[
         sectionId
       ].patch({
         $headers: {
           authorization: `Bearer ${idToken}`,
         },
+        ...query,
         name: data.name,
       });
 
@@ -394,12 +417,14 @@ export const setlistService = {
   /**
    * Delete a section from a setlist
    */
-  deleteSection: async (setlistId: string, sectionId: string) => {
+  deleteSection: async (setlistId: string, sectionId: string, shareToken?: string) => {
     try {
       const idToken = await firebaseAuthService.getIdToken();
       if (!idToken) {
         return { data: null, error: 'Authentication required' };
       }
+
+      const query = shareToken ? { $query: { shareToken } } : {};
 
       const { data, error } = await api.setlist[setlistId].sections[
         sectionId
@@ -407,6 +432,7 @@ export const setlistService = {
         $headers: {
           authorization: `Bearer ${idToken}`,
         },
+        ...query,
       })
 
       return { data, error };

@@ -68,8 +68,8 @@ export const SongSearchModal = ({ visible, onClose, onSelectTrack }: SongSearchM
         return;
       }
 
-      setTracks(data.items || []);
-      if (!data.items || data.items.length === 0) {
+      setTracks(data.data || []);
+      if (!data.data || data.data.length === 0) {
         setError(null); // No error, just no results
       }
     } catch (err) {
