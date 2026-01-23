@@ -10,23 +10,6 @@ const config = {
     // Handle /setlist/:id/share paths
     const shareMatch = path.match(/^\/setlist\/([^/]+)\/share$/);
     if (shareMatch) {
-      // Set up browser history to have the setlist page as previous entry
-      if (typeof window !== 'undefined' && window.history.length <= 1) {
-        // Only manipulate history if this is the first entry (direct access)
-        const setlistUrl = path.replace(/\/share$/, '');
-        window.history.pushState(
-          { page: 'setlist', setlistId: shareMatch[1] },
-          '',
-          setlistUrl
-        );
-        // Replace back to /share URL
-        window.history.replaceState(
-          { modal: 'share', setlistId: shareMatch[1] },
-          '',
-          path
-        );
-      }
-
       return {
         routes: [
           {

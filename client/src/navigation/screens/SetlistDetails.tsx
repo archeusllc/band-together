@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import {
   View,
   Text,
@@ -36,6 +36,7 @@ interface DisplayItem {
 export const SetlistDetailsScreen = ({ route, navigation }: Props) => {
   const { setlistId } = route.params;
   const { user, loading: authLoading } = useAuth();
+  const historySetupRef = useRef(false);
   const [setlist, setSetlist] = useState<SetList & { setItems?: Array<SetItem & { track?: any }>; setSections?: SetSection[] } | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -78,14 +79,33 @@ export const SetlistDetailsScreen = ({ route, navigation }: Props) => {
     }
   }, [isEditing, isOwner, wsConnected]);
 
-  // Handle direct /setlist/:id/share URL access - open share modal on load
+  // Handle direct /setlist/:id/share URL access - open share modal on load and set up history
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
-    if (window.location.pathname.endsWith('/share')) {
+    const isShareUrl = window.location.pathname.endsWith('/share');
+    if (isShareUrl) {
       setShowShare(true);
+
+      // Set up browser history on first mount for direct /share access
+      if (!historySetupRef.current && window.history.length <= 1) {
+        historySetupRef.current = true;
+        const setlistUrl = window.location.pathname.replace(/\/share$/, '');
+        // Add setlist page to history
+        window.history.pushState(
+          { page: 'setlist', setlistId },
+          '',
+          setlistUrl
+        );
+        // Replace current entry back to share URL
+        window.history.replaceState(
+          { modal: 'share', setlistId },
+          '',
+          window.location.pathname
+        );
+      }
     }
-  }, []);
+  }, [setlistId]);
 
   // Sync Share modal state with browser history for proper back button support
   useEffect(() => {
