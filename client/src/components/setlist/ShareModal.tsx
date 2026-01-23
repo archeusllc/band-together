@@ -114,9 +114,6 @@ export const ShareModal = ({ visible, setlistId, setlistName, onClose }: ShareMo
   };
 
   const generateNewShareWithSettings = async () => {
-    // If expiration field is empty, skip regeneration
-    if (!expiresAt) return;
-
     setLoading(true);
     try {
       const { data, error } = await setlistService.createShare(setlistId, {
