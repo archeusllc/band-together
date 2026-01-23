@@ -1,8 +1,11 @@
 import React from 'react';
 import { View, Text, Pressable } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import type { NavigationProp } from '@react-navigation/native';
 import { tailwind, colors } from '@theme';
 import { IconSymbol } from '@ui';
 import type { SetList, SetListShare } from '@band-together/shared';
+import type { DrawerParamList } from '@navigation/types';
 
 interface SetlistCardProps {
   setlist: SetList & {
@@ -30,15 +33,24 @@ const calculateDuration = (items: any[] = []): string => {
 };
 
 export const SetlistCard = ({ setlist, onPress }: SetlistCardProps) => {
+  const navigation = useNavigation<NavigationProp<DrawerParamList>>();
   const trackCount = setlist.setItems?.length || 0;
   const sectionCount = setlist.setSections?.length || 0;
   const shareCount = setlist.shares?.length || 0;
   const duration = calculateDuration(setlist.setItems);
 
+  const handlePress = () => {
+    if (onPress) {
+      onPress();
+    } else {
+      navigation.navigate('SetlistDetails', { setlistId: setlist.setListId });
+    }
+  };
+
   return (
     <Pressable
       className={`${tailwind.card.both} rounded-xl p-4 mb-3 mx-4 border ${tailwind.border.both}`}
-      onPress={onPress}
+      onPress={handlePress}
     >
       <View className="flex-row items-start gap-3">
         {/* Icon */}

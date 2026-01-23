@@ -1,20 +1,42 @@
 import { prisma } from '@services/prisma.service';
 
+/**
+ * Helper function to get database userId from Firebase UID
+ * The middleware creates users in the database with a cuid userId,
+ * but passes firebase.uid to the handlers. This helper looks up the actual database userId.
+ */
+const getUserIdByFirebaseUid = async (firebaseUid: string): Promise<string> => {
+  const user = await prisma.user.findUnique({
+    where: { firebaseUid },
+    select: { userId: true },
+  });
+
+  if (!user) {
+    throw new Error('User not found in database');
+  }
+
+  return user.userId;
+};
+
 export const setlistService = {
   /**
    * Create a new setlist for the authenticated user
+   * @param firebaseUid - Firebase UID of the authenticated user
    */
   createSetlist: async (
-    ownerId: string,
+    firebaseUid: string,
     name: string,
     description?: string,
     guildId?: string
   ) => {
+    // Look up the user by Firebase UID to get their database userId
+    const userId = await getUserIdByFirebaseUid(firebaseUid);
+
     return await prisma.setList.create({
       data: {
         name,
         description,
-        ownerId,
+        ownerId: userId, // Use database userId, not Firebase UID
         guildId,
         isPrivate: true, // Always private by design
       },
@@ -33,8 +55,11 @@ export const setlistService = {
 
   /**
    * Get all setlists for a user (personal, guild-associated, and shared)
+   * @param firebaseUid - Firebase UID of the authenticated user
    */
-  getUserSetlists: async (userId: string) => {
+  getUserSetlists: async (firebaseUid: string) => {
+    const userId = await getUserIdByFirebaseUid(firebaseUid);
+
     const [personal, shared] = await Promise.all([
       // Personal setlists + guild-associated setlists
       prisma.setList.findMany({
@@ -162,16 +187,19 @@ export const setlistService = {
 
   /**
    * Update a setlist (owner only)
+   * @param firebaseUid - Firebase UID of the authenticated user
    */
   updateSetlist: async (
     setlistId: string,
-    userId: string,
+    firebaseUid: string,
     updates: {
       name?: string;
       description?: string | null;
       guildId?: string | null;
     }
   ) => {
+    const userId = await getUserIdByFirebaseUid(firebaseUid);
+
     // Check ownership
     const setlist = await prisma.setList.findUnique({
       where: { setListId: setlistId },
@@ -199,8 +227,11 @@ export const setlistService = {
 
   /**
    * Delete a setlist (owner only, cascade deletes items and sections)
+   * @param firebaseUid - Firebase UID of the authenticated user
    */
-  deleteSetlist: async (setlistId: string, userId: string) => {
+  deleteSetlist: async (setlistId: string, firebaseUid: string) => {
+    const userId = await getUserIdByFirebaseUid(firebaseUid);
+
     // Check ownership
     const setlist = await prisma.setList.findUnique({
       where: { setListId: setlistId },
@@ -232,8 +263,11 @@ export const setlistService = {
 
   /**
    * Duplicate a setlist with all its items and sections
+   * @param firebaseUid - Firebase UID of the authenticated user
    */
-  duplicateSetlist: async (setlistId: string, userId: string) => {
+  duplicateSetlist: async (setlistId: string, firebaseUid: string) => {
+    const userId = await getUserIdByFirebaseUid(firebaseUid);
+
     const original = await prisma.setList.findUnique({
       where: { setListId: setlistId },
       include: {
@@ -327,10 +361,11 @@ export const setlistService = {
 
   /**
    * Add a track to a setlist with optional custom overrides
+   * @param firebaseUid - Firebase UID of the authenticated user
    */
   addSetItem: async (
     setlistId: string,
-    userId: string,
+    firebaseUid: string,
     data: {
       trackId: string;
       customTuning?: string;
@@ -340,6 +375,8 @@ export const setlistService = {
       sectionId?: string;
     }
   ) => {
+    const userId = await getUserIdByFirebaseUid(firebaseUid);
+
     // 1. Verify setlist exists and user has edit permission
     const setlist = await prisma.setList.findUnique({
       where: { setListId: setlistId },
@@ -392,10 +429,11 @@ export const setlistService = {
 
   /**
    * Update a SetItem's custom overrides
+   * @param firebaseUid - Firebase UID of the authenticated user
    */
   updateSetItem: async (
     setItemId: string,
-    userId: string,
+    firebaseUid: string,
     data: {
       customTuning?: string;
       customNotes?: string;
@@ -403,6 +441,8 @@ export const setlistService = {
       sectionId?: string | null;
     }
   ) => {
+    const userId = await getUserIdByFirebaseUid(firebaseUid);
+
     // 1. Get SetItem with setlist relation
     const item = await prisma.setItem.findUnique({
       where: { setItemId },
@@ -431,11 +471,14 @@ export const setlistService = {
 
   /**
    * Remove a track from a setlist
+   * @param firebaseUid - Firebase UID of the authenticated user
    */
   removeSetItem: async (
     setItemId: string,
-    userId: string
+    firebaseUid: string
   ) => {
+    const userId = await getUserIdByFirebaseUid(firebaseUid);
+
     // 1. Get SetItem with setlist relation
     const item = await prisma.setItem.findUnique({
       where: { setItemId },
@@ -461,15 +504,18 @@ export const setlistService = {
 
   /**
    * Reorder tracks in a setlist
+   * @param firebaseUid - Firebase UID of the authenticated user
    */
   reorderSetItems: async (
     setlistId: string,
-    userId: string,
+    firebaseUid: string,
     itemPositions: Array<{
       setItemId: string;
       position: number;
     }>
   ) => {
+    const userId = await getUserIdByFirebaseUid(firebaseUid);
+
     // 1. Verify setlist exists and user has edit permission
     const setlist = await prisma.setList.findUnique({
       where: { setListId: setlistId },
@@ -522,12 +568,14 @@ export const setlistService = {
    */
   addSection: async (
     setlistId: string,
-    userId: string,
+    firebaseUid: string,
     data: {
       name: string;
       position?: number;
     }
   ) => {
+    const userId = await getUserIdByFirebaseUid(firebaseUid);
+
     // 1. Verify setlist exists and user has edit permission
     const setlist = await prisma.setList.findUnique({
       where: { setListId: setlistId },
@@ -563,15 +611,18 @@ export const setlistService = {
 
   /**
    * Update a section (name only)
+   * @param firebaseUid - Firebase UID of the authenticated user
    */
   updateSection: async (
     setlistId: string,
     sectionId: string,
-    userId: string,
+    firebaseUid: string,
     data: {
       name?: string;
     }
   ) => {
+    const userId = await getUserIdByFirebaseUid(firebaseUid);
+
     // 1. Get section with setlist relation
     const section = await prisma.setSection.findUnique({
       where: { sectionId },
@@ -609,12 +660,15 @@ export const setlistService = {
 
   /**
    * Delete a section (unassigns items from the section)
+   * @param firebaseUid - Firebase UID of the authenticated user
    */
   deleteSection: async (
     setlistId: string,
     sectionId: string,
-    userId: string
+    firebaseUid: string
   ) => {
+    const userId = await getUserIdByFirebaseUid(firebaseUid);
+
     // 1. Get section with setlist relation
     const section = await prisma.setSection.findUnique({
       where: { sectionId },
@@ -651,13 +705,16 @@ export const setlistService = {
 
   /**
    * Create a share link for a setlist
+   * @param firebaseUid - Firebase UID of the authenticated user
    */
   createShare: async (
     setlistId: string,
-    userId: string,
+    firebaseUid: string,
     permission: 'VIEW_ONLY' | 'CAN_EDIT',
     expiresAt?: Date
   ) => {
+    const userId = await getUserIdByFirebaseUid(firebaseUid);
+
     // 1. Verify setlist exists and user is owner
     const setlist = await prisma.setList.findUnique({
       where: { setListId: setlistId },
@@ -700,8 +757,11 @@ export const setlistService = {
 
   /**
    * Get all shares for a setlist
+   * @param firebaseUid - Firebase UID of the authenticated user
    */
-  listShares: async (setlistId: string, userId: string) => {
+  listShares: async (setlistId: string, firebaseUid: string) => {
+    const userId = await getUserIdByFirebaseUid(firebaseUid);
+
     // 1. Verify setlist exists and user is owner
     const setlist = await prisma.setList.findUnique({
       where: { setListId: setlistId },
@@ -733,8 +793,11 @@ export const setlistService = {
 
   /**
    * Revoke a share link
+   * @param firebaseUid - Firebase UID of the authenticated user
    */
-  revokeShare: async (setlistId: string, shareId: string, userId: string) => {
+  revokeShare: async (setlistId: string, shareId: string, firebaseUid: string) => {
+    const userId = await getUserIdByFirebaseUid(firebaseUid);
+
     // 1. Get share with setlist relation
     const share = await prisma.setListShare.findUnique({
       where: { shareId },

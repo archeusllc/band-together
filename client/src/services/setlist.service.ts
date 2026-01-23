@@ -74,18 +74,14 @@ export const setlistService = {
         return { data: null, error: 'Authentication required' };
       }
 
-      const { data: result, error } = await api.setlist.post(
-        {
-          name: data.name,
-          description: data.description,
-          guildId: data.guildId,
+      const { data: result, error } = await api.setlist.post({
+        $headers: {
+          authorization: `Bearer ${idToken}`,
         },
-        {
-          $headers: {
-            authorization: `Bearer ${idToken}`,
-          },
-        }
-      );
+        name: data.name,
+        description: data.description,
+        guildId: data.guildId,
+      });
 
       return { data: result, error };
     } catch (err) {
@@ -110,18 +106,14 @@ export const setlistService = {
         return { data: null, error: 'Authentication required' };
       }
 
-      const { data: result, error } = await api.setlist[setlistId].patch(
-        {
-          name: data.name,
-          description: data.description,
-          guildId: data.guildId,
+      const { data: result, error } = await api.setlist[setlistId].patch({
+        $headers: {
+          authorization: `Bearer ${idToken}`,
         },
-        {
-          $headers: {
-            authorization: `Bearer ${idToken}`,
-          },
-        }
-      );
+        name: data.name,
+        description: data.description,
+        guildId: data.guildId,
+      });
 
       return { data: result, error };
     } catch (err) {
@@ -143,7 +135,7 @@ export const setlistService = {
         $headers: {
           authorization: `Bearer ${idToken}`,
         },
-      });
+      })
 
       return { data, error };
     } catch (err) {
@@ -161,14 +153,11 @@ export const setlistService = {
         return { data: null, error: 'Authentication required' };
       }
 
-      const { data, error } = await api.setlist[setlistId].duplicate.post(
-        {},
-        {
-          $headers: {
-            authorization: `Bearer ${idToken}`,
-          },
-        }
-      );
+      const { data, error } = await api.setlist[setlistId].duplicate.post({
+        $headers: {
+          authorization: `Bearer ${idToken}`,
+        },
+      });
 
       return { data, error };
     } catch (err) {
@@ -196,21 +185,17 @@ export const setlistService = {
         return { data: null, error: 'Authentication required' };
       }
 
-      const { data: result, error } = await api.setlist[setlistId].items.post(
-        {
-          trackId: data.trackId,
-          customTuning: data.customTuning,
-          customNotes: data.customNotes,
-          customDuration: data.customDuration,
-          position: data.position,
-          sectionId: data.sectionId,
+      const { data: result, error } = await api.setlist[setlistId].items.post({
+        $headers: {
+          authorization: `Bearer ${idToken}`,
         },
-        {
-          $headers: {
-            authorization: `Bearer ${idToken}`,
-          },
-        }
-      );
+        trackId: data.trackId,
+        customTuning: data.customTuning,
+        customNotes: data.customNotes,
+        customDuration: data.customDuration,
+        position: data.position,
+        sectionId: data.sectionId,
+      });
 
       return { data: result, error };
     } catch (err) {
@@ -239,19 +224,15 @@ export const setlistService = {
 
       const { data: result, error } = await api.setlist[setlistId].items[
         setItemId
-      ].patch(
-        {
-          customTuning: data.customTuning,
-          customNotes: data.customNotes,
-          customDuration: data.customDuration,
-          sectionId: data.sectionId,
+      ].patch({
+        $headers: {
+          authorization: `Bearer ${idToken}`,
         },
-        {
-          $headers: {
-            authorization: `Bearer ${idToken}`,
-          },
-        }
-      );
+        customTuning: data.customTuning,
+        customNotes: data.customNotes,
+        customDuration: data.customDuration,
+        sectionId: data.sectionId,
+      });
 
       return { data: result, error };
     } catch (err) {
@@ -275,7 +256,7 @@ export const setlistService = {
         $headers: {
           authorization: `Bearer ${idToken}`,
         },
-      });
+      })
 
       return { data, error };
     } catch (err) {
@@ -299,16 +280,12 @@ export const setlistService = {
         return { data: null, error: 'Authentication required' };
       }
 
-      const { data, error } = await api.setlist[setlistId].reorder.post(
-        {
-          itemPositions,
+      const { data, error } = await api.setlist[setlistId].reorder.post({
+        $headers: {
+          authorization: `Bearer ${idToken}`,
         },
-        {
-          $headers: {
-            authorization: `Bearer ${idToken}`,
-          },
-        }
-      );
+        itemPositions,
+      });
 
       return { data, error };
     } catch (err) {
@@ -332,17 +309,13 @@ export const setlistService = {
         return { data: null, error: 'Authentication required' };
       }
 
-      const { data: result, error } = await api.setlist[setlistId].sections.post(
-        {
-          name: data.name,
-          position: data.position,
+      const { data: result, error } = await api.setlist[setlistId].sections.post({
+        $headers: {
+          authorization: `Bearer ${idToken}`,
         },
-        {
-          $headers: {
-            authorization: `Bearer ${idToken}`,
-          },
-        }
-      );
+        name: data.name,
+        position: data.position,
+      });
 
       return { data: result, error };
     } catch (err) {
@@ -368,16 +341,12 @@ export const setlistService = {
 
       const { data: result, error } = await api.setlist[setlistId].sections[
         sectionId
-      ].patch(
-        {
-          name: data.name,
+      ].patch({
+        $headers: {
+          authorization: `Bearer ${idToken}`,
         },
-        {
-          $headers: {
-            authorization: `Bearer ${idToken}`,
-          },
-        }
-      );
+        name: data.name,
+      });
 
       return { data: result, error };
     } catch (err) {
@@ -401,7 +370,7 @@ export const setlistService = {
         $headers: {
           authorization: `Bearer ${idToken}`,
         },
-      });
+      })
 
       return { data, error };
     } catch (err) {
@@ -425,17 +394,13 @@ export const setlistService = {
         return { data: null, error: 'Authentication required' };
       }
 
-      const { data: result, error } = await api.setlist[setlistId].shares.post(
-        {
-          permission: data.permission,
-          expiresAt: data.expiresAt,
+      const { data: result, error } = await api.setlist[setlistId].shares.post({
+        $headers: {
+          authorization: `Bearer ${idToken}`,
         },
-        {
-          $headers: {
-            authorization: `Bearer ${idToken}`,
-          },
-        }
-      );
+        permission: data.permission,
+        expiresAt: data.expiresAt,
+      });
 
       return { data: result, error };
     } catch (err) {
@@ -481,7 +446,7 @@ export const setlistService = {
         $headers: {
           authorization: `Bearer ${idToken}`,
         },
-      });
+      })
 
       return { data, error };
     } catch (err) {

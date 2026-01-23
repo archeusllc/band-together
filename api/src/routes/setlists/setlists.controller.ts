@@ -3,9 +3,10 @@ import { setlistService } from './setlists.service';
 export const setlistController = {
   /**
    * Create a new setlist for the authenticated user
+   * @param firebaseUid - Firebase UID of the authenticated user
    */
   createSetlist: async (
-    userId: string,
+    firebaseUid: string,
     data: {
       name: string;
       description?: string;
@@ -17,7 +18,7 @@ export const setlistController = {
     }
 
     return await setlistService.createSetlist(
-      userId,
+      firebaseUid,
       data.name.trim(),
       data.description?.trim(),
       data.guildId
@@ -26,9 +27,10 @@ export const setlistController = {
 
   /**
    * Get all setlists for the authenticated user
+   * @param firebaseUid - Firebase UID of the authenticated user
    */
-  getUserSetlists: async (userId: string) => {
-    return await setlistService.getUserSetlists(userId);
+  getUserSetlists: async (firebaseUid: string) => {
+    return await setlistService.getUserSetlists(firebaseUid);
   },
 
   /**
@@ -58,10 +60,11 @@ export const setlistController = {
 
   /**
    * Update a setlist (owner only)
+   * @param firebaseUid - Firebase UID of the authenticated user
    */
   updateSetlist: async (
     setlistId: string,
-    userId: string,
+    firebaseUid: string,
     data: {
       name?: string;
       description?: string;
@@ -87,38 +90,41 @@ export const setlistController = {
       updates.guildId = data.guildId;
     }
 
-    return await setlistService.updateSetlist(setlistId, userId, updates);
+    return await setlistService.updateSetlist(setlistId, firebaseUid, updates);
   },
 
   /**
    * Delete a setlist (owner only)
+   * @param firebaseUid - Firebase UID of the authenticated user
    */
-  deleteSetlist: async (setlistId: string, userId: string) => {
+  deleteSetlist: async (setlistId: string, firebaseUid: string) => {
     if (!setlistId || setlistId.trim().length === 0) {
       throw new Error('Setlist ID is required');
     }
 
-    await setlistService.deleteSetlist(setlistId, userId);
+    await setlistService.deleteSetlist(setlistId, firebaseUid);
     return { success: true };
   },
 
   /**
    * Duplicate a setlist
+   * @param firebaseUid - Firebase UID of the authenticated user
    */
-  duplicateSetlist: async (setlistId: string, userId: string) => {
+  duplicateSetlist: async (setlistId: string, firebaseUid: string) => {
     if (!setlistId || setlistId.trim().length === 0) {
       throw new Error('Setlist ID is required');
     }
 
-    return await setlistService.duplicateSetlist(setlistId, userId);
+    return await setlistService.duplicateSetlist(setlistId, firebaseUid);
   },
 
   /**
    * Add a track to a setlist
+   * @param firebaseUid - Firebase UID of the authenticated user
    */
   addSetItem: async (
     setlistId: string,
-    userId: string,
+    firebaseUid: string,
     data: {
       trackId: string;
       customTuning?: string;
@@ -135,15 +141,16 @@ export const setlistController = {
       throw new Error('Track ID is required');
     }
 
-    return await setlistService.addSetItem(setlistId, userId, data);
+    return await setlistService.addSetItem(setlistId, firebaseUid, data);
   },
 
   /**
    * Update a SetItem's custom overrides
+   * @param firebaseUid - Firebase UID of the authenticated user
    */
   updateSetItem: async (
     setItemId: string,
-    userId: string,
+    firebaseUid: string,
     data: {
       customTuning?: string;
       customNotes?: string;
@@ -155,29 +162,31 @@ export const setlistController = {
       throw new Error('SetItem ID is required');
     }
 
-    return await setlistService.updateSetItem(setItemId, userId, data);
+    return await setlistService.updateSetItem(setItemId, firebaseUid, data);
   },
 
   /**
    * Remove a track from a setlist
+   * @param firebaseUid - Firebase UID of the authenticated user
    */
   removeSetItem: async (
     setItemId: string,
-    userId: string
+    firebaseUid: string
   ) => {
     if (!setItemId || setItemId.trim().length === 0) {
       throw new Error('SetItem ID is required');
     }
 
-    return await setlistService.removeSetItem(setItemId, userId);
+    return await setlistService.removeSetItem(setItemId, firebaseUid);
   },
 
   /**
    * Reorder tracks in a setlist
+   * @param firebaseUid - Firebase UID of the authenticated user
    */
   reorderSetItems: async (
     setlistId: string,
-    userId: string,
+    firebaseUid: string,
     itemPositions: Array<{
       setItemId: string;
       position: number;
@@ -190,15 +199,16 @@ export const setlistController = {
       throw new Error('Item positions array is required');
     }
 
-    return await setlistService.reorderSetItems(setlistId, userId, itemPositions);
+    return await setlistService.reorderSetItems(setlistId, firebaseUid, itemPositions);
   },
 
   /**
    * Add a section to a setlist
+   * @param firebaseUid - Firebase UID of the authenticated user
    */
   addSection: async (
     setlistId: string,
-    userId: string,
+    firebaseUid: string,
     data: {
       name: string;
       position?: number;
@@ -211,7 +221,7 @@ export const setlistController = {
       throw new Error('Section name is required');
     }
 
-    return await setlistService.addSection(setlistId, userId, {
+    return await setlistService.addSection(setlistId, firebaseUid, {
       name: data.name.trim(),
       position: data.position,
     });
@@ -219,11 +229,12 @@ export const setlistController = {
 
   /**
    * Update a section name
+   * @param firebaseUid - Firebase UID of the authenticated user
    */
   updateSection: async (
     setlistId: string,
     sectionId: string,
-    userId: string,
+    firebaseUid: string,
     data: {
       name?: string;
     }
@@ -235,16 +246,17 @@ export const setlistController = {
       throw new Error('Section ID is required');
     }
 
-    return await setlistService.updateSection(setlistId, sectionId, userId, data);
+    return await setlistService.updateSection(setlistId, sectionId, firebaseUid, data);
   },
 
   /**
    * Delete a section from a setlist
+   * @param firebaseUid - Firebase UID of the authenticated user
    */
   deleteSection: async (
     setlistId: string,
     sectionId: string,
-    userId: string
+    firebaseUid: string
   ) => {
     if (!setlistId || setlistId.trim().length === 0) {
       throw new Error('Setlist ID is required');
@@ -253,15 +265,16 @@ export const setlistController = {
       throw new Error('Section ID is required');
     }
 
-    return await setlistService.deleteSection(setlistId, sectionId, userId);
+    return await setlistService.deleteSection(setlistId, sectionId, firebaseUid);
   },
 
   /**
    * Create a share link for a setlist
+   * @param firebaseUid - Firebase UID of the authenticated user
    */
   createShare: async (
     setlistId: string,
-    userId: string,
+    firebaseUid: string,
     data: {
       permission: 'VIEW_ONLY' | 'CAN_EDIT';
       expiresAt?: Date;
@@ -274,24 +287,26 @@ export const setlistController = {
       throw new Error('Permission is required');
     }
 
-    return await setlistService.createShare(setlistId, userId, data.permission, data.expiresAt);
+    return await setlistService.createShare(setlistId, firebaseUid, data.permission, data.expiresAt);
   },
 
   /**
    * List all shares for a setlist
+   * @param firebaseUid - Firebase UID of the authenticated user
    */
-  listShares: async (setlistId: string, userId: string) => {
+  listShares: async (setlistId: string, firebaseUid: string) => {
     if (!setlistId || setlistId.trim().length === 0) {
       throw new Error('Setlist ID is required');
     }
 
-    return await setlistService.listShares(setlistId, userId);
+    return await setlistService.listShares(setlistId, firebaseUid);
   },
 
   /**
    * Revoke a share link
+   * @param firebaseUid - Firebase UID of the authenticated user
    */
-  revokeShare: async (setlistId: string, shareId: string, userId: string) => {
+  revokeShare: async (setlistId: string, shareId: string, firebaseUid: string) => {
     if (!setlistId || setlistId.trim().length === 0) {
       throw new Error('Setlist ID is required');
     }
@@ -299,6 +314,6 @@ export const setlistController = {
       throw new Error('Share ID is required');
     }
 
-    return await setlistService.revokeShare(setlistId, shareId, userId);
+    return await setlistService.revokeShare(setlistId, shareId, firebaseUid);
   },
 };

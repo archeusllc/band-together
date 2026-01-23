@@ -118,7 +118,19 @@ export const CreateSetlistScreen = ({ navigation }: Props) => {
       });
 
       if (error || !data) {
-        Alert.alert('Error', 'Failed to create setlist. Please try again.');
+        // Extract error message from various error formats
+        let errorMessage = 'Failed to create setlist. Please try again.';
+        if (error) {
+          if (typeof error === 'string') {
+            errorMessage = error;
+          } else if (error instanceof Error) {
+            errorMessage = error.message;
+          } else if (typeof error === 'object' && 'message' in error) {
+            errorMessage = (error as any).message;
+          }
+        }
+        Alert.alert('Error', errorMessage);
+        console.error('Create setlist error details:', error);
         return;
       }
 
