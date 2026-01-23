@@ -454,13 +454,14 @@ export const ShareModal = ({ visible, setlistId, setlistName, onClose }: ShareMo
 
         {/* QR Code Enlarged Modal */}
         {showQrModal && qrCodeUrl && (
-          <View className="absolute inset-0 z-50" style={{ pointerEvents: 'box-none' }}>
-            <Pressable
-              className="absolute inset-0 bg-black/75"
-              onPress={() => setShowQrModal(false)}
-            />
+          <Pressable
+            className="absolute inset-0 z-50"
+            onPress={() => setShowQrModal(false)}
+            style={{ pointerEvents: 'auto' }}
+          >
+            <View className="absolute inset-0 bg-black/75" style={{ pointerEvents: 'none' }} />
             <View className="absolute inset-0 flex items-center justify-center" style={{ pointerEvents: 'box-none' }}>
-              <View className={`${tailwind.card.both} rounded-lg p-4 mx-4`} style={{ pointerEvents: 'box-only' }}>
+              <View className={`${tailwind.card.both} rounded-lg p-4 mx-4`} style={{ pointerEvents: 'box-none' }}>
                 <Image
                   source={{ uri: qrCodeUrl }}
                   style={{ width: 320, height: 320 }}
@@ -470,7 +471,7 @@ export const ShareModal = ({ visible, setlistId, setlistName, onClose }: ShareMo
                 </Text>
               </View>
             </View>
-          </View>
+          </Pressable>
         )}
       </View>
     </Modal>
