@@ -253,7 +253,6 @@ export const ShareModal = ({ visible, setlistId, setlistName, onClose }: ShareMo
                 <Image
                   source={{ uri: qrCodeUrl }}
                   style={{ width: 250, height: 250 }}
-                  className="rounded-lg"
                 />
                 <Text className={`text-xs ${tailwind.textMuted.both} mt-2`}>
                   Tap to enlarge
@@ -465,7 +464,6 @@ export const ShareModal = ({ visible, setlistId, setlistName, onClose }: ShareMo
                 <Image
                   source={{ uri: qrCodeUrl }}
                   style={{ width: 320, height: 320 }}
-                  className="rounded-lg"
                 />
                 <Text className={`text-xs ${tailwind.textMuted.both} mt-3 text-center`}>
                   Tap outside to close
