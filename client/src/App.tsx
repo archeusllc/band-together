@@ -20,6 +20,8 @@ const config = {
                   name: 'SetlistDetails',
                   params: {
                     setlistId: setlistMatch[1],
+                    // Store the original path to preserve it
+                    originalPath: path,
                   },
                 },
               ],
@@ -29,6 +31,15 @@ const config = {
       };
     }
     // Let React Navigation handle other paths normally
+    return undefined;
+  },
+  // Preserve the original URL path instead of regenerating it
+  getPathFromState: (state: any) => {
+    // If we have the original path stored, use it
+    if (state?.routes?.[0]?.state?.routes?.[0]?.params?.originalPath) {
+      return state.routes[0].state.routes[0].params.originalPath;
+    }
+    // Otherwise let React Navigation generate the path normally
     return undefined;
   },
 };

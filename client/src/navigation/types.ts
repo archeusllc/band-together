@@ -29,6 +29,6 @@ export type DrawerParamList = {
   // Tools
   SetlistManager: undefined;
   // Setlists
-  SetlistDetails: { setlistId: string };
+  SetlistDetails: { setlistId: string; originalPath?: string };
   CreateSetlist: undefined;
 };
