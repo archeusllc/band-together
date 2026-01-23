@@ -146,8 +146,9 @@ export const SongSearchModal = ({ visible, onClose, onSelectTrack }: SongSearchM
         <View className={`border-b ${tailwind.border.both} p-4 pt-2`}>
           <View className="flex-row items-center justify-between mb-3">
             <Text className={`text-lg font-bold ${tailwind.text.both}`}>Add Song</Text>
-            <Pressable onPress={onClose}>
-              <IconSymbol name="xmark.circle.fill" size={24} color="#9CA3AF" />
+            <Pressable onPress={onClose} className="flex-row items-center gap-1">
+              <IconSymbol name="xmark.circle.fill" size={20} color={colors.brand.error} />
+              <Text className={`text-sm font-medium ${tailwind.error}`}>Close</Text>
             </Pressable>
           </View>
 
