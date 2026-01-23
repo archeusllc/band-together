@@ -149,4 +149,216 @@ describe('Setlists CRUD', () => {
       // TODO: Verify new setlist ownerId matches authenticated user
     });
   });
+
+  describe('POST /setlist/:setlistId/items - Add Track to Setlist', () => {
+    test('should reject unauthenticated requests with 401', async () => {
+      const response = await app.handle(new Request(`${URL}/setlist/some-id/items`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer invalid-token',
+        },
+        body: JSON.stringify({ trackId: 'some-track-id' })
+      }));
+      expect(response.status).toBe(401);
+    });
+
+    test('should validate that trackId is required (422 when missing)', async () => {
+      const response = await app.handle(new Request(`${URL}/setlist/some-id/items`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer valid-token',
+        },
+        body: JSON.stringify({ customTuning: 'Drop D' })
+      }));
+      expect(response.status).toBe(422);
+    });
+
+    test.todo('should add track to setlist with authenticated user (requires Prisma mock)', async () => {
+      // TODO: Mock setlist ownership and track existence
+    });
+    test.todo('should auto-assign position when not provided (requires Prisma mock)', async () => {
+      // TODO: Verify position = max + 1
+    });
+    test.todo('should respect provided position (requires Prisma mock)', async () => {
+      // TODO: Verify custom position is used
+    });
+  });
+
+  describe('PATCH /setlist/:setlistId/items/:setItemId - Update SetItem', () => {
+    test.todo('should reject unauthenticated requests with 401', async () => {
+      // TODO: Test authentication requirement
+    });
+    test.todo('should reject non-owner with 403 (requires Prisma mock)', async () => {
+      // TODO: Mock setlist owned by different user
+    });
+    test.todo('should update custom overrides (requires Prisma mock)', async () => {
+      // TODO: Test customTuning, customNotes, customDuration updates
+    });
+  });
+
+  describe('DELETE /setlist/:setlistId/items/:setItemId - Remove Track', () => {
+    test.todo('should reject unauthenticated requests with 401', async () => {
+      // TODO: Test authentication requirement
+    });
+    test.todo('should reject non-owner with 403 (requires Prisma mock)', async () => {
+      // TODO: Mock setlist owned by different user
+    });
+    test.todo('should delete SetItem (requires Prisma mock)', async () => {
+      // TODO: Verify item is deleted from database
+    });
+  });
+
+  describe('POST /setlist/:setlistId/reorder - Reorder Tracks', () => {
+    test.todo('should reject unauthenticated requests with 401', async () => {
+      // TODO: Test authentication requirement
+    });
+    test.todo('should reject non-owner with 403 (requires Prisma mock)', async () => {
+      // TODO: Mock setlist owned by different user
+    });
+    test.todo('should reorder items atomically (requires Prisma mock)', async () => {
+      // TODO: Verify transaction handles unique constraint
+    });
+    test.todo('should handle position gaps (requires Prisma mock)', async () => {
+      // TODO: Test positions: [0, 2, 5, 10]
+    });
+  });
+
+  describe('POST /setlist/:setlistId/sections - Add Section to Setlist', () => {
+    test('should reject unauthenticated requests with 401', async () => {
+      const response = await app.handle(new Request(`${URL}/setlist/some-id/sections`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer invalid-token',
+        },
+        body: JSON.stringify({ name: 'Set 1' })
+      }));
+      expect(response.status).toBe(401);
+    });
+
+    test('should validate that name is required (422 when missing)', async () => {
+      const response = await app.handle(new Request(`${URL}/setlist/some-id/sections`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer valid-token',
+        },
+        body: JSON.stringify({ position: 0 })
+      }));
+      expect(response.status).toBe(422);
+    });
+
+    test.todo('should add section to setlist with authenticated user (requires Prisma mock)', async () => {
+      // TODO: Mock setlist ownership and verify section creation
+    });
+    test.todo('should auto-assign position when not provided (requires Prisma mock)', async () => {
+      // TODO: Verify position = max + 1
+    });
+  });
+
+  describe('PATCH /setlist/:setlistId/sections/:sectionId - Update Section', () => {
+    test.todo('should reject unauthenticated requests with 401', async () => {
+      // TODO: Test authentication requirement
+    });
+    test.todo('should reject non-owner with 403 (requires Prisma mock)', async () => {
+      // TODO: Mock setlist owned by different user
+    });
+    test.todo('should update section name (requires Prisma mock)', async () => {
+      // TODO: Test name update
+    });
+  });
+
+  describe('DELETE /setlist/:setlistId/sections/:sectionId - Delete Section', () => {
+    test.todo('should reject unauthenticated requests with 401', async () => {
+      // TODO: Test authentication requirement
+    });
+    test.todo('should reject non-owner with 403 (requires Prisma mock)', async () => {
+      // TODO: Mock setlist owned by different user
+    });
+    test.todo('should unassign items when section deleted (requires Prisma mock)', async () => {
+      // TODO: Verify items have sectionId set to null
+    });
+  });
+
+  describe('POST /setlist/:setlistId/shares - Create Share', () => {
+    test('should reject unauthenticated requests with 401', async () => {
+      const response = await app.handle(new Request(`${URL}/setlist/some-id/shares`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer invalid-token',
+        },
+        body: JSON.stringify({ permission: 'VIEW_ONLY' })
+      }));
+      expect(response.status).toBe(401);
+    });
+
+    test('should validate that permission is required (422 when missing)', async () => {
+      const response = await app.handle(new Request(`${URL}/setlist/some-id/shares`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer valid-token',
+        },
+        body: JSON.stringify({ expiresAt: '2025-12-31' })
+      }));
+      expect(response.status).toBe(422);
+    });
+
+    test.todo('should create share with authenticated user (requires Prisma mock)', async () => {
+      // TODO: Mock setlist ownership and verify share token generation
+    });
+    test.todo('should support both VIEW_ONLY and CAN_EDIT permissions (requires Prisma mock)', async () => {
+      // TODO: Test both permission levels are accepted
+    });
+    test.todo('should support optional expiration date (requires Prisma mock)', async () => {
+      // TODO: Verify expiresAt is stored correctly
+    });
+  });
+
+  describe('GET /setlist/:setlistId/shares - List Shares', () => {
+    test('should reject unauthenticated requests with 401', async () => {
+      const response = await app.handle(new Request(`${URL}/setlist/some-id/shares`, {
+        method: 'GET',
+        headers: {
+          'Authorization': 'Bearer invalid-token',
+        },
+      }));
+      expect(response.status).toBe(401);
+    });
+
+    test.todo('should list shares for owner (requires Prisma mock)', async () => {
+      // TODO: Mock setlist ownership and verify share list returned
+    });
+    test.todo('should reject non-owner with 403 (requires Prisma mock)', async () => {
+      // TODO: Mock setlist owned by different user, verify 403
+    });
+    test.todo('should include creator details (requires Prisma mock)', async () => {
+      // TODO: Verify creator userId, displayName, email included
+    });
+  });
+
+  describe('DELETE /setlist/:setlistId/shares/:shareId - Revoke Share', () => {
+    test('should reject unauthenticated requests with 401', async () => {
+      const response = await app.handle(new Request(`${URL}/setlist/some-id/shares/share-id`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': 'Bearer invalid-token',
+        },
+      }));
+      expect(response.status).toBe(401);
+    });
+
+    test.todo('should revoke share for owner (requires Prisma mock)', async () => {
+      // TODO: Mock share ownership and verify deletion
+    });
+    test.todo('should reject non-owner with 403 (requires Prisma mock)', async () => {
+      // TODO: Mock setlist owned by different user, verify 403
+    });
+    test.todo('should return 404 for non-existent share (requires Prisma mock)', async () => {
+      // TODO: Verify 404 when share doesn't exist
+    });
+  });
 })

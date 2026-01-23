@@ -1,12 +1,12 @@
 import Elysia, { t } from 'elysia';
-import { trackController } from '@controllers/track.controller';
+import { tracksController } from '@routes/tracks/tracks.controller';
 
 export const trackRoutes = new Elysia().group('/tracks', (track) =>
   track.get(
     '/search',
     async ({ query, set }) => {
       try {
-        return await trackController.searchTracks({
+        return await tracksController.searchTracks({
           query: query.query,
           type: query.type,
           limit: query.limit || 20,

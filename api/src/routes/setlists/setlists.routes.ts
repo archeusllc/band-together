@@ -253,6 +253,534 @@ export const setlistRoutes = new Elysia()
           },
         }
       )
+      // Add track to setlist
+      .post(
+        '/:setlistId/items',
+        async ({ firebase, params, body, set }) => {
+          try {
+            const result = await setlistController.addSetItem(
+              params.setlistId,
+              firebase.uid,
+              {
+                trackId: body.trackId,
+                customTuning: body.customTuning,
+                customNotes: body.customNotes,
+                customDuration: body.customDuration,
+                position: body.position,
+                sectionId: body.sectionId,
+              }
+            );
+            set.status = 201;
+            return result;
+          } catch (error) {
+            const message = (error as Error).message;
+            if (message.includes('Unauthorized')) {
+              set.status = 403;
+            } else if (message.includes('not found')) {
+              set.status = 404;
+            } else {
+              set.status = 422;
+            }
+            return { error: message };
+          }
+        },
+        {
+          params: t.Object({
+            setlistId: t.String(),
+          }),
+          body: t.Object({
+            trackId: t.String(),
+            customTuning: t.Optional(t.String()),
+            customNotes: t.Optional(t.String()),
+            customDuration: t.Optional(t.Number()),
+            position: t.Optional(t.Number()),
+            sectionId: t.Optional(t.String()),
+          }),
+          detail: {
+            tags: ['Setlists'],
+            summary: 'Add Track to Setlist',
+            description:
+              'Add a track to a setlist with optional custom overrides (tuning, notes, duration). If position is not provided, track will be appended to the end of the setlist.',
+            security: [{ bearerAuth: [] }],
+            responses: {
+              201: { description: 'Track added to setlist successfully' },
+              401: {
+                description:
+                  'Unauthorized - missing or invalid Firebase token',
+              },
+              403: { description: 'Forbidden - only the setlist owner can add tracks' },
+              404: { description: 'Setlist or track not found' },
+              422: {
+                description:
+                  'Unprocessable Entity - invalid input data',
+              },
+            },
+          },
+        }
+      )
+      // Update item custom overrides
+      .patch(
+        '/:setlistId/items/:setItemId',
+        async ({ firebase, params, body, set }) => {
+          try {
+            return await setlistController.updateSetItem(
+              params.setItemId,
+              firebase.uid,
+              {
+                customTuning: body.customTuning,
+                customNotes: body.customNotes,
+                customDuration: body.customDuration,
+                sectionId: body.sectionId,
+              }
+            );
+          } catch (error) {
+            const message = (error as Error).message;
+            if (message.includes('Unauthorized')) {
+              set.status = 403;
+            } else if (message.includes('not found')) {
+              set.status = 404;
+            } else {
+              set.status = 422;
+            }
+            return { error: message };
+          }
+        },
+        {
+          params: t.Object({
+            setlistId: t.String(),
+            setItemId: t.String(),
+          }),
+          body: t.Object({
+            customTuning: t.Optional(t.String()),
+            customNotes: t.Optional(t.String()),
+            customDuration: t.Optional(t.Number()),
+            sectionId: t.Optional(t.Union([t.String(), t.Null()])),
+          }),
+          detail: {
+            tags: ['Setlists'],
+            summary: 'Update SetItem Custom Overrides',
+            description:
+              'Update custom overrides (tuning, notes, duration) or section assignment for a track in a setlist. Cannot change position (use reorder endpoint) or track (delete and add new instead).',
+            security: [{ bearerAuth: [] }],
+            responses: {
+              200: { description: 'SetItem updated successfully' },
+              401: {
+                description:
+                  'Unauthorized - missing or invalid Firebase token',
+              },
+              403: { description: 'Forbidden - only the setlist owner can update items' },
+              404: { description: 'SetItem not found' },
+              422: {
+                description:
+                  'Unprocessable Entity - invalid input data',
+              },
+            },
+          },
+        }
+      )
+      // Remove track from setlist
+      .delete(
+        '/:setlistId/items/:setItemId',
+        async ({ firebase, params, set }) => {
+          try {
+            return await setlistController.removeSetItem(
+              params.setItemId,
+              firebase.uid
+            );
+          } catch (error) {
+            const message = (error as Error).message;
+            if (message.includes('Unauthorized')) {
+              set.status = 403;
+            } else if (message.includes('not found')) {
+              set.status = 404;
+            } else {
+              set.status = 500;
+            }
+            return { error: message };
+          }
+        },
+        {
+          params: t.Object({
+            setlistId: t.String(),
+            setItemId: t.String(),
+          }),
+          detail: {
+            tags: ['Setlists'],
+            summary: 'Remove Track from Setlist',
+            description:
+              'Remove a track from a setlist. Only the setlist owner can remove tracks.',
+            security: [{ bearerAuth: [] }],
+            responses: {
+              200: { description: 'Track removed from setlist successfully' },
+              401: {
+                description:
+                  'Unauthorized - missing or invalid Firebase token',
+              },
+              403: { description: 'Forbidden - only the setlist owner can remove tracks' },
+              404: { description: 'SetItem not found' },
+              500: { description: 'Server error' },
+            },
+          },
+        }
+      )
+      // Reorder tracks in setlist
+      .post(
+        '/:setlistId/reorder',
+        async ({ firebase, params, body, set }) => {
+          try {
+            return await setlistController.reorderSetItems(
+              params.setlistId,
+              firebase.uid,
+              body.itemPositions
+            );
+          } catch (error) {
+            const message = (error as Error).message;
+            if (message.includes('Unauthorized')) {
+              set.status = 403;
+            } else if (message.includes('not found')) {
+              set.status = 404;
+            } else {
+              set.status = 422;
+            }
+            return { error: message };
+          }
+        },
+        {
+          params: t.Object({
+            setlistId: t.String(),
+          }),
+          body: t.Object({
+            itemPositions: t.Array(
+              t.Object({
+                setItemId: t.String(),
+                position: t.Number(),
+              })
+            ),
+          }),
+          detail: {
+            tags: ['Setlists'],
+            summary: 'Reorder Tracks in Setlist',
+            description:
+              'Update the positions of tracks in a setlist. Provide an array of {setItemId, position} objects. All items must belong to the specified setlist.',
+            security: [{ bearerAuth: [] }],
+            responses: {
+              200: { description: 'Tracks reordered successfully' },
+              401: {
+                description:
+                  'Unauthorized - missing or invalid Firebase token',
+              },
+              403: { description: 'Forbidden - only the setlist owner can reorder tracks' },
+              404: { description: 'Setlist not found' },
+              422: {
+                description:
+                  'Unprocessable Entity - invalid input data',
+              },
+            },
+          },
+        }
+      )
+      // Add section to setlist
+      .post(
+        '/:setlistId/sections',
+        async ({ firebase, params, body, set }) => {
+          try {
+            const result = await setlistController.addSection(
+              params.setlistId,
+              firebase.uid,
+              {
+                name: body.name,
+                position: body.position,
+              }
+            );
+            set.status = 201;
+            return result;
+          } catch (error) {
+            const message = (error as Error).message;
+            if (message.includes('Unauthorized')) {
+              set.status = 403;
+            } else if (message.includes('not found')) {
+              set.status = 404;
+            } else {
+              set.status = 422;
+            }
+            return { error: message };
+          }
+        },
+        {
+          params: t.Object({
+            setlistId: t.String(),
+          }),
+          body: t.Object({
+            name: t.String(),
+            position: t.Optional(t.Number()),
+          }),
+          detail: {
+            tags: ['Setlists'],
+            summary: 'Add Section to Setlist',
+            description:
+              'Add a new section to a setlist for organizing tracks. If position is not provided, section will be appended to the end.',
+            security: [{ bearerAuth: [] }],
+            responses: {
+              201: { description: 'Section added to setlist successfully' },
+              401: {
+                description:
+                  'Unauthorized - missing or invalid Firebase token',
+              },
+              403: { description: 'Forbidden - only the setlist owner can add sections' },
+              404: { description: 'Setlist not found' },
+              422: {
+                description:
+                  'Unprocessable Entity - invalid input data',
+              },
+            },
+          },
+        }
+      )
+      // Update section name
+      .patch(
+        '/:setlistId/sections/:sectionId',
+        async ({ firebase, params, body, set }) => {
+          try {
+            return await setlistController.updateSection(
+              params.setlistId,
+              params.sectionId,
+              firebase.uid,
+              {
+                name: body.name,
+              }
+            );
+          } catch (error) {
+            const message = (error as Error).message;
+            if (message.includes('Unauthorized')) {
+              set.status = 403;
+            } else if (message.includes('not found') || message.includes('does not belong')) {
+              set.status = 404;
+            } else {
+              set.status = 422;
+            }
+            return { error: message };
+          }
+        },
+        {
+          params: t.Object({
+            setlistId: t.String(),
+            sectionId: t.String(),
+          }),
+          body: t.Object({
+            name: t.Optional(t.String()),
+          }),
+          detail: {
+            tags: ['Setlists'],
+            summary: 'Update Section',
+            description:
+              'Update a section name. Only the setlist owner can update sections.',
+            security: [{ bearerAuth: [] }],
+            responses: {
+              200: { description: 'Section updated successfully' },
+              401: {
+                description:
+                  'Unauthorized - missing or invalid Firebase token',
+              },
+              403: { description: 'Forbidden - only the setlist owner can update sections' },
+              404: { description: 'Section not found or does not belong to setlist' },
+              422: {
+                description:
+                  'Unprocessable Entity - invalid input data',
+              },
+            },
+          },
+        }
+      )
+      // Delete section from setlist
+      .delete(
+        '/:setlistId/sections/:sectionId',
+        async ({ firebase, params, set }) => {
+          try {
+            return await setlistController.deleteSection(
+              params.setlistId,
+              params.sectionId,
+              firebase.uid
+            );
+          } catch (error) {
+            const message = (error as Error).message;
+            if (message.includes('Unauthorized')) {
+              set.status = 403;
+            } else if (message.includes('not found') || message.includes('does not belong')) {
+              set.status = 404;
+            } else {
+              set.status = 500;
+            }
+            return { error: message };
+          }
+        },
+        {
+          params: t.Object({
+            setlistId: t.String(),
+            sectionId: t.String(),
+          }),
+          detail: {
+            tags: ['Setlists'],
+            summary: 'Delete Section',
+            description:
+              'Delete a section from a setlist. Items in the section will be unassigned (sectionId set to null). Only the setlist owner can delete sections.',
+            security: [{ bearerAuth: [] }],
+            responses: {
+              200: { description: 'Section deleted successfully' },
+              401: {
+                description:
+                  'Unauthorized - missing or invalid Firebase token',
+              },
+              403: { description: 'Forbidden - only the setlist owner can delete sections' },
+              404: { description: 'Section not found or does not belong to setlist' },
+              500: { description: 'Server error' },
+            },
+          },
+        }
+      )
+      // Create share for setlist
+      .post(
+        '/:setlistId/shares',
+        async ({ firebase, params, body, set }) => {
+          try {
+            const result = await setlistController.createShare(
+              params.setlistId,
+              firebase.uid,
+              {
+                permission: body.permission,
+                expiresAt: body.expiresAt ? new Date(body.expiresAt) : undefined,
+              }
+            );
+            set.status = 201;
+            return result;
+          } catch (error) {
+            const message = (error as Error).message;
+            if (message.includes('Unauthorized')) {
+              set.status = 403;
+            } else if (message.includes('not found')) {
+              set.status = 404;
+            } else {
+              set.status = 422;
+            }
+            return { error: message };
+          }
+        },
+        {
+          params: t.Object({
+            setlistId: t.String(),
+          }),
+          body: t.Object({
+            permission: t.Union([t.Literal('VIEW_ONLY'), t.Literal('CAN_EDIT')]),
+            expiresAt: t.Optional(t.String()),
+          }),
+          detail: {
+            tags: ['Setlists'],
+            summary: 'Create Share Link',
+            description:
+              'Create a shareable link for a setlist with optional expiration date. Returns a unique share token that can be used to access the setlist without authentication.',
+            security: [{ bearerAuth: [] }],
+            responses: {
+              201: { description: 'Share link created successfully' },
+              401: {
+                description:
+                  'Unauthorized - missing or invalid Firebase token',
+              },
+              403: { description: 'Forbidden - only the setlist owner can create shares' },
+              404: { description: 'Setlist not found' },
+              422: {
+                description:
+                  'Unprocessable Entity - invalid input data',
+              },
+            },
+          },
+        }
+      )
+      // List all shares for a setlist
+      .get(
+        '/:setlistId/shares',
+        async ({ firebase, params, set }) => {
+          try {
+            return await setlistController.listShares(params.setlistId, firebase.uid);
+          } catch (error) {
+            const message = (error as Error).message;
+            if (message.includes('Unauthorized')) {
+              set.status = 403;
+            } else if (message.includes('not found')) {
+              set.status = 404;
+            } else {
+              set.status = 500;
+            }
+            return { error: message };
+          }
+        },
+        {
+          params: t.Object({
+            setlistId: t.String(),
+          }),
+          detail: {
+            tags: ['Setlists'],
+            summary: 'List Shares',
+            description:
+              'Get all active share links for a setlist. Only the setlist owner can list shares.',
+            security: [{ bearerAuth: [] }],
+            responses: {
+              200: { description: 'Shares retrieved successfully' },
+              401: {
+                description:
+                  'Unauthorized - missing or invalid Firebase token',
+              },
+              403: { description: 'Forbidden - only the setlist owner can list shares' },
+              404: { description: 'Setlist not found' },
+              500: { description: 'Server error' },
+            },
+          },
+        }
+      )
+      // Revoke a share link
+      .delete(
+        '/:setlistId/shares/:shareId',
+        async ({ firebase, params, set }) => {
+          try {
+            return await setlistController.revokeShare(
+              params.setlistId,
+              params.shareId,
+              firebase.uid
+            );
+          } catch (error) {
+            const message = (error as Error).message;
+            if (message.includes('Unauthorized')) {
+              set.status = 403;
+            } else if (message.includes('not found') || message.includes('does not belong')) {
+              set.status = 404;
+            } else {
+              set.status = 500;
+            }
+            return { error: message };
+          }
+        },
+        {
+          params: t.Object({
+            setlistId: t.String(),
+            shareId: t.String(),
+          }),
+          detail: {
+            tags: ['Setlists'],
+            summary: 'Revoke Share',
+            description:
+              'Revoke a share link for a setlist. Only the setlist owner can revoke shares.',
+            security: [{ bearerAuth: [] }],
+            responses: {
+              200: { description: 'Share revoked successfully' },
+              401: {
+                description:
+                  'Unauthorized - missing or invalid Firebase token',
+              },
+              403: { description: 'Forbidden - only the setlist owner can revoke shares' },
+              404: { description: 'Share not found or does not belong to setlist' },
+              500: { description: 'Server error' },
+            },
+          },
+        }
+      )
   )
   .group('/setlist', (setlistRoute) =>
     setlistRoute
