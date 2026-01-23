@@ -113,7 +113,7 @@ export const SongSearchModal = ({ visible, onClose, onSelectTrack }: SongSearchM
             {item.title}
           </Text>
           <Text className={`text-sm ${tailwind.textMuted.both} ml-2`}>
-            {formatDuration(item.duration || 0)}
+            {formatDuration(item.defaultDuration || 0)}
           </Text>
         </View>
 
@@ -124,9 +124,9 @@ export const SongSearchModal = ({ visible, onClose, onSelectTrack }: SongSearchM
               {item.artist}
             </Text>
           )}
-          {item.tuning && (
+          {item.defaultTuning && (
             <Text className={`text-xs px-2 py-1 rounded ${tailwind.activeBackground.both} ${tailwind.textMuted.both}`}>
-              {item.tuning}
+              {item.defaultTuning}
             </Text>
           )}
         </View>

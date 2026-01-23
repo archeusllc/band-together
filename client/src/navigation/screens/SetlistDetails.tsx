@@ -5,23 +5,42 @@ import {
   ScrollView,
   ActivityIndicator,
   FlatList,
+  Pressable,
+  Alert,
 } from 'react-native';
 import type { DrawerScreenProps } from '@react-navigation/drawer';
 import type { DrawerParamList } from '@navigation/types';
+import DraggableFlatList, { ScaleDecorator } from 'react-native-draggable-flatlist';
 import { setlistService } from '@services';
+import { useAuth } from '@contexts';
 import { tailwind, colors } from '@theme';
 import { IconSymbol } from '@ui';
 import { SetItemRow } from '@components/setlist/SetItemRow';
 import { SetSectionHeader } from '@components/setlist/SetSectionHeader';
-import type { SetList, SetItem, SetSection } from '@band-together/shared';
+import { SongSearchModal } from '@components/setlist/SongSearchModal';
+import { AddSectionModal } from '@components/setlist/AddSectionModal';
+import { EditItemModal } from '@components/setlist/EditItemModal';
+import type { SetList, SetItem, SetSection, Track } from '@band-together/shared';
 
 type Props = DrawerScreenProps<DrawerParamList, 'SetlistDetails'>;
 
+interface DisplayItem {
+  type: 'header' | 'item';
+  data: SetSection | (SetItem & { track?: Track });
+  id: string;
+}
+
 export const SetlistDetailsScreen = ({ route }: Props) => {
   const { setlistId } = route.params;
+  const { user } = useAuth();
   const [setlist, setSetlist] = useState<SetList & { setItems?: Array<SetItem & { track?: any }>; setSections?: SetSection[] } | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [showSongSearch, setShowSongSearch] = useState(false);
+  const [showAddSection, setShowAddSection] = useState(false);
+  const [editingItem, setEditingItem] = useState<SetItem & { track?: Track } | null>(null);
+  const [operationLoading, setOperationLoading] = useState(false);
 
   useEffect(() => {
     fetchSetlistDetails();
@@ -44,6 +63,136 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
       console.error('Fetch setlist error:', err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const isOwner = user && setlist && user.userId === (setlist as any).ownerId;
+
+  const formatDuration = (seconds: number): string => {
+    if (seconds === 0) return '0s';
+    if (seconds < 60) return `${seconds}s`;
+
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    return remainingSeconds > 0 ? `${minutes}m ${remainingSeconds}s` : `${minutes}m`;
+  };
+
+  const handleAddTrack = async (track: Track) => {
+    if (!setlist) return;
+    setOperationLoading(true);
+    try {
+      await setlistService.addSetItem(setlistId, {
+        trackId: track.trackId,
+      });
+      // Refresh setlist data
+      await fetchSetlistDetails();
+    } catch (err) {
+      Alert.alert('Error', `Failed to add track: ${err instanceof Error ? err.message : 'Unknown error'}`);
+    } finally {
+      setOperationLoading(false);
+    }
+  };
+
+  const handleDeleteItem = (item: SetItem & { track?: Track }) => {
+    Alert.alert(
+      'Delete Track',
+      `Remove "${item.track?.title}" from setlist?`,
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Delete',
+          style: 'destructive',
+          onPress: async () => {
+            setOperationLoading(true);
+            try {
+              await setlistService.deleteSetItem(setlistId, item.setItemId);
+              await fetchSetlistDetails();
+            } catch (err) {
+              Alert.alert('Error', `Failed to delete track: ${err instanceof Error ? err.message : 'Unknown error'}`);
+            } finally {
+              setOperationLoading(false);
+            }
+          },
+        },
+      ]
+    );
+  };
+
+  const handleUpdateItem = async (updates: {
+    customTuning?: string;
+    customNotes?: string;
+    customDuration?: number;
+  }) => {
+    if (!editingItem) return;
+    setOperationLoading(true);
+    try {
+      await setlistService.updateSetItem(setlistId, editingItem.setItemId, updates);
+      await fetchSetlistDetails();
+      setEditingItem(null);
+    } catch (err) {
+      throw err;
+    } finally {
+      setOperationLoading(false);
+    }
+  };
+
+  const handleAddSection = async (name: string) => {
+    setOperationLoading(true);
+    try {
+      await setlistService.addSection(setlistId, { name });
+      await fetchSetlistDetails();
+      setShowAddSection(false);
+    } catch (err) {
+      throw err;
+    } finally {
+      setOperationLoading(false);
+    }
+  };
+
+  const handleDeleteSection = (section: SetSection) => {
+    Alert.alert(
+      'Delete Section',
+      `Remove section "${section.name}"? Tracks in this section will become unsectioned.`,
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Delete',
+          style: 'destructive',
+          onPress: async () => {
+            setOperationLoading(true);
+            try {
+              await setlistService.deleteSection(setlistId, section.sectionId);
+              await fetchSetlistDetails();
+            } catch (err) {
+              Alert.alert('Error', `Failed to delete section: ${err instanceof Error ? err.message : 'Unknown error'}`);
+            } finally {
+              setOperationLoading(false);
+            }
+          },
+        },
+      ]
+    );
+  };
+
+  const handleReorderItems = async (newData: DisplayItem[]) => {
+    if (!setlist?.setItems) return;
+
+    // Extract only items (not headers) and map to reorder data
+    const reorderedItems = newData
+      .filter((item) => item.type === 'item')
+      .map((item, index) => ({
+        setItemId: (item.data as SetItem).setItemId,
+        position: index,
+      }));
+
+    setOperationLoading(true);
+    try {
+      await setlistService.reorderSetItems(setlistId, reorderedItems);
+      await fetchSetlistDetails();
+    } catch (err) {
+      Alert.alert('Error', `Failed to reorder tracks: ${err instanceof Error ? err.message : 'Unknown error'}`);
+    } finally {
+      setOperationLoading(false);
     }
   };
 
@@ -71,18 +220,9 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
 
   // Calculate total duration
   const totalDuration = (setlist.setItems || []).reduce((sum, item) => {
-    const duration = item.customDuration ?? item.track?.duration ?? 0;
+    const duration = item.customDuration ?? item.track?.defaultDuration ?? 0;
     return sum + duration;
   }, 0);
-
-  const formatDuration = (seconds: number): string => {
-    if (seconds === 0) return '0s';
-    if (seconds < 60) return `${seconds}s`;
-
-    const minutes = Math.floor(seconds / 60);
-    const remainingSeconds = seconds % 60;
-    return remainingSeconds > 0 ? `${minutes}m ${remainingSeconds}s` : `${minutes}m`;
-  };
 
   // Group items by section for display
   const sectionMap = new Map<string | null, typeof setlist.setItems>();
@@ -95,37 +235,105 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
   });
 
   // Create display list with sections as headers
-  const displayItems: Array<{ type: 'header' | 'item'; data: any }> = [];
+  const displayItems: DisplayItem[] = [];
   const sections = setlist.setSections || [];
-  const sectionIds = new Set(sections.map((s) => s.setSectionId));
 
   // Add unsectioned items first (if any)
   const unsectionedItems = sectionMap.get(null) || [];
   if (unsectionedItems.length > 0) {
     unsectionedItems.forEach((item) => {
-      displayItems.push({ type: 'item', data: item });
+      displayItems.push({ type: 'item', data: item, id: `item-${item.setItemId}` });
     });
   }
 
   // Add sections with their items
   sections.forEach((section) => {
-    displayItems.push({ type: 'header', data: section });
-    const sectionItems = sectionMap.get(section.setSectionId) || [];
+    displayItems.push({ type: 'header', data: section, id: `section-${section.sectionId}` });
+    const sectionItems = sectionMap.get(section.sectionId) || [];
     sectionItems.forEach((item) => {
-      displayItems.push({ type: 'item', data: item });
+      displayItems.push({ type: 'item', data: item, id: `item-${item.setItemId}` });
     });
   });
 
-  const renderItem = ({ item }: { item: (typeof displayItems)[0] }) => {
+  const renderItem = (props: any) => {
+    const { item, drag, isActive } = props;
+
     if (item.type === 'header') {
-      return <SetSectionHeader section={item.data} />;
+      return (
+        <SetSectionHeader
+          section={item.data}
+          isEditing={isEditing}
+          onEdit={() => {
+            Alert.prompt(
+              'Edit Section Name',
+              'Enter new section name',
+              [
+                { text: 'Cancel', style: 'cancel' },
+                {
+                  text: 'Update',
+                  onPress: async (newName: string | undefined) => {
+                    if (!newName?.trim()) return;
+                    setOperationLoading(true);
+                    try {
+                      await setlistService.updateSection(setlistId, item.data.sectionId, {
+                        name: newName.trim(),
+                      });
+                      await fetchSetlistDetails();
+                    } catch (err) {
+                      Alert.alert('Error', `Failed to update section: ${err instanceof Error ? err.message : 'Unknown error'}`);
+                    } finally {
+                      setOperationLoading(false);
+                    }
+                  },
+                },
+              ],
+              'plain-text',
+              item.data.name
+            );
+          }}
+          onDelete={() => handleDeleteSection(item.data)}
+        />
+      );
     }
+
+    if (isEditing) {
+      return (
+        <ScaleDecorator>
+          <SetItemRow
+            item={item.data}
+            isEditing={true}
+            isDragging={isActive}
+            onEdit={() => setEditingItem(item.data)}
+            onDelete={() => handleDeleteItem(item.data)}
+          />
+        </ScaleDecorator>
+      );
+    }
+
     return <SetItemRow item={item.data} />;
   };
 
   return (
     <View className={`flex-1 ${tailwind.background.both}`}>
-      <ScrollView>
+      {/* Header with Edit Button */}
+      <View className={`${tailwind.card.both} border-b ${tailwind.border.both} px-4 py-3 flex-row items-center justify-between`}>
+        <Text className={`text-lg font-bold ${tailwind.text.both}`}>
+          {setlist.name}
+        </Text>
+        {isOwner && (
+          <Pressable
+            onPress={() => setIsEditing(!isEditing)}
+            disabled={operationLoading}
+            className={`py-2 px-4 rounded-lg ${isEditing ? 'bg-blue-500' : tailwind.activeBackground.both}`}
+          >
+            <Text className={`font-semibold ${isEditing ? 'text-white' : tailwind.text.both}`}>
+              {isEditing ? 'Done' : 'Edit'}
+            </Text>
+          </Pressable>
+        )}
+      </View>
+
+      <ScrollView showsVerticalScrollIndicator={false}>
         {/* Header Section */}
         <View className={`${tailwind.card.both} border-b ${tailwind.border.both} p-6`}>
           {/* Title and Privacy Icon */}
@@ -154,7 +362,7 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
           )}
 
           {/* Stats */}
-          <View className="flex-row gap-6">
+          <View className="flex-row gap-6 mb-4">
             {/* Track Count */}
             <View className="items-center">
               <Text className={`text-lg font-bold ${tailwind.text.both}`}>
@@ -185,22 +393,50 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
               </View>
             )}
           </View>
+
+          {/* Action Buttons (editing mode) */}
+          {isEditing && isOwner && (
+            <View className="flex-row gap-2 pt-4 border-t border-slate-200 dark:border-slate-700">
+              <Pressable
+                className={`flex-1 py-3 rounded-lg flex-row items-center justify-center gap-2 ${tailwind.activeBackground.both}`}
+                onPress={() => setShowSongSearch(true)}
+                disabled={operationLoading}
+              >
+                <IconSymbol name="plus.circle" size={16} color={colors.brand.primary} />
+                <Text className={`font-semibold ${tailwind.text.both}`}>Add Song</Text>
+              </Pressable>
+              <Pressable
+                className={`flex-1 py-3 rounded-lg flex-row items-center justify-center gap-2 ${tailwind.activeBackground.both}`}
+                onPress={() => setShowAddSection(true)}
+                disabled={operationLoading}
+              >
+                <IconSymbol name="plus.circle" size={16} color={colors.brand.primary} />
+                <Text className={`font-semibold ${tailwind.text.both}`}>Add Section</Text>
+              </Pressable>
+            </View>
+          )}
         </View>
 
         {/* Tracks Section */}
         {displayItems.length > 0 ? (
-          <FlatList
-            data={displayItems}
-            keyExtractor={(item, index) => {
-              if (item.type === 'header') {
-                return `section-${item.data.setSectionId}`;
-              }
-              return `item-${item.data.setItemId}`;
-            }}
-            renderItem={renderItem}
-            scrollEnabled={false}
-            nestedScrollEnabled={false}
-          />
+          isEditing ? (
+            <DraggableFlatList
+              data={displayItems}
+              keyExtractor={(item) => item.id}
+              renderItem={renderItem}
+              onDragEnd={({ data }) => handleReorderItems(data)}
+              scrollEnabled={false}
+              activationDistance={10}
+            />
+          ) : (
+            <FlatList
+              data={displayItems}
+              keyExtractor={(item) => item.id}
+              renderItem={({ item }) => renderItem({ item })}
+              scrollEnabled={false}
+              nestedScrollEnabled={false}
+            />
+          )
         ) : (
           <View className="flex-1 items-center justify-center p-6 min-h-96">
             <IconSymbol name="music.note.slash" size={48} color={colors.light.muted} />
@@ -208,11 +444,33 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
               No tracks in this setlist yet
             </Text>
             <Text className={`text-sm ${tailwind.textMuted.both} mt-2 text-center`}>
-              Add songs to get started
+              {isOwner && isEditing ? 'Tap "Add Song" to get started' : 'Add songs to get started'}
             </Text>
           </View>
         )}
       </ScrollView>
+
+      {/* Modals */}
+      <SongSearchModal
+        visible={showSongSearch}
+        onClose={() => setShowSongSearch(false)}
+        onSelectTrack={handleAddTrack}
+      />
+
+      <AddSectionModal
+        visible={showAddSection}
+        onClose={() => setShowAddSection(false)}
+        onAdd={handleAddSection}
+        loading={operationLoading}
+      />
+
+      <EditItemModal
+        visible={!!editingItem}
+        item={editingItem}
+        onClose={() => setEditingItem(null)}
+        onSave={handleUpdateItem}
+        loading={operationLoading}
+      />
     </View>
   );
 };
