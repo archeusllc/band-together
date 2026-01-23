@@ -16,5 +16,8 @@
     "setlist",
     "rehearsal",
     "gig"
-  ]
+  ],
+  "dependencies": {
+    "elysia": "^1.4.22"
+  }
 }

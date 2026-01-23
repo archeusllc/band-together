@@ -1,6 +1,7 @@
 import { firebaseGate, firebaseMiddleware } from '@middleware';
 import Elysia, { t } from 'elysia';
 import { setlistController } from './setlists.controller';
+import { setlistPresenceService } from '@services/setlist-presence.service';
 
 export const setlistRoutes = new Elysia()
   .group('/setlist', (setlistRoute) =>
@@ -828,4 +829,134 @@ export const setlistRoutes = new Elysia()
           },
         }
       )
+      // WebSocket for real-time collaboration
+      .ws('/:setlistId/ws', {
+        params: t.Object({
+          setlistId: t.String(),
+        }),
+        query: t.Object({
+          userId: t.Optional(t.String()),
+          userName: t.Optional(t.String()),
+        }),
+        open(ws: any) {
+          const setlistId = ws.data.params.setlistId as string;
+          const userId = (ws.data.query.userId as string) || null;
+          const userName = (ws.data.query.userName as string) || 'Guest';
+
+          // Generate unique connection ID
+          const connectionId = `${setlistId}-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`;
+
+          // Store on ws instance for use in message/close handlers
+          (ws as any).setlistId = setlistId;
+          (ws as any).connectionId = connectionId;
+
+          // Add user to presence tracking
+          const presence = setlistPresenceService.addUser(
+            setlistId,
+            connectionId,
+            userId,
+            userName,
+            !!userId
+          );
+
+          // Subscribe to setlist room
+          ws.subscribe(`setlist:${setlistId}`);
+
+          // Broadcast presence update to all clients in room
+          ws.publish(
+            `setlist:${setlistId}`,
+            JSON.stringify({
+              type: 'presence-update',
+              presence,
+              timestamp: new Date().toISOString(),
+            })
+          );
+        },
+
+        message(ws: any, message: string) {
+          const setlistId = ws.setlistId as string;
+          const connectionId = ws.connectionId as string;
+
+          try {
+            const parsed = JSON.parse(message);
+
+            switch (parsed.type) {
+              case 'start-editing': {
+                setlistPresenceService.updateEditingStatus(
+                  setlistId,
+                  connectionId,
+                  true
+                );
+                const updatedPresence =
+                  setlistPresenceService.getPresence(setlistId);
+
+                ws.publish(
+                  `setlist:${setlistId}`,
+                  JSON.stringify({
+                    type: 'presence-update',
+                    presence: updatedPresence,
+                    timestamp: new Date().toISOString(),
+                  })
+                );
+                break;
+              }
+
+              case 'stop-editing': {
+                setlistPresenceService.updateEditingStatus(
+                  setlistId,
+                  connectionId,
+                  false
+                );
+                const updatedPresence =
+                  setlistPresenceService.getPresence(setlistId);
+
+                ws.publish(
+                  `setlist:${setlistId}`,
+                  JSON.stringify({
+                    type: 'presence-update',
+                    presence: updatedPresence,
+                    timestamp: new Date().toISOString(),
+                  })
+                );
+                break;
+              }
+
+              default:
+                console.warn('Unknown message type:', parsed.type);
+            }
+          } catch (error) {
+            console.error('Failed to parse WebSocket message:', error);
+          }
+        },
+
+        close(ws: any) {
+          const setlistId = ws.setlistId as string;
+          const connectionId = ws.connectionId as string;
+
+          // Remove user from presence tracking
+          const updatedPresence = setlistPresenceService.removeUser(
+            setlistId,
+            connectionId
+          );
+
+          // Broadcast presence update to remaining clients
+          if (updatedPresence.length > 0) {
+            ws.publish(
+              `setlist:${setlistId}`,
+              JSON.stringify({
+                type: 'presence-update',
+                presence: updatedPresence,
+                timestamp: new Date().toISOString(),
+              })
+            );
+          }
+        },
+
+        detail: {
+          tags: ['Setlists'],
+          summary: 'WebSocket for Real-Time Collaboration',
+          description:
+            'WebSocket connection for real-time setlist collaboration. Clients connect with optional userId and userName. Server broadcasts presence updates when users join/leave or change editing status.',
+        },
+      })
   );
