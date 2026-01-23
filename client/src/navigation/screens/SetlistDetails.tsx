@@ -78,6 +78,31 @@ export const SetlistDetailsScreen = ({ route, navigation }: Props) => {
     }
   }, [isEditing, isOwner, wsConnected]);
 
+  // Sync Share modal state with browser history for proper back button support
+  useEffect(() => {
+    if (typeof window === 'undefined') return; // Skip on non-web platforms
+
+    const handlePopState = () => {
+      setShowShare(false);
+    };
+
+    if (showShare) {
+      // Push a new history entry when share modal opens
+      const currentUrl = window.location.href;
+      const shareUrl = currentUrl.endsWith('/')
+        ? currentUrl.slice(0, -1) + '/share'
+        : currentUrl + '/share';
+      window.history.pushState({ modal: 'share', setlistId }, '', shareUrl);
+    } else {
+      // Don't pop state here - let the browser back button trigger handlePopState
+    }
+
+    window.addEventListener('popstate', handlePopState);
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+    };
+  }, [showShare]);
+
   const fetchSetlistDetails = async () => {
     setLoading(true);
     setError(null);
