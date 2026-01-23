@@ -22,3 +22,6 @@ export { CreateClubScreen } from './CreateClub';
 export { EditClubScreen } from './EditClub';
 // Tools
 export { SetlistManagerScreen } from './SetlistManager';
+// Setlists
+export { SetlistDetailsScreen } from './SetlistDetails';
+export { CreateSetlistScreen } from './CreateSetlist';

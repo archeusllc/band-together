@@ -29,6 +29,9 @@ import {
   EditClubScreen,
   // Tools
   SetlistManagerScreen,
+  // Setlists
+  SetlistDetailsScreen,
+  CreateSetlistScreen,
 } from '@screens';
 import { lightTheme, darkTheme } from './themes';
 import type { RootStackParamList, DrawerParamList } from './types';
@@ -200,6 +203,27 @@ const MainDrawer = createDrawerNavigator({
       },
       options: {
         header: () => <AppHeader />,
+      },
+    },
+    // Setlists
+    SetlistDetails: {
+      screen: SetlistDetailsScreen,
+      linking: {
+        path: 'setlist/:setlistId',
+      },
+      options: {
+        header: () => <AppHeader />,
+        drawerItemStyle: { display: 'none' },
+      },
+    },
+    CreateSetlist: {
+      screen: CreateSetlistScreen,
+      linking: {
+        path: 'setlist/create',
+      },
+      options: {
+        header: () => <AppHeader />,
+        drawerItemStyle: { display: 'none' },
       },
     },
   },
