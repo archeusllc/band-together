@@ -210,7 +210,7 @@ const MainDrawer = createDrawerNavigator({
     SetlistDetails: {
       screen: SetlistDetailsScreen,
       linking: {
-        path: 'setlist/:setlistId',
+        path: 'setlist/:setlistId/:modalState?',
       },
       options: {
         header: () => <AppHeader />,
@@ -289,6 +289,14 @@ export function Navigation(props: any) {
   const colorScheme = useColorScheme();
   const theme = colorScheme === 'dark' ? darkTheme : lightTheme;
 
-  return <RootNavigator {...props} theme={theme} />;
+  return (
+    <RootNavigator
+      {...props}
+      theme={theme}
+      linking={{
+        prefixes: ['bandtogethermobile://', 'https://band-together.app'],
+      }}
+    />
+  );
 }
 

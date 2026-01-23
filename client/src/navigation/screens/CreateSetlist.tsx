@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, Pressable, ActivityIndicator, ScrollView, Alert, FlatList } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { DrawerScreenProps } from '@react-navigation/drawer';
 import type { DrawerParamList } from '@navigation/types';
 import { setlistService, guildService } from '@services';
@@ -22,7 +23,8 @@ interface GuildOption {
   type: 'ACT' | 'VENUE' | 'CLUB';
 }
 
-export const CreateSetlistScreen = ({ navigation }: Props) => {
+export const CreateSetlistScreen = () => {
+  const navigation = useNavigation<NativeStackNavigationProp<DrawerParamList>>();
   const { loading: authLoading } = useAuth();
   const [formData, setFormData] = useState<FormData>({
     name: '',
@@ -139,14 +141,8 @@ export const CreateSetlistScreen = ({ navigation }: Props) => {
         return;
       }
 
-      Alert.alert('Success', 'Setlist created!', [
-        {
-          text: 'OK',
-          onPress: () => {
-            navigation.navigate('SetlistDetails', { setlistId: data.setListId });
-          },
-        },
-      ]);
+      // Navigate to the new setlist immediately
+      navigation.navigate('SetlistDetails', { setlistId: data.setListId });
     } catch (err) {
       console.error('Create setlist error:', err);
       Alert.alert('Error', 'An unexpected error occurred');

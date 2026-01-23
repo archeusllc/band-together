@@ -159,8 +159,9 @@ export const ShareModal = ({ visible, setlistId, setlistName, onClose }: ShareMo
         <View className={`border-b ${tailwind.border.both} p-4 pt-2`}>
           <View className="flex-row items-center justify-between mb-4">
             <Text className={`text-lg font-bold ${tailwind.text.both}`}>Share Setlist</Text>
-            <Pressable onPress={onClose} disabled={loading || listLoading}>
+            <Pressable onPress={onClose} disabled={loading || listLoading} className="flex-row items-center gap-1">
               <IconSymbol name="xmark.circle.fill" size={24} color={colors.light.muted} />
+              <Text className={`text-sm font-semibold ${tailwind.text.both}`}>Close</Text>
             </Pressable>
           </View>
           <Text className={`text-sm ${tailwind.textMuted.both}`}>{setlistName}</Text>

@@ -14,7 +14,7 @@ import { RootStackParamList } from '@navigation/types';
 import { setlistService, setlistWSService } from '@services';
 import { useAuth } from '@contexts';
 import { SetItemRow, SetSectionHeader, SetlistPresence } from '@components';
-import { tailwind, colors } from '@theme';
+import { tailwind } from '@theme';
 import type { SetList, SetItem, SetSection, Track } from '@band-together/shared';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'SharedSetlist'>;
@@ -395,9 +395,8 @@ export const SharedSetlist = ({ route, navigation }: Props) => {
           {canEdit && (
             <TouchableOpacity
               onPress={handleEditPress}
-              className={`ml-4 px-4 py-2 rounded ${
-                isEditing ? `${tailwind.card.both} border ${tailwind.border.both}` : ''
-              }`}
+              className={`ml-4 px-4 py-2 rounded ${isEditing ? `${tailwind.card.both} border ${tailwind.border.both}` : ''
+                }`}
             >
               <Text className={tailwind.primary}>
                 {isEditing ? 'Done' : 'Edit'}

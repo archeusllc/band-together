@@ -7,6 +7,8 @@ import {
   Pressable,
   Alert,
 } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { DrawerScreenProps } from '@react-navigation/drawer';
 import type { DrawerParamList } from '@navigation/types';
 import DraggableFlatList, { ScaleDecorator } from 'react-native-draggable-flatlist';
@@ -33,7 +35,8 @@ interface DisplayItem {
   id: string;
 }
 
-export const SetlistDetailsScreen = ({ route, navigation }: Props) => {
+export const SetlistDetailsScreen = ({ route }: Props) => {
+  const navigation = useNavigation<NativeStackNavigationProp<DrawerParamList>>();
   const { setlistId } = route.params;
   const { user, loading: authLoading } = useAuth();
   const [setlist, setSetlist] = useState<SetList & { setItems?: Array<SetItem & { track?: any }>; setSections?: SetSection[] } | null>(null);
@@ -42,7 +45,6 @@ export const SetlistDetailsScreen = ({ route, navigation }: Props) => {
   const [isEditing, setIsEditing] = useState(false);
   const [showSongSearch, setShowSongSearch] = useState(false);
   const [showAddSection, setShowAddSection] = useState(false);
-  const [showShare, setShowShare] = useState(false);
   const [showOptions, setShowOptions] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [editingItem, setEditingItem] = useState<SetItem & { track?: Track } | null>(null);
@@ -52,6 +54,10 @@ export const SetlistDetailsScreen = ({ route, navigation }: Props) => {
   const [recentlyAddedItemId, setRecentlyAddedItemId] = useState<string | null>(null);
 
   const isOwner = user && setlist && user.userId === (setlist as any).ownerId;
+
+  const showShare = route.params.modalState === 'share';
+
+  const setShowShare = (show: boolean) => navigation.navigate('SetlistDetails', { setlistId, modalState: show ? 'share' : undefined });
 
   // Wait for Firebase auth to initialize before fetching
   useEffect(() => {
