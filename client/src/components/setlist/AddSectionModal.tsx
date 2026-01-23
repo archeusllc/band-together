@@ -6,7 +6,6 @@ import {
   TextInput,
   Pressable,
   ActivityIndicator,
-  Alert,
 } from 'react-native';
 import { tailwind, colors } from '@theme';
 import { IconSymbol } from '@ui';
@@ -20,18 +19,21 @@ interface AddSectionModalProps {
 
 export const AddSectionModal = ({ visible, onClose, onAdd, loading = false }: AddSectionModalProps) => {
   const [name, setName] = useState('');
+  const [error, setError] = useState<string | null>(null);
 
   const handleAdd = async () => {
     if (!name.trim()) {
-      Alert.alert('Section name is required');
+      setError('Section name is required');
       return;
     }
 
     try {
+      setError(null);
       await onAdd(name.trim());
       setName('');
-    } catch (error) {
-      Alert.alert('Error', `Failed to add section: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Unknown error';
+      setError(`Failed to add section: ${errorMessage}`);
     }
   };
 
@@ -59,7 +61,7 @@ export const AddSectionModal = ({ visible, onClose, onAdd, loading = false }: Ad
         <View className="flex-row items-center justify-between mb-4">
           <Text className={`text-lg font-bold ${tailwind.text.both}`}>Add Section</Text>
           <Pressable onPress={handleClose} disabled={loading}>
-            <IconSymbol name="xmark.circle.fill" size={24} color={colors.light.muted} />
+            <IconSymbol name="xmark.circle.fill" size={24} color="#9CA3AF" />
           </Pressable>
         </View>
 
@@ -71,7 +73,7 @@ export const AddSectionModal = ({ visible, onClose, onAdd, loading = false }: Ad
           <TextInput
             className={`${tailwind.card.both} border ${tailwind.border.both} rounded-lg px-4 py-3 ${tailwind.text.both}`}
             placeholder="e.g., Set 1, Encore, Acoustic"
-            placeholderTextColor={colors.light.muted}
+            placeholderTextColor="#9CA3AF"
             value={name}
             onChangeText={setName}
             editable={!loading}
@@ -103,6 +105,33 @@ export const AddSectionModal = ({ visible, onClose, onAdd, loading = false }: Ad
             )}
           </Pressable>
         </View>
+
+        {/* Error Modal */}
+        {error && (
+          <Pressable
+            className="absolute inset-0 bg-black/50"
+            onPress={() => setError(null)}
+            style={{ pointerEvents: 'auto' }}
+          >
+            <View className="absolute inset-0 flex items-center justify-center" style={{ pointerEvents: 'box-none' }}>
+              <Pressable
+                className={`${tailwind.card.both} rounded-lg p-6 mx-6 max-w-sm`}
+                onPress={() => {}}
+                style={{ pointerEvents: 'box-only' }}
+              >
+                <Text className={`text-lg font-bold ${tailwind.text.both} mb-2`}>Error</Text>
+                <Text className={`text-base ${tailwind.text.both} mb-6`}>{error}</Text>
+                <Pressable
+                  className="py-3 rounded-lg"
+                  style={{ backgroundColor: colors.brand.primary }}
+                  onPress={() => setError(null)}
+                >
+                  <Text className="text-center font-semibold text-white">OK</Text>
+                </Pressable>
+              </Pressable>
+            </View>
+          </Pressable>
+        )}
       </View>
     </Modal>
   );

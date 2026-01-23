@@ -147,7 +147,7 @@ export const SongSearchModal = ({ visible, onClose, onSelectTrack }: SongSearchM
           <View className="flex-row items-center justify-between mb-3">
             <Text className={`text-lg font-bold ${tailwind.text.both}`}>Add Song</Text>
             <Pressable onPress={onClose}>
-              <IconSymbol name="xmark.circle.fill" size={24} color={colors.light.muted} />
+              <IconSymbol name="xmark.circle.fill" size={24} color="#9CA3AF" />
             </Pressable>
           </View>
 
@@ -155,7 +155,7 @@ export const SongSearchModal = ({ visible, onClose, onSelectTrack }: SongSearchM
           <TextInput
             className={`${tailwind.card.both} border ${tailwind.border.both} rounded-lg px-4 py-3 ${tailwind.text.both}`}
             placeholder="Search songs..."
-            placeholderTextColor={colors.light.muted}
+            placeholderTextColor="#9CA3AF"
             value={searchQuery}
             onChangeText={handleSearchChange}
             autoFocus
