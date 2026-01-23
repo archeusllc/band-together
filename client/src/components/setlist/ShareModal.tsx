@@ -455,28 +455,23 @@ export const ShareModal = ({ visible, setlistId, setlistName, onClose }: ShareMo
 
         {/* QR Code Enlarged Modal */}
         {showQrModal && qrCodeUrl && (
-          <View
-            className="absolute inset-0 bg-black/75 flex items-center justify-center z-50"
-            style={{ pointerEvents: 'box-none' }}
-          >
-            <View
-              className={`${tailwind.card.both} rounded-lg p-4 mx-4`}
-              style={{ pointerEvents: 'box-only' }}
-            >
-              <Image
-                source={{ uri: qrCodeUrl }}
-                style={{ width: 320, height: 320 }}
-                className="rounded-lg"
-              />
-              <Text className={`text-xs ${tailwind.textMuted.both} mt-3 text-center`}>
-                Tap outside to close
-              </Text>
-            </View>
+          <View className="absolute inset-0 z-50" style={{ pointerEvents: 'box-none' }}>
             <Pressable
-              className="absolute inset-0"
+              className="absolute inset-0 bg-black/75"
               onPress={() => setShowQrModal(false)}
-              style={{ pointerEvents: 'auto' }}
             />
+            <View className="absolute inset-0 flex items-center justify-center" style={{ pointerEvents: 'box-none' }}>
+              <View className={`${tailwind.card.both} rounded-lg p-4 mx-4`} style={{ pointerEvents: 'box-only' }}>
+                <Image
+                  source={{ uri: qrCodeUrl }}
+                  style={{ width: 320, height: 320 }}
+                  className="rounded-lg"
+                />
+                <Text className={`text-xs ${tailwind.textMuted.both} mt-3 text-center`}>
+                  Tap outside to close
+                </Text>
+              </View>
+            </View>
           </View>
         )}
       </View>
