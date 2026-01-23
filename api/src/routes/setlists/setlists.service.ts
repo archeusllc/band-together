@@ -1,4 +1,6 @@
 import { prisma } from '@services/prisma.service';
+import { broadcastService } from '@services/broadcast.service';
+import type { Elysia } from 'elysia';
 
 /**
  * Helper function to get database userId from Firebase UID
@@ -16,6 +18,27 @@ const getUserIdByFirebaseUid = async (firebaseUid: string): Promise<string> => {
   }
 
   return user.userId;
+};
+
+/**
+ * Helper function to get user details (userId and displayName) from Firebase UID
+ */
+const getUserDetailsFromFirebaseUid = async (
+  firebaseUid: string
+): Promise<{ userId: string; displayName: string }> => {
+  const user = await prisma.user.findUnique({
+    where: { firebaseUid },
+    select: { userId: true, displayName: true },
+  });
+
+  if (!user) {
+    throw new Error('User not found in database');
+  }
+
+  return {
+    userId: user.userId,
+    displayName: user.displayName || 'User',
+  };
 };
 
 export const setlistService = {
@@ -362,6 +385,7 @@ export const setlistService = {
   /**
    * Add a track to a setlist with optional custom overrides
    * @param firebaseUid - Firebase UID of the authenticated user
+   * @param app - Elysia app instance for broadcasting WebSocket events
    */
   addSetItem: async (
     setlistId: string,
@@ -373,9 +397,10 @@ export const setlistService = {
       customDuration?: number;
       position?: number;
       sectionId?: string;
-    }
+    },
+    app?: Elysia<any, any, any, any, any, any>
   ) => {
-    const userId = await getUserIdByFirebaseUid(firebaseUid);
+    const { userId, displayName } = await getUserDetailsFromFirebaseUid(firebaseUid);
 
     // 1. Verify setlist exists and user has edit permission
     const setlist = await prisma.setList.findUnique({
@@ -410,7 +435,7 @@ export const setlistService = {
     }
 
     // 4. Create SetItem
-    return await prisma.setItem.create({
+    const newItem = await prisma.setItem.create({
       data: {
         setListId: setlistId,
         trackId: data.trackId,
@@ -425,11 +450,19 @@ export const setlistService = {
         section: true,
       },
     });
+
+    // 5. Broadcast item-added event
+    if (app) {
+      broadcastService.itemAdded(app, setlistId, newItem, userId, displayName);
+    }
+
+    return newItem;
   },
 
   /**
    * Update a SetItem's custom overrides
    * @param firebaseUid - Firebase UID of the authenticated user
+   * @param app - Elysia app instance for broadcasting WebSocket events
    */
   updateSetItem: async (
     setItemId: string,
@@ -439,9 +472,10 @@ export const setlistService = {
       customNotes?: string;
       customDuration?: number;
       sectionId?: string | null;
-    }
+    },
+    app?: Elysia<any, any, any, any, any, any>
   ) => {
-    const userId = await getUserIdByFirebaseUid(firebaseUid);
+    const { userId, displayName } = await getUserDetailsFromFirebaseUid(firebaseUid);
 
     // 1. Get SetItem with setlist relation
     const item = await prisma.setItem.findUnique({
@@ -459,7 +493,7 @@ export const setlistService = {
     }
 
     // 3. Update
-    return await prisma.setItem.update({
+    const updatedItem = await prisma.setItem.update({
       where: { setItemId },
       data,
       include: {
@@ -467,17 +501,26 @@ export const setlistService = {
         section: true,
       },
     });
+
+    // 4. Broadcast item-updated event
+    if (app) {
+      broadcastService.itemUpdated(app, item.setListId, updatedItem, userId, displayName);
+    }
+
+    return updatedItem;
   },
 
   /**
    * Remove a track from a setlist
    * @param firebaseUid - Firebase UID of the authenticated user
+   * @param app - Elysia app instance for broadcasting WebSocket events
    */
   removeSetItem: async (
     setItemId: string,
-    firebaseUid: string
+    firebaseUid: string,
+    app?: Elysia<any, any, any, any, any, any>
   ) => {
-    const userId = await getUserIdByFirebaseUid(firebaseUid);
+    const { userId, displayName } = await getUserDetailsFromFirebaseUid(firebaseUid);
 
     // 1. Get SetItem with setlist relation
     const item = await prisma.setItem.findUnique({
@@ -499,12 +542,18 @@ export const setlistService = {
       where: { setItemId },
     });
 
+    // 4. Broadcast item-deleted event
+    if (app) {
+      broadcastService.itemDeleted(app, item.setListId, setItemId, userId, displayName);
+    }
+
     return { success: true };
   },
 
   /**
    * Reorder tracks in a setlist
    * @param firebaseUid - Firebase UID of the authenticated user
+   * @param app - Elysia app instance for broadcasting WebSocket events
    */
   reorderSetItems: async (
     setlistId: string,
@@ -512,9 +561,10 @@ export const setlistService = {
     itemPositions: Array<{
       setItemId: string;
       position: number;
-    }>
+    }>,
+    app?: Elysia<any, any, any, any, any, any>
   ) => {
-    const userId = await getUserIdByFirebaseUid(firebaseUid);
+    const { userId, displayName } = await getUserDetailsFromFirebaseUid(firebaseUid);
 
     // 1. Verify setlist exists and user has edit permission
     const setlist = await prisma.setList.findUnique({
@@ -549,7 +599,7 @@ export const setlistService = {
     });
 
     // 3. Return updated setlist with items
-    return await prisma.setList.findUnique({
+    const updatedSetlist = await prisma.setList.findUnique({
       where: { setListId: setlistId },
       include: {
         setItems: {
@@ -561,10 +611,19 @@ export const setlistService = {
         },
       },
     });
+
+    // 4. Broadcast reordered event
+    if (app && updatedSetlist) {
+      broadcastService.reordered(app, setlistId, updatedSetlist, userId, displayName);
+    }
+
+    return updatedSetlist;
   },
 
   /**
    * Add a section to a setlist
+   * @param firebaseUid - Firebase UID of the authenticated user
+   * @param app - Elysia app instance for broadcasting WebSocket events
    */
   addSection: async (
     setlistId: string,
@@ -572,9 +631,10 @@ export const setlistService = {
     data: {
       name: string;
       position?: number;
-    }
+    },
+    app?: Elysia<any, any, any, any, any, any>
   ) => {
-    const userId = await getUserIdByFirebaseUid(firebaseUid);
+    const { userId, displayName } = await getUserDetailsFromFirebaseUid(firebaseUid);
 
     // 1. Verify setlist exists and user has edit permission
     const setlist = await prisma.setList.findUnique({
@@ -600,18 +660,26 @@ export const setlistService = {
     }
 
     // 3. Create SetSection
-    return await prisma.setSection.create({
+    const newSection = await prisma.setSection.create({
       data: {
         setListId: setlistId,
         name: data.name,
         position,
       },
     });
+
+    // 4. Broadcast section-added event
+    if (app) {
+      broadcastService.sectionAdded(app, setlistId, newSection, userId, displayName);
+    }
+
+    return newSection;
   },
 
   /**
    * Update a section (name only)
    * @param firebaseUid - Firebase UID of the authenticated user
+   * @param app - Elysia app instance for broadcasting WebSocket events
    */
   updateSection: async (
     setlistId: string,
@@ -619,9 +687,10 @@ export const setlistService = {
     firebaseUid: string,
     data: {
       name?: string;
-    }
+    },
+    app?: Elysia<any, any, any, any, any, any>
   ) => {
-    const userId = await getUserIdByFirebaseUid(firebaseUid);
+    const { userId, displayName } = await getUserDetailsFromFirebaseUid(firebaseUid);
 
     // 1. Get section with setlist relation
     const section = await prisma.setSection.findUnique({
@@ -652,22 +721,31 @@ export const setlistService = {
       updateData.name = data.name.trim();
     }
 
-    return await prisma.setSection.update({
+    const updatedSection = await prisma.setSection.update({
       where: { sectionId },
       data: updateData,
     });
+
+    // 5. Broadcast section-updated event
+    if (app) {
+      broadcastService.sectionUpdated(app, setlistId, updatedSection, userId, displayName);
+    }
+
+    return updatedSection;
   },
 
   /**
    * Delete a section (unassigns items from the section)
    * @param firebaseUid - Firebase UID of the authenticated user
+   * @param app - Elysia app instance for broadcasting WebSocket events
    */
   deleteSection: async (
     setlistId: string,
     sectionId: string,
-    firebaseUid: string
+    firebaseUid: string,
+    app?: Elysia<any, any, any, any, any, any>
   ) => {
-    const userId = await getUserIdByFirebaseUid(firebaseUid);
+    const { userId, displayName } = await getUserDetailsFromFirebaseUid(firebaseUid);
 
     // 1. Get section with setlist relation
     const section = await prisma.setSection.findUnique({
@@ -699,6 +777,11 @@ export const setlistService = {
     await prisma.setSection.delete({
       where: { sectionId },
     });
+
+    // 6. Broadcast section-deleted event
+    if (app) {
+      broadcastService.sectionDeleted(app, setlistId, sectionId, userId, displayName);
+    }
 
     return { success: true };
   },
