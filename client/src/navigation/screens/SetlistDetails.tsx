@@ -65,34 +65,6 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
   // Store unsubscribe functions to properly clean up WebSocket listeners
   const unsubscribeFunctions = useRef<Array<() => void>>([]);
 
-  // Wait for Firebase auth to initialize before fetching
-  useEffect(() => {
-    if (!authLoading) {
-      fetchSetlistDetails();
-      connectWebSocket();
-    }
-
-    return () => {
-      // Cleanup: unsubscribe from all WebSocket events and disconnect
-      unsubscribeFunctions.current.forEach(unsub => unsub());
-      unsubscribeFunctions.current = [];
-      setlistWSService.disconnect();
-      setWsConnected(false);
-    };
-  }, [setlistId, authLoading]);
-
-  // Handle editing mode changes - send status to other clients
-  useEffect(() => {
-    if (isOwner && wsConnected) {
-      if (isEditing) {
-        setlistWSService.startEditing();
-      } else {
-        setlistWSService.stopEditing();
-      }
-    }
-  }, [isEditing, isOwner, wsConnected]);
-
-
   const fetchSetlistDetails = async () => {
     setLoading(true);
     setError(null);
@@ -126,7 +98,58 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
     }
   };
 
-  const connectWebSocket = async () => {
+  // Define all WebSocket event handlers with stable references using useCallback
+  const handleItemAdded = useCallback((event: any) => {
+    if (event.setlistId === setlistId) {
+      // Refresh setlist to get the new item
+      fetchSetlistDetails();
+      // Highlight the newly added item briefly
+      setRecentlyAddedItemId(event.data.setItemId);
+      setTimeout(() => setRecentlyAddedItemId(null), 3000);
+    }
+  }, [setlistId]);
+
+  const handleItemUpdated = useCallback((event: any) => {
+    if (event.setlistId === setlistId) {
+      fetchSetlistDetails();
+    }
+  }, [setlistId]);
+
+  const handleItemDeleted = useCallback((event: any) => {
+    if (event.setlistId === setlistId) {
+      fetchSetlistDetails();
+    }
+  }, [setlistId]);
+
+  const handleReordered = useCallback((event: any) => {
+    if (event.setlistId === setlistId) {
+      fetchSetlistDetails();
+    }
+  }, [setlistId]);
+
+  const handleSectionAdded = useCallback((event: any) => {
+    if (event.setlistId === setlistId) {
+      fetchSetlistDetails();
+    }
+  }, [setlistId]);
+
+  const handleSectionUpdated = useCallback((event: any) => {
+    if (event.setlistId === setlistId) {
+      fetchSetlistDetails();
+    }
+  }, [setlistId]);
+
+  const handleSectionDeleted = useCallback((event: any) => {
+    if (event.setlistId === setlistId) {
+      fetchSetlistDetails();
+    }
+  }, [setlistId]);
+
+  const handlePresenceUpdate = useCallback((event: any) => {
+    setPresence(event.presence);
+  }, []);
+
+  const connectWebSocket = useCallback(async () => {
     try {
       // Clear any existing unsubscribe functions
       unsubscribeFunctions.current.forEach(unsub => unsub());
@@ -149,57 +172,34 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
       console.error('Failed to connect WebSocket:', error);
       setWsConnected(false);
     }
-  };
+  }, [setlistId, user?.userId, user?.email, handleItemAdded, handleItemUpdated, handleItemDeleted, handleReordered, handleSectionAdded, handleSectionUpdated, handleSectionDeleted, handlePresenceUpdate]);
 
-  const handleItemAdded = (event: any) => {
-    if (event.setlistId === setlistId) {
-      // Refresh setlist to get the new item
+  // Wait for Firebase auth to initialize before fetching
+  useEffect(() => {
+    if (!authLoading) {
       fetchSetlistDetails();
-      // Highlight the newly added item briefly
-      setRecentlyAddedItemId(event.data.setItemId);
-      setTimeout(() => setRecentlyAddedItemId(null), 3000);
+      connectWebSocket();
     }
-  };
 
-  const handleItemUpdated = (event: any) => {
-    if (event.setlistId === setlistId) {
-      fetchSetlistDetails();
+    return () => {
+      // Cleanup: unsubscribe from all WebSocket events and disconnect
+      unsubscribeFunctions.current.forEach(unsub => unsub());
+      unsubscribeFunctions.current = [];
+      setlistWSService.disconnect();
+      setWsConnected(false);
+    };
+  }, [setlistId, authLoading, connectWebSocket]);
+
+  // Handle editing mode changes - send status to other clients
+  useEffect(() => {
+    if (isOwner && wsConnected) {
+      if (isEditing) {
+        setlistWSService.startEditing();
+      } else {
+        setlistWSService.stopEditing();
+      }
     }
-  };
-
-  const handleItemDeleted = (event: any) => {
-    if (event.setlistId === setlistId) {
-      fetchSetlistDetails();
-    }
-  };
-
-  const handleReordered = (event: any) => {
-    if (event.setlistId === setlistId) {
-      fetchSetlistDetails();
-    }
-  };
-
-  const handleSectionAdded = (event: any) => {
-    if (event.setlistId === setlistId) {
-      fetchSetlistDetails();
-    }
-  };
-
-  const handleSectionUpdated = (event: any) => {
-    if (event.setlistId === setlistId) {
-      fetchSetlistDetails();
-    }
-  };
-
-  const handleSectionDeleted = (event: any) => {
-    if (event.setlistId === setlistId) {
-      fetchSetlistDetails();
-    }
-  };
-
-  const handlePresenceUpdate = (event: any) => {
-    setPresence(event.presence);
-  };
+  }, [isEditing, isOwner, wsConnected]);
 
   const formatDuration = (seconds: number): string => {
     if (seconds === 0) return '0s';
