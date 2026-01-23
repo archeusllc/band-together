@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, RefreshControl, ActivityIndicator, Pressable, SectionList } from 'react-native';
+import { View, Text, FlatList, RefreshControl, Pressable, SectionList } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import type { DrawerNavigationProp } from '@react-navigation/drawer';
 import type { DrawerParamList } from '@navigation/types';
 import { setlistService } from '@services';
 import { useAuth } from '@contexts';
-import { SetlistCard } from '@components/setlist/SetlistCard';
+import { SetlistCard, SetlistCardSkeleton } from '@components/setlist';
 import { tailwind, colors } from '@theme';
 import { IconSymbol } from '@ui';
 import type { SetList } from '@band-together/shared';
@@ -98,11 +98,14 @@ export const SetlistManagerScreen = () => {
 
   if (loading && sections.length === 0) {
     return (
-      <View className={`flex-1 ${tailwind.background.both} justify-center items-center`}>
-        <ActivityIndicator size="large" color={colors.brand.primary} />
-        <Text className={`text-base ${tailwind.textMuted.both} mt-4`}>
-          Loading setlists...
-        </Text>
+      <View className={`flex-1 ${tailwind.background.both}`}>
+        <View className="flex-row items-center gap-2 px-4 py-3 mt-2 mb-1">
+          <View className="w-4 h-4 bg-blue-500 rounded" />
+          <View className="flex-1 h-5 bg-slate-200 dark:bg-slate-700 rounded w-24" />
+        </View>
+        {[1, 2, 3].map((i) => (
+          <SetlistCardSkeleton key={i} />
+        ))}
       </View>
     );
   }

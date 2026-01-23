@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   View,
   Text,
   ScrollView,
-  ActivityIndicator,
   FlatList,
   Pressable,
   Alert,
@@ -22,6 +21,7 @@ import { AddSectionModal } from '@components/setlist/AddSectionModal';
 import { EditItemModal } from '@components/setlist/EditItemModal';
 import { ShareModal } from '@components/setlist/ShareModal';
 import { SetlistPresence } from '@components/setlist/SetlistPresence';
+import { SetlistDetailsSkeleton } from '@components/setlist/SetlistDetailsSkeleton';
 import type { SetList, SetItem, SetSection, Track } from '@band-together/shared';
 import type { UserPresence, BroadcastEvent } from '@services/setlist-ws.service';
 
@@ -33,9 +33,9 @@ interface DisplayItem {
   id: string;
 }
 
-export const SetlistDetailsScreen = ({ route }: Props) => {
+export const SetlistDetailsScreen = ({ route, navigation }: Props) => {
   const { setlistId } = route.params;
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const [setlist, setSetlist] = useState<SetList & { setItems?: Array<SetItem & { track?: any }>; setSections?: SetSection[] } | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -43,6 +43,8 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
   const [showSongSearch, setShowSongSearch] = useState(false);
   const [showAddSection, setShowAddSection] = useState(false);
   const [showShare, setShowShare] = useState(false);
+  const [showOptions, setShowOptions] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [editingItem, setEditingItem] = useState<SetItem & { track?: Track } | null>(null);
   const [operationLoading, setOperationLoading] = useState(false);
   const [wsConnected, setWsConnected] = useState(false);
@@ -51,17 +53,19 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
 
   const isOwner = user && setlist && user.userId === (setlist as any).ownerId;
 
+  // Wait for Firebase auth to initialize before fetching
   useEffect(() => {
-    fetchSetlistDetails();
-    // Connect to WebSocket when screen mounts
-    connectWebSocket();
+    if (!authLoading) {
+      fetchSetlistDetails();
+      connectWebSocket();
+    }
 
     return () => {
       // Cleanup: disconnect WebSocket when screen unmounts
       setlistWSService.disconnect();
       setWsConnected(false);
     };
-  }, [setlistId]);
+  }, [setlistId, authLoading]);
 
   // Handle editing mode changes - send status to other clients
   useEffect(() => {
@@ -85,6 +89,9 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
         return;
       }
 
+      console.log('[SetlistDetails] Fetched setlist:', data);
+      console.log('[SetlistDetails] Current user:', user);
+      console.log('[SetlistDetails] ownerId:', data.ownerId, 'userId:', user?.userId);
       setSetlist(data);
     } catch (err) {
       setError('An error occurred while loading the setlist');
@@ -292,15 +299,68 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
     }
   };
 
+  const handleDeleteSetlist = async () => {
+    setOperationLoading(true);
+    try {
+      console.log('[SetlistDetails] Deleting setlist:', setlistId);
+      const result = await setlistService.deleteSetlist(setlistId);
+      console.log('[SetlistDetails] Delete result:', result);
+
+      if (result.error) {
+        console.error('[SetlistDetails] Delete error:', result.error);
+        Alert.alert('Error', `Failed to delete setlist: ${result.error}`);
+        return;
+      }
+
+      console.log('[SetlistDetails] Setlist deleted successfully, navigating back');
+      // Navigate back to setlist manager
+      setShowDeleteConfirm(false);
+      navigation.goBack();
+    } catch (err) {
+      console.error('[SetlistDetails] Delete exception:', err);
+      const errorMsg = err instanceof Error ? err.message : 'Unknown error';
+      Alert.alert('Error', `Failed to delete setlist: ${errorMsg}`);
+    } finally {
+      setOperationLoading(false);
+    }
+  };
+
+  const handleDuplicateSetlist = async () => {
+    if (!setlist) return;
+    setOperationLoading(true);
+    try {
+      const result = await setlistService.createSetlist({
+        name: `${setlist.name} (Copy)`,
+        description: setlist.description || '',
+        guildId: setlist.guildId || undefined,
+      });
+
+      if (result.data) {
+        // Copy all items from original setlist
+        const items = setlist.setItems || [];
+        for (const item of items) {
+          await setlistService.addSetItem(result.data.setListId, {
+            trackId: item.trackId,
+            customTuning: item.customTuning ?? undefined,
+            customNotes: item.customNotes ?? undefined,
+            customDuration: item.customDuration ?? undefined,
+            sectionId: item.sectionId ?? undefined,
+            position: item.position ?? undefined,
+          });
+        }
+        // Navigate to the new setlist after successful duplication
+        navigation.navigate('SetlistDetails', { setlistId: result.data.setListId });
+        Alert.alert('Success', 'Setlist duplicated successfully');
+      }
+    } catch (err) {
+      Alert.alert('Error', `Failed to duplicate setlist: ${err instanceof Error ? err.message : 'Unknown error'}`);
+    } finally {
+      setOperationLoading(false);
+    }
+  };
+
   if (loading) {
-    return (
-      <View className={`flex-1 ${tailwind.background.both} items-center justify-center`}>
-        <ActivityIndicator size="large" color={colors.brand.primary} />
-        <Text className={`text-base ${tailwind.textMuted.both} mt-4`}>
-          Loading setlist...
-        </Text>
-      </View>
-    );
+    return <SetlistDetailsSkeleton />;
   }
 
   if (error || !setlist) {
@@ -432,9 +492,10 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
             <Pressable
               onPress={() => setShowShare(true)}
               disabled={operationLoading}
-              className={`py-2 px-3 rounded-lg ${tailwind.activeBackground.both}`}
+              className={`py-2 px-3 rounded-lg ${tailwind.activeBackground.both} flex-row items-center gap-1`}
             >
-              <IconSymbol name="link" size={20} color={colors.brand.primary} />
+              <IconSymbol name="link" size={16} color={colors.brand.primary} />
+              <Text className={`text-sm font-semibold ${tailwind.text.both}`}>Share</Text>
             </Pressable>
             <Pressable
               onPress={() => setIsEditing(!isEditing)}
@@ -444,6 +505,17 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
               <Text className={`font-semibold ${isEditing ? 'text-white' : tailwind.text.both}`}>
                 {isEditing ? 'Done' : 'Edit'}
               </Text>
+            </Pressable>
+            <Pressable
+              onPress={() => {
+                console.log('[SetlistDetails] More button pressed, opening options');
+                setShowOptions(true);
+              }}
+              disabled={operationLoading}
+              className={`py-2 px-3 rounded-lg ${tailwind.activeBackground.both} flex-row items-center gap-1`}
+            >
+              <IconSymbol name="gear" size={16} color={colors.brand.primary} />
+              <Text className={`text-sm font-semibold ${tailwind.text.both}`}>More</Text>
             </Pressable>
           </View>
         )}
@@ -595,6 +667,115 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
           setlistName={setlist.name}
           onClose={() => setShowShare(false)}
         />
+      )}
+
+      {/* Options Modal - Web-compatible alternative to Alert */}
+      {showOptions && (
+        <View
+          className="absolute inset-0 bg-black/50 flex items-center justify-center z-50"
+          style={{ pointerEvents: 'box-none' }}
+        >
+          <View
+            className={`${tailwind.card.both} rounded-lg p-4 w-80 max-w-full`}
+            style={{ pointerEvents: 'box-only' }}
+          >
+            <Text className={`text-lg font-bold ${tailwind.text.both} mb-4`}>
+              Options
+            </Text>
+            <Text className={`${tailwind.textMuted.both} mb-6`}>
+              What would you like to do?
+            </Text>
+
+            <View className="gap-2">
+              <Pressable
+                onPress={() => {
+                  console.log('[SetlistDetails] Duplicate selected');
+                  setShowOptions(false);
+                  handleDuplicateSetlist();
+                }}
+                className={`${tailwind.activeBackground.both} rounded-lg p-3`}
+              >
+                <Text className={`font-semibold ${tailwind.text.both}`}>
+                  Duplicate
+                </Text>
+              </Pressable>
+
+              <Pressable
+                onPress={() => {
+                  console.log('[SetlistDetails] Delete selected, showing confirmation');
+                  setShowOptions(false);
+                  setShowDeleteConfirm(true);
+                }}
+                className={`bg-red-100 dark:bg-red-900/30 rounded-lg p-3`}
+              >
+                <Text className="font-semibold text-red-600 dark:text-red-400">
+                  Delete
+                </Text>
+              </Pressable>
+
+              <Pressable
+                onPress={() => {
+                  console.log('[SetlistDetails] Cancel selected');
+                  setShowOptions(false);
+                }}
+                className={`${tailwind.activeBackground.both} rounded-lg p-3`}
+              >
+                <Text className={`font-semibold ${tailwind.text.both}`}>
+                  Cancel
+                </Text>
+              </Pressable>
+            </View>
+          </View>
+        </View>
+      )}
+
+      {/* Delete Confirmation Modal - Web-compatible alternative to Alert */}
+      {showDeleteConfirm && (
+        <View
+          className="absolute inset-0 bg-black/50 flex items-center justify-center z-50"
+          style={{ pointerEvents: 'box-none' }}
+        >
+          <View
+            className={`${tailwind.card.both} rounded-lg p-4 w-80 max-w-full`}
+            style={{ pointerEvents: 'box-only' }}
+          >
+            <Text className={`text-lg font-bold ${tailwind.text.both} mb-2`}>
+              Delete Setlist
+            </Text>
+            <Text className={`${tailwind.textMuted.both} mb-6`}>
+              Are you sure you want to delete "{setlist?.name}"? This action cannot be undone.
+            </Text>
+
+            <View className="gap-2">
+              <Pressable
+                onPress={() => {
+                  console.log('[SetlistDetails] Confirming deletion');
+                  setShowDeleteConfirm(false);
+                  handleDeleteSetlist();
+                }}
+                disabled={operationLoading}
+                className={`bg-red-100 dark:bg-red-900/30 rounded-lg p-3`}
+              >
+                <Text className="font-semibold text-red-600 dark:text-red-400">
+                  {operationLoading ? 'Deleting...' : 'Delete'}
+                </Text>
+              </Pressable>
+
+              <Pressable
+                onPress={() => {
+                  console.log('[SetlistDetails] Delete cancelled');
+                  setShowDeleteConfirm(false);
+                }}
+                disabled={operationLoading}
+                className={`${tailwind.activeBackground.both} rounded-lg p-3`}
+              >
+                <Text className={`font-semibold ${tailwind.text.both}`}>
+                  Cancel
+                </Text>
+              </Pressable>
+            </View>
+          </View>
+        </View>
       )}
     </View>
   );

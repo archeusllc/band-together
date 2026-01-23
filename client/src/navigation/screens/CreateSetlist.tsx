@@ -4,6 +4,7 @@ import { useNavigation } from '@react-navigation/native';
 import type { DrawerScreenProps } from '@react-navigation/drawer';
 import type { DrawerParamList } from '@navigation/types';
 import { setlistService, guildService } from '@services';
+import { useAuth } from '@contexts';
 import { tailwind, colors } from '@theme';
 import { IconSymbol } from '@ui';
 
@@ -22,6 +23,7 @@ interface GuildOption {
 }
 
 export const CreateSetlistScreen = ({ navigation }: Props) => {
+  const { loading: authLoading } = useAuth();
   const [formData, setFormData] = useState<FormData>({
     name: '',
     description: '',
@@ -35,8 +37,11 @@ export const CreateSetlistScreen = ({ navigation }: Props) => {
   const [showGuildDropdown, setShowGuildDropdown] = useState(false);
 
   useEffect(() => {
-    fetchUserGuilds();
-  }, []);
+    // Only fetch guilds after auth has finished initializing
+    if (!authLoading) {
+      fetchUserGuilds();
+    }
+  }, [authLoading]);
 
   const fetchUserGuilds = async () => {
     setLoading(true);

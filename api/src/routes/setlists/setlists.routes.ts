@@ -936,12 +936,13 @@ export const setlistRoutes = new Elysia()
           );
         },
 
-        message(ws: any, message: string) {
+        message(ws: any, message: string | any) {
           const setlistId = ws.setlistId as string;
           const connectionId = ws.connectionId as string;
 
           try {
-            const parsed = JSON.parse(message);
+            // Handle both string and object message formats
+            const parsed = typeof message === 'string' ? JSON.parse(message) : message;
 
             switch (parsed.type) {
               case 'start-editing': {
