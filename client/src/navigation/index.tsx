@@ -33,6 +33,7 @@ import {
   SetlistDetailsScreen,
   CreateSetlistScreen,
 } from '@screens';
+import { SharedSetlist } from './screens/SharedSetlist';
 import { lightTheme, darkTheme } from './themes';
 import type { RootStackParamList, DrawerParamList } from './types';
 
@@ -267,6 +268,16 @@ const RootStack = createNativeStackNavigator({
       },
       options: {
         headerShown: false,
+      },
+    },
+    SharedSetlist: {
+      screen: SharedSetlist,
+      linking: {
+        path: 'setlist/shared/:shareToken',
+      },
+      options: {
+        title: 'Shared Setlist',
+        presentation: 'modal',
       },
     },
   },

@@ -3,6 +3,7 @@ export type RootStackParamList = {
   Login: undefined;
   Register: undefined;
   NotFound: undefined;
+  SharedSetlist: { shareToken: string };
 };
 
 export type DrawerParamList = {

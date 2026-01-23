@@ -57,8 +57,8 @@ export const ShareModal = ({ visible, setlistId, setlistName, onClose }: ShareMo
   };
 
   const generateShareUrl = (shareToken: string): string => {
-    // Format: bandtogether://setlist/shared/{shareToken}
-    return `bandtogether://setlist/shared/${shareToken}`;
+    // Universal Link format - works on web and opens app when installed
+    return `https://band-together.app/setlist/shared/${shareToken}`;
   };
 
   const generateQrCodeUrl = (shareToken: string): string => {

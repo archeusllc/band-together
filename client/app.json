@@ -7,16 +7,37 @@
     "icon": "src/assets/images/icon.png",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
-    "scheme": "bandtogethermobile",
+    "scheme": "bandtogether",
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.bandtogether.mobile",
+      "associatedDomains": [
+        "applinks:band-together.app"
+      ]
     },
     "android": {
       "package": "com.bandtogether.mobile",
       "adaptiveIcon": {
         "foregroundImage": "src/assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "autoVerify": true,
+          "data": [
+            {
+              "scheme": "https",
+              "host": "band-together.app",
+              "pathPrefix": "/setlist/shared"
+            }
+          ],
+          "category": [
+            "BROWSABLE",
+            "DEFAULT"
+          ]
+        }
+      ]
     },
     "web": {
       "favicon": "src/assets/images/favicon.png"
