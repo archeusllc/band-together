@@ -78,19 +78,6 @@ export const SetlistDetailsScreen = ({ route, navigation }: Props) => {
     }
   }, [isEditing, isOwner, wsConnected]);
 
-  // Detect which modal should be open based on the current pathname
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-
-    const pathname = window.location.pathname;
-
-    // If pathname ends with /share, open the share modal
-    if (pathname.endsWith('/share')) {
-      setShowShare(true);
-    } else {
-      setShowShare(false);
-    }
-  }, []);
 
   const fetchSetlistDetails = async () => {
     setLoading(true);
