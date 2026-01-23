@@ -135,7 +135,7 @@ export const EditItemModal = ({ visible, item, onClose, onSave, loading = false 
           {/* Tuning */}
           <View className="mb-6">
             <Text className={`text-sm font-semibold ${tailwind.textMuted.both} mb-2`}>
-              Tuning <Text className={`${tailwind.text.both}}`}>(optional)</Text>
+              Tuning <Text className={`${tailwind.textMuted.both}}`}>(optional)</Text>
             </Text>
             <TextInput
               className={`${tailwind.card.both} border ${tailwind.border.both} rounded-lg px-4 py-3 ${tailwind.text.both}`}
@@ -151,7 +151,7 @@ export const EditItemModal = ({ visible, item, onClose, onSave, loading = false 
           {/* Duration */}
           <View className="mb-6">
             <Text className={`text-sm font-semibold ${tailwind.textMuted.both} mb-2`}>
-              Duration in Seconds <Text className={`${tailwind.text.both}}`}>(optional)</Text>
+              Duration in Seconds <Text className={`${tailwind.textMuted.both}}`}>(optional)</Text>
             </Text>
             <TextInput
               className={`${tailwind.card.both} border ${tailwind.border.both} rounded-lg px-4 py-3 ${tailwind.text.both}`}
@@ -173,7 +173,7 @@ export const EditItemModal = ({ visible, item, onClose, onSave, loading = false 
           {/* Notes */}
           <View className="mb-6">
             <Text className={`text-sm font-semibold ${tailwind.textMuted.both} mb-2`}>
-              Notes <Text className={`${tailwind.text.both}}`}>(optional)</Text>
+              Notes <Text className={`${tailwind.textMuted.both}}`}>(optional)</Text>
             </Text>
             <TextInput
               className={`${tailwind.card.both} border ${tailwind.border.both} rounded-lg px-4 py-3 ${tailwind.text.both} h-24`}
