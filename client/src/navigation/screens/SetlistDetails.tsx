@@ -150,6 +150,9 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
       unsubscribeFunctions.current.push(setlistWSService.on('section-updated', handleSectionUpdated));
       unsubscribeFunctions.current.push(setlistWSService.on('section-deleted', handleSectionDeleted));
       unsubscribeFunctions.current.push(setlistWSService.on('presence-update', handlePresenceUpdate));
+
+      // Request presence from server now that event handler is subscribed
+      setlistWSService.requestPresence();
     } catch (error) {
       console.error('Failed to connect WebSocket:', error);
       setWsConnected(false);
