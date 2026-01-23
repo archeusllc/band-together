@@ -38,7 +38,7 @@ export const SetItemRow = ({ item, isEditing = false, isDragging = false, onEdit
         {/* Drag Handle (editing only) */}
         {isEditing && (
           <View className="w-5 items-center justify-center">
-            <IconSymbol name="line.3.horizontal" size={16} color={colors.light.muted} />
+            <IconSymbol name="line.3.horizontal" size={16} color="#9CA3AF" />
           </View>
         )}
 
@@ -77,7 +77,7 @@ export const SetItemRow = ({ item, isEditing = false, isDragging = false, onEdit
           {/* Custom Notes (if present) */}
           {displayNotes && (
             <View className="flex-row items-start gap-2 mt-2">
-              <IconSymbol name="note.text" size={12} color={colors.light.muted} />
+              <IconSymbol name="note.text" size={12} color="#9CA3AF" />
               <Text className={`text-xs ${tailwind.textMuted.both} flex-1 italic`} numberOfLines={2}>
                 {displayNotes}
               </Text>
@@ -89,16 +89,18 @@ export const SetItemRow = ({ item, isEditing = false, isDragging = false, onEdit
         {isEditing && (
           <View className="flex-row gap-2">
             <Pressable
-              className={`p-2 rounded ${tailwind.activeBackground.both}`}
+              className={`flex-row items-center gap-1 px-3 py-2 rounded ${tailwind.activeBackground.both}`}
               onPress={onEdit}
             >
               <IconSymbol name="pencil" size={16} color={colors.brand.primary} />
+              <Text className={`text-sm font-medium ${tailwind.primary}`}>Edit</Text>
             </Pressable>
             <Pressable
-              className={`p-2 rounded ${tailwind.activeBackground.both}`}
+              className={`flex-row items-center gap-1 px-3 py-2 rounded ${tailwind.activeBackground.both}`}
               onPress={onDelete}
             >
               <IconSymbol name="trash" size={16} color={colors.brand.error} />
+              <Text className={`text-sm font-medium ${tailwind.error}`}>Delete</Text>
             </Pressable>
           </View>
         )}

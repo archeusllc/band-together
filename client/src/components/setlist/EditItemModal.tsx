@@ -6,7 +6,6 @@ import {
   TextInput,
   Pressable,
   ActivityIndicator,
-  Alert,
   ScrollView,
 } from 'react-native';
 import { tailwind, colors } from '@theme';
@@ -38,6 +37,7 @@ export const EditItemModal = ({ visible, item, onClose, onSave, loading = false 
   const [tuning, setTuning] = useState('');
   const [notes, setNotes] = useState('');
   const [duration, setDuration] = useState('');
+  const [error, setError] = useState<string | null>(null);
 
   // Initialize form with current values when modal opens
   useEffect(() => {
@@ -70,8 +70,9 @@ export const EditItemModal = ({ visible, item, onClose, onSave, loading = false 
 
       await onSave(updates);
       onClose();
-    } catch (error) {
-      Alert.alert('Error', `Failed to update item: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Unknown error';
+      setError(`Failed to update item: ${errorMessage}`);
     }
   };
 
@@ -97,7 +98,7 @@ export const EditItemModal = ({ visible, item, onClose, onSave, loading = false 
           <View className="flex-row items-center justify-between mb-4">
             <Text className={`text-lg font-bold ${tailwind.text.both}`}>Edit Track</Text>
             <Pressable onPress={handleClose} disabled={loading}>
-              <IconSymbol name="xmark.circle.fill" size={24} color={colors.light.muted} />
+              <IconSymbol name="xmark.circle.fill" size={24} color="#9CA3AF" />
             </Pressable>
           </View>
 
@@ -139,7 +140,7 @@ export const EditItemModal = ({ visible, item, onClose, onSave, loading = false 
             <TextInput
               className={`${tailwind.card.both} border ${tailwind.border.both} rounded-lg px-4 py-3 ${tailwind.text.both}`}
               placeholder={item.track.defaultTuning || 'Standard, Drop D, etc.'}
-              placeholderTextColor={colors.light.muted}
+              placeholderTextColor="#9CA3AF"
               value={tuning}
               onChangeText={setTuning}
               editable={!loading}
@@ -155,7 +156,7 @@ export const EditItemModal = ({ visible, item, onClose, onSave, loading = false 
             <TextInput
               className={`${tailwind.card.both} border ${tailwind.border.both} rounded-lg px-4 py-3 ${tailwind.text.both}`}
               placeholder={String(item.track.defaultDuration || 0)}
-              placeholderTextColor={colors.light.muted}
+              placeholderTextColor="#9CA3AF"
               value={duration}
               onChangeText={setDuration}
               editable={!loading}
@@ -177,7 +178,7 @@ export const EditItemModal = ({ visible, item, onClose, onSave, loading = false 
             <TextInput
               className={`${tailwind.card.both} border ${tailwind.border.both} rounded-lg px-4 py-3 ${tailwind.text.both} h-24`}
               placeholder="e.g., Play with palm muting, start with clean tone..."
-              placeholderTextColor={colors.light.muted}
+              placeholderTextColor="#9CA3AF"
               value={notes}
               onChangeText={setNotes}
               editable={!loading}
@@ -214,6 +215,33 @@ export const EditItemModal = ({ visible, item, onClose, onSave, loading = false 
             )}
           </Pressable>
         </View>
+
+        {/* Error Modal */}
+        {error && (
+          <Pressable
+            className="absolute inset-0 bg-black/50"
+            onPress={() => setError(null)}
+            style={{ pointerEvents: 'auto' }}
+          >
+            <View className="absolute inset-0 flex items-center justify-center" style={{ pointerEvents: 'box-none' }}>
+              <Pressable
+                className={`${tailwind.card.both} rounded-lg p-6 mx-6 max-w-sm`}
+                onPress={() => {}}
+                style={{ pointerEvents: 'box-only' }}
+              >
+                <Text className={`text-lg font-bold ${tailwind.text.both} mb-2`}>Error</Text>
+                <Text className={`text-base ${tailwind.text.both} mb-6`}>{error}</Text>
+                <Pressable
+                  className="py-3 rounded-lg"
+                  style={{ backgroundColor: colors.brand.primary }}
+                  onPress={() => setError(null)}
+                >
+                  <Text className="text-center font-semibold text-white">OK</Text>
+                </Pressable>
+              </Pressable>
+            </View>
+          </Pressable>
+        )}
       </View>
     </Modal>
   );
