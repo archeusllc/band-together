@@ -675,6 +675,47 @@ export const authRoutes = new Elysia().group('/auth', (authRoute) =>
 
 ### Commits & Documentation
 
+**⚠️ IMPORTANT: Git Commits are Disabled**
+- AI assistants cannot execute git commits due to permission restrictions
+- All code changes should be staged and ready to commit, but **a human must manually run `git commit`**
+- AI can prepare commits with `git add` and provide commit messages, but final commit execution requires human action
+- This is a safety measure to ensure human review of all commits
+
+**Workflow for Phase Completion**
+When completing a phase from the plan:
+1. Implement all changes in the phase
+2. **Update the plan file** (e.g., `wiki/Plan-Setlist-Manager.md`):
+   - Mark phase with ✅ **COMPLETE** status
+   - Add "Implementation Summary" section describing what was built
+   - List "Completed Tasks" with checkmarks
+   - List "Files Created/Modified"
+   - List "Deliverables Achieved"
+   - Update top-level plan status if needed (e.g., "Phases 2, 6-10 complete")
+3. Stage files with `git add [files]`
+4. **Generate a detailed commit message** describing:
+   - What phase was completed
+   - Key files modified/created
+   - Main features/functionality added
+   - Include co-author credit: `Co-Authored-By: Claude [Model] <noreply@anthropic.com>`
+5. Provide the commit message to the human
+6. Human executes: `git commit -m "[message]"`
+
+Example commit message format:
+```
+Phase 10: Create client services layer for tracks and setlists
+
+- Add trackService with searchTracks method for global track database
+- Add comprehensive setlistService with full CRUD operations:
+  - SetList CRUD: create, read, update, delete, duplicate
+  - SetItem operations: add, update, delete, reorder tracks
+  - SetSection operations: add, update, delete sections
+  - Sharing: create, list, and revoke share links
+- All methods handle Firebase authentication and error handling
+- Services follow established patterns with optional auth support
+
+Co-Authored-By: Claude Haiku 4.5 <noreply@anthropic.com>
+```
+
 **Incremental Commits**
 - Phase 4 was split into 2 commits: initial implementation + critical bug fix
 - Each commit should represent a working state (even if buggy features are still present)
@@ -699,19 +740,26 @@ export const authRoutes = new Elysia().group('/auth', (authRoute) =>
 
 ---
 
-**Last Updated**: 2026-01-21
+**Last Updated**: 2026-01-22
 
 **Recent Changes**:
+- Completed Phase 10: Client services layer (trackService, setlistService)
 - Completed Guild CRUD MVP with type-specific endpoints (/acts, /venues, /clubs)
 - Implemented Firebase authentication using a two-tier Elysia middleware pattern
 - **CRITICAL FIX**: `firebaseMiddleware` uses `.derive({ as: 'global' })` to make context available to dependent middleware (like `firebaseGate`)
 - Documented correct Firebase authentication middleware pattern with proper global/scoped context extension
 - Fixed Bearer token transmission in client service with proper `$headers` handling
 - Clarified that authentication middleware is optional - only applies to routes that use it
+- **⚠️ Git commits are disabled for AI - humans must execute final commits**
 
 **Key Learning**: The correct Elysia pattern for Firebase authentication uses a two-tier approach:
 - `firebaseMiddleware`: Uses `.derive({ as: 'global' })` to create reusable base middleware that makes `firebase` context available to dependent middleware
 - `firebaseGate`: Uses `.derive({ as: 'scoped' })` as a final guard that requires authentication
 This is more composable than scoped-only approach and prevents context loss when middleware chains use routes in different scopes.
+
+**Important Note on Git Workflow**:
+- AI assistants can stage files with `git add` and prepare commit messages
+- **Final git commits must be executed by a human** due to permission restrictions
+- This ensures all commits have human review and validation before being finalized
 
 Happy coding! 🎵
