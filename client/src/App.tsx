@@ -20,7 +20,6 @@ const config = {
                   name: 'SetlistDetails',
                   params: {
                     setlistId: shareMatch[1],
-                    showShare: true,
                   },
                 },
               ],

@@ -34,7 +34,7 @@ interface DisplayItem {
 }
 
 export const SetlistDetailsScreen = ({ route, navigation }: Props) => {
-  const { setlistId, showShare: initialShowShare } = route.params;
+  const { setlistId } = route.params;
   const { user, loading: authLoading } = useAuth();
   const [setlist, setSetlist] = useState<SetList & { setItems?: Array<SetItem & { track?: any }>; setSections?: SetSection[] } | null>(null);
   const [loading, setLoading] = useState(true);
@@ -82,10 +82,8 @@ export const SetlistDetailsScreen = ({ route, navigation }: Props) => {
   useEffect(() => {
     if (typeof window !== 'undefined' && window.location.pathname.endsWith('/share')) {
       setShowShare(true);
-    } else if (initialShowShare) {
-      setShowShare(true);
     }
-  }, [initialShowShare]);
+  }, []);
 
   // Sync Share modal state with browser history for proper back button support
   useEffect(() => {
