@@ -79,29 +79,34 @@ export const SetlistDetailsScreen = ({ route, navigation }: Props) => {
     }
   }, [isEditing, isOwner, wsConnected]);
 
-  // Handle direct /setlist/:id/share URL access - open share modal on load and set up history
+  // Handle /setlist/:id/* URLs - set up proper history and detect modal states
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
-    const isShareUrl = window.location.pathname.endsWith('/share');
-    if (isShareUrl) {
-      setShowShare(true);
+    const pathname = window.location.pathname;
+    const baseUrl = `/setlist/${setlistId}`;
 
-      // Set up browser history on first mount for direct /share access
+    // If we're accessing a subpath (e.g., /setlist/:id/share), set it up in history
+    if (pathname !== baseUrl) {
+      // Detect which modal should be open based on the path
+      if (pathname.endsWith('/share')) {
+        setShowShare(true);
+      }
+
+      // On first mount (history.length <= 1), set up the history stack
       if (!historySetupRef.current && window.history.length <= 1) {
         historySetupRef.current = true;
-        const setlistUrl = window.location.pathname.replace(/\/share$/, '');
-        // Add setlist page to history
+        // Push the base setlist URL to history
         window.history.pushState(
           { page: 'setlist', setlistId },
           '',
-          setlistUrl
+          baseUrl
         );
-        // Replace current entry back to share URL
+        // Replace to the current subpath
         window.history.replaceState(
-          { modal: 'share', setlistId },
+          { modal: pathname.slice(baseUrl.length + 1), setlistId },
           '',
-          window.location.pathname
+          pathname
         );
       }
     }

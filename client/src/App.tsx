@@ -5,11 +5,11 @@ import { AuthProvider, FeedProvider } from '@contexts';
 
 const config = {
   prefixes: ['bandtogethermobile://', 'https://band-together.app'],
-  // Custom path parser to handle /setlist/:id/share URLs
+  // Custom path parser to handle /setlist/:id/* paths
   getStateFromPath: (path: string) => {
-    // Handle /setlist/:id/share paths
-    const shareMatch = path.match(/^\/setlist\/([^/]+)\/share$/);
-    if (shareMatch) {
+    // Handle /setlist/:id/* paths (match any subpath after setlist ID)
+    const setlistMatch = path.match(/^\/setlist\/([^/]+)(\/.*)?$/);
+    if (setlistMatch) {
       return {
         routes: [
           {
@@ -19,7 +19,7 @@ const config = {
                 {
                   name: 'SetlistDetails',
                   params: {
-                    setlistId: shareMatch[1],
+                    setlistId: setlistMatch[1],
                   },
                 },
               ],
