@@ -129,19 +129,12 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
   const connectWebSocket = async () => {
     try {
       await setlistWSService.connect(setlistId, user?.userId, user?.email?.split('@')[0] || 'Guest');
-      setWsConnected(true);
-
-      // Initialize presence from service immediately (in case first presence-update hasn't arrived yet)
-      const initialPresence = setlistWSService.getPresence();
-      if (initialPresence.length > 0) {
-        setPresence(initialPresence);
-      }
 
       // Clear any existing unsubscribe functions
       unsubscribeFunctions.current.forEach(unsub => unsub());
       unsubscribeFunctions.current = [];
 
-      // Subscribe to broadcast events and store unsubscribe functions
+      // Subscribe to broadcast events FIRST (before setting wsConnected)
       unsubscribeFunctions.current.push(setlistWSService.on('item-added', handleItemAdded));
       unsubscribeFunctions.current.push(setlistWSService.on('item-updated', handleItemUpdated));
       unsubscribeFunctions.current.push(setlistWSService.on('item-deleted', handleItemDeleted));
@@ -153,6 +146,9 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
 
       // Request presence from server now that event handler is subscribed
       setlistWSService.requestPresence();
+
+      // Set wsConnected AFTER subscribing to events so handlers are ready
+      setWsConnected(true);
     } catch (error) {
       console.error('Failed to connect WebSocket:', error);
       setWsConnected(false);
