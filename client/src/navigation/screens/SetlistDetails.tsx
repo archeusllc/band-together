@@ -11,7 +11,7 @@ import {
 import type { DrawerScreenProps } from '@react-navigation/drawer';
 import type { DrawerParamList } from '@navigation/types';
 import DraggableFlatList, { ScaleDecorator } from 'react-native-draggable-flatlist';
-import { setlistService } from '@services';
+import { setlistService, setlistWSService } from '@services';
 import { useAuth } from '@contexts';
 import { tailwind, colors } from '@theme';
 import { IconSymbol } from '@ui';
@@ -21,7 +21,9 @@ import { SongSearchModal } from '@components/setlist/SongSearchModal';
 import { AddSectionModal } from '@components/setlist/AddSectionModal';
 import { EditItemModal } from '@components/setlist/EditItemModal';
 import { ShareModal } from '@components/setlist/ShareModal';
+import { SetlistPresence } from '@components/setlist/SetlistPresence';
 import type { SetList, SetItem, SetSection, Track } from '@band-together/shared';
+import type { UserPresence, BroadcastEvent } from '@services/setlist-ws.service';
 
 type Props = DrawerScreenProps<DrawerParamList, 'SetlistDetails'>;
 
@@ -43,10 +45,34 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
   const [showShare, setShowShare] = useState(false);
   const [editingItem, setEditingItem] = useState<SetItem & { track?: Track } | null>(null);
   const [operationLoading, setOperationLoading] = useState(false);
+  const [wsConnected, setWsConnected] = useState(false);
+  const [presence, setPresence] = useState<UserPresence[]>([]);
+  const [recentlyAddedItemId, setRecentlyAddedItemId] = useState<string | null>(null);
+
+  const isOwner = user && setlist && user.userId === (setlist as any).ownerId;
 
   useEffect(() => {
     fetchSetlistDetails();
+    // Connect to WebSocket when screen mounts
+    connectWebSocket();
+
+    return () => {
+      // Cleanup: disconnect WebSocket when screen unmounts
+      setlistWSService.disconnect();
+      setWsConnected(false);
+    };
   }, [setlistId]);
+
+  // Handle editing mode changes - send status to other clients
+  useEffect(() => {
+    if (isOwner && wsConnected) {
+      if (isEditing) {
+        setlistWSService.startEditing();
+      } else {
+        setlistWSService.stopEditing();
+      }
+    }
+  }, [isEditing, isOwner, wsConnected]);
 
   const fetchSetlistDetails = async () => {
     setLoading(true);
@@ -68,7 +94,75 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
     }
   };
 
-  const isOwner = user && setlist && user.userId === (setlist as any).ownerId;
+  const connectWebSocket = async () => {
+    try {
+      await setlistWSService.connect(setlistId, user?.userId, user?.email?.split('@')[0] || 'Guest');
+      setWsConnected(true);
+
+      // Subscribe to broadcast events
+      setlistWSService.on('item-added', handleItemAdded);
+      setlistWSService.on('item-updated', handleItemUpdated);
+      setlistWSService.on('item-deleted', handleItemDeleted);
+      setlistWSService.on('reordered', handleReordered);
+      setlistWSService.on('section-added', handleSectionAdded);
+      setlistWSService.on('section-updated', handleSectionUpdated);
+      setlistWSService.on('section-deleted', handleSectionDeleted);
+      setlistWSService.on('presence-update', handlePresenceUpdate);
+    } catch (error) {
+      console.error('Failed to connect WebSocket:', error);
+      setWsConnected(false);
+    }
+  };
+
+  const handleItemAdded = (event: any) => {
+    if (event.setlistId === setlistId) {
+      // Refresh setlist to get the new item
+      fetchSetlistDetails();
+      // Highlight the newly added item briefly
+      setRecentlyAddedItemId(event.data.setItemId);
+      setTimeout(() => setRecentlyAddedItemId(null), 3000);
+    }
+  };
+
+  const handleItemUpdated = (event: any) => {
+    if (event.setlistId === setlistId) {
+      fetchSetlistDetails();
+    }
+  };
+
+  const handleItemDeleted = (event: any) => {
+    if (event.setlistId === setlistId) {
+      fetchSetlistDetails();
+    }
+  };
+
+  const handleReordered = (event: any) => {
+    if (event.setlistId === setlistId) {
+      fetchSetlistDetails();
+    }
+  };
+
+  const handleSectionAdded = (event: any) => {
+    if (event.setlistId === setlistId) {
+      fetchSetlistDetails();
+    }
+  };
+
+  const handleSectionUpdated = (event: any) => {
+    if (event.setlistId === setlistId) {
+      fetchSetlistDetails();
+    }
+  };
+
+  const handleSectionDeleted = (event: any) => {
+    if (event.setlistId === setlistId) {
+      fetchSetlistDetails();
+    }
+  };
+
+  const handlePresenceUpdate = (event: any) => {
+    setPresence(event.presence);
+  };
 
   const formatDuration = (seconds: number): string => {
     if (seconds === 0) return '0s';
@@ -298,25 +392,36 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
       );
     }
 
+    const isRecentlyAdded = recentlyAddedItemId === item.data.setItemId;
+
     if (isEditing) {
       return (
         <ScaleDecorator>
-          <SetItemRow
-            item={item.data}
-            isEditing={true}
-            isDragging={isActive}
-            onEdit={() => setEditingItem(item.data)}
-            onDelete={() => handleDeleteItem(item.data)}
-          />
+          <View className={isRecentlyAdded ? `${tailwind.activeBackground.both}` : ''}>
+            <SetItemRow
+              item={item.data}
+              isEditing={true}
+              isDragging={isActive}
+              onEdit={() => setEditingItem(item.data)}
+              onDelete={() => handleDeleteItem(item.data)}
+            />
+          </View>
         </ScaleDecorator>
       );
     }
 
-    return <SetItemRow item={item.data} />;
+    return (
+      <View className={isRecentlyAdded ? `${tailwind.activeBackground.both}` : ''}>
+        <SetItemRow item={item.data} />
+      </View>
+    );
   };
 
   return (
     <View className={`flex-1 ${tailwind.background.both}`}>
+      {/* Presence Indicator */}
+      <SetlistPresence presence={presence} isConnected={wsConnected} />
+
       {/* Header with Edit and Share Buttons */}
       <View className={`${tailwind.card.both} border-b ${tailwind.border.both} px-4 py-3 flex-row items-center justify-between gap-2`}>
         <Text className={`text-lg font-bold ${tailwind.text.both} flex-1`}>
