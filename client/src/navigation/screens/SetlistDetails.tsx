@@ -47,6 +47,9 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
   const [showAddSection, setShowAddSection] = useState(false);
   const [showOptions, setShowOptions] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [deleteItemConfirm, setDeleteItemConfirm] = useState<(SetItem & { track?: Track }) | null>(null);
+  const [deleteSectionConfirm, setDeleteSectionConfirm] = useState<SetSection | null>(null);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
   const [editingItem, setEditingItem] = useState<SetItem & { track?: Track } | null>(null);
   const [operationLoading, setOperationLoading] = useState(false);
   const [wsConnected, setWsConnected] = useState(false);
@@ -223,28 +226,20 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
   };
 
   const handleDeleteItem = (item: SetItem & { track?: Track }) => {
-    Alert.alert(
-      'Delete Track',
-      `Remove "${item.track?.title}" from setlist?`,
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Delete',
-          style: 'destructive',
-          onPress: async () => {
-            setOperationLoading(true);
-            try {
-              await setlistService.deleteSetItem(setlistId, item.setItemId);
-              await fetchSetlistDetails();
-            } catch (err) {
-              Alert.alert('Error', `Failed to delete track: ${err instanceof Error ? err.message : 'Unknown error'}`);
-            } finally {
-              setOperationLoading(false);
-            }
-          },
-        },
-      ]
-    );
+    setDeleteItemConfirm(item);
+  };
+
+  const handleConfirmDeleteItem = async (item: SetItem & { track?: Track }) => {
+    setOperationLoading(true);
+    try {
+      await setlistService.deleteSetItem(setlistId, item.setItemId);
+      await fetchSetlistDetails();
+      setDeleteItemConfirm(null);
+    } catch (err) {
+      setDeleteError(`Failed to delete track: ${err instanceof Error ? err.message : 'Unknown error'}`);
+    } finally {
+      setOperationLoading(false);
+    }
   };
 
   const handleUpdateItem = async (updates: {
@@ -279,28 +274,20 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
   };
 
   const handleDeleteSection = (section: SetSection) => {
-    Alert.alert(
-      'Delete Section',
-      `Remove section "${section.name}"? Tracks in this section will become unsectioned.`,
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Delete',
-          style: 'destructive',
-          onPress: async () => {
-            setOperationLoading(true);
-            try {
-              await setlistService.deleteSection(setlistId, section.sectionId);
-              await fetchSetlistDetails();
-            } catch (err) {
-              Alert.alert('Error', `Failed to delete section: ${err instanceof Error ? err.message : 'Unknown error'}`);
-            } finally {
-              setOperationLoading(false);
-            }
-          },
-        },
-      ]
-    );
+    setDeleteSectionConfirm(section);
+  };
+
+  const handleConfirmDeleteSection = async (section: SetSection) => {
+    setOperationLoading(true);
+    try {
+      await setlistService.deleteSection(setlistId, section.sectionId);
+      await fetchSetlistDetails();
+      setDeleteSectionConfirm(null);
+    } catch (err) {
+      setDeleteError(`Failed to delete section: ${err instanceof Error ? err.message : 'Unknown error'}`);
+    } finally {
+      setOperationLoading(false);
+    }
   };
 
   const handleReorderItems = async (newData: DisplayItem[]) => {
@@ -802,6 +789,117 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
             </View>
           </View>
         </View>
+      )}
+
+      {/* Delete Item Confirmation Modal */}
+      {deleteItemConfirm && (
+        <View
+          className="absolute inset-0 bg-black/50 flex items-center justify-center z-50"
+          style={{ pointerEvents: 'box-none' }}
+        >
+          <View
+            className={`${tailwind.card.both} rounded-lg p-4 w-80 max-w-full`}
+            style={{ pointerEvents: 'box-only' }}
+          >
+            <Text className={`text-lg font-bold ${tailwind.text.both} mb-2`}>
+              Delete Track
+            </Text>
+            <Text className={`${tailwind.textMuted.both} mb-6`}>
+              Remove "{deleteItemConfirm.track?.title}" from setlist?
+            </Text>
+
+            <View className="gap-2">
+              <Pressable
+                onPress={() => handleConfirmDeleteItem(deleteItemConfirm)}
+                disabled={operationLoading}
+                className={`bg-red-100 dark:bg-red-900/30 rounded-lg p-3`}
+              >
+                <Text className="font-semibold text-red-600 dark:text-red-400">
+                  {operationLoading ? 'Deleting...' : 'Delete'}
+                </Text>
+              </Pressable>
+
+              <Pressable
+                onPress={() => setDeleteItemConfirm(null)}
+                disabled={operationLoading}
+                className={`${tailwind.activeBackground.both} rounded-lg p-3`}
+              >
+                <Text className={`font-semibold ${tailwind.text.both}`}>
+                  Cancel
+                </Text>
+              </Pressable>
+            </View>
+          </View>
+        </View>
+      )}
+
+      {/* Delete Section Confirmation Modal */}
+      {deleteSectionConfirm && (
+        <View
+          className="absolute inset-0 bg-black/50 flex items-center justify-center z-50"
+          style={{ pointerEvents: 'box-none' }}
+        >
+          <View
+            className={`${tailwind.card.both} rounded-lg p-4 w-80 max-w-full`}
+            style={{ pointerEvents: 'box-only' }}
+          >
+            <Text className={`text-lg font-bold ${tailwind.text.both} mb-2`}>
+              Delete Section
+            </Text>
+            <Text className={`${tailwind.textMuted.both} mb-6`}>
+              Remove section "{deleteSectionConfirm.name}"? Tracks in this section will become unsectioned.
+            </Text>
+
+            <View className="gap-2">
+              <Pressable
+                onPress={() => handleConfirmDeleteSection(deleteSectionConfirm)}
+                disabled={operationLoading}
+                className={`bg-red-100 dark:bg-red-900/30 rounded-lg p-3`}
+              >
+                <Text className="font-semibold text-red-600 dark:text-red-400">
+                  {operationLoading ? 'Deleting...' : 'Delete'}
+                </Text>
+              </Pressable>
+
+              <Pressable
+                onPress={() => setDeleteSectionConfirm(null)}
+                disabled={operationLoading}
+                className={`${tailwind.activeBackground.both} rounded-lg p-3`}
+              >
+                <Text className={`font-semibold ${tailwind.text.both}`}>
+                  Cancel
+                </Text>
+              </Pressable>
+            </View>
+          </View>
+        </View>
+      )}
+
+      {/* Delete Error Modal */}
+      {deleteError && (
+        <Pressable
+          className="absolute inset-0 bg-black/50"
+          onPress={() => setDeleteError(null)}
+          style={{ pointerEvents: 'auto' }}
+        >
+          <View className="absolute inset-0 flex items-center justify-center" style={{ pointerEvents: 'box-none' }}>
+            <Pressable
+              className={`${tailwind.card.both} rounded-lg p-6 mx-6 max-w-sm`}
+              onPress={() => {}}
+              style={{ pointerEvents: 'box-only' }}
+            >
+              <Text className={`text-lg font-bold ${tailwind.text.both} mb-2`}>Error</Text>
+              <Text className={`text-base ${tailwind.text.both} mb-6`}>{deleteError}</Text>
+              <Pressable
+                className="py-3 rounded-lg"
+                style={{ backgroundColor: colors.brand.primary }}
+                onPress={() => setDeleteError(null)}
+              >
+                <Text className="text-center font-semibold text-white">OK</Text>
+              </Pressable>
+            </Pressable>
+          </View>
+        </Pressable>
       )}
     </View>
   );
