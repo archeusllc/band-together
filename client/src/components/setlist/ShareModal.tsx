@@ -467,7 +467,7 @@ export const ShareModal = ({ visible, setlistId, setlistName, onClose }: ShareMo
                   style={{ width: 320, height: 320 }}
                 />
                 <Text className={`text-xs ${tailwind.textMuted.both} mt-3 text-center`}>
-                  Tap outside to close
+                  Tap to close
                 </Text>
               </View>
             </View>
