@@ -653,6 +653,60 @@ On the **first app load**, Firebase's `auth.currentUser` may be `null` until `on
 - Data-fetching screens in protected navigation flows
 - Initial app setup screens after authentication
 
+**CRITICAL: Firebase UID vs Database UserID Type Mismatch**
+
+The app uses two different user identifiers that must be handled carefully:
+
+1. **Firebase UID** (`firebase.uid`) - String returned by Firebase authentication (e.g., `"abc123xyz"`)
+2. **Database UserID** (`userId`) - CUID stored in database (e.g., `"clp1234...abc"`)
+
+**The Problem**:
+- Middleware provides `firebase.uid` from Firebase tokens
+- Database stores `userId` (CUID) as the primary user identifier
+- Directly comparing them causes type mismatches: `"clp1234...abc" !== "abc123xyz"`
+- This leads to failed permission checks and unexpected 404/403 errors
+
+**The Solution**:
+All service methods that need permission checks must convert Firebase UID to database UserID:
+
+```typescript
+const getUserIdByFirebaseUid = async (firebaseUid: string): Promise<string> => {
+  const user = await prisma.user.findUnique({
+    where: { firebaseUid },
+    select: { userId: true },
+  });
+  if (!user) {
+    throw new Error('User not found in database');
+  }
+  return user.userId;
+};
+
+// In service method:
+const databaseUserId = await getUserIdByFirebaseUid(firebaseUid);
+const isOwner = setlist.ownerId === databaseUserId; // Now both are CUIDs
+```
+
+**Pattern to Follow**:
+- Routes pass `firebase.uid` (required by middleware)
+- Controllers receive `firebaseUid` parameter name (for clarity)
+- Services convert `firebaseUid` → `userId` before permission checks
+- Always compare database identifiers to database fields
+
+**Critical Mistake to Avoid**:
+```typescript
+// ❌ WRONG - Compares Firebase UID to database CUID
+const isOwner = setlist.ownerId === firebase.uid;
+
+// ✅ CORRECT - Converts Firebase UID first
+const userId = await getUserIdByFirebaseUid(firebase.uid);
+const isOwner = setlist.ownerId === userId;
+```
+
+**Where This Matters**:
+- Permission checks (owner, guild member validation)
+- Any Prisma query comparing user identifiers
+- Optional authentication flows that need to check if user is the owner
+
 ### State Management
 
 **Local State vs Global Context**
