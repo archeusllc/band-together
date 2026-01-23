@@ -247,10 +247,12 @@ export const ShareModal = ({ visible, setlistId, setlistName, onClose }: ShareMo
                 className="items-center mb-4 active:opacity-75"
                 onPress={() => setShowQrModal(true)}
               >
-                <Image
-                  source={{ uri: qrCodeUrl }}
-                  style={{ width: 250, height: 250 }}
-                />
+                <View className="bg-white rounded-lg p-2">
+                  <Image
+                    source={{ uri: qrCodeUrl }}
+                    style={{ width: 250, height: 250 }}
+                  />
+                </View>
                 <Text className={`text-xs ${tailwind.textMuted.both} mt-2`}>
                   Tap to enlarge
                 </Text>
@@ -459,11 +461,13 @@ export const ShareModal = ({ visible, setlistId, setlistName, onClose }: ShareMo
             <View className="absolute inset-0 bg-black/75" style={{ pointerEvents: 'none' }} />
             <View className="absolute inset-0 flex items-center justify-center p-6" style={{ pointerEvents: 'box-none' }}>
               <View className={`${tailwind.card.both} rounded-lg p-6 items-center`} style={{ pointerEvents: 'box-none', aspectRatio: 1, width: '100%', maxWidth: 500 }}>
-                <Image
-                  source={{ uri: qrCodeUrl }}
-                  style={{ flex: 1, width: '100%' }}
-                  resizeMode="contain"
-                />
+                <View className="bg-white rounded-lg flex-1 w-full items-center justify-center">
+                  <Image
+                    source={{ uri: qrCodeUrl }}
+                    style={{ flex: 1, width: '100%' }}
+                    resizeMode="contain"
+                  />
+                </View>
                 <Text className={`text-xs ${tailwind.textMuted.both} mt-4 text-center`}>
                   Tap to close
                 </Text>
