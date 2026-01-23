@@ -32,6 +32,8 @@ export const ShareModal = ({ visible, setlistId, setlistName, onClose }: ShareMo
   const [expiresAt, setExpiresAt] = useState<string>('');
   const [qrCodeUrl, setQrCodeUrl] = useState<string>('');
   const [copyFeedback, setCopyFeedback] = useState<string>('');
+  const [revokeConfirming, setRevokeConfirming] = useState<string | null>(null);
+  const [revokeLoading, setRevokeLoading] = useState(false);
 
   // Load existing shares when modal opens
   useEffect(() => {
@@ -109,34 +111,25 @@ export const ShareModal = ({ visible, setlistId, setlistName, onClose }: ShareMo
     }
   };
 
-  const handleRevokeShare = (shareId: string) => {
-    Alert.alert(
-      'Revoke Share',
-      'This share link will no longer work. Users with the link will lose access.',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Revoke',
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              const { error } = await setlistService.revokeShare(setlistId, shareId);
-              if (error) {
-                Alert.alert('Error', 'Failed to revoke share');
-                return;
-              }
-              await loadShares();
-              if (generatedShare?.shareId === shareId) {
-                setGeneratedShare(null);
-                setQrCodeUrl('');
-              }
-            } catch (err) {
-              Alert.alert('Error', `Failed to revoke share: ${err instanceof Error ? err.message : 'Unknown error'}`);
-            }
-          },
-        },
-      ]
-    );
+  const handleRevokeShare = async (shareId: string) => {
+    setRevokeLoading(true);
+    try {
+      const { error } = await setlistService.revokeShare(setlistId, shareId);
+      if (error) {
+        Alert.alert('Error', 'Failed to revoke share');
+        return;
+      }
+      await loadShares();
+      if (generatedShare?.shareId === shareId) {
+        setGeneratedShare(null);
+        setQrCodeUrl('');
+      }
+      setRevokeConfirming(null);
+    } catch (err) {
+      Alert.alert('Error', `Failed to revoke share: ${err instanceof Error ? err.message : 'Unknown error'}`);
+    } finally {
+      setRevokeLoading(false);
+    }
   };
 
   const formatPermission = (perm: string): string => {
@@ -331,10 +324,12 @@ export const ShareModal = ({ visible, setlistId, setlistName, onClose }: ShareMo
                       </Text>
                     </View>
                     <Pressable
-                      className="p-2"
-                      onPress={() => handleRevokeShare(share.shareId)}
+                      className="flex-row items-center gap-1 px-3 py-2 rounded-lg active:bg-red-100 dark:active:bg-red-900/30"
+                      onPress={() => setRevokeConfirming(share.shareId)}
+                      disabled={loading || listLoading || revokeLoading}
                     >
-                      <IconSymbol name="trash" size={16} color={colors.brand.error} />
+                      <IconSymbol name="trash" size={14} color={colors.brand.error} />
+                      <Text className="text-xs font-semibold text-red-600 dark:text-red-400">Revoke</Text>
                     </Pressable>
                   </View>
                 ))}
@@ -345,6 +340,48 @@ export const ShareModal = ({ visible, setlistId, setlistName, onClose }: ShareMo
           {/* Spacing */}
           <View className="h-6" />
         </ScrollView>
+
+        {/* Revoke Confirmation Modal */}
+        {revokeConfirming && (
+          <View
+            className="absolute inset-0 bg-black/50 flex items-center justify-center z-50"
+            style={{ pointerEvents: 'box-none' }}
+          >
+            <View
+              className={`${tailwind.card.both} rounded-lg p-4 w-80 max-w-full`}
+              style={{ pointerEvents: 'box-only' }}
+            >
+              <Text className={`text-lg font-bold ${tailwind.text.both} mb-2`}>
+                Revoke Share
+              </Text>
+              <Text className={`${tailwind.textMuted.both} mb-6`}>
+                This share link will no longer work. Users with the link will lose access.
+              </Text>
+
+              <View className="gap-2">
+                <Pressable
+                  onPress={() => handleRevokeShare(revokeConfirming)}
+                  disabled={revokeLoading}
+                  className={`bg-red-100 dark:bg-red-900/30 rounded-lg p-3`}
+                >
+                  <Text className="font-semibold text-red-600 dark:text-red-400">
+                    {revokeLoading ? 'Revoking...' : 'Revoke'}
+                  </Text>
+                </Pressable>
+
+                <Pressable
+                  onPress={() => setRevokeConfirming(null)}
+                  disabled={revokeLoading}
+                  className={`${tailwind.activeBackground.both} rounded-lg p-3`}
+                >
+                  <Text className={`font-semibold ${tailwind.text.both}`}>
+                    Cancel
+                  </Text>
+                </Pressable>
+              </View>
+            </View>
+          </View>
+        )}
       </View>
     </Modal>
   );
