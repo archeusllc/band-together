@@ -37,7 +37,19 @@ export const setlistService = {
    */
   getSetlistById: async (setlistId: string, shareToken?: string) => {
     try {
-      const idToken = await firebaseAuthService.getIdToken().catch(() => null);
+      let idToken = await firebaseAuthService.getIdToken().catch(() => null);
+
+      // Retry logic: if no token but Firebase user exists, wait for session restoration
+      // This handles cases where user is logged in but token not immediately available
+      // (e.g., switching between localhost and IP addresses)
+      if (!idToken) {
+        const fbUser = firebaseAuthService.getCurrentUser();
+        if (fbUser) {
+          // Wait for Firebase session restoration
+          await new Promise(resolve => setTimeout(resolve, 200));
+          idToken = await firebaseAuthService.getIdToken().catch(() => null);
+        }
+      }
 
       const headers = idToken
         ? {
