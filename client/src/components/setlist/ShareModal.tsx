@@ -1,0 +1,351 @@
+import React, { useState, useEffect } from 'react';
+import {
+  View,
+  Text,
+  Modal,
+  Pressable,
+  ActivityIndicator,
+  Alert,
+  ScrollView,
+  TextInput,
+  Image,
+  Clipboard,
+} from 'react-native';
+import { tailwind, colors } from '@theme';
+import { IconSymbol } from '@ui';
+import { setlistService } from '@services';
+import type { SetListShare } from '@band-together/shared';
+
+interface ShareModalProps {
+  visible: boolean;
+  setlistId: string;
+  setlistName: string;
+  onClose: () => void;
+}
+
+export const ShareModal = ({ visible, setlistId, setlistName, onClose }: ShareModalProps) => {
+  const [permission, setPermission] = useState<'VIEW_ONLY' | 'CAN_EDIT'>('VIEW_ONLY');
+  const [loading, setLoading] = useState(false);
+  const [listLoading, setListLoading] = useState(false);
+  const [shares, setShares] = useState<SetListShare[]>([]);
+  const [generatedShare, setGeneratedShare] = useState<SetListShare | null>(null);
+  const [expiresAt, setExpiresAt] = useState<string>('');
+  const [qrCodeUrl, setQrCodeUrl] = useState<string>('');
+  const [copyFeedback, setCopyFeedback] = useState<string>('');
+
+  // Load existing shares when modal opens
+  useEffect(() => {
+    if (visible) {
+      loadShares();
+    }
+  }, [visible]);
+
+  const loadShares = async () => {
+    setListLoading(true);
+    try {
+      const { data, error } = await setlistService.listShares(setlistId);
+      if (error || !data) {
+        Alert.alert('Error', 'Failed to load shares');
+        return;
+      }
+      setShares(data);
+    } catch (err) {
+      console.error('Load shares error:', err);
+    } finally {
+      setListLoading(false);
+    }
+  };
+
+  const generateShareUrl = (shareToken: string): string => {
+    // Format: bandtogether://setlist/shared/{shareToken}
+    return `bandtogether://setlist/shared/${shareToken}`;
+  };
+
+  const generateQrCodeUrl = (shareToken: string): string => {
+    const shareUrl = generateShareUrl(shareToken);
+    // Using qrserver API: encodes URL as QR code
+    return `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(shareUrl)}`;
+  };
+
+  const handleGenerateShare = async () => {
+    setLoading(true);
+    try {
+      const { data, error } = await setlistService.createShare(setlistId, {
+        permission,
+        expiresAt: expiresAt || undefined,
+      });
+
+      if (error || !data) {
+        Alert.alert('Error', 'Failed to create share link');
+        return;
+      }
+
+      // Generate QR code URL
+      const qrUrl = generateQrCodeUrl(data.shareToken);
+      setGeneratedShare(data);
+      setQrCodeUrl(qrUrl);
+      setExpiresAt('');
+      setPermission('VIEW_ONLY');
+
+      // Reload shares list
+      await loadShares();
+    } catch (err) {
+      Alert.alert('Error', `Failed to create share: ${err instanceof Error ? err.message : 'Unknown error'}`);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleCopyLink = async () => {
+    if (!generatedShare) return;
+
+    const shareUrl = generateShareUrl(generatedShare.shareToken);
+    try {
+      await Clipboard.setString(shareUrl);
+      setCopyFeedback('Copied!');
+      setTimeout(() => setCopyFeedback(''), 2000);
+    } catch (err) {
+      Alert.alert('Error', 'Failed to copy link');
+    }
+  };
+
+  const handleRevokeShare = (shareId: string) => {
+    Alert.alert(
+      'Revoke Share',
+      'This share link will no longer work. Users with the link will lose access.',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Revoke',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              const { error } = await setlistService.revokeShare(setlistId, shareId);
+              if (error) {
+                Alert.alert('Error', 'Failed to revoke share');
+                return;
+              }
+              await loadShares();
+              if (generatedShare?.shareId === shareId) {
+                setGeneratedShare(null);
+                setQrCodeUrl('');
+              }
+            } catch (err) {
+              Alert.alert('Error', `Failed to revoke share: ${err instanceof Error ? err.message : 'Unknown error'}`);
+            }
+          },
+        },
+      ]
+    );
+  };
+
+  const formatPermission = (perm: string): string => {
+    return perm === 'VIEW_ONLY' ? 'View only' : 'Can edit';
+  };
+
+  const formatDate = (date: Date | string): string => {
+    const d = typeof date === 'string' ? new Date(date) : date;
+    return d.toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+  };
+
+  return (
+    <Modal
+      visible={visible}
+      transparent
+      animationType="slide"
+      onRequestClose={onClose}
+    >
+      <View className={`flex-1 ${tailwind.background.both}`}>
+        {/* Header */}
+        <View className={`border-b ${tailwind.border.both} p-4 pt-2`}>
+          <View className="flex-row items-center justify-between mb-4">
+            <Text className={`text-lg font-bold ${tailwind.text.both}`}>Share Setlist</Text>
+            <Pressable onPress={onClose} disabled={loading || listLoading}>
+              <IconSymbol name="xmark.circle.fill" size={24} color={colors.light.muted} />
+            </Pressable>
+          </View>
+          <Text className={`text-sm ${tailwind.textMuted.both}`}>{setlistName}</Text>
+        </View>
+
+        <ScrollView showsVerticalScrollIndicator={false} className="flex-1 p-4">
+          {/* Generate New Share Section */}
+          <View className={`${tailwind.card.both} border ${tailwind.border.both} rounded-lg p-4 mb-6`}>
+            <Text className={`text-base font-semibold ${tailwind.text.both} mb-4`}>
+              Generate New Share Link
+            </Text>
+
+            {/* Permission Selector */}
+            <View className="mb-4">
+              <Text className={`text-sm font-semibold ${tailwind.textMuted.both} mb-2`}>
+                Permission Level
+              </Text>
+              <View className="flex-row gap-2">
+                {['VIEW_ONLY', 'CAN_EDIT'].map((perm) => (
+                  <Pressable
+                    key={perm}
+                    onPress={() => setPermission(perm as 'VIEW_ONLY' | 'CAN_EDIT')}
+                    className={`flex-1 py-2 rounded-lg border ${tailwind.border.both} ${
+                      permission === perm ? 'bg-blue-500' : tailwind.activeBackground.both
+                    }`}
+                  >
+                    <Text
+                      className={`text-center text-sm font-semibold ${
+                        permission === perm ? 'text-white' : tailwind.text.both
+                      }`}
+                    >
+                      {formatPermission(perm)}
+                    </Text>
+                  </Pressable>
+                ))}
+              </View>
+            </View>
+
+            {/* Expiration Date Input */}
+            <View className="mb-4">
+              <Text className={`text-sm font-semibold ${tailwind.textMuted.both} mb-2`}>
+                Expiration (optional)
+              </Text>
+              <TextInput
+                className={`${tailwind.card.both} border ${tailwind.border.both} rounded-lg px-4 py-3 ${tailwind.text.both}`}
+                placeholder="YYYY-MM-DD HH:MM"
+                placeholderTextColor={colors.light.muted}
+                value={expiresAt}
+                onChangeText={setExpiresAt}
+                editable={!loading}
+              />
+              <Text className={`text-xs ${tailwind.textMuted.both} mt-1`}>
+                Leave blank for no expiration
+              </Text>
+            </View>
+
+            {/* Generate Button */}
+            <Pressable
+              className={`py-3 rounded-lg ${loading ? 'opacity-50' : ''}`}
+              style={{ backgroundColor: colors.brand.primary }}
+              onPress={handleGenerateShare}
+              disabled={loading}
+            >
+              {loading ? (
+                <ActivityIndicator color="white" />
+              ) : (
+                <Text className="text-center font-semibold text-white">Generate Link</Text>
+              )}
+            </Pressable>
+          </View>
+
+          {/* Generated Share Display */}
+          {generatedShare && qrCodeUrl && (
+            <View className={`${tailwind.card.both} border ${tailwind.border.both} rounded-lg p-4 mb-6`}>
+              <Text className={`text-base font-semibold ${tailwind.text.both} mb-4`}>
+                Your Share Link
+              </Text>
+
+              {/* QR Code */}
+              <View className="items-center mb-4">
+                <Image
+                  source={{ uri: qrCodeUrl }}
+                  style={{ width: 250, height: 250 }}
+                  className="rounded-lg"
+                />
+              </View>
+
+              {/* Share URL */}
+              <View className={`${tailwind.activeBackground.both} rounded-lg p-3 mb-3`}>
+                <Text className={`text-xs font-semibold ${tailwind.textMuted.both} mb-1`}>
+                  SHARE URL
+                </Text>
+                <Text className={`text-xs ${tailwind.text.both} mb-2 font-mono`} numberOfLines={2}>
+                  {generateShareUrl(generatedShare.shareToken)}
+                </Text>
+              </View>
+
+              {/* Copy Button */}
+              <Pressable
+                className={`py-3 rounded-lg border ${tailwind.border.both} flex-row items-center justify-center gap-2 ${
+                  copyFeedback ? 'bg-green-500' : tailwind.activeBackground.both
+                }`}
+                onPress={handleCopyLink}
+              >
+                <IconSymbol
+                  name={copyFeedback ? 'checkmark.circle.fill' : 'doc.on.doc'}
+                  size={16}
+                  color={copyFeedback ? '#FFFFFF' : colors.brand.primary}
+                />
+                <Text
+                  className={`font-semibold ${copyFeedback ? 'text-white' : tailwind.text.both}`}
+                >
+                  {copyFeedback || 'Copy Link'}
+                </Text>
+              </Pressable>
+            </View>
+          )}
+
+          {/* Existing Shares Section */}
+          <View>
+            <Text className={`text-base font-semibold ${tailwind.text.both} mb-3`}>
+              Active Shares ({shares.length})
+            </Text>
+
+            {listLoading ? (
+              <View className="items-center py-6">
+                <ActivityIndicator size="large" color={colors.brand.primary} />
+              </View>
+            ) : shares.length === 0 ? (
+              <View className={`${tailwind.activeBackground.both} rounded-lg p-4 items-center`}>
+                <IconSymbol name="link.slash" size={24} color={colors.light.muted} />
+                <Text className={`text-sm ${tailwind.textMuted.both} mt-2 text-center`}>
+                  No active shares yet
+                </Text>
+              </View>
+            ) : (
+              <View className="gap-2">
+                {shares.map((share) => (
+                  <View
+                    key={share.shareId}
+                    className={`${tailwind.card.both} border ${tailwind.border.both} rounded-lg p-3 flex-row items-center justify-between`}
+                  >
+                    <View className="flex-1">
+                      <View className="flex-row items-center gap-2 mb-1">
+                        <Text className={`text-sm font-semibold ${tailwind.text.both}`}>
+                          {formatPermission(share.permission)}
+                        </Text>
+                        {share.expiresAt && new Date(share.expiresAt) > new Date() && (
+                          <Text className={`text-xs px-2 py-1 rounded ${tailwind.activeBackground.both} ${tailwind.textMuted.both}`}>
+                            {formatDate(share.expiresAt)}
+                          </Text>
+                        )}
+                        {share.expiresAt && new Date(share.expiresAt) <= new Date() && (
+                          <Text className="text-xs px-2 py-1 rounded bg-red-100 dark:bg-red-900 text-red-600 dark:text-red-300">
+                            Expired
+                          </Text>
+                        )}
+                      </View>
+                      <Text className={`text-xs ${tailwind.textMuted.both}`}>
+                        Created {formatDate(share.createdAt)}
+                      </Text>
+                    </View>
+                    <Pressable
+                      className="p-2"
+                      onPress={() => handleRevokeShare(share.shareId)}
+                    >
+                      <IconSymbol name="trash" size={16} color={colors.brand.error} />
+                    </Pressable>
+                  </View>
+                ))}
+              </View>
+            )}
+          </View>
+
+          {/* Spacing */}
+          <View className="h-6" />
+        </ScrollView>
+      </View>
+    </Modal>
+  );
+};

@@ -20,6 +20,7 @@ import { SetSectionHeader } from '@components/setlist/SetSectionHeader';
 import { SongSearchModal } from '@components/setlist/SongSearchModal';
 import { AddSectionModal } from '@components/setlist/AddSectionModal';
 import { EditItemModal } from '@components/setlist/EditItemModal';
+import { ShareModal } from '@components/setlist/ShareModal';
 import type { SetList, SetItem, SetSection, Track } from '@band-together/shared';
 
 type Props = DrawerScreenProps<DrawerParamList, 'SetlistDetails'>;
@@ -39,6 +40,7 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
   const [isEditing, setIsEditing] = useState(false);
   const [showSongSearch, setShowSongSearch] = useState(false);
   const [showAddSection, setShowAddSection] = useState(false);
+  const [showShare, setShowShare] = useState(false);
   const [editingItem, setEditingItem] = useState<SetItem & { track?: Track } | null>(null);
   const [operationLoading, setOperationLoading] = useState(false);
 
@@ -315,21 +317,30 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
 
   return (
     <View className={`flex-1 ${tailwind.background.both}`}>
-      {/* Header with Edit Button */}
-      <View className={`${tailwind.card.both} border-b ${tailwind.border.both} px-4 py-3 flex-row items-center justify-between`}>
-        <Text className={`text-lg font-bold ${tailwind.text.both}`}>
+      {/* Header with Edit and Share Buttons */}
+      <View className={`${tailwind.card.both} border-b ${tailwind.border.both} px-4 py-3 flex-row items-center justify-between gap-2`}>
+        <Text className={`text-lg font-bold ${tailwind.text.both} flex-1`}>
           {setlist.name}
         </Text>
         {isOwner && (
-          <Pressable
-            onPress={() => setIsEditing(!isEditing)}
-            disabled={operationLoading}
-            className={`py-2 px-4 rounded-lg ${isEditing ? 'bg-blue-500' : tailwind.activeBackground.both}`}
-          >
-            <Text className={`font-semibold ${isEditing ? 'text-white' : tailwind.text.both}`}>
-              {isEditing ? 'Done' : 'Edit'}
-            </Text>
-          </Pressable>
+          <View className="flex-row gap-2">
+            <Pressable
+              onPress={() => setShowShare(true)}
+              disabled={operationLoading}
+              className={`py-2 px-3 rounded-lg ${tailwind.activeBackground.both}`}
+            >
+              <IconSymbol name="link" size={20} color={colors.brand.primary} />
+            </Pressable>
+            <Pressable
+              onPress={() => setIsEditing(!isEditing)}
+              disabled={operationLoading}
+              className={`py-2 px-4 rounded-lg ${isEditing ? 'bg-blue-500' : tailwind.activeBackground.both}`}
+            >
+              <Text className={`font-semibold ${isEditing ? 'text-white' : tailwind.text.both}`}>
+                {isEditing ? 'Done' : 'Edit'}
+              </Text>
+            </Pressable>
+          </View>
         )}
       </View>
 
@@ -471,6 +482,15 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
         onSave={handleUpdateItem}
         loading={operationLoading}
       />
+
+      {setlist && (
+        <ShareModal
+          visible={showShare}
+          setlistId={setlistId}
+          setlistName={setlist.name}
+          onClose={() => setShowShare(false)}
+        />
+      )}
     </View>
   );
 };

@@ -617,6 +617,42 @@ export const authRoutes = new Elysia().group('/auth', (authRoute) =>
 - This pattern allows mixing public and protected routes in the same file
 - Always document protected endpoints with `security: [{ bearerAuth: [] }]` in OpenAPI detail
 
+**CRITICAL: Waiting for Auth Initialization on App Load**
+
+On the **first app load**, Firebase's `auth.currentUser` may be `null` until `onAuthStateChanged` fires. This causes a race condition:
+- Component mounts and calls `useEffect` immediately
+- Calls `getIdToken()` which returns `null` (session not restored yet)
+- Request fails with 401
+- User sees "Try Again" error screen
+- After tapping retry, Firebase has restored the session and call succeeds
+
+**The Fix**:
+- Import `useAuth()` from `@contexts` to access the `loading` state
+- Wait for `loading` to become `false` before fetching authenticated data
+- Example:
+  ```typescript
+  const { loading: authLoading } = useAuth();
+
+  useEffect(() => {
+    // Only fetch after auth initialization completes
+    if (!authLoading) {
+      fetchSetlists();
+    }
+  }, [authLoading]);
+  ```
+
+**Why This Matters**:
+- `AuthContext.loading` is set to `true` initially
+- `onAuthStateChanged` listener restores the Firebase session
+- `loading` becomes `false` once session is ready
+- Only then is `getIdToken()` guaranteed to return a valid token
+- Critical for first-load UX on apps with persisted authentication
+
+**Applies to**:
+- Any screen that needs authenticated API calls on mount
+- Data-fetching screens in protected navigation flows
+- Initial app setup screens after authentication
+
 ### State Management
 
 **Local State vs Global Context**

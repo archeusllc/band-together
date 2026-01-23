@@ -4,6 +4,7 @@ import { useNavigation } from '@react-navigation/native';
 import type { DrawerNavigationProp } from '@react-navigation/drawer';
 import type { DrawerParamList } from '@navigation/types';
 import { setlistService } from '@services';
+import { useAuth } from '@contexts';
 import { SetlistCard } from '@components/setlist/SetlistCard';
 import { tailwind, colors } from '@theme';
 import { IconSymbol } from '@ui';
@@ -19,6 +20,7 @@ interface SetlistSection {
 
 export const SetlistManagerScreen = () => {
   const navigation = useNavigation<NavigationProp>();
+  const { loading: authLoading } = useAuth();
 
   const [sections, setSections] = useState<SetlistSection[]>([]);
   const [loading, setLoading] = useState(true);
@@ -26,8 +28,12 @@ export const SetlistManagerScreen = () => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetchSetlists();
-  }, []);
+    // Only fetch setlists after auth has finished initializing
+    // This ensures Firebase has restored the session and getIdToken() will work
+    if (!authLoading) {
+      fetchSetlists();
+    }
+  }, [authLoading]);
 
   const fetchSetlists = async (isRefresh: boolean = false) => {
     if (isRefresh) {
