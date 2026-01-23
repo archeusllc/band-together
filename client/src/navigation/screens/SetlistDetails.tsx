@@ -549,7 +549,14 @@ export const SetlistDetailsScreen = ({ route, navigation }: Props) => {
         {isOwner && (
           <View className="flex-row gap-2">
             <Pressable
-              onPress={() => setShowShare(true)}
+              onPress={() => {
+                setShowShare(true);
+                // Update URL when Share button is clicked
+                if (typeof window !== 'undefined') {
+                  const shareUrl = `/setlist/${setlistId}/share`;
+                  window.history.pushState({ modal: 'share', setlistId }, '', shareUrl);
+                }
+              }}
               disabled={operationLoading}
               className={`py-2 px-3 rounded-lg ${tailwind.activeBackground.both} flex-row items-center gap-1`}
             >
