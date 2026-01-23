@@ -82,6 +82,7 @@ class SetlistWebSocketService {
   private reconnectDelay = 1000; // Start with 1 second
   private userId: string | null = null;
   private userName: string = 'Guest';
+  private currentPresence: UserPresence[] = [];
 
   /**
    * Connect to WebSocket for a setlist
@@ -184,8 +185,7 @@ class SetlistWebSocketService {
    * Get current presence list
    */
   getPresence(): UserPresence[] {
-    // This would be maintained from presence-update events
-    return [];
+    return this.currentPresence;
   }
 
   /**
@@ -224,6 +224,11 @@ class SetlistWebSocketService {
    * Handle incoming message
    */
   private handleMessage(message: BroadcastEvent): void {
+    // Update current presence if this is a presence-update event
+    if (message.type === 'presence-update') {
+      this.currentPresence = message.presence;
+    }
+
     const handlers = this.handlers.get(message.type);
     if (handlers) {
       handlers.forEach((handler) => {

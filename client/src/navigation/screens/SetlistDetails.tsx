@@ -131,6 +131,12 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
       await setlistWSService.connect(setlistId, user?.userId, user?.email?.split('@')[0] || 'Guest');
       setWsConnected(true);
 
+      // Initialize presence from service immediately (in case first presence-update hasn't arrived yet)
+      const initialPresence = setlistWSService.getPresence();
+      if (initialPresence.length > 0) {
+        setPresence(initialPresence);
+      }
+
       // Clear any existing unsubscribe functions
       unsubscribeFunctions.current.forEach(unsub => unsub());
       unsubscribeFunctions.current = [];
