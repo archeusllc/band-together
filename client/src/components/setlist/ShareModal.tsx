@@ -461,10 +461,11 @@ export const ShareModal = ({ visible, setlistId, setlistName, onClose }: ShareMo
           >
             <View className="absolute inset-0 bg-black/75" style={{ pointerEvents: 'none' }} />
             <View className="absolute inset-0 flex items-center justify-center" style={{ pointerEvents: 'box-none' }}>
-              <View className={`${tailwind.card.both} rounded-lg p-4 mx-4`} style={{ pointerEvents: 'box-none' }}>
+              <View className={`${tailwind.card.both} rounded-lg p-4`} style={{ pointerEvents: 'box-none', maxWidth: '90%', maxHeight: '90%', aspectRatio: 1 }}>
                 <Image
                   source={{ uri: qrCodeUrl }}
-                  style={{ width: 320, height: 320 }}
+                  style={{ flex: 1, width: '100%', height: '100%' }}
+                  resizeMode="contain"
                 />
                 <Text className={`text-xs ${tailwind.textMuted.both} mt-3 text-center`}>
                   Tap to close
