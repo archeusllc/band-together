@@ -80,10 +80,21 @@ export const SetlistDetailsScreen = ({ route, navigation }: Props) => {
 
   // Handle direct /setlist/:id/share URL access - open share modal on load
   useEffect(() => {
-    if (typeof window !== 'undefined' && window.location.pathname.endsWith('/share')) {
+    if (typeof window === 'undefined') return;
+
+    if (window.location.pathname.endsWith('/share')) {
       setShowShare(true);
+
+      // Add the setlist page to history so back button works
+      // Replace current entry with the setlist URL
+      const setlistUrl = window.location.pathname.replace(/\/share$/, '');
+      window.history.replaceState(
+        { modal: 'share', setlistId },
+        '',
+        setlistUrl + '/share'
+      );
     }
-  }, []);
+  }, [setlistId]);
 
   // Sync Share modal state with browser history for proper back button support
   useEffect(() => {
