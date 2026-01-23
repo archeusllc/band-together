@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import {
   View,
   Text,
@@ -59,6 +59,9 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
 
   const setShowShare = (show: boolean) => navigation.navigate('SetlistDetails', { setlistId, modalState: show ? 'share' : undefined });
 
+  // Store unsubscribe functions to properly clean up WebSocket listeners
+  const unsubscribeFunctions = useRef<Array<() => void>>([]);
+
   // Wait for Firebase auth to initialize before fetching
   useEffect(() => {
     if (!authLoading) {
@@ -67,7 +70,9 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
     }
 
     return () => {
-      // Cleanup: disconnect WebSocket when screen unmounts
+      // Cleanup: unsubscribe from all WebSocket events and disconnect
+      unsubscribeFunctions.current.forEach(unsub => unsub());
+      unsubscribeFunctions.current = [];
       setlistWSService.disconnect();
       setWsConnected(false);
     };
@@ -123,15 +128,19 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
       await setlistWSService.connect(setlistId, user?.userId, user?.email?.split('@')[0] || 'Guest');
       setWsConnected(true);
 
-      // Subscribe to broadcast events
-      setlistWSService.on('item-added', handleItemAdded);
-      setlistWSService.on('item-updated', handleItemUpdated);
-      setlistWSService.on('item-deleted', handleItemDeleted);
-      setlistWSService.on('reordered', handleReordered);
-      setlistWSService.on('section-added', handleSectionAdded);
-      setlistWSService.on('section-updated', handleSectionUpdated);
-      setlistWSService.on('section-deleted', handleSectionDeleted);
-      setlistWSService.on('presence-update', handlePresenceUpdate);
+      // Clear any existing unsubscribe functions
+      unsubscribeFunctions.current.forEach(unsub => unsub());
+      unsubscribeFunctions.current = [];
+
+      // Subscribe to broadcast events and store unsubscribe functions
+      unsubscribeFunctions.current.push(setlistWSService.on('item-added', handleItemAdded));
+      unsubscribeFunctions.current.push(setlistWSService.on('item-updated', handleItemUpdated));
+      unsubscribeFunctions.current.push(setlistWSService.on('item-deleted', handleItemDeleted));
+      unsubscribeFunctions.current.push(setlistWSService.on('reordered', handleReordered));
+      unsubscribeFunctions.current.push(setlistWSService.on('section-added', handleSectionAdded));
+      unsubscribeFunctions.current.push(setlistWSService.on('section-updated', handleSectionUpdated));
+      unsubscribeFunctions.current.push(setlistWSService.on('section-deleted', handleSectionDeleted));
+      unsubscribeFunctions.current.push(setlistWSService.on('presence-update', handlePresenceUpdate));
     } catch (error) {
       console.error('Failed to connect WebSocket:', error);
       setWsConnected(false);
