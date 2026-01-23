@@ -925,7 +925,14 @@ export const setlistRoutes = new Elysia()
           // Subscribe to setlist room
           ws.subscribe(`setlist:${setlistId}`);
 
-          // Broadcast presence update to all clients in room
+          // Send presence update directly to the newly connected client
+          ws.send(JSON.stringify({
+            type: 'presence-update',
+            presence,
+            timestamp: new Date().toISOString(),
+          }));
+
+          // Also broadcast to all other clients in room
           ws.publish(
             `setlist:${setlistId}`,
             JSON.stringify({
@@ -945,21 +952,6 @@ export const setlistRoutes = new Elysia()
             const parsed = typeof message === 'string' ? JSON.parse(message) : message;
 
             switch (parsed.type) {
-              case 'request-presence': {
-                // Client is requesting current presence (sent after subscribing to events)
-                const currentPresence =
-                  setlistPresenceService.getPresence(setlistId);
-                ws.publish(
-                  `setlist:${setlistId}`,
-                  JSON.stringify({
-                    type: 'presence-update',
-                    presence: currentPresence,
-                    timestamp: new Date().toISOString(),
-                  })
-                );
-                break;
-              }
-
               case 'start-editing': {
                 setlistPresenceService.updateEditingStatus(
                   setlistId,

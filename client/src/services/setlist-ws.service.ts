@@ -160,15 +160,6 @@ class SetlistWebSocketService {
   }
 
   /**
-   * Request current presence from server
-   */
-  requestPresence(): void {
-    this.sendMessage({
-      type: 'request-presence',
-    });
-  }
-
-  /**
    * Subscribe to event
    */
   on<T extends keyof EventHandlers>(event: T, handler: EventHandlers[T]): () => void {
