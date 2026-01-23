@@ -5,7 +5,6 @@ import {
   Modal,
   Pressable,
   ActivityIndicator,
-  Alert,
   ScrollView,
   TextInput,
   Image,
@@ -35,6 +34,7 @@ export const ShareModal = ({ visible, setlistId, setlistName, onClose }: ShareMo
   const [revokeConfirming, setRevokeConfirming] = useState<string | null>(null);
   const [revokeLoading, setRevokeLoading] = useState(false);
   const [showQrModal, setShowQrModal] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   // Load existing shares when modal opens
   useEffect(() => {
@@ -62,7 +62,7 @@ export const ShareModal = ({ visible, setlistId, setlistName, onClose }: ShareMo
     try {
       const { data, error } = await setlistService.listShares(setlistId);
       if (error || !data) {
-        Alert.alert('Error', 'Failed to load shares');
+        setError('Failed to load shares');
         return;
       }
       setShares(data);
@@ -123,7 +123,7 @@ export const ShareModal = ({ visible, setlistId, setlistName, onClose }: ShareMo
 
       if (error || !data) {
         // Show error for intentional regeneration
-        Alert.alert('Error', 'Failed to create share link');
+        setError('Failed to create share link');
         return;
       }
 
@@ -131,7 +131,7 @@ export const ShareModal = ({ visible, setlistId, setlistName, onClose }: ShareMo
       setGeneratedShare(data);
       setQrCodeUrl(qrUrl);
     } catch (err) {
-      Alert.alert('Error', `Failed to create share: ${err instanceof Error ? err.message : 'Unknown error'}`);
+      setError(`Failed to create share: ${err instanceof Error ? err.message : 'Unknown error'}`);
     } finally {
       setLoading(false);
     }
@@ -146,7 +146,7 @@ export const ShareModal = ({ visible, setlistId, setlistName, onClose }: ShareMo
       });
 
       if (error || !data) {
-        Alert.alert('Error', 'Failed to create share link');
+        setError('Failed to create share link');
         return;
       }
 
@@ -159,7 +159,7 @@ export const ShareModal = ({ visible, setlistId, setlistName, onClose }: ShareMo
       // Reload shares list
       await loadShares();
     } catch (err) {
-      Alert.alert('Error', `Failed to create share: ${err instanceof Error ? err.message : 'Unknown error'}`);
+      setError(`Failed to create share: ${err instanceof Error ? err.message : 'Unknown error'}`);
     } finally {
       setLoading(false);
     }
@@ -174,7 +174,7 @@ export const ShareModal = ({ visible, setlistId, setlistName, onClose }: ShareMo
       setCopyFeedback('Copied!');
       setTimeout(() => setCopyFeedback(''), 2000);
     } catch (err) {
-      Alert.alert('Error', 'Failed to copy link');
+      setError('Failed to copy link');
     }
   };
 
@@ -183,7 +183,7 @@ export const ShareModal = ({ visible, setlistId, setlistName, onClose }: ShareMo
     try {
       const { error } = await setlistService.revokeShare(setlistId, shareId);
       if (error) {
-        Alert.alert('Error', 'Failed to revoke share');
+        setError('Failed to revoke share');
         return;
       }
       await loadShares();
@@ -193,7 +193,7 @@ export const ShareModal = ({ visible, setlistId, setlistName, onClose }: ShareMo
       }
       setRevokeConfirming(null);
     } catch (err) {
-      Alert.alert('Error', `Failed to revoke share: ${err instanceof Error ? err.message : 'Unknown error'}`);
+      setError(`Failed to revoke share: ${err instanceof Error ? err.message : 'Unknown error'}`);
     } finally {
       setRevokeLoading(false);
     }
@@ -227,7 +227,7 @@ export const ShareModal = ({ visible, setlistId, setlistName, onClose }: ShareMo
           <View className="flex-row items-center justify-between mb-4">
             <Text className={`text-lg font-bold ${tailwind.text.both}`}>Share Setlist</Text>
             <Pressable onPress={onClose} disabled={loading || listLoading} className="flex-row items-center gap-1">
-              <IconSymbol name="xmark.circle.fill" size={24} color={colors.light.muted} />
+              <IconSymbol name="xmark.circle.fill" size={24} color="#9CA3AF" />
               <Text className={`text-sm font-semibold ${tailwind.text.both}`}>Close</Text>
             </Pressable>
           </View>
@@ -329,7 +329,7 @@ export const ShareModal = ({ visible, setlistId, setlistName, onClose }: ShareMo
               <TextInput
                 className={`${tailwind.card.both} border ${tailwind.border.both} rounded-lg px-4 py-3 ${tailwind.text.both}`}
                 placeholder="YYYY-MM-DD HH:MM"
-                placeholderTextColor={colors.light.muted}
+                placeholderTextColor="#9CA3AF"
                 value={expiresAt}
                 onChangeText={setExpiresAt}
                 editable={!loading}
@@ -359,7 +359,7 @@ export const ShareModal = ({ visible, setlistId, setlistName, onClose }: ShareMo
               </View>
             ) : shares.length === 0 ? (
               <View className={`${tailwind.activeBackground.both} rounded-lg p-4 items-center`}>
-                <IconSymbol name="link.slash" size={24} color={colors.light.muted} />
+                <IconSymbol name="link.slash" size={24} color="#9CA3AF" />
                 <Text className={`text-sm ${tailwind.textMuted.both} mt-2 text-center`}>
                   No active shares yet
                 </Text>
@@ -472,6 +472,33 @@ export const ShareModal = ({ visible, setlistId, setlistName, onClose }: ShareMo
                   Tap to close
                 </Text>
               </View>
+            </View>
+          </Pressable>
+        )}
+
+        {/* Error Modal */}
+        {error && (
+          <Pressable
+            className="absolute inset-0 bg-black/50 z-50"
+            onPress={() => setError(null)}
+            style={{ pointerEvents: 'auto' }}
+          >
+            <View className="absolute inset-0 flex items-center justify-center" style={{ pointerEvents: 'box-none' }}>
+              <Pressable
+                className={`${tailwind.card.both} rounded-lg p-6 mx-6 max-w-sm`}
+                onPress={() => {}}
+                style={{ pointerEvents: 'box-only' }}
+              >
+                <Text className={`text-lg font-bold ${tailwind.text.both} mb-2`}>Error</Text>
+                <Text className={`text-base ${tailwind.text.both} mb-6`}>{error}</Text>
+                <Pressable
+                  className="py-3 rounded-lg"
+                  style={{ backgroundColor: colors.brand.primary }}
+                  onPress={() => setError(null)}
+                >
+                  <Text className="text-center font-semibold text-white">OK</Text>
+                </Pressable>
+              </Pressable>
             </View>
           </Pressable>
         )}
