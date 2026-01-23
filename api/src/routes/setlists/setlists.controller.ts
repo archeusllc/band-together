@@ -61,6 +61,31 @@ export const setlistController = {
   },
 
   /**
+   * Get a setlist by share token (public access)
+   * @param shareToken - The share token for the setlist
+   * @param firebaseUid - Firebase UID of the authenticated user (optional)
+   */
+  getSetlistByShareToken: async (
+    shareToken: string,
+    firebaseUid?: string
+  ) => {
+    if (!shareToken || shareToken.trim().length === 0) {
+      throw new Error('Share token is required');
+    }
+
+    const setlist = await setlistService.getSetlistByShareToken(
+      shareToken,
+      firebaseUid
+    );
+
+    if (!setlist) {
+      throw new Error('Share token not found, expired, or revoked');
+    }
+
+    return setlist;
+  },
+
+  /**
    * Update a setlist (owner only)
    * @param firebaseUid - Firebase UID of the authenticated user
    */

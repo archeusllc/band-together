@@ -7,3 +7,4 @@ export { SetlistCard } from './setlist/SetlistCard';
 export { SongSearchModal } from './setlist/SongSearchModal';
 export { SetItemRow } from './setlist/SetItemRow';
 export { SetSectionHeader } from './setlist/SetSectionHeader';
+export { SetlistPresence } from './setlist/SetlistPresence';

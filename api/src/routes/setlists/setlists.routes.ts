@@ -787,6 +787,41 @@ export const setlistRoutes = new Elysia()
     setlistRoute
       // Semi-protected routes (optional authentication)
       .use(firebaseMiddleware)
+      // Get setlist by share token - public endpoint for shared access
+      .get(
+        '/by-token/:shareToken',
+        async ({ firebase, params, set }) => {
+          try {
+            return await setlistController.getSetlistByShareToken(
+              params.shareToken,
+              firebase?.uid
+            );
+          } catch (error) {
+            set.status = 404;
+            return { error: (error as Error).message };
+          }
+        },
+        {
+          params: t.Object({
+            shareToken: t.String(),
+          }),
+          detail: {
+            tags: ['Setlists'],
+            summary: 'Get Setlist by Share Token',
+            description:
+              'Get a setlist using only a share token. Returns full setlist data including setListId, items, and sections. Works with both VIEW_ONLY and CAN_EDIT share tokens. Authentication is optional.',
+            responses: {
+              200: {
+                description: 'Setlist retrieved successfully via share token',
+              },
+              404: {
+                description:
+                  'Share token not found, expired, or revoked',
+              },
+            },
+          },
+        }
+      )
       // Get setlist by ID - supports both authenticated and share tokens
       .get(
         '/:setlistId',

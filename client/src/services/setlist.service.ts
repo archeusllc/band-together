@@ -61,6 +61,31 @@ export const setlistService = {
   },
 
   /**
+   * Get a setlist by share token (public access)
+   */
+  getSetlistByShareToken: async (shareToken: string) => {
+    try {
+      const idToken = await firebaseAuthService.getIdToken().catch(() => null);
+
+      const headers = idToken
+        ? {
+            $headers: {
+              authorization: `Bearer ${idToken}`,
+            },
+          }
+        : {};
+
+      const { data, error } = await api.setlist['by-token'][shareToken].get({
+        ...headers,
+      });
+
+      return { data, error };
+    } catch (err) {
+      return { data: null, error: err };
+    }
+  },
+
+  /**
    * Create a new setlist
    */
   createSetlist: async (data: {

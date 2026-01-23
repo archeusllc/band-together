@@ -223,6 +223,52 @@ export const setlistService = {
   },
 
   /**
+   * Get a setlist by share token (public access)
+   * @param shareToken - Share token for accessing shared setlists
+   * @param firebaseUid - Firebase UID of the authenticated user (optional)
+   */
+  getSetlistByShareToken: async (
+    shareToken: string,
+    firebaseUid?: string
+  ) => {
+    // Find the share record
+    const share = await prisma.setListShare.findFirst({
+      where: {
+        shareToken,
+        OR: [{ expiresAt: null }, { expiresAt: { gt: new Date() } }],
+      },
+      include: {
+        setList: {
+          include: {
+            setItems: {
+              include: {
+                track: true,
+                section: true,
+              },
+              orderBy: { position: 'asc' },
+            },
+            setSections: {
+              orderBy: { position: 'asc' },
+            },
+            shares: true,
+            guild: true,
+            owner: {
+              select: {
+                userId: true,
+                email: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (!share) return null;
+
+    return share.setList;
+  },
+
+  /**
    * Update a setlist (owner only)
    * @param firebaseUid - Firebase UID of the authenticated user
    */
