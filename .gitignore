@@ -45,3 +45,5 @@ prisma/dev.db-journal
 
 # Plans
 .claude/plans/
+
+secrets/

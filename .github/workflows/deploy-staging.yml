@@ -1,0 +1,40 @@
+name: Deploy Staging API
+
+on:
+  push:
+    branches:
+      - staging
+      - develop
+    paths:
+      - 'api/**'
+      - 'shared/**'
+      - 'db/**'
+      - '.github/workflows/deploy-staging.yml'
+
+jobs:
+  deploy:
+    name: Deploy to Fly.io Staging
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Fly.io CLI
+        uses: superfly/flyctl-actions/setup-flyctl@master
+
+      - name: Deploy to Fly.io
+        run: flyctl deploy --remote-only --app band-together-staging
+        working-directory: ./api
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+
+      - name: Verify deployment health
+        run: flyctl status --app band-together-staging
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+
+      - name: Get deployment logs
+        if: failure()
+        run: flyctl logs --app band-together-staging --lines 50
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}

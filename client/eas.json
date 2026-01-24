@@ -14,6 +14,9 @@
     },
     "preview": {
       "distribution": "internal",
+      "env": {
+        "EXPO_PUBLIC_API_URL": "https://band-together-staging.fly.dev"
+      },
       "android": {
         "buildType": "apk"
       }
