@@ -141,7 +141,7 @@ export const SettingsScreen = () => {
               <Text className={`text-base ${tailwind.textMuted.both}`}>{process.env.NODE_ENV}</Text>
             </View>
             {isAuthenticated && (
-              <View className={`py-3 border-b ${tailwind.border.both}`}>
+              <View className={`py-3`}>
               <View className={`flex-row justify-between items-center mb-3`}>
                 <Text className={`text-base ${tailwind.text.both}`}>Firebase Token</Text>
                 <TouchableOpacity
