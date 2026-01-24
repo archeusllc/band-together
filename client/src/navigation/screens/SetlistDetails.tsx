@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -12,7 +12,7 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { DrawerScreenProps } from '@react-navigation/drawer';
 import type { DrawerParamList } from '@navigation/types';
 import DraggableFlatList, { ScaleDecorator } from 'react-native-draggable-flatlist';
-import { setlistService, setlistWSService } from '@services';
+import { setlistService } from '@services';
 import { useAuth } from '@contexts';
 import { tailwind, colors } from '@theme';
 import { IconSymbol } from '@ui';
@@ -22,10 +22,8 @@ import { SongSearchModal } from '@components/setlist/SongSearchModal';
 import { AddSectionModal } from '@components/setlist/AddSectionModal';
 import { EditItemModal } from '@components/setlist/EditItemModal';
 import { ShareModal } from '@components/setlist/ShareModal';
-import { SetlistPresence } from '@components/setlist/SetlistPresence';
 import { SetlistDetailsSkeleton } from '@components/setlist/SetlistDetailsSkeleton';
 import type { SetList, SetItem, SetSection, Track } from '@band-together/shared';
-import type { UserPresence, BroadcastEvent } from '@services/setlist-ws.service';
 
 type Props = DrawerScreenProps<DrawerParamList, 'SetlistDetails'>;
 
@@ -52,9 +50,6 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
   const [deleteError, setDeleteError] = useState<string | null>(null);
   const [editingItem, setEditingItem] = useState<SetItem & { track?: Track } | null>(null);
   const [operationLoading, setOperationLoading] = useState(false);
-  const [wsConnected, setWsConnected] = useState(false);
-  const [presence, setPresence] = useState<UserPresence[]>([]);
-  const [recentlyAddedItemId, setRecentlyAddedItemId] = useState<string | null>(null);
 
   const isOwner = user && setlist && user.userId === (setlist as any).ownerId;
 
@@ -62,23 +57,11 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
 
   const setShowShare = (show: boolean) => navigation.navigate('SetlistDetails', { setlistId, modalState: show ? 'share' : undefined });
 
-  // Keep track of current setlistId in a ref for handlers to access without recreating them
-  const currentSetlistIdRef = useRef(setlistId);
-
-  // Update ref whenever setlistId changes
-  useEffect(() => {
-    currentSetlistIdRef.current = setlistId;
-  }, [setlistId]);
-
-  // Store fetchSetlistDetails in a ref so handlers don't need to recreate when it changes
-  const fetchSetlistDetailsRef = useRef<() => Promise<void>>();
-
-  // Create the actual fetch function
-  const fetchSetlistDetails = useCallback(async () => {
+  const fetchSetlistDetails = async () => {
     setLoading(true);
     setError(null);
     try {
-      const { data, error: fetchError } = await setlistService.getSetlistById(currentSetlistIdRef.current);
+      const { data, error: fetchError } = await setlistService.getSetlistById(setlistId);
 
       if (fetchError || !data) {
         // Provide more specific error message based on error content
@@ -105,122 +88,15 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
     } finally {
       setLoading(false);
     }
-  }, [user]);
+  };
 
-  // Update the ref whenever the function changes
-  useEffect(() => {
-    fetchSetlistDetailsRef.current = fetchSetlistDetails;
-  }, [fetchSetlistDetails]);
 
-  // Define all WebSocket event handlers with stable references using useCallback
-  // Note: These handlers check the event.setlistId, so they don't need setlistId in dependencies
-  const handlePresenceUpdate = useCallback((event: any) => {
-    setPresence(event.presence);
-  }, []);
-
-  const handleItemAdded = useCallback((event: any) => {
-    console.log('[SetlistDetails] Item added event:', event);
-    if (event.setlistId === currentSetlistIdRef.current) {
-      console.log('[SetlistDetails] Item added to current setlist, fetching details');
-      fetchSetlistDetailsRef.current?.();
-      setRecentlyAddedItemId(event.data.setItemId);
-      setTimeout(() => setRecentlyAddedItemId(null), 3000);
-    }
-  }, []);
-
-  const handleItemUpdated = useCallback((event: any) => {
-    if (event.setlistId === currentSetlistIdRef.current) {
-      fetchSetlistDetailsRef.current?.();
-    }
-  }, []);
-
-  const handleItemDeleted = useCallback((event: any) => {
-    if (event.setlistId === currentSetlistIdRef.current) {
-      fetchSetlistDetailsRef.current?.();
-    }
-  }, []);
-
-  const handleReordered = useCallback((event: any) => {
-    if (event.setlistId === currentSetlistIdRef.current) {
-      fetchSetlistDetailsRef.current?.();
-    }
-  }, []);
-
-  const handleSectionAdded = useCallback((event: any) => {
-    if (event.setlistId === currentSetlistIdRef.current) {
-      fetchSetlistDetailsRef.current?.();
-    }
-  }, []);
-
-  const handleSectionUpdated = useCallback((event: any) => {
-    if (event.setlistId === currentSetlistIdRef.current) {
-      fetchSetlistDetailsRef.current?.();
-    }
-  }, []);
-
-  const handleSectionDeleted = useCallback((event: any) => {
-    if (event.setlistId === currentSetlistIdRef.current) {
-      fetchSetlistDetailsRef.current?.();
-    }
-  }, []);
-
-  // Subscribe to WebSocket events - run only once when component mounts
-  useEffect(() => {
-    console.log('[SetlistDetails] Subscribing to WebSocket events');
-    const unsubs: Array<() => void> = [];
-
-    unsubs.push(setlistWSService.on('item-added', handleItemAdded));
-    unsubs.push(setlistWSService.on('item-updated', handleItemUpdated));
-    unsubs.push(setlistWSService.on('item-deleted', handleItemDeleted));
-    unsubs.push(setlistWSService.on('reordered', handleReordered));
-    unsubs.push(setlistWSService.on('section-added', handleSectionAdded));
-    unsubs.push(setlistWSService.on('section-updated', handleSectionUpdated));
-    unsubs.push(setlistWSService.on('section-deleted', handleSectionDeleted));
-    unsubs.push(setlistWSService.on('presence-update', handlePresenceUpdate));
-
-    return () => {
-      // Cleanup: unsubscribe from all WebSocket events when component unmounts
-      unsubs.forEach(unsub => unsub());
-    };
-    // Empty dependencies - subscribe only once on mount
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  // Connect to WebSocket and fetch setlist - run when auth loads and setlistId changes
+  // Wait for Firebase auth to initialize before fetching
   useEffect(() => {
     if (authLoading) return;
 
-    const setupWebSocket = async () => {
-      try {
-        // Connect to WebSocket for this setlist
-        await setlistWSService.connect(setlistId, user?.userId, user?.email?.split('@')[0] || 'Guest');
-        setWsConnected(true);
-      } catch (error) {
-        console.error('Failed to connect WebSocket:', error);
-        setWsConnected(false);
-      }
-    };
-
     fetchSetlistDetails();
-    setupWebSocket();
-
-    return () => {
-      // Disconnect when setlistId changes or component unmounts
-      setlistWSService.disconnect();
-      setWsConnected(false);
-    };
-  }, [setlistId, authLoading, user?.userId, user?.email]);
-
-  // Handle editing mode changes - send status to other clients
-  useEffect(() => {
-    if (isOwner && wsConnected) {
-      if (isEditing) {
-        setlistWSService.startEditing();
-      } else {
-        setlistWSService.stopEditing();
-      }
-    }
-  }, [isEditing, isOwner, wsConnected]);
+  }, [setlistId, authLoading]);
 
   const formatDuration = (seconds: number): string => {
     if (seconds === 0) return '0s';
@@ -487,12 +363,10 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
       );
     }
 
-    const isRecentlyAdded = recentlyAddedItemId === item.data.setItemId;
-
     if (isEditing) {
       return (
         <ScaleDecorator>
-          <View className={isRecentlyAdded ? `${tailwind.activeBackground.both}` : ''}>
+          <View>
             <SetItemRow
               item={item.data}
               isEditing={true}
@@ -506,7 +380,7 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
     }
 
     return (
-      <View className={isRecentlyAdded ? `${tailwind.activeBackground.both}` : ''}>
+      <View>
         <SetItemRow item={item.data} />
       </View>
     );
@@ -514,8 +388,6 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
 
   return (
     <View className={`flex-1 ${tailwind.background.both}`}>
-      {/* Presence Indicator */}
-      <SetlistPresence presence={presence} isConnected={wsConnected} />
 
       {/* Header with Edit and Share Buttons */}
       <View className={`${tailwind.card.both} border-b ${tailwind.border.both} px-4 py-3 flex-row items-center justify-between gap-2`}>
