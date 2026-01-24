@@ -22,8 +22,6 @@ export const AppHeader = () => {
     }
   };
 
-  const displayName = isAuthenticated && user?.displayName ? user.displayName : 'Log In';
-
   return (
     <SafeAreaView
       edges={['top']}
@@ -46,30 +44,37 @@ export const AppHeader = () => {
           resizeMode="contain"
           accessibilityLabel="Band Together"
         />
-        <Pressable
-          onPress={handleAvatarPress}
-          className="flex-row items-center gap-2 active:opacity-70"
-          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-        >
-          <Text className={`text-sm font-semibold ${tailwind.text.both} max-w-xs`} numberOfLines={1}>
-            {displayName}
-          </Text>
-          {user?.avatar ? (
-            <Image
-              source={{ uri: user.avatar }}
-              className="w-8 h-8 rounded-full"
-            />
-          ) : (
-            <View
-              className="w-8 h-8 rounded-full items-center justify-center"
-              style={{ backgroundColor: colors.brand.primary }}
-            >
-              <Text className="text-white text-xs font-bold">
-                {isAuthenticated && user?.displayName ? user.displayName[0].toUpperCase() : '?'}
-              </Text>
-            </View>
-          )}
-        </Pressable>
+        {isAuthenticated ? (
+          <Pressable
+            onPress={handleAvatarPress}
+            className="active:opacity-70"
+            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+          >
+            {user?.avatar ? (
+              <Image
+                source={{ uri: user.avatar }}
+                className="w-8 h-8 rounded-full"
+              />
+            ) : (
+              <View
+                className="w-8 h-8 rounded-full items-center justify-center"
+                style={{ backgroundColor: colors.brand.primary }}
+              >
+                <Text className="text-white text-xs font-bold">
+                  {user?.displayName ? user.displayName[0].toUpperCase() : '?'}
+                </Text>
+              </View>
+            )}
+          </Pressable>
+        ) : (
+          <Pressable
+            onPress={handleAvatarPress}
+            className="px-4 py-2 bg-blue-500 rounded-lg active:opacity-70"
+            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+          >
+            <Text className="text-white text-sm font-semibold">Log In</Text>
+          </Pressable>
+        )}
       </View>
     </SafeAreaView>
   );
