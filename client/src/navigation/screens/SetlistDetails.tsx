@@ -39,6 +39,16 @@ interface DisplayItem {
 export const SetlistDetailsScreen = ({ route }: Props) => {
   const navigation = useNavigation<NativeStackNavigationProp<DrawerParamList>>();
   const insets = useSafeAreaInsets();
+
+  // Guard against missing params (e.g., when browser back button is pressed)
+  if (!route.params) {
+    return (
+      <View className={`flex-1 ${tailwind.background.both} items-center justify-center`}>
+        <Text className={`text-lg ${tailwind.text.both}`}>Setlist not found</Text>
+      </View>
+    );
+  }
+
   const { setlistId, shareToken } = route.params;
   const { user, isAuthenticated, loading: authLoading } = useAuth();
   const [setlist, setSetlist] = useState<SetList & { setItems?: Array<SetItem & { track?: any }>; setSections?: SetSection[] } | null>(null);
