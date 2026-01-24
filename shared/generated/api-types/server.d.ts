@@ -56,6 +56,40 @@ declare const app: Elysia<"", {
         };
     };
 } & {
+    testbroadcast: {
+        get: {
+            body: unknown;
+            params: {};
+            query: unknown;
+            headers: unknown;
+            response: {};
+        };
+    };
+} & {
+    testws: {
+        ":id": {
+            subscribe: {
+                body: unknown;
+                params: {
+                    id: string;
+                } & {};
+                query: unknown;
+                headers: unknown;
+                response: {
+                    422: {
+                        type: "validation";
+                        on: string;
+                        summary?: string;
+                        message?: string;
+                        found?: unknown;
+                        property?: string;
+                        expected?: string;
+                    };
+                };
+            };
+        };
+    };
+} & {
     health: {
         get: {
             body: unknown;
@@ -510,9 +544,9 @@ declare const app: Elysia<"", {
                             updatedAt: Date;
                         } | null;
                         tag: {
+                            value: string;
                             tagId: string;
                             category: string;
-                            value: string;
                         } | null;
                     } & {
                         userId: string;
@@ -600,9 +634,9 @@ declare const app: Elysia<"", {
                         updatedAt: Date;
                     } | null;
                     tag: {
+                        value: string;
                         tagId: string;
                         category: string;
-                        value: string;
                     } | null;
                 } & {
                     userId: string;
@@ -1726,7 +1760,9 @@ declare const app: Elysia<"", {
                     params: {
                         setlistId: string;
                     };
-                    query: unknown;
+                    query: {
+                        shareToken?: string | undefined;
+                    };
                     headers: unknown;
                     response: {
                         200: ({
@@ -1794,7 +1830,9 @@ declare const app: Elysia<"", {
                             setItemId: string;
                             setlistId: string;
                         };
-                        query: unknown;
+                        query: {
+                            shareToken?: string | undefined;
+                        };
                         headers: unknown;
                         response: {
                             200: ({
@@ -1858,7 +1896,9 @@ declare const app: Elysia<"", {
                             setItemId: string;
                             setlistId: string;
                         };
-                        query: unknown;
+                        query: {
+                            shareToken?: string | undefined;
+                        };
                         headers: unknown;
                         response: {
                             200: {
@@ -1895,7 +1935,9 @@ declare const app: Elysia<"", {
                     params: {
                         setlistId: string;
                     };
-                    query: unknown;
+                    query: {
+                        shareToken?: string | undefined;
+                    };
                     headers: unknown;
                     response: {
                         200: ({
@@ -1970,7 +2012,9 @@ declare const app: Elysia<"", {
                     params: {
                         setlistId: string;
                     };
-                    query: unknown;
+                    query: {
+                        shareToken?: string | undefined;
+                    };
                     headers: unknown;
                     response: {
                         200: {
@@ -2010,7 +2054,9 @@ declare const app: Elysia<"", {
                             sectionId: string;
                             setlistId: string;
                         };
-                        query: unknown;
+                        query: {
+                            shareToken?: string | undefined;
+                        };
                         headers: unknown;
                         response: {
                             200: {
@@ -2049,7 +2095,9 @@ declare const app: Elysia<"", {
                             sectionId: string;
                             setlistId: string;
                         };
-                        query: unknown;
+                        query: {
+                            shareToken?: string | undefined;
+                        };
                         headers: unknown;
                         response: {
                             200: {
@@ -2191,6 +2239,110 @@ declare const app: Elysia<"", {
     };
 } & {
     setlist: {
+        "by-token": {
+            ":shareToken": {
+                get: {
+                    body: unknown;
+                    params: {
+                        shareToken: string;
+                    };
+                    query: unknown;
+                    headers: unknown;
+                    response: {
+                        200: ({
+                            guild: {
+                                createdAt: Date;
+                                name: string;
+                                venueId: string | null;
+                                actId: string | null;
+                                guildId: string;
+                                guildType: import("node_modules/@band-together/shared/generated/prisma-client").$Enums.GuildType;
+                                createdById: string | null;
+                                currentOwnerId: string;
+                                clubId: string | null;
+                            } | null;
+                            setItems: ({
+                                track: {
+                                    type: import("node_modules/@band-together/shared/generated/prisma-client").$Enums.TrackType;
+                                    createdAt: Date;
+                                    updatedAt: Date;
+                                    title: string;
+                                    createdBy: string;
+                                    trackId: string;
+                                    artist: string;
+                                    defaultDuration: number | null;
+                                    defaultTuning: string | null;
+                                    isActive: boolean;
+                                };
+                                section: {
+                                    createdAt: Date;
+                                    updatedAt: Date;
+                                    name: string;
+                                    setListId: string;
+                                    position: number;
+                                    sectionId: string;
+                                } | null;
+                            } & {
+                                createdAt: Date;
+                                updatedAt: Date;
+                                trackId: string;
+                                setListId: string;
+                                setItemId: string;
+                                position: number;
+                                customTuning: string | null;
+                                customNotes: string | null;
+                                customDuration: number | null;
+                                sectionId: string | null;
+                            })[];
+                            owner: {
+                                email: string;
+                                userId: string;
+                            };
+                            setSections: {
+                                createdAt: Date;
+                                updatedAt: Date;
+                                name: string;
+                                setListId: string;
+                                position: number;
+                                sectionId: string;
+                            }[];
+                            shares: {
+                                createdAt: Date;
+                                createdBy: string;
+                                setListId: string;
+                                shareId: string;
+                                shareToken: string;
+                                permission: import("node_modules/@band-together/shared/generated/prisma-client").$Enums.SharePermission;
+                                expiresAt: Date | null;
+                            }[];
+                        } & {
+                            description: string | null;
+                            createdAt: Date;
+                            updatedAt: Date;
+                            name: string;
+                            guildId: string | null;
+                            setListId: string;
+                            isPrivate: boolean;
+                            ownerId: string;
+                        }) | {
+                            error: string;
+                        };
+                        422: {
+                            type: "validation";
+                            on: string;
+                            summary?: string;
+                            message?: string;
+                            found?: unknown;
+                            property?: string;
+                            expected?: string;
+                        };
+                    };
+                };
+            };
+        };
+    };
+} & {
+    setlist: {
         ":setlistId": {
             get: {
                 body: unknown;
@@ -2288,6 +2440,35 @@ declare const app: Elysia<"", {
                         found?: unknown;
                         property?: string;
                         expected?: string;
+                    };
+                };
+            };
+        };
+    };
+} & {
+    setlist: {
+        ":setlistId": {
+            ws: {
+                subscribe: {
+                    body: {};
+                    params: {
+                        setlistId: string;
+                    };
+                    query: {
+                        userId?: string | undefined;
+                        userName?: string | undefined;
+                    };
+                    headers: {};
+                    response: {
+                        422: {
+                            type: "validation";
+                            on: string;
+                            summary?: string;
+                            message?: string;
+                            found?: unknown;
+                            property?: string;
+                            expected?: string;
+                        };
                     };
                 };
             };
