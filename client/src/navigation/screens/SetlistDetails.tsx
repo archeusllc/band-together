@@ -409,6 +409,7 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
         <SetSectionHeader
           section={section}
           isEditing={isOwner || false}
+          isOwner={isOwner || false}
           onEdit={() => {
             Alert.prompt(
               'Edit Section Name',
