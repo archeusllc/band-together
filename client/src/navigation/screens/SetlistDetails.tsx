@@ -65,7 +65,15 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
   // Store unsubscribe functions to properly clean up WebSocket listeners
   const unsubscribeFunctions = useRef<Array<() => void>>([]);
 
-  const fetchSetlistDetails = async () => {
+  // Keep track of current setlistId in a ref for handlers to access without recreating them
+  const currentSetlistIdRef = useRef(setlistId);
+
+  // Update ref whenever setlistId changes
+  useEffect(() => {
+    currentSetlistIdRef.current = setlistId;
+  }, [setlistId]);
+
+  const fetchSetlistDetails = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
@@ -96,80 +104,88 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [setlistId]);
 
   // Define all WebSocket event handlers with stable references using useCallback
+  // Note: These handlers check the event.setlistId, so they don't need setlistId in dependencies
   const handlePresenceUpdate = useCallback((event: any) => {
     setPresence(event.presence);
   }, []);
 
   const handleItemAdded = useCallback((event: any) => {
     console.log('[SetlistDetails] Item added event:', event);
-    if (event.setlistId === setlistId) {
+    if (event.setlistId === currentSetlistIdRef.current) {
       console.log('[SetlistDetails] Item added to current setlist, fetching details');
       fetchSetlistDetails();
       setRecentlyAddedItemId(event.data.setItemId);
       setTimeout(() => setRecentlyAddedItemId(null), 3000);
     }
-  }, [setlistId]);
+  }, [fetchSetlistDetails]);
 
   const handleItemUpdated = useCallback((event: any) => {
-    if (event.setlistId === setlistId) {
+    if (event.setlistId === currentSetlistIdRef.current) {
       fetchSetlistDetails();
     }
-  }, [setlistId]);
+  }, [fetchSetlistDetails]);
 
   const handleItemDeleted = useCallback((event: any) => {
-    if (event.setlistId === setlistId) {
+    if (event.setlistId === currentSetlistIdRef.current) {
       fetchSetlistDetails();
     }
-  }, [setlistId]);
+  }, [fetchSetlistDetails]);
 
   const handleReordered = useCallback((event: any) => {
-    if (event.setlistId === setlistId) {
+    if (event.setlistId === currentSetlistIdRef.current) {
       fetchSetlistDetails();
     }
-  }, [setlistId]);
+  }, [fetchSetlistDetails]);
 
   const handleSectionAdded = useCallback((event: any) => {
-    if (event.setlistId === setlistId) {
+    if (event.setlistId === currentSetlistIdRef.current) {
       fetchSetlistDetails();
     }
-  }, [setlistId]);
+  }, [fetchSetlistDetails]);
 
   const handleSectionUpdated = useCallback((event: any) => {
-    if (event.setlistId === setlistId) {
+    if (event.setlistId === currentSetlistIdRef.current) {
       fetchSetlistDetails();
     }
-  }, [setlistId]);
+  }, [fetchSetlistDetails]);
 
   const handleSectionDeleted = useCallback((event: any) => {
-    if (event.setlistId === setlistId) {
+    if (event.setlistId === currentSetlistIdRef.current) {
       fetchSetlistDetails();
     }
-  }, [setlistId]);
+  }, [fetchSetlistDetails]);
 
-  // Wait for Firebase auth to initialize before fetching
+  // Subscribe to WebSocket events - run only once when component mounts
+  useEffect(() => {
+    if (unsubscribeFunctions.current.length === 0) {
+      console.log('[SetlistDetails] Subscribing to WebSocket events');
+      unsubscribeFunctions.current.push(setlistWSService.on('item-added', handleItemAdded));
+      unsubscribeFunctions.current.push(setlistWSService.on('item-updated', handleItemUpdated));
+      unsubscribeFunctions.current.push(setlistWSService.on('item-deleted', handleItemDeleted));
+      unsubscribeFunctions.current.push(setlistWSService.on('reordered', handleReordered));
+      unsubscribeFunctions.current.push(setlistWSService.on('section-added', handleSectionAdded));
+      unsubscribeFunctions.current.push(setlistWSService.on('section-updated', handleSectionUpdated));
+      unsubscribeFunctions.current.push(setlistWSService.on('section-deleted', handleSectionDeleted));
+      unsubscribeFunctions.current.push(setlistWSService.on('presence-update', handlePresenceUpdate));
+    }
+
+    return () => {
+      // Cleanup: unsubscribe from all WebSocket events when component unmounts
+      unsubscribeFunctions.current.forEach(unsub => unsub());
+      unsubscribeFunctions.current = [];
+    };
+  }, [handleItemAdded, handleItemUpdated, handleItemDeleted, handleReordered, handleSectionAdded, handleSectionUpdated, handleSectionDeleted, handlePresenceUpdate]);
+
+  // Connect to WebSocket and fetch setlist - run when auth loads and setlistId changes
   useEffect(() => {
     if (authLoading) return;
 
     const setupWebSocket = async () => {
       try {
-        // Clear any existing subscriptions
-        unsubscribeFunctions.current.forEach(unsub => unsub());
-        unsubscribeFunctions.current = [];
-
-        // Subscribe to broadcast events FIRST (before connecting, so handlers are ready)
-        unsubscribeFunctions.current.push(setlistWSService.on('item-added', handleItemAdded));
-        unsubscribeFunctions.current.push(setlistWSService.on('item-updated', handleItemUpdated));
-        unsubscribeFunctions.current.push(setlistWSService.on('item-deleted', handleItemDeleted));
-        unsubscribeFunctions.current.push(setlistWSService.on('reordered', handleReordered));
-        unsubscribeFunctions.current.push(setlistWSService.on('section-added', handleSectionAdded));
-        unsubscribeFunctions.current.push(setlistWSService.on('section-updated', handleSectionUpdated));
-        unsubscribeFunctions.current.push(setlistWSService.on('section-deleted', handleSectionDeleted));
-        unsubscribeFunctions.current.push(setlistWSService.on('presence-update', handlePresenceUpdate));
-
-        // Now connect - server will immediately send presence update to this client
+        // Connect to WebSocket for this setlist
         await setlistWSService.connect(setlistId, user?.userId, user?.email?.split('@')[0] || 'Guest');
         setWsConnected(true);
       } catch (error) {
@@ -182,9 +198,7 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
     setupWebSocket();
 
     return () => {
-      // Cleanup: unsubscribe from all WebSocket events and disconnect
-      unsubscribeFunctions.current.forEach(unsub => unsub());
-      unsubscribeFunctions.current = [];
+      // Disconnect when setlistId changes or component unmounts
       setlistWSService.disconnect();
       setWsConnected(false);
     };
