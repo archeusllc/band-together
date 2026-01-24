@@ -1,5 +1,7 @@
 import React from 'react';
-import { View, Text, Pressable } from 'react-native';
+import { View, Text, Pressable, Platform } from 'react-native';
+import { Swipeable } from 'react-native-gesture-handler';
+import * as Haptics from 'expo-haptics';
 import { tailwind, colors } from '@theme';
 import { IconSymbol } from '@ui';
 import type { SetItem, Track } from '@band-together/shared';
@@ -9,6 +11,7 @@ interface SetItemRowProps {
     track?: Track;
   };
   isEditing?: boolean;
+  isOwner?: boolean;
   onEdit?: () => void;
   onDelete?: () => void;
 }
@@ -26,7 +29,76 @@ const formatDuration = (seconds: number): string => {
   return hours > 0 ? `${hours}:${mm}:${ss}` : `${mm}:${ss}`;
 };
 
-export const SetItemRow = ({ item, isEditing = false, onEdit, onDelete }: SetItemRowProps) => {
+const ItemContent = ({ track, item, displayTuning, displayDuration, displayNotes, isEditing, onEdit, onDelete }: any) => (
+  <View className={`border-b ${tailwind.border.both} p-4`}>
+    <View className="flex-row items-center gap-3">
+      {/* Position Number */}
+      <Text className={`text-sm font-semibold ${tailwind.textMuted.both} w-6`}>
+        {item.position + 1}
+      </Text>
+
+      {/* Track Info */}
+      <View className="flex-1 mb-2">
+        <View className="flex-row items-center gap-3 mb-2">
+          <View className="flex-1">
+            <Text className={`text-base font-semibold ${tailwind.text.both}`} numberOfLines={1}>
+              {track.title}
+            </Text>
+          </View>
+          <Text className={`text-sm ${tailwind.textMuted.both}`}>
+            {formatDuration(displayDuration)}
+          </Text>
+        </View>
+
+        {/* Artist and Tuning */}
+        <View className="flex-row items-center gap-2">
+          {track.artist && (
+            <Text className={`text-sm ${tailwind.textMuted.both} flex-1`} numberOfLines={1}>
+              {track.artist}
+            </Text>
+          )}
+          {displayTuning && (
+            <Text className={`text-xs px-2 py-1 rounded ${tailwind.activeBackground.both} ${tailwind.textMuted.both}`}>
+              {displayTuning}
+            </Text>
+          )}
+        </View>
+
+        {/* Custom Notes (if present) */}
+        {displayNotes && (
+          <View className="flex-row items-start gap-2 mt-2">
+            <IconSymbol name="document-text" size={12} color="#9CA3AF" />
+            <Text className={`text-xs ${tailwind.textMuted.both} flex-1 italic`} numberOfLines={2}>
+              {displayNotes}
+            </Text>
+          </View>
+        )}
+      </View>
+
+      {/* Edit/Delete Buttons (web only, or when isEditing true and not on mobile with swipe enabled) */}
+      {isEditing && (
+        <View className="flex-row gap-2">
+          <Pressable
+            className={`p-2 rounded ${tailwind.activeBackground.both}`}
+            onPress={onEdit}
+            accessibilityLabel="Edit track"
+          >
+            <IconSymbol name="pencil" size={18} color={colors.brand.primary} />
+          </Pressable>
+          <Pressable
+            className={`p-2 rounded ${tailwind.activeBackground.both}`}
+            onPress={onDelete}
+            accessibilityLabel="Delete track"
+          >
+            <IconSymbol name="trash" size={18} color={colors.brand.error} />
+          </Pressable>
+        </View>
+      )}
+    </View>
+  </View>
+);
+
+export const SetItemRow = ({ item, isEditing = false, isOwner = false, onEdit, onDelete }: SetItemRowProps) => {
   const track = item.track;
   if (!track) return null;
 
@@ -35,72 +107,73 @@ export const SetItemRow = ({ item, isEditing = false, onEdit, onDelete }: SetIte
   const displayDuration = item.customDuration ?? track.defaultDuration ?? 0;
   const displayNotes = item.customNotes;
 
-  return (
-    <View className={`border-b ${tailwind.border.both} p-4`}>
-      <View className="flex-row items-center gap-3">
-        {/* Position Number */}
-        <Text className={`text-sm font-semibold ${tailwind.textMuted.both} w-6`}>
-          {item.position + 1}
-        </Text>
+  const isWeb = Platform.OS === 'web';
 
-        {/* Track Info */}
-        <View className="flex-1 mb-2">
-          <View className="flex-row items-center gap-3 mb-2">
-            <View className="flex-1">
-              <Text className={`text-base font-semibold ${tailwind.text.both}`} numberOfLines={1}>
-                {track.title}
-              </Text>
-            </View>
-            <Text className={`text-sm ${tailwind.textMuted.both}`}>
-              {formatDuration(displayDuration)}
-            </Text>
-          </View>
+  // Haptic feedback handlers
+  const handleDelete = () => {
+    if (!isWeb) {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    }
+    onDelete?.();
+  };
 
-          {/* Artist and Tuning */}
-          <View className="flex-row items-center gap-2">
-            {track.artist && (
-              <Text className={`text-sm ${tailwind.textMuted.both} flex-1`} numberOfLines={1}>
-                {track.artist}
-              </Text>
-            )}
-            {displayTuning && (
-              <Text className={`text-xs px-2 py-1 rounded ${tailwind.activeBackground.both} ${tailwind.textMuted.both}`}>
-                {displayTuning}
-              </Text>
-            )}
-          </View>
+  const handleEdit = () => {
+    if (!isWeb) {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    }
+    onEdit?.();
+  };
 
-          {/* Custom Notes (if present) */}
-          {displayNotes && (
-            <View className="flex-row items-start gap-2 mt-2">
-              <IconSymbol name="document-text" size={12} color="#9CA3AF" />
-              <Text className={`text-xs ${tailwind.textMuted.both} flex-1 italic`} numberOfLines={2}>
-                {displayNotes}
-              </Text>
-            </View>
-          )}
-        </View>
-
-        {/* Edit/Delete Buttons (editing only) */}
-        {isEditing && (
-          <View className="flex-row gap-2">
-            <Pressable
-              className={`p-2 rounded ${tailwind.activeBackground.both}`}
-              onPress={onEdit}
-              accessibilityLabel="Edit track"
-            >
-              <IconSymbol name="pencil" size={18} color={colors.brand.primary} />
-            </Pressable>
-            <Pressable
-              className={`p-2 rounded ${tailwind.activeBackground.both}`}
-              onPress={onDelete}
-              accessibilityLabel="Delete track"
-            >
-              <IconSymbol name="trash" size={18} color={colors.brand.error} />
-            </Pressable>
-          </View>
+  // Mobile with swipe gestures: show no visible buttons, wrap in Swipeable
+  if (!isWeb && isOwner && isEditing) {
+    return (
+      <Swipeable
+        renderLeftActions={() => (
+          <Pressable
+            onPress={handleDelete}
+            className="bg-red-500 flex-row items-center justify-center px-6 flex-1"
+          >
+            <IconSymbol name="trash" size={20} color="white" />
+            <Text className="text-white font-semibold ml-2">Delete</Text>
+          </Pressable>
         )}
-      </View>
-    </View>
+        renderRightActions={() => (
+          <Pressable
+            onPress={handleEdit}
+            className="bg-blue-500 flex-row items-center justify-center px-6 flex-1"
+          >
+            <IconSymbol name="pencil" size={20} color="white" />
+            <Text className="text-white font-semibold ml-2">Edit</Text>
+          </Pressable>
+        )}
+        overshootLeft={false}
+        overshootRight={false}
+      >
+        <ItemContent
+          track={track}
+          item={item}
+          displayTuning={displayTuning}
+          displayDuration={displayDuration}
+          displayNotes={displayNotes}
+          isEditing={false}
+          onEdit={handleEdit}
+          onDelete={handleDelete}
+        />
+      </Swipeable>
+    );
+  }
+
+  // Web or non-editing mode: render with buttons (existing behavior)
+  return (
+    <ItemContent
+      track={track}
+      item={item}
+      displayTuning={displayTuning}
+      displayDuration={displayDuration}
+      displayNotes={displayNotes}
+      isEditing={isEditing}
+      onEdit={handleEdit}
+      onDelete={handleDelete}
+    />
   );
 };

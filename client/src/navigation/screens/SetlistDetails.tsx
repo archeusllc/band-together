@@ -448,6 +448,7 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
         <SetItemRow
           item={trackItem}
           isEditing={isOwner || false}
+          isOwner={isOwner || false}
           onEdit={() => setEditingItem(trackItem)}
           onDelete={() => handleDeleteItem(trackItem)}
         />
