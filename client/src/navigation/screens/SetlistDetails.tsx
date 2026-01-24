@@ -78,13 +78,9 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
         return;
       }
 
-      console.log('[SetlistDetails] Fetched setlist:', data);
-      console.log('[SetlistDetails] Current user:', user);
-      console.log('[SetlistDetails] ownerId:', data.ownerId, 'userId:', user?.userId);
       setSetlist(data);
     } catch (err) {
       setError('An error occurred while loading the setlist');
-      console.error('Fetch setlist error:', err);
     } finally {
       setLoading(false);
     }
@@ -213,22 +209,17 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
   const handleDeleteSetlist = async () => {
     setOperationLoading(true);
     try {
-      console.log('[SetlistDetails] Deleting setlist:', setlistId);
       const result = await setlistService.deleteSetlist(setlistId);
-      console.log('[SetlistDetails] Delete result:', result);
 
       if (result.error) {
-        console.error('[SetlistDetails] Delete error:', result.error);
         setDeleteError(`Failed to delete setlist: ${result.error}`);
         return;
       }
 
-      console.log('[SetlistDetails] Setlist deleted successfully, navigating back');
       // Navigate back to setlist manager
       setShowDeleteConfirm(false);
       navigation.navigate('SetlistManager' as any);
     } catch (err) {
-      console.error('[SetlistDetails] Delete exception:', err);
       const errorMsg = err instanceof Error ? err.message : 'Unknown error';
       setDeleteError(`Failed to delete setlist: ${errorMsg}`);
     } finally {
@@ -415,7 +406,6 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
             </Pressable>
             <Pressable
               onPress={() => {
-                console.log('[SetlistDetails] More button pressed, opening options');
                 setShowOptions(true);
               }}
               disabled={operationLoading}
@@ -596,7 +586,6 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
             <View className="gap-2">
               <Pressable
                 onPress={() => {
-                  console.log('[SetlistDetails] Duplicate selected');
                   setShowOptions(false);
                   handleDuplicateSetlist();
                 }}
@@ -609,7 +598,6 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
 
               <Pressable
                 onPress={() => {
-                  console.log('[SetlistDetails] Delete selected, showing confirmation');
                   setShowOptions(false);
                   setShowDeleteConfirm(true);
                 }}
@@ -622,7 +610,6 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
 
               <Pressable
                 onPress={() => {
-                  console.log('[SetlistDetails] Cancel selected');
                   setShowOptions(false);
                 }}
                 className={`${tailwind.activeBackground.both} rounded-lg p-3`}
@@ -656,7 +643,6 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
             <View className="gap-2">
               <Pressable
                 onPress={() => {
-                  console.log('[SetlistDetails] Confirming deletion');
                   setShowDeleteConfirm(false);
                   handleDeleteSetlist();
                 }}
@@ -670,7 +656,6 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
 
               <Pressable
                 onPress={() => {
-                  console.log('[SetlistDetails] Delete cancelled');
                   setShowDeleteConfirm(false);
                 }}
                 disabled={operationLoading}
