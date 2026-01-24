@@ -71,7 +71,7 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
     refreshTimeoutRef.current = setTimeout(() => {
       fetchSetlistDetails();
     }, 200); // 200ms debounce
-  }, []);
+  }, [setlistId, shareToken]);
 
   useFocusEffect(
     useCallback(() => {
