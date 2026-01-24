@@ -346,6 +346,39 @@ export const setlistService = {
   },
 
   /**
+   * Reorder sections in a setlist
+   */
+  reorderSections: async (
+    setlistId: string,
+    sectionPositions: Array<{
+      sectionId: string;
+      position: number;
+    }>,
+    shareToken?: string
+  ) => {
+    try {
+      const idToken = await firebaseAuthService.getIdToken();
+      if (!idToken) {
+        return { data: null, error: 'Authentication required' };
+      }
+
+      const query = shareToken ? { $query: { shareToken } } : {};
+
+      const { data, error } = await api.setlist[setlistId]['sections/reorder'].post({
+        $headers: {
+          authorization: `Bearer ${idToken}`,
+        },
+        ...query,
+        sectionPositions,
+      });
+
+      return { data, error };
+    } catch (err) {
+      return { data: null, error: err };
+    }
+  },
+
+  /**
    * Add a section to a setlist
    */
   addSection: async (

@@ -517,17 +517,96 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
     }
   };
 
+  // Find section index in displayItems
+  const findSectionIndex = (sectionId: string): number => {
+    return displayItems.findIndex(item => item.type === 'header' && (item.data as SetSection).sectionId === sectionId);
+  };
+
+  // Find previous section (skip items/breaks)
+  const findPreviousSectionIndex = (currentIndex: number): number => {
+    for (let i = currentIndex - 1; i >= 0; i--) {
+      if (displayItems[i].type === 'header') {
+        return i;
+      }
+    }
+    return -1;
+  };
+
+  // Find next section (skip items/breaks)
+  const findNextSectionIndex = (currentIndex: number): number => {
+    for (let i = currentIndex + 1; i < displayItems.length; i++) {
+      if (displayItems[i].type === 'header') {
+        return i;
+      }
+    }
+    return -1;
+  };
+
+  // Handle moving section up
+  const handleMoveSectionUp = async (section: SetSection) => {
+    const currentIndex = findSectionIndex(section.sectionId);
+    const prevIndex = findPreviousSectionIndex(currentIndex);
+
+    if (prevIndex === -1) return; // Can't move up
+
+    const prevSection = displayItems[prevIndex].data as SetSection;
+
+    setOperationLoading(true);
+    try {
+      await setlistService.reorderSections(setlistId, [
+        { sectionId: section.sectionId, position: prevSection.position },
+        { sectionId: prevSection.sectionId, position: section.position },
+      ]);
+      await fetchSetlistDetails();
+    } catch (err) {
+      setDeleteError(`Failed to move section: ${err instanceof Error ? err.message : 'Unknown error'}`);
+    } finally {
+      setOperationLoading(false);
+    }
+  };
+
+  // Handle moving section down
+  const handleMoveSectionDown = async (section: SetSection) => {
+    const currentIndex = findSectionIndex(section.sectionId);
+    const nextIndex = findNextSectionIndex(currentIndex);
+
+    if (nextIndex === -1) return; // Can't move down
+
+    const nextSection = displayItems[nextIndex].data as SetSection;
+
+    setOperationLoading(true);
+    try {
+      await setlistService.reorderSections(setlistId, [
+        { sectionId: section.sectionId, position: nextSection.position },
+        { sectionId: nextSection.sectionId, position: section.position },
+      ]);
+      await fetchSetlistDetails();
+    } catch (err) {
+      setDeleteError(`Failed to move section: ${err instanceof Error ? err.message : 'Unknown error'}`);
+    } finally {
+      setOperationLoading(false);
+    }
+  };
+
   const renderItem = ({ item }: { item: DisplayItem }) => {
     if (item.type === 'header') {
       const section = item.data as SetSection;
+      const currentIndex = findSectionIndex(section.sectionId);
+      const canMoveUp = findPreviousSectionIndex(currentIndex) !== -1;
+      const canMoveDown = findNextSectionIndex(currentIndex) !== -1;
+
       return (
         <SetSectionHeader
           section={section}
           isEditing={isOwner || false}
           isOwner={isOwner || false}
           duration={sectionDurations.get(section.sectionId)}
+          canMoveUp={canMoveUp}
+          canMoveDown={canMoveDown}
           onEdit={() => setEditingSection(section)}
           onDelete={() => handleDeleteSection(section)}
+          onMoveUp={() => handleMoveSectionUp(section)}
+          onMoveDown={() => handleMoveSectionDown(section)}
         />
       );
     }

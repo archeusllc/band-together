@@ -497,6 +497,66 @@ export const setlistRoutes = new Elysia()
           },
         }
       )
+      // Reorder sections in setlist
+      .post(
+        '/:setlistId/sections/reorder',
+        async ({ firebase, params, query, body, set }) => {
+          try {
+            return await setlistController.reorderSetSections(
+              params.setlistId,
+              firebase.uid,
+              body.sectionPositions,
+              query.shareToken
+            );
+          } catch (error) {
+            const message = (error as Error).message;
+            if (message.includes('Unauthorized')) {
+              set.status = 403;
+            } else if (message.includes('not found')) {
+              set.status = 404;
+            } else {
+              set.status = 422;
+            }
+            return { error: message };
+          }
+        },
+        {
+          params: t.Object({
+            setlistId: t.String(),
+          }),
+          query: t.Object({
+            shareToken: t.Optional(t.String()),
+          }),
+          body: t.Object({
+            sectionPositions: t.Array(
+              t.Object({
+                sectionId: t.String(),
+                position: t.Number(),
+              })
+            ),
+          }),
+          detail: {
+            tags: ['Setlists'],
+            summary: 'Reorder Sections in Setlist',
+            description:
+              'Update the positions of sections in a setlist. Provide an array of {sectionId, position} objects. All sections must belong to the specified setlist. Requires authentication and ownership or CAN_EDIT share permission.',
+            security: [{ bearerAuth: [] }],
+            responses: {
+              200: { description: 'Sections reordered successfully' },
+              401: {
+                description:
+                  'Unauthorized - missing or invalid Firebase token',
+              },
+              403: { description: 'Forbidden - must be owner or have CAN_EDIT share access' },
+              404: { description: 'Setlist not found' },
+              422: {
+                description:
+                  'Unprocessable Entity - invalid input data',
+              },
+            },
+          },
+        }
+      )
       // Add section to setlist
       .post(
         '/:setlistId/sections',

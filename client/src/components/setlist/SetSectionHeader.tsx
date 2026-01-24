@@ -24,11 +24,44 @@ interface SetSectionHeaderProps {
   isEditing?: boolean;
   isOwner?: boolean;
   duration?: number;
+  canMoveUp?: boolean;
+  canMoveDown?: boolean;
   onEdit?: () => void;
   onDelete?: () => void;
+  onMoveUp?: () => void;
+  onMoveDown?: () => void;
 }
 
-const SectionSwipeActions = ({ onEdit, onDelete }: any) => (
+const SectionLeftSwipeActions = ({ onMoveUp, onMoveDown, canMoveUp, canMoveDown }: any) => (
+  <View style={{ flexDirection: 'row', height: '100%', gap: 12, paddingHorizontal: 12, alignItems: 'center' }}>
+    <Pressable
+      onPress={onMoveUp}
+      disabled={!canMoveUp}
+      style={{
+        padding: 8,
+        alignItems: 'center',
+        justifyContent: 'center',
+        opacity: canMoveUp ? 1 : 0.3,
+      }}
+    >
+      <IconSymbol name="chevron-up" size={20} color={colors.brand.primary} />
+    </Pressable>
+    <Pressable
+      onPress={onMoveDown}
+      disabled={!canMoveDown}
+      style={{
+        padding: 8,
+        alignItems: 'center',
+        justifyContent: 'center',
+        opacity: canMoveDown ? 1 : 0.3,
+      }}
+    >
+      <IconSymbol name="chevron-down" size={20} color={colors.brand.primary} />
+    </Pressable>
+  </View>
+);
+
+const SectionRightSwipeActions = ({ onEdit, onDelete }: any) => (
   <View style={{ flexDirection: 'row', height: '100%', gap: 12, paddingHorizontal: 12, alignItems: 'center' }}>
     <Pressable
       onPress={onEdit}
@@ -53,7 +86,7 @@ const SectionSwipeActions = ({ onEdit, onDelete }: any) => (
   </View>
 );
 
-const SectionContent = ({ section, isEditing, onEdit, onDelete, duration }: any) => (
+const SectionContent = ({ section, isEditing, onEdit, onDelete, duration, canMoveUp, canMoveDown, onMoveUp, onMoveDown }: any) => (
   <View className={`${tailwind.activeBackground.both} px-4 py-3 border-b ${tailwind.border.both} flex-row items-center justify-between`}>
     <View className="flex-1">
       <View className="flex-row items-center gap-2">
@@ -70,12 +103,35 @@ const SectionContent = ({ section, isEditing, onEdit, onDelete, duration }: any)
 
     {isEditing && (
       <View className="flex-row gap-1">
+        {/* Move Up Button */}
+        <Pressable
+          className={`p-3 rounded transition-all duration-150 ${canMoveUp ? tailwind.background.both : 'opacity-30'} hover:opacity-80`}
+          onPress={onMoveUp}
+          disabled={!canMoveUp}
+          accessibilityLabel="Move section up"
+        >
+          <IconSymbol name="chevron-up" size={16} color={colors.brand.primary} />
+        </Pressable>
+
+        {/* Move Down Button */}
+        <Pressable
+          className={`p-3 rounded transition-all duration-150 ${canMoveDown ? tailwind.background.both : 'opacity-30'} hover:opacity-80`}
+          onPress={onMoveDown}
+          disabled={!canMoveDown}
+          accessibilityLabel="Move section down"
+        >
+          <IconSymbol name="chevron-down" size={16} color={colors.brand.primary} />
+        </Pressable>
+
+        {/* Edit Button */}
         <Pressable
           className={`p-3 rounded transition-all duration-150 ${tailwind.background.both} hover:opacity-80`}
           onPress={onEdit}
         >
           <IconSymbol name="pencil" size={16} color={colors.brand.primary} />
         </Pressable>
+
+        {/* Delete Button */}
         <Pressable
           className={`p-3 rounded transition-all duration-150 ${tailwind.background.both} hover:opacity-80`}
           onPress={onDelete}
@@ -87,7 +143,7 @@ const SectionContent = ({ section, isEditing, onEdit, onDelete, duration }: any)
   </View>
 );
 
-export const SetSectionHeader = ({ section, isEditing = false, isOwner = false, duration, onEdit, onDelete }: SetSectionHeaderProps) => {
+export const SetSectionHeader = ({ section, isEditing = false, isOwner = false, duration, canMoveUp = false, canMoveDown = false, onEdit, onDelete, onMoveUp, onMoveDown }: SetSectionHeaderProps) => {
   const isWeb = Platform.OS === 'web';
 
   // Haptic feedback handlers
@@ -105,16 +161,30 @@ export const SetSectionHeader = ({ section, isEditing = false, isOwner = false, 
     onEdit?.();
   };
 
+  const handleMoveUp = () => {
+    if (!isWeb) {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    }
+    onMoveUp?.();
+  };
+
+  const handleMoveDown = () => {
+    if (!isWeb) {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    }
+    onMoveDown?.();
+  };
+
   // Mobile with swipe gestures: show no visible buttons, wrap in Swipeable
   if (!isWeb && isOwner && isEditing) {
     return (
       <Swipeable
-        renderLeftActions={() => null}
-        renderRightActions={() => <SectionSwipeActions onEdit={handleEdit} onDelete={handleDelete} />}
+        renderLeftActions={() => <SectionLeftSwipeActions onMoveUp={handleMoveUp} onMoveDown={handleMoveDown} canMoveUp={canMoveUp} canMoveDown={canMoveDown} />}
+        renderRightActions={() => <SectionRightSwipeActions onEdit={handleEdit} onDelete={handleDelete} />}
         friction={2}
         overshootRight={false}
         overshootLeft={false}
-        leftThreshold={999}
+        leftThreshold={50}
       >
         <SectionContent
           section={section}
@@ -122,6 +192,10 @@ export const SetSectionHeader = ({ section, isEditing = false, isOwner = false, 
           onEdit={handleEdit}
           onDelete={handleDelete}
           duration={duration}
+          canMoveUp={canMoveUp}
+          canMoveDown={canMoveDown}
+          onMoveUp={handleMoveUp}
+          onMoveDown={handleMoveDown}
         />
       </Swipeable>
     );
@@ -135,6 +209,10 @@ export const SetSectionHeader = ({ section, isEditing = false, isOwner = false, 
       onEdit={handleEdit}
       onDelete={handleDelete}
       duration={duration}
+      canMoveUp={canMoveUp}
+      canMoveDown={canMoveDown}
+      onMoveUp={handleMoveUp}
+      onMoveDown={handleMoveDown}
     />
   );
 };
