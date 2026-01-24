@@ -381,51 +381,71 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
 
   const totalDuration = trackDuration + breakDuration;
 
-  // Get sections list
+  // Get sections and items
   const sections = setlist.setSections || [];
+  const items = setlist.setItems || [];
 
-  // Group items by section for display
-  const sectionMap = new Map<string | null, typeof setlist.setItems>();
-  (setlist.setItems || []).forEach((item) => {
-    const sectionId = item.sectionId || null;
-    if (!sectionMap.has(sectionId)) {
-      sectionMap.set(sectionId, []);
-    }
-    sectionMap.get(sectionId)!.push(item);
-  });
-
-  // Calculate per-section durations (sum of track durations, excluding breaks)
-  const sectionDurations = new Map<string, number>();
-  sections.forEach((section) => {
-    const sectionItems = sectionMap.get(section.sectionId) || [];
-    const duration = sectionItems.reduce((sum, item) => {
-      const itemDuration = item.customDuration ?? item.track?.defaultDuration ?? 0;
-      return sum + itemDuration;
-    }, 0);
-    sectionDurations.set(section.sectionId, duration);
-  });
-
-  // Create display list with sections as headers
+  // Create a unified list of all displayable items (sections, tracks, breaks) sorted by position
   const displayItems: DisplayItem[] = [];
 
-  // Add unsectioned items first (if any)
-  const unsectionedItems = sectionMap.get(null) || [];
-  if (unsectionedItems.length > 0) {
-    unsectionedItems.forEach((item) => {
-      displayItems.push({ type: 'item', data: item, id: `item-${item.setItemId}` });
-    });
-  }
+  // Combine sections and items into a single array with position for sorting
+  const allElements: Array<{ position: number; type: 'section' | 'item'; data: any }> = [];
 
-  // Add sections with their items and breaks
+  // Add all sections
   sections.forEach((section) => {
-    displayItems.push({ type: 'header', data: section, id: `section-${section.sectionId}` });
-    const sectionItems = sectionMap.get(section.sectionId) || [];
-    sectionItems.forEach((item) => {
+    allElements.push({ position: section.position, type: 'section', data: section });
+  });
+
+  // Add all items
+  items.forEach((item) => {
+    allElements.push({ position: item.position, type: 'item', data: item });
+  });
+
+  // Sort by position to get the unified display order
+  allElements.sort((a, b) => a.position - b.position);
+
+  // Build displayItems from sorted elements, and track current section for membership
+  let currentSection: SetSection | null = null;
+  const sectionDurations = new Map<string, number>();
+
+  allElements.forEach((element) => {
+    if (element.type === 'section') {
+      const section = element.data as SetSection;
+      displayItems.push({ type: 'header', data: section, id: `section-${section.sectionId}` });
+      currentSection = section;
+
+      // Initialize duration tracking for this section
+      sectionDurations.set(section.sectionId, 0);
+    } else if (element.type === 'item') {
+      const item = element.data as SetItem & { track?: Track };
       displayItems.push({ type: 'item', data: item, id: `item-${item.setItemId}` });
-    });
-    // Add break indicator if section has a break duration
-    if (section.breakDuration && section.breakDuration > 0) {
-      displayItems.push({ type: 'break', data: section, id: `break-${section.sectionId}` });
+
+      // Add to current section's duration (if there is one)
+      if (currentSection) {
+        const itemDuration = item.customDuration ?? item.track?.defaultDuration ?? 0;
+        sectionDurations.set(
+          currentSection.sectionId,
+          (sectionDurations.get(currentSection.sectionId) || 0) + itemDuration
+        );
+      }
+    }
+  });
+
+  // Add break indicators after each section
+  sections.forEach((section) => {
+    // Find the header in displayItems
+    const headerIndex = displayItems.findIndex(
+      (item) => item.type === 'header' && (item.data as SetSection).sectionId === section.sectionId
+    );
+
+    if (headerIndex !== -1 && section.breakDuration && section.breakDuration > 0) {
+      // Find the position to insert the break (after all items in this section, before next section)
+      let insertIndex = headerIndex + 1;
+      for (let i = headerIndex + 1; i < displayItems.length; i++) {
+        if (displayItems[i].type === 'header') break;
+        insertIndex = i + 1;
+      }
+      displayItems.splice(insertIndex, 0, { type: 'break', data: section, id: `break-${section.sectionId}` });
     }
   });
 
@@ -454,12 +474,7 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
     return -1;
   };
 
-  // Check if two items are in the same section
-  const isSameSection = (item1: SetItem, item2: SetItem): boolean => {
-    return (item1.sectionId || null) === (item2.sectionId || null);
-  };
-
-  // Handle moving item up
+  // Handle moving item up - can move before any other item (including past section headers)
   const handleMoveItemUp = async (item: SetItem & { track?: Track }) => {
     const currentIndex = findItemIndex(item.setItemId);
     const prevIndex = findPreviousTrackIndex(currentIndex);
@@ -467,12 +482,6 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
     if (prevIndex === -1) return; // Can't move up
 
     const prevItem = displayItems[prevIndex].data as SetItem;
-
-    // Check if in same section
-    if (!isSameSection(item, prevItem)) {
-      setDeleteError('Cannot move tracks across section boundaries');
-      return;
-    }
 
     setOperationLoading(true);
     try {
@@ -488,7 +497,7 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
     }
   };
 
-  // Handle moving item down
+  // Handle moving item down - can move after any other item (including past section headers)
   const handleMoveItemDown = async (item: SetItem & { track?: Track }) => {
     const currentIndex = findItemIndex(item.setItemId);
     const nextIndex = findNextTrackIndex(currentIndex);
@@ -496,12 +505,6 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
     if (nextIndex === -1) return; // Can't move down
 
     const nextItem = displayItems[nextIndex].data as SetItem;
-
-    // Check if in same section
-    if (!isSameSection(item, nextItem)) {
-      setDeleteError('Cannot move tracks across section boundaries');
-      return;
-    }
 
     setOperationLoading(true);
     try {
@@ -542,7 +545,8 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
     return -1;
   };
 
-  // Handle moving section up - swap positions of both section headers and their items
+  // Handle moving section up - swap positions with the previous section header
+  // Items naturally stay with their section because they're ordered by position
   const handleMoveSectionUp = async (section: SetSection) => {
     const currentIndex = findSectionIndex(section.sectionId);
     const prevIndex = findPreviousSectionIndex(currentIndex);
@@ -551,65 +555,14 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
 
     const prevSection = displayItems[prevIndex].data as SetSection;
 
-    // Collect items from current section in order
-    const currentSectionItems: SetItem[] = [];
-    for (let i = currentIndex + 1; i < displayItems.length; i++) {
-      const item = displayItems[i];
-      if (item.type === 'header') break; // Stop at next section
-      if (item.type === 'item') {
-        currentSectionItems.push(item.data as SetItem);
-      }
-    }
-
-    // Collect items from previous section in order
-    const prevSectionItems: SetItem[] = [];
-    for (let i = prevIndex + 1; i < currentIndex; i++) {
-      const item = displayItems[i];
-      if (item.type === 'header') break; // Stop at next section
-      if (item.type === 'item') {
-        prevSectionItems.push(item.data as SetItem);
-      }
-    }
-
     setOperationLoading(true);
     try {
-      // Swap section positions
-      const sectionUpdates = [
+      // Simply swap the two section header positions
+      // Items between them will naturally reorder because they're sorted by position
+      await setlistService.reorderSections(setlistId, [
         { sectionId: section.sectionId, position: prevSection.position },
         { sectionId: prevSection.sectionId, position: section.position },
-      ];
-
-      // Swap item positions: items exchange their position ranges
-      const itemUpdates: Array<{ setItemId: string; position: number }> = [];
-
-      // Starting positions for each section (after their header)
-      const prevSectionItemStart = prevSection.position + 1;
-      const currentSectionItemStart = section.position + 1;
-
-      // Put previous section's items in current section's positions
-      prevSectionItems.forEach((item, index) => {
-        itemUpdates.push({
-          setItemId: item.setItemId,
-          position: currentSectionItemStart + index,
-        });
-      });
-
-      // Put current section's items in previous section's positions
-      currentSectionItems.forEach((item, index) => {
-        itemUpdates.push({
-          setItemId: item.setItemId,
-          position: prevSectionItemStart + index,
-        });
-      });
-
-      // Update sections first
-      await setlistService.reorderSections(setlistId, sectionUpdates);
-
-      // Then update items if there are any to update
-      if (itemUpdates.length > 0) {
-        await setlistService.reorderSetItems(setlistId, itemUpdates);
-      }
-
+      ]);
       await fetchSetlistDetails();
     } catch (err) {
       setDeleteError(`Failed to move section: ${err instanceof Error ? err.message : 'Unknown error'}`);
@@ -618,7 +571,8 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
     }
   };
 
-  // Handle moving section down - swap positions of both section headers and their items
+  // Handle moving section down - swap positions with the next section header
+  // Items naturally stay with their section because they're ordered by position
   const handleMoveSectionDown = async (section: SetSection) => {
     const currentIndex = findSectionIndex(section.sectionId);
     const nextIndex = findNextSectionIndex(currentIndex);
@@ -627,65 +581,14 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
 
     const nextSection = displayItems[nextIndex].data as SetSection;
 
-    // Collect items from current section in order
-    const currentSectionItems: SetItem[] = [];
-    for (let i = currentIndex + 1; i < displayItems.length; i++) {
-      const item = displayItems[i];
-      if (item.type === 'header') break; // Stop at next section
-      if (item.type === 'item') {
-        currentSectionItems.push(item.data as SetItem);
-      }
-    }
-
-    // Collect items from next section in order
-    const nextSectionItems: SetItem[] = [];
-    for (let i = nextIndex + 1; i < displayItems.length; i++) {
-      const item = displayItems[i];
-      if (item.type === 'header') break; // Stop at next section
-      if (item.type === 'item') {
-        nextSectionItems.push(item.data as SetItem);
-      }
-    }
-
     setOperationLoading(true);
     try {
-      // Swap section positions
-      const sectionUpdates = [
+      // Simply swap the two section header positions
+      // Items between them will naturally reorder because they're sorted by position
+      await setlistService.reorderSections(setlistId, [
         { sectionId: section.sectionId, position: nextSection.position },
         { sectionId: nextSection.sectionId, position: section.position },
-      ];
-
-      // Swap item positions: items exchange their position ranges
-      const itemUpdates: Array<{ setItemId: string; position: number }> = [];
-
-      // Starting positions for each section (after their header)
-      const currentSectionItemStart = section.position + 1;
-      const nextSectionItemStart = nextSection.position + 1;
-
-      // Put current section's items in next section's positions
-      currentSectionItems.forEach((item, index) => {
-        itemUpdates.push({
-          setItemId: item.setItemId,
-          position: nextSectionItemStart + index,
-        });
-      });
-
-      // Put next section's items in current section's positions
-      nextSectionItems.forEach((item, index) => {
-        itemUpdates.push({
-          setItemId: item.setItemId,
-          position: currentSectionItemStart + index,
-        });
-      });
-
-      // Update sections first
-      await setlistService.reorderSections(setlistId, sectionUpdates);
-
-      // Then update items if there are any to update
-      if (itemUpdates.length > 0) {
-        await setlistService.reorderSetItems(setlistId, itemUpdates);
-      }
-
+      ]);
       await fetchSetlistDetails();
     } catch (err) {
       setDeleteError(`Failed to move section: ${err instanceof Error ? err.message : 'Unknown error'}`);
@@ -728,8 +631,8 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
 
     const trackItem = item.data as SetItem & { track?: Track };
     const currentIndex = findItemIndex(trackItem.setItemId);
-    const canMoveUp = findPreviousTrackIndex(currentIndex) !== -1 && isSameSection(trackItem, displayItems[findPreviousTrackIndex(currentIndex)].data as SetItem);
-    const canMoveDown = findNextTrackIndex(currentIndex) !== -1 && isSameSection(trackItem, displayItems[findNextTrackIndex(currentIndex)].data as SetItem);
+    const canMoveUp = findPreviousTrackIndex(currentIndex) !== -1;
+    const canMoveDown = findNextTrackIndex(currentIndex) !== -1;
 
     return (
       <View>
