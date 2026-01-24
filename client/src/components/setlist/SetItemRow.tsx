@@ -30,7 +30,7 @@ const formatDuration = (seconds: number): string => {
 };
 
 const ItemContent = ({ track, item, displayTuning, displayDuration, displayNotes, isEditing, onEdit, onDelete }: any) => (
-  <View className={`border-b ${tailwind.border.both} p-4`}>
+  <View className={`border-b ${tailwind.border.both} p-4 ${tailwind.card.both}`}>
     <View className="flex-row items-center gap-3">
       {/* Position Number */}
       <Text className={`text-sm font-semibold ${tailwind.textMuted.both} w-6`}>
@@ -129,25 +129,23 @@ export const SetItemRow = ({ item, isEditing = false, isOwner = false, onEdit, o
     return (
       <Swipeable
         renderLeftActions={() => (
-          <Pressable
-            onPress={handleDelete}
-            className="bg-red-500 flex-row items-center justify-center px-6 flex-1"
-          >
-            <IconSymbol name="trash" size={20} color="white" />
-            <Text className="text-white font-semibold ml-2">Delete</Text>
-          </Pressable>
+          <View className="flex-row">
+            <Pressable
+              onPress={handleEdit}
+              className="bg-blue-500 flex-row items-center justify-center px-4 flex-1"
+            >
+              <IconSymbol name="pencil" size={20} color="white" />
+            </Pressable>
+            <Pressable
+              onPress={handleDelete}
+              className="bg-red-500 flex-row items-center justify-center px-4 flex-1"
+            >
+              <IconSymbol name="trash" size={20} color="white" />
+            </Pressable>
+          </View>
         )}
-        renderRightActions={() => (
-          <Pressable
-            onPress={handleEdit}
-            className="bg-blue-500 flex-row items-center justify-center px-6 flex-1"
-          >
-            <IconSymbol name="pencil" size={20} color="white" />
-            <Text className="text-white font-semibold ml-2">Edit</Text>
-          </Pressable>
-        )}
+        friction={2}
         overshootLeft={false}
-        overshootRight={false}
       >
         <ItemContent
           track={track}
