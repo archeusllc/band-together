@@ -56,40 +56,6 @@ declare const app: Elysia<"", {
         };
     };
 } & {
-    testbroadcast: {
-        get: {
-            body: unknown;
-            params: {};
-            query: unknown;
-            headers: unknown;
-            response: {};
-        };
-    };
-} & {
-    testws: {
-        ":id": {
-            subscribe: {
-                body: unknown;
-                params: {
-                    id: string;
-                } & {};
-                query: unknown;
-                headers: unknown;
-                response: {
-                    422: {
-                        type: "validation";
-                        on: string;
-                        summary?: string;
-                        message?: string;
-                        found?: unknown;
-                        property?: string;
-                        expected?: string;
-                    };
-                };
-            };
-        };
-    };
-} & {
     health: {
         get: {
             body: unknown;
@@ -544,9 +510,9 @@ declare const app: Elysia<"", {
                             updatedAt: Date;
                         } | null;
                         tag: {
-                            value: string;
                             tagId: string;
                             category: string;
+                            value: string;
                         } | null;
                     } & {
                         userId: string;
@@ -634,9 +600,9 @@ declare const app: Elysia<"", {
                         updatedAt: Date;
                     } | null;
                     tag: {
-                        value: string;
                         tagId: string;
                         category: string;
+                        value: string;
                     } | null;
                 } & {
                     userId: string;
@@ -1356,6 +1322,7 @@ declare const app: Elysia<"", {
                             setListId: string;
                             position: number;
                             sectionId: string;
+                            breakDuration: number | null;
                         } | null;
                     } & {
                         createdAt: Date;
@@ -1376,6 +1343,7 @@ declare const app: Elysia<"", {
                         setListId: string;
                         position: number;
                         sectionId: string;
+                        breakDuration: number | null;
                     }[];
                     shares: {
                         createdAt: Date;
@@ -1571,6 +1539,7 @@ declare const app: Elysia<"", {
                                 setListId: string;
                                 position: number;
                                 sectionId: string;
+                                breakDuration: number | null;
                             } | null;
                         } & {
                             createdAt: Date;
@@ -1591,6 +1560,7 @@ declare const app: Elysia<"", {
                             setListId: string;
                             position: number;
                             sectionId: string;
+                            breakDuration: number | null;
                         }[];
                         shares: {
                             createdAt: Date;
@@ -1688,6 +1658,7 @@ declare const app: Elysia<"", {
                                     setListId: string;
                                     position: number;
                                     sectionId: string;
+                                    breakDuration: number | null;
                                 } | null;
                             } & {
                                 createdAt: Date;
@@ -1708,6 +1679,7 @@ declare const app: Elysia<"", {
                                 setListId: string;
                                 position: number;
                                 sectionId: string;
+                                breakDuration: number | null;
                             }[];
                             shares: {
                                 createdAt: Date;
@@ -1785,6 +1757,7 @@ declare const app: Elysia<"", {
                                 setListId: string;
                                 position: number;
                                 sectionId: string;
+                                breakDuration: number | null;
                             } | null;
                         } & {
                             createdAt: Date;
@@ -1855,6 +1828,7 @@ declare const app: Elysia<"", {
                                     setListId: string;
                                     position: number;
                                     sectionId: string;
+                                    breakDuration: number | null;
                                 } | null;
                             } & {
                                 createdAt: Date;
@@ -1961,6 +1935,7 @@ declare const app: Elysia<"", {
                                     setListId: string;
                                     position: number;
                                     sectionId: string;
+                                    breakDuration: number | null;
                                 } | null;
                             } & {
                                 createdAt: Date;
@@ -2024,6 +1999,7 @@ declare const app: Elysia<"", {
                             setListId: string;
                             position: number;
                             sectionId: string;
+                            breakDuration: number | null;
                         } | {
                             error: string;
                         };
@@ -2066,6 +2042,7 @@ declare const app: Elysia<"", {
                                 setListId: string;
                                 position: number;
                                 sectionId: string;
+                                breakDuration: number | null;
                             } | {
                                 error: string;
                             };
@@ -2281,6 +2258,7 @@ declare const app: Elysia<"", {
                                     setListId: string;
                                     position: number;
                                     sectionId: string;
+                                    breakDuration: number | null;
                                 } | null;
                             } & {
                                 createdAt: Date;
@@ -2305,6 +2283,7 @@ declare const app: Elysia<"", {
                                 setListId: string;
                                 position: number;
                                 sectionId: string;
+                                breakDuration: number | null;
                             }[];
                             shares: {
                                 createdAt: Date;
@@ -2386,6 +2365,7 @@ declare const app: Elysia<"", {
                                 setListId: string;
                                 position: number;
                                 sectionId: string;
+                                breakDuration: number | null;
                             } | null;
                         } & {
                             createdAt: Date;
@@ -2410,6 +2390,7 @@ declare const app: Elysia<"", {
                             setListId: string;
                             position: number;
                             sectionId: string;
+                            breakDuration: number | null;
                         }[];
                         shares: {
                             createdAt: Date;
@@ -2456,6 +2437,7 @@ declare const app: Elysia<"", {
                     };
                     query: {
                         userId?: string | undefined;
+                        shareToken?: string | undefined;
                         userName?: string | undefined;
                     };
                     headers: {};

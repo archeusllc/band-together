@@ -429,6 +429,94 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
     }
   });
 
+  // Find the index of a track item in displayItems
+  const findItemIndex = (itemId: string): number => {
+    return displayItems.findIndex(item => item.type === 'item' && (item.data as SetItem).setItemId === itemId);
+  };
+
+  // Find previous track (skip headers/breaks)
+  const findPreviousTrackIndex = (currentIndex: number): number => {
+    for (let i = currentIndex - 1; i >= 0; i--) {
+      if (displayItems[i].type === 'item') {
+        return i;
+      }
+    }
+    return -1;
+  };
+
+  // Find next track (skip headers/breaks)
+  const findNextTrackIndex = (currentIndex: number): number => {
+    for (let i = currentIndex + 1; i < displayItems.length; i++) {
+      if (displayItems[i].type === 'item') {
+        return i;
+      }
+    }
+    return -1;
+  };
+
+  // Check if two items are in the same section
+  const isSameSection = (item1: SetItem, item2: SetItem): boolean => {
+    return (item1.sectionId || null) === (item2.sectionId || null);
+  };
+
+  // Handle moving item up
+  const handleMoveItemUp = async (item: SetItem & { track?: Track }) => {
+    const currentIndex = findItemIndex(item.setItemId);
+    const prevIndex = findPreviousTrackIndex(currentIndex);
+
+    if (prevIndex === -1) return; // Can't move up
+
+    const prevItem = displayItems[prevIndex].data as SetItem;
+
+    // Check if in same section
+    if (!isSameSection(item, prevItem)) {
+      setDeleteError('Cannot move tracks across section boundaries');
+      return;
+    }
+
+    setOperationLoading(true);
+    try {
+      await setlistService.reorderSetItems(setlistId, [
+        { setItemId: item.setItemId, position: prevItem.position },
+        { setItemId: prevItem.setItemId, position: item.position },
+      ]);
+      await fetchSetlistDetails();
+    } catch (err) {
+      setDeleteError(`Failed to move track: ${err instanceof Error ? err.message : 'Unknown error'}`);
+    } finally {
+      setOperationLoading(false);
+    }
+  };
+
+  // Handle moving item down
+  const handleMoveItemDown = async (item: SetItem & { track?: Track }) => {
+    const currentIndex = findItemIndex(item.setItemId);
+    const nextIndex = findNextTrackIndex(currentIndex);
+
+    if (nextIndex === -1) return; // Can't move down
+
+    const nextItem = displayItems[nextIndex].data as SetItem;
+
+    // Check if in same section
+    if (!isSameSection(item, nextItem)) {
+      setDeleteError('Cannot move tracks across section boundaries');
+      return;
+    }
+
+    setOperationLoading(true);
+    try {
+      await setlistService.reorderSetItems(setlistId, [
+        { setItemId: item.setItemId, position: nextItem.position },
+        { setItemId: nextItem.setItemId, position: item.position },
+      ]);
+      await fetchSetlistDetails();
+    } catch (err) {
+      setDeleteError(`Failed to move track: ${err instanceof Error ? err.message : 'Unknown error'}`);
+    } finally {
+      setOperationLoading(false);
+    }
+  };
+
   const renderItem = ({ item }: { item: DisplayItem }) => {
     if (item.type === 'header') {
       const section = item.data as SetSection;
@@ -454,6 +542,10 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
     }
 
     const trackItem = item.data as SetItem & { track?: Track };
+    const currentIndex = findItemIndex(trackItem.setItemId);
+    const canMoveUp = findPreviousTrackIndex(currentIndex) !== -1 && isSameSection(trackItem, displayItems[findPreviousTrackIndex(currentIndex)].data as SetItem);
+    const canMoveDown = findNextTrackIndex(currentIndex) !== -1 && isSameSection(trackItem, displayItems[findNextTrackIndex(currentIndex)].data as SetItem);
+
     return (
       <View>
         <SetItemRow
@@ -462,6 +554,10 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
           isOwner={isOwner || false}
           onEdit={() => setEditingItem(trackItem)}
           onDelete={() => handleDeleteItem(trackItem)}
+          canMoveUp={canMoveUp}
+          canMoveDown={canMoveDown}
+          onMoveUp={() => handleMoveItemUp(trackItem)}
+          onMoveDown={() => handleMoveItemDown(trackItem)}
         />
       </View>
     );

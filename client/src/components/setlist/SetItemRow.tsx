@@ -14,6 +14,10 @@ interface SetItemRowProps {
   isOwner?: boolean;
   onEdit?: () => void;
   onDelete?: () => void;
+  canMoveUp?: boolean;
+  canMoveDown?: boolean;
+  onMoveUp?: () => void;
+  onMoveDown?: () => void;
 }
 
 const formatDuration = (seconds: number): string => {
@@ -29,7 +33,7 @@ const formatDuration = (seconds: number): string => {
   return hours > 0 ? `${hours}:${mm}:${ss}` : `${mm}:${ss}`;
 };
 
-const SwipeActions = ({ onEdit, onDelete }: any) => (
+const RightSwipeActions = ({ onEdit, onDelete }: any) => (
   <View style={{ flexDirection: 'row', height: '100%', gap: 12, paddingHorizontal: 12, alignItems: 'center' }}>
     <Pressable
       onPress={onEdit}
@@ -54,7 +58,36 @@ const SwipeActions = ({ onEdit, onDelete }: any) => (
   </View>
 );
 
-const ItemContent = ({ track, item, displayTuning, displayDuration, displayNotes, isEditing, onEdit, onDelete }: any) => (
+const LeftSwipeActions = ({ onMoveUp, onMoveDown, canMoveUp, canMoveDown }: any) => (
+  <View style={{ flexDirection: 'row', height: '100%', gap: 12, paddingHorizontal: 12, alignItems: 'center' }}>
+    <Pressable
+      onPress={onMoveUp}
+      disabled={!canMoveUp}
+      style={{
+        padding: 8,
+        alignItems: 'center',
+        justifyContent: 'center',
+        opacity: canMoveUp ? 1 : 0.3,
+      }}
+    >
+      <IconSymbol name="chevron-up" size={24} color={colors.brand.primary} />
+    </Pressable>
+    <Pressable
+      onPress={onMoveDown}
+      disabled={!canMoveDown}
+      style={{
+        padding: 8,
+        alignItems: 'center',
+        justifyContent: 'center',
+        opacity: canMoveDown ? 1 : 0.3,
+      }}
+    >
+      <IconSymbol name="chevron-down" size={24} color={colors.brand.primary} />
+    </Pressable>
+  </View>
+);
+
+const ItemContent = ({ track, item, displayTuning, displayDuration, displayNotes, isEditing, onEdit, onDelete, canMoveUp, canMoveDown, onMoveUp, onMoveDown }: any) => (
   <View className={`border-b ${tailwind.border.both} p-4 ${tailwind.card.both}`}>
     <View className="flex-row items-center gap-3">
       {/* Position Number */}
@@ -100,9 +133,30 @@ const ItemContent = ({ track, item, displayTuning, displayDuration, displayNotes
         )}
       </View>
 
-      {/* Edit/Delete Buttons (web + non-mobile) */}
+      {/* Action Buttons (web + non-mobile) */}
       {isEditing && (
         <View className="flex-row gap-1">
+          {/* Move Up Button */}
+          <Pressable
+            className={`p-3 rounded transition-all duration-150 ${canMoveUp ? tailwind.activeBackground.both : 'opacity-30'} hover:opacity-80`}
+            onPress={onMoveUp}
+            disabled={!canMoveUp}
+            accessibilityLabel="Move track up"
+          >
+            <IconSymbol name="chevron-up" size={18} color={colors.brand.primary} />
+          </Pressable>
+
+          {/* Move Down Button */}
+          <Pressable
+            className={`p-3 rounded transition-all duration-150 ${canMoveDown ? tailwind.activeBackground.both : 'opacity-30'} hover:opacity-80`}
+            onPress={onMoveDown}
+            disabled={!canMoveDown}
+            accessibilityLabel="Move track down"
+          >
+            <IconSymbol name="chevron-down" size={18} color={colors.brand.primary} />
+          </Pressable>
+
+          {/* Edit Button */}
           <Pressable
             className={`p-3 rounded transition-all duration-150 ${tailwind.activeBackground.both} hover:opacity-80`}
             onPress={onEdit}
@@ -110,6 +164,8 @@ const ItemContent = ({ track, item, displayTuning, displayDuration, displayNotes
           >
             <IconSymbol name="pencil" size={18} color={colors.brand.primary} />
           </Pressable>
+
+          {/* Delete Button */}
           <Pressable
             className={`p-3 rounded transition-all duration-150 ${tailwind.activeBackground.both} hover:opacity-80`}
             onPress={onDelete}
@@ -123,7 +179,7 @@ const ItemContent = ({ track, item, displayTuning, displayDuration, displayNotes
   </View>
 );
 
-export const SetItemRow = ({ item, isEditing = false, isOwner = false, onEdit, onDelete }: SetItemRowProps) => {
+export const SetItemRow = ({ item, isEditing = false, isOwner = false, onEdit, onDelete, canMoveUp = false, canMoveDown = false, onMoveUp, onMoveDown }: SetItemRowProps) => {
   const track = item.track;
   if (!track) return null;
 
@@ -149,12 +205,26 @@ export const SetItemRow = ({ item, isEditing = false, isOwner = false, onEdit, o
     onEdit?.();
   };
 
+  const handleMoveUp = () => {
+    if (!isWeb) {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    }
+    onMoveUp?.();
+  };
+
+  const handleMoveDown = () => {
+    if (!isWeb) {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    }
+    onMoveDown?.();
+  };
+
   // Mobile with swipe gestures: show no visible buttons, wrap in Swipeable
   if (!isWeb && isOwner && isEditing) {
     return (
       <Swipeable
-        renderLeftActions={() => null}
-        renderRightActions={() => <SwipeActions onEdit={handleEdit} onDelete={handleDelete} />}
+        renderLeftActions={() => <LeftSwipeActions onMoveUp={handleMoveUp} onMoveDown={handleMoveDown} canMoveUp={canMoveUp} canMoveDown={canMoveDown} />}
+        renderRightActions={() => <RightSwipeActions onEdit={handleEdit} onDelete={handleDelete} />}
         friction={2}
         overshootRight={false}
         overshootLeft={false}
@@ -169,6 +239,10 @@ export const SetItemRow = ({ item, isEditing = false, isOwner = false, onEdit, o
           isEditing={false}
           onEdit={handleEdit}
           onDelete={handleDelete}
+          canMoveUp={canMoveUp}
+          canMoveDown={canMoveDown}
+          onMoveUp={handleMoveUp}
+          onMoveDown={handleMoveDown}
         />
       </Swipeable>
     );
@@ -185,6 +259,10 @@ export const SetItemRow = ({ item, isEditing = false, isOwner = false, onEdit, o
       isEditing={isEditing}
       onEdit={handleEdit}
       onDelete={handleDelete}
+      canMoveUp={canMoveUp}
+      canMoveDown={canMoveDown}
+      onMoveUp={handleMoveUp}
+      onMoveDown={handleMoveDown}
     />
   );
 };
