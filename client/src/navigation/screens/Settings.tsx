@@ -1,12 +1,14 @@
 import React from 'react';
 import { View, Text, ScrollView, TouchableOpacity, Clipboard as RNClipboard } from 'react-native';
 import { apiBaseUrl, firebaseAuthService } from '@services';
+import { useAuth } from '@contexts';
 import { tailwind } from '@theme';
 import { IconSymbol } from '@components/ui/IconSymbol';
 
 type ApiStatus = 'checking' | 'online' | 'offline';
 
 export const SettingsScreen = () => {
+  const { isAuthenticated } = useAuth();
   const [apiStatus, setApiStatus] = React.useState<ApiStatus>('checking');
   const [idToken, setIdToken] = React.useState<string | null>(null);
   const [copied, setCopied] = React.useState(false);
@@ -138,7 +140,8 @@ export const SettingsScreen = () => {
               <Text className={`text-base ${tailwind.text.both}`}>Environment</Text>
               <Text className={`text-base ${tailwind.textMuted.both}`}>{process.env.NODE_ENV}</Text>
             </View>
-            <View className={`py-3 border-b ${tailwind.border.both}`}>
+            {isAuthenticated && (
+              <View className={`py-3 border-b ${tailwind.border.both}`}>
               <View className={`flex-row justify-between items-center mb-3`}>
                 <Text className={`text-base ${tailwind.text.both}`}>Firebase Token</Text>
                 <TouchableOpacity
@@ -169,6 +172,7 @@ export const SettingsScreen = () => {
                 {expandToken ? 'Tap to collapse' : 'Tap to expand • Copy to clipboard'}
               </Text>
             </View>
+            )}
           </>
         )}
       </View>
