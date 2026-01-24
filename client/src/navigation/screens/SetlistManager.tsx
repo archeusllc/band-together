@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { View, Text, FlatList, RefreshControl, Pressable, SectionList } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '@navigation/types';
 import { setlistService } from '@services';
@@ -34,6 +34,18 @@ export const SetlistManagerScreen = () => {
       fetchSetlists();
     }
   }, [authLoading]);
+
+  // Refetch setlists when screen gains focus
+  // This handles: deletion refresh, post-login auto-load, and navigation back to screen
+  useFocusEffect(
+    useCallback(() => {
+      // Only refetch if authenticated and auth has finished initializing
+      // This prevents fetching before login completes
+      if (!authLoading && isAuthenticated) {
+        fetchSetlists();
+      }
+    }, [authLoading, isAuthenticated])
+  );
 
   const fetchSetlists = async (isRefresh: boolean = false) => {
     if (isRefresh) {
