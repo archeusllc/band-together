@@ -73,6 +73,7 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
   const [isConnected, setIsConnected] = useState(false);
   const refreshTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const socketRef = useRef<any>(null);
+  const healthCheckIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   // Debounced refresh function - waits 200ms after last broadcast before fetching
   const debouncedRefresh = useCallback(() => {
@@ -143,6 +144,42 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
       }
     };
   }, [setlistId]);
+
+  // Health check: Periodically detect if connection has recovered when shown as offline
+  useEffect(() => {
+    if (!isConnected && presence.length > 0) {
+      // If we show as offline but presence data is flowing, the connection has recovered
+      console.log('[WebSocket] Health check: Connection appears recovered, updating badge');
+      setIsConnected(true);
+    }
+
+    // Start health check interval when connection is offline
+    if (!isConnected) {
+      if (healthCheckIntervalRef.current) {
+        clearInterval(healthCheckIntervalRef.current);
+      }
+      healthCheckIntervalRef.current = setInterval(() => {
+        // Check if presence data is flowing (indicates connection has recovered)
+        if (presence.length > 0) {
+          console.log('[WebSocket] Health check: Presence data detected, connection recovered');
+          setIsConnected(true);
+        }
+      }, 3000); // Check every 3 seconds
+    } else {
+      // Clear interval when connection is restored
+      if (healthCheckIntervalRef.current) {
+        clearInterval(healthCheckIntervalRef.current);
+        healthCheckIntervalRef.current = null;
+      }
+    }
+
+    return () => {
+      if (healthCheckIntervalRef.current) {
+        clearInterval(healthCheckIntervalRef.current);
+        healthCheckIntervalRef.current = null;
+      }
+    };
+  }, [isConnected, presence]);
 
   const isOwner = user && setlist && user.userId === (setlist as any).ownerId;
 
