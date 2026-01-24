@@ -482,8 +482,7 @@ export const setlistService = {
       position?: number;
       sectionId?: string;
     },
-    shareToken?: string,
-    app?: Elysia<any, any, any, any, any, any>
+    shareToken?: string
   ) => {
     const { userId, displayName } = await getUserDetailsFromFirebaseUid(firebaseUid);
 
@@ -543,9 +542,7 @@ export const setlistService = {
     });
 
     // 6. Broadcast item-added event
-    if (app) {
-      broadcastService.itemAdded(app, setlistId, newItem, userId, displayName);
-    }
+    broadcastService.itemAdded(setlistId, newItem, userId, displayName);
 
     return newItem;
   },
@@ -554,7 +551,6 @@ export const setlistService = {
    * Update a SetItem's custom overrides
    * @param firebaseUid - Firebase UID of the authenticated user
    * @param shareToken - Optional share token for permission validation
-   * @param app - Elysia app instance for broadcasting WebSocket events
    */
   updateSetItem: async (
     setItemId: string,
@@ -565,8 +561,7 @@ export const setlistService = {
       customDuration?: number;
       sectionId?: string | null;
     },
-    shareToken?: string,
-    app?: Elysia<any, any, any, any, any, any>
+    shareToken?: string
   ) => {
     const { userId, displayName } = await getUserDetailsFromFirebaseUid(firebaseUid);
 
@@ -601,9 +596,7 @@ export const setlistService = {
     });
 
     // 4. Broadcast item-updated event
-    if (app) {
-      broadcastService.itemUpdated(app, item.setListId, updatedItem, userId, displayName);
-    }
+    broadcastService.itemUpdated(item.setListId, updatedItem, userId, displayName);
 
     return updatedItem;
   },
@@ -612,13 +605,11 @@ export const setlistService = {
    * Remove a track from a setlist
    * @param firebaseUid - Firebase UID of the authenticated user
    * @param shareToken - Optional share token for permission validation
-   * @param app - Elysia app instance for broadcasting WebSocket events
    */
   removeSetItem: async (
     setItemId: string,
     firebaseUid: string,
-    shareToken?: string,
-    app?: Elysia<any, any, any, any, any, any>
+    shareToken?: string
   ) => {
     const { userId, displayName } = await getUserDetailsFromFirebaseUid(firebaseUid);
 
@@ -648,9 +639,7 @@ export const setlistService = {
     });
 
     // 4. Broadcast item-deleted event
-    if (app) {
-      broadcastService.itemDeleted(app, item.setListId, setItemId, userId, displayName);
-    }
+    broadcastService.itemDeleted(item.setListId, setItemId, userId, displayName);
 
     return { success: true };
   },
@@ -659,7 +648,6 @@ export const setlistService = {
    * Reorder tracks in a setlist
    * @param firebaseUid - Firebase UID of the authenticated user
    * @param shareToken - Optional share token for permission validation
-   * @param app - Elysia app instance for broadcasting WebSocket events
    */
   reorderSetItems: async (
     setlistId: string,
@@ -668,8 +656,7 @@ export const setlistService = {
       setItemId: string;
       position: number;
     }>,
-    shareToken?: string,
-    app?: Elysia<any, any, any, any, any, any>
+    shareToken?: string
   ) => {
     const { userId, displayName } = await getUserDetailsFromFirebaseUid(firebaseUid);
 
@@ -726,8 +713,8 @@ export const setlistService = {
     });
 
     // 4. Broadcast reordered event
-    if (app && updatedSetlist) {
-      broadcastService.reordered(app, setlistId, updatedSetlist, userId, displayName);
+    if (updatedSetlist) {
+      broadcastService.reordered(setlistId, updatedSetlist, userId, displayName);
     }
 
     return updatedSetlist;
@@ -737,7 +724,6 @@ export const setlistService = {
    * Add a section to a setlist
    * @param firebaseUid - Firebase UID of the authenticated user
    * @param shareToken - Optional share token for permission validation
-   * @param app - Elysia app instance for broadcasting WebSocket events
    */
   addSection: async (
     setlistId: string,
@@ -746,8 +732,7 @@ export const setlistService = {
       name: string;
       position?: number;
     },
-    shareToken?: string,
-    app?: Elysia<any, any, any, any, any, any>
+    shareToken?: string
   ) => {
     const { userId, displayName } = await getUserDetailsFromFirebaseUid(firebaseUid);
 
@@ -790,9 +775,7 @@ export const setlistService = {
     });
 
     // 5. Broadcast section-added event
-    if (app) {
-      broadcastService.sectionAdded(app, setlistId, newSection, userId, displayName);
-    }
+    broadcastService.sectionAdded(setlistId, newSection, userId, displayName);
 
     return newSection;
   },
@@ -801,7 +784,6 @@ export const setlistService = {
    * Update a section (name only)
    * @param firebaseUid - Firebase UID of the authenticated user
    * @param shareToken - Optional share token for permission validation
-   * @param app - Elysia app instance for broadcasting WebSocket events
    */
   updateSection: async (
     setlistId: string,
@@ -810,8 +792,7 @@ export const setlistService = {
     data: {
       name?: string;
     },
-    shareToken?: string,
-    app?: Elysia<any, any, any, any, any, any>
+    shareToken?: string
   ) => {
     const { userId, displayName } = await getUserDetailsFromFirebaseUid(firebaseUid);
 
@@ -855,9 +836,7 @@ export const setlistService = {
     });
 
     // 5. Broadcast section-updated event
-    if (app) {
-      broadcastService.sectionUpdated(app, setlistId, updatedSection, userId, displayName);
-    }
+    broadcastService.sectionUpdated(setlistId, updatedSection, userId, displayName);
 
     return updatedSection;
   },
@@ -866,14 +845,12 @@ export const setlistService = {
    * Delete a section (unassigns items from the section)
    * @param firebaseUid - Firebase UID of the authenticated user
    * @param shareToken - Optional share token for permission validation
-   * @param app - Elysia app instance for broadcasting WebSocket events
    */
   deleteSection: async (
     setlistId: string,
     sectionId: string,
     firebaseUid: string,
-    shareToken?: string,
-    app?: Elysia<any, any, any, any, any, any>
+    shareToken?: string
   ) => {
     const { userId, displayName } = await getUserDetailsFromFirebaseUid(firebaseUid);
 
@@ -914,9 +891,7 @@ export const setlistService = {
     });
 
     // 6. Broadcast section-deleted event
-    if (app) {
-      broadcastService.sectionDeleted(app, setlistId, sectionId, userId, displayName);
-    }
+    broadcastService.sectionDeleted(setlistId, sectionId, userId, displayName);
 
     return { success: true };
   },

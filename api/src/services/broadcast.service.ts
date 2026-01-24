@@ -1,4 +1,3 @@
-import type { Elysia } from 'elysia';
 import type { SetItem, SetSection } from '@band-together/shared';
 
 export interface BroadcastEvent {
@@ -11,33 +10,58 @@ export interface BroadcastEvent {
 }
 
 /**
+ * Publisher registry for WebSocket connections
+ * Maps setlistId to a publish function registered when a WebSocket connection opens
+ */
+const setlistPublishers: Record<string, (message: BroadcastEvent) => void> = {};
+
+/**
  * Broadcast service for publishing WebSocket events to connected clients
  */
 export const broadcastService = {
   /**
+   * Register a publisher function for a setlist
+   * Called when a WebSocket connection opens
+   */
+  registerPublisher: (setlistId: string, publishFn: (message: BroadcastEvent) => void) => {
+    setlistPublishers[setlistId] = publishFn;
+  },
+
+  /**
+   * Unregister a publisher function for a setlist
+   * Called when a WebSocket connection closes
+   */
+  unregisterPublisher: (setlistId: string) => {
+    delete setlistPublishers[setlistId];
+  },
+
+  /**
    * Publish an event to all connected clients in a setlist room
    */
-  publish: (app: Elysia<any, any, any, any, any, any>, event: BroadcastEvent) => {
-    if (!app.server) {
-      console.warn('WebSocket server not available - cannot publish event');
+  publish: (event: BroadcastEvent) => {
+    const publishFn = setlistPublishers[event.setlistId];
+    if (!publishFn) {
+      console.warn(`No publisher registered for setlist ${event.setlistId} - broadcast skipped`);
       return;
     }
 
-    const roomId = `setlist:${event.setlistId}`;
-    app.server.publish(roomId, JSON.stringify(event));
+    try {
+      publishFn(event);
+    } catch (error) {
+      console.error(`Failed to publish event to setlist ${event.setlistId}:`, error);
+    }
   },
 
   /**
    * Broadcast item-added event
    */
   itemAdded: (
-    app: Elysia<any, any, any, any, any, any>,
     setlistId: string,
     item: SetItem & { track?: any },
     userId: string,
     userName: string
   ) => {
-    broadcastService.publish(app, {
+    broadcastService.publish({
       type: 'item-added',
       setlistId,
       data: item,
@@ -51,13 +75,12 @@ export const broadcastService = {
    * Broadcast item-updated event
    */
   itemUpdated: (
-    app: Elysia<any, any, any, any, any, any>,
     setlistId: string,
     item: SetItem & { track?: any },
     userId: string,
     userName: string
   ) => {
-    broadcastService.publish(app, {
+    broadcastService.publish({
       type: 'item-updated',
       setlistId,
       data: item,
@@ -71,13 +94,12 @@ export const broadcastService = {
    * Broadcast item-deleted event
    */
   itemDeleted: (
-    app: Elysia<any, any, any, any, any, any>,
     setlistId: string,
     itemId: string,
     userId: string,
     userName: string
   ) => {
-    broadcastService.publish(app, {
+    broadcastService.publish({
       type: 'item-deleted',
       setlistId,
       data: { setItemId: itemId },
@@ -91,13 +113,12 @@ export const broadcastService = {
    * Broadcast reordered event with updated setlist
    */
   reordered: (
-    app: Elysia<any, any, any, any, any, any>,
     setlistId: string,
     setlist: any,
     userId: string,
     userName: string
   ) => {
-    broadcastService.publish(app, {
+    broadcastService.publish({
       type: 'reordered',
       setlistId,
       data: setlist,
@@ -111,13 +132,12 @@ export const broadcastService = {
    * Broadcast section-added event
    */
   sectionAdded: (
-    app: Elysia<any, any, any, any, any, any>,
     setlistId: string,
     section: SetSection,
     userId: string,
     userName: string
   ) => {
-    broadcastService.publish(app, {
+    broadcastService.publish({
       type: 'section-added',
       setlistId,
       data: section,
@@ -131,13 +151,12 @@ export const broadcastService = {
    * Broadcast section-updated event
    */
   sectionUpdated: (
-    app: Elysia<any, any, any, any, any, any>,
     setlistId: string,
     section: SetSection,
     userId: string,
     userName: string
   ) => {
-    broadcastService.publish(app, {
+    broadcastService.publish({
       type: 'section-updated',
       setlistId,
       data: section,
@@ -151,13 +170,12 @@ export const broadcastService = {
    * Broadcast section-deleted event
    */
   sectionDeleted: (
-    app: Elysia<any, any, any, any, any, any>,
     setlistId: string,
     sectionId: string,
     userId: string,
     userName: string
   ) => {
-    broadcastService.publish(app, {
+    broadcastService.publish({
       type: 'section-deleted',
       setlistId,
       data: { sectionId },

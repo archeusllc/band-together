@@ -160,8 +160,7 @@ export const setlistController = {
       position?: number;
       sectionId?: string;
     },
-    shareToken?: string,
-    app?: Elysia<any, any, any, any, any, any>
+    shareToken?: string
   ) => {
     if (!setlistId || setlistId.trim().length === 0) {
       throw new Error('Setlist ID is required');
@@ -170,7 +169,7 @@ export const setlistController = {
       throw new Error('Track ID is required');
     }
 
-    return await setlistService.addSetItem(setlistId, firebaseUid, data, shareToken, app);
+    return await setlistService.addSetItem(setlistId, firebaseUid, data, shareToken);
   },
 
   /**
@@ -187,14 +186,13 @@ export const setlistController = {
       customDuration?: number;
       sectionId?: string | null;
     },
-    shareToken?: string,
-    app?: Elysia<any, any, any, any, any, any>
+    shareToken?: string
   ) => {
     if (!setItemId || setItemId.trim().length === 0) {
       throw new Error('SetItem ID is required');
     }
 
-    return await setlistService.updateSetItem(setItemId, firebaseUid, data, shareToken, app);
+    return await setlistService.updateSetItem(setItemId, firebaseUid, data, shareToken);
   },
 
   /**
@@ -205,14 +203,13 @@ export const setlistController = {
   removeSetItem: async (
     setItemId: string,
     firebaseUid: string,
-    shareToken?: string,
-    app?: Elysia<any, any, any, any, any, any>
+    shareToken?: string
   ) => {
     if (!setItemId || setItemId.trim().length === 0) {
       throw new Error('SetItem ID is required');
     }
 
-    return await setlistService.removeSetItem(setItemId, firebaseUid, shareToken, app);
+    return await setlistService.removeSetItem(setItemId, firebaseUid, shareToken);
   },
 
   /**
@@ -227,8 +224,7 @@ export const setlistController = {
       setItemId: string;
       position: number;
     }>,
-    shareToken?: string,
-    app?: Elysia<any, any, any, any, any, any>
+    shareToken?: string
   ) => {
     if (!setlistId || setlistId.trim().length === 0) {
       throw new Error('Setlist ID is required');
@@ -237,7 +233,7 @@ export const setlistController = {
       throw new Error('Item positions array is required');
     }
 
-    return await setlistService.reorderSetItems(setlistId, firebaseUid, itemPositions, shareToken, app);
+    return await setlistService.reorderSetItems(setlistId, firebaseUid, itemPositions, shareToken);
   },
 
   /**
@@ -252,8 +248,7 @@ export const setlistController = {
       name: string;
       position?: number;
     },
-    shareToken?: string,
-    app?: Elysia<any, any, any, any, any, any>
+    shareToken?: string
   ) => {
     if (!setlistId || setlistId.trim().length === 0) {
       throw new Error('Setlist ID is required');
@@ -265,7 +260,7 @@ export const setlistController = {
     return await setlistService.addSection(setlistId, firebaseUid, {
       name: data.name.trim(),
       position: data.position,
-    }, shareToken, app);
+    }, shareToken);
   },
 
   /**
@@ -280,8 +275,7 @@ export const setlistController = {
     data: {
       name?: string;
     },
-    shareToken?: string,
-    app?: Elysia<any, any, any, any, any, any>
+    shareToken?: string
   ) => {
     if (!setlistId || setlistId.trim().length === 0) {
       throw new Error('Setlist ID is required');
@@ -290,7 +284,7 @@ export const setlistController = {
       throw new Error('Section ID is required');
     }
 
-    return await setlistService.updateSection(setlistId, sectionId, firebaseUid, data, shareToken, app);
+    return await setlistService.updateSection(setlistId, sectionId, firebaseUid, data, shareToken);
   },
 
   /**
@@ -302,8 +296,7 @@ export const setlistController = {
     setlistId: string,
     sectionId: string,
     firebaseUid: string,
-    shareToken?: string,
-    app?: Elysia<any, any, any, any, any, any>
+    shareToken?: string
   ) => {
     if (!setlistId || setlistId.trim().length === 0) {
       throw new Error('Setlist ID is required');
@@ -312,7 +305,7 @@ export const setlistController = {
       throw new Error('Section ID is required');
     }
 
-    return await setlistService.deleteSection(setlistId, sectionId, firebaseUid, shareToken, app);
+    return await setlistService.deleteSection(setlistId, sectionId, firebaseUid, shareToken);
   },
 
   /**
