@@ -39,7 +39,7 @@ export const AppHeader = () => {
         </Pressable>
         <Image
           source={require('@assets/images/band-together-logo.png')}
-          className="flex-1"
+          className="flex-1 dark:invert-0 invert"
           style={{ height: 40 }}
           resizeMode="contain"
           accessibilityLabel="Band Together"

@@ -15,7 +15,14 @@
     "preview": {
       "distribution": "internal",
       "env": {
-        "EXPO_PUBLIC_API_URL": "https://band-together-staging.fly.dev"
+        "EXPO_PUBLIC_API_URL": "https://band-together-staging.fly.dev",
+        "EXPO_PUBLIC_FIREBASE_API_KEY": "AIzaSyDIgHkzGdjEiU_4I0imBDorXhCrFen3w9U",
+        "EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN": "band-together-firebase.firebaseapp.com",
+        "EXPO_PUBLIC_FIREBASE_PROJECT_ID": "band-together-firebase",
+        "EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET": "band-together-firebase.firebasestorage.app",
+        "EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID": "496192484528",
+        "EXPO_PUBLIC_FIREBASE_APP_ID": "1:496192484528:web:ad1dfeed5f30d25b2e7775",
+        "EXPO_PUBLIC_FIREBASE_MEASUREMENT_ID": "G-0EK661ZGTQ"
       },
       "android": {
         "buildType": "apk"

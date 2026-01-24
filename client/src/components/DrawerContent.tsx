@@ -15,6 +15,17 @@ export function DrawerContent(props: DrawerContentComponentProps) {
   const { colorScheme } = useColorScheme();
   const [collapsedSections, setCollapsedSections] = useState<Set<string>>(new Set());
 
+  // Build account section items - show Profile/Logout only if authenticated
+  const accountItems = [
+    ...(isAuthenticated ? [
+      { name: 'Profile', icon: 'person' as const, route: 'Profile' },
+    ] : []),
+    { name: 'Settings', icon: 'settings' as const, route: 'Settings' },
+    ...(isAuthenticated ? [
+      { name: 'Logout', icon: 'log-out' as const, route: 'Logout', action: 'logout' },
+    ] : []),
+  ];
+
   const drawerSections = [
     {
       title: 'Browse',
@@ -32,11 +43,7 @@ export function DrawerContent(props: DrawerContentComponentProps) {
     },
     {
       title: 'Account',
-      items: [
-        { name: 'Profile', icon: 'person' as const, route: 'Profile' },
-        { name: 'Settings', icon: 'settings' as const, route: 'Settings' },
-        { name: 'Logout', icon: 'log-out' as const, route: 'Logout', action: 'logout' },
-      ],
+      items: accountItems,
     },
   ];
 
@@ -58,6 +65,7 @@ export function DrawerContent(props: DrawerContentComponentProps) {
       >
         <Image
           source={require('@assets/images/band-together-logo.png')}
+          className="dark:invert-0 invert"
           style={{ width: 200, height: 70 }}
           resizeMode="contain"
           accessibilityLabel="Band Together"

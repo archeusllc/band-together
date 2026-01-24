@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, RefreshControl, Pressable, SectionList } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import type { DrawerNavigationProp } from '@react-navigation/drawer';
-import type { DrawerParamList } from '@navigation/types';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import type { RootStackParamList } from '@navigation/types';
 import { setlistService } from '@services';
 import { useAuth } from '@contexts';
 import { SetlistCard, SetlistCardSkeleton } from '@components/setlist';
@@ -10,7 +10,7 @@ import { tailwind, colors } from '@theme';
 import { IconSymbol } from '@ui';
 import type { SetList } from '@band-together/shared';
 
-type NavigationProp = DrawerNavigationProp<DrawerParamList>;
+type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
 interface SetlistSection {
   title: string;
@@ -93,7 +93,7 @@ export const SetlistManagerScreen = () => {
   };
 
   const handleCreateSetlist = () => {
-    navigation.navigate('CreateSetlist');
+    navigation.navigate('MainDrawer', { screen: 'CreateSetlist' });
   };
 
   if (loading && sections.length === 0) {
@@ -124,13 +124,13 @@ export const SetlistManagerScreen = () => {
           <View className="gap-3 w-full max-w-xs">
             <Pressable
               className="bg-blue-500 py-3 px-6 rounded-lg items-center"
-              onPress={() => navigation.navigate('Login')}
+              onPress={() => navigation.navigate('Login' as any)}
             >
               <Text className="text-white text-base font-semibold">Login</Text>
             </Pressable>
             <Pressable
               className="bg-transparent py-3 px-6 rounded-lg items-center border border-blue-500"
-              onPress={() => navigation.navigate('Register')}
+              onPress={() => navigation.navigate('Register' as any)}
             >
               <Text className={tailwind.primary}>Create Account</Text>
             </Pressable>
@@ -141,6 +141,36 @@ export const SetlistManagerScreen = () => {
   }
 
   if (error && sections.length === 0) {
+    // If unauthenticated and there's an error, show login prompt instead of error
+    if (!isAuthenticated) {
+      return (
+        <View className={`flex-1 ${tailwind.background.both}`}>
+          <View className="flex-1 justify-center items-center px-5">
+            <Text className={`text-3xl font-bold mb-4 ${tailwind.text.both}`}>
+              My Setlists
+            </Text>
+            <Text className={`text-base ${tailwind.textMuted.both} mb-8 text-center`}>
+              Please log in to create and manage your setlists
+            </Text>
+            <View className="gap-3 w-full max-w-xs">
+              <Pressable
+                className="bg-blue-500 py-3 px-6 rounded-lg items-center"
+                onPress={() => navigation.navigate('Login' as any)}
+              >
+                <Text className="text-white text-base font-semibold">Login</Text>
+              </Pressable>
+              <Pressable
+                className="bg-transparent py-3 px-6 rounded-lg items-center border border-blue-500"
+                onPress={() => navigation.navigate('Register' as any)}
+              >
+                <Text className={tailwind.primary}>Create Account</Text>
+              </Pressable>
+            </View>
+          </View>
+        </View>
+      );
+    }
+
     return (
       <View className={`flex-1 ${tailwind.background.both} justify-center items-center px-6`}>
         <Text className="text-4xl mb-4">⚠️</Text>
@@ -188,7 +218,7 @@ export const SetlistManagerScreen = () => {
           renderItem={({ item }) => (
             <SetlistCard
               setlist={item}
-              onPress={() => navigation.navigate('SetlistDetails', { setlistId: item.setListId })}
+              onPress={() => navigation.navigate('MainDrawer', { screen: 'SetlistDetails', params: { setlistId: item.setListId } })}
             />
           )}
           renderSectionHeader={({ section }) => (

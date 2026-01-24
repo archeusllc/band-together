@@ -64,16 +64,21 @@ export const SongSearchModal = ({ visible, onClose, onSelectTrack, existingTrack
       );
 
       if (searchError || !data) {
+        console.error('🔍 [TrackSearch] Error:', searchError);
         setError('Failed to search songs');
         setTracks([]);
         return;
       }
 
-      setTracks(data.data || []);
-      if (!data.data || data.data.length === 0) {
+      // Handle both response formats: { data: [...] } or direct array
+      const tracksArray = Array.isArray(data) ? data : data.data || [];
+      console.log('🔍 [TrackSearch] Found tracks:', tracksArray.length);
+      setTracks(tracksArray);
+      if (tracksArray.length === 0) {
         setError(null); // No error, just no results
       }
     } catch (err) {
+      console.error('🔍 [TrackSearch] Exception:', err);
       setError('An error occurred while searching');
       setTracks([]);
     } finally {

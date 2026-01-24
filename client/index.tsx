@@ -1,4 +1,4 @@
-import './gesture-handler';
+import './gesture-handler.tsx';
 import './global.css';
 
 import '@expo/metro-runtime'; // Necessary for Fast Refresh on Web
