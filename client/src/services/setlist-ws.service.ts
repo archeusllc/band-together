@@ -100,6 +100,11 @@ class SetlistWebSocketService {
           this.ws = null;
         }
 
+        // Clear any old handlers to prevent stale subscriptions
+        this.handlers.clear();
+        this.currentPresence = [];
+        this.reconnectAttempts = 0;
+
         this.setlistId = setlistId;
         this.userId = userId || null;
         this.userName = userName || 'Guest';
@@ -144,7 +149,7 @@ class SetlistWebSocketService {
   }
 
   /**
-   * Disconnect WebSocket
+   * Disconnect WebSocket and clean up all handlers
    */
   disconnect(): void {
     this.intentionalDisconnect = true;
@@ -153,6 +158,9 @@ class SetlistWebSocketService {
       this.ws = null;
     }
     this.setlistId = null;
+    // Clear all event handlers to prevent stale subscriptions
+    this.handlers.clear();
+    this.currentPresence = [];
   }
 
   /**

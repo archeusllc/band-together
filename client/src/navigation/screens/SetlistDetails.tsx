@@ -99,11 +99,10 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
   };
 
   // Define all WebSocket event handlers with stable references using useCallback
+  // Handlers use setlistId via closure, not as a dependency
   const handleItemAdded = useCallback((event: any) => {
     if (event.setlistId === setlistId) {
-      // Refresh setlist to get the new item
       fetchSetlistDetails();
-      // Highlight the newly added item briefly
       setRecentlyAddedItemId(event.data.setItemId);
       setTimeout(() => setRecentlyAddedItemId(null), 3000);
     }
@@ -149,37 +148,37 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
     setPresence(event.presence);
   }, []);
 
-  const connectWebSocket = useCallback(async () => {
-    try {
-      // Clear any existing unsubscribe functions
-      unsubscribeFunctions.current.forEach(unsub => unsub());
-      unsubscribeFunctions.current = [];
-
-      // Subscribe to broadcast events FIRST (before connecting, so handlers are ready)
-      unsubscribeFunctions.current.push(setlistWSService.on('item-added', handleItemAdded));
-      unsubscribeFunctions.current.push(setlistWSService.on('item-updated', handleItemUpdated));
-      unsubscribeFunctions.current.push(setlistWSService.on('item-deleted', handleItemDeleted));
-      unsubscribeFunctions.current.push(setlistWSService.on('reordered', handleReordered));
-      unsubscribeFunctions.current.push(setlistWSService.on('section-added', handleSectionAdded));
-      unsubscribeFunctions.current.push(setlistWSService.on('section-updated', handleSectionUpdated));
-      unsubscribeFunctions.current.push(setlistWSService.on('section-deleted', handleSectionDeleted));
-      unsubscribeFunctions.current.push(setlistWSService.on('presence-update', handlePresenceUpdate));
-
-      // Now connect - server will immediately send presence update to this client
-      await setlistWSService.connect(setlistId, user?.userId, user?.email?.split('@')[0] || 'Guest');
-      setWsConnected(true);
-    } catch (error) {
-      console.error('Failed to connect WebSocket:', error);
-      setWsConnected(false);
-    }
-  }, [setlistId, user?.userId, user?.email, handleItemAdded, handleItemUpdated, handleItemDeleted, handleReordered, handleSectionAdded, handleSectionUpdated, handleSectionDeleted, handlePresenceUpdate]);
-
   // Wait for Firebase auth to initialize before fetching
   useEffect(() => {
-    if (!authLoading) {
-      fetchSetlistDetails();
-      connectWebSocket();
-    }
+    if (authLoading) return;
+
+    const setupWebSocket = async () => {
+      try {
+        // Clear any existing subscriptions
+        unsubscribeFunctions.current.forEach(unsub => unsub());
+        unsubscribeFunctions.current = [];
+
+        // Subscribe to broadcast events FIRST (before connecting, so handlers are ready)
+        unsubscribeFunctions.current.push(setlistWSService.on('item-added', handleItemAdded));
+        unsubscribeFunctions.current.push(setlistWSService.on('item-updated', handleItemUpdated));
+        unsubscribeFunctions.current.push(setlistWSService.on('item-deleted', handleItemDeleted));
+        unsubscribeFunctions.current.push(setlistWSService.on('reordered', handleReordered));
+        unsubscribeFunctions.current.push(setlistWSService.on('section-added', handleSectionAdded));
+        unsubscribeFunctions.current.push(setlistWSService.on('section-updated', handleSectionUpdated));
+        unsubscribeFunctions.current.push(setlistWSService.on('section-deleted', handleSectionDeleted));
+        unsubscribeFunctions.current.push(setlistWSService.on('presence-update', handlePresenceUpdate));
+
+        // Now connect - server will immediately send presence update to this client
+        await setlistWSService.connect(setlistId, user?.userId, user?.email?.split('@')[0] || 'Guest');
+        setWsConnected(true);
+      } catch (error) {
+        console.error('Failed to connect WebSocket:', error);
+        setWsConnected(false);
+      }
+    };
+
+    fetchSetlistDetails();
+    setupWebSocket();
 
     return () => {
       // Cleanup: unsubscribe from all WebSocket events and disconnect
@@ -188,7 +187,7 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
       setlistWSService.disconnect();
       setWsConnected(false);
     };
-  }, [setlistId, authLoading, connectWebSocket]);
+  }, [setlistId, authLoading, user?.userId, user?.email, handleItemAdded, handleItemUpdated, handleItemDeleted, handleReordered, handleSectionAdded, handleSectionUpdated, handleSectionDeleted, handlePresenceUpdate]);
 
   // Handle editing mode changes - send status to other clients
   useEffect(() => {
