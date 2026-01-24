@@ -17,6 +17,7 @@ interface SongSearchModalProps {
   visible: boolean;
   onClose: () => void;
   onSelectTrack: (track: Track) => void;
+  existingTrackIds?: Set<string>;
 }
 
 const formatDuration = (seconds: number): string => {
@@ -28,7 +29,7 @@ const formatDuration = (seconds: number): string => {
   return remainingSeconds > 0 ? `${minutes}m ${remainingSeconds}s` : `${minutes}m`;
 };
 
-export const SongSearchModal = ({ visible, onClose, onSelectTrack }: SongSearchModalProps) => {
+export const SongSearchModal = ({ visible, onClose, onSelectTrack, existingTrackIds }: SongSearchModalProps) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(false);
   const [tracks, setTracks] = useState<Track[]>([]);
@@ -101,38 +102,50 @@ export const SongSearchModal = ({ visible, onClose, onSelectTrack }: SongSearchM
     onClose();
   };
 
-  const renderTrackItem = ({ item }: { item: Track }) => (
-    <Pressable
-      className={`border-b ${tailwind.border.both} p-4`}
-      onPress={() => handleSelectTrack(item)}
-    >
-      <View className="flex-1">
-        {/* Title and Duration */}
-        <View className="flex-row items-center justify-between mb-1">
-          <Text className={`text-base font-semibold ${tailwind.text.both} flex-1`} numberOfLines={1}>
-            {item.title}
-          </Text>
-          <Text className={`text-sm ${tailwind.textMuted.both} ml-2`}>
-            {formatDuration(item.defaultDuration || 0)}
-          </Text>
-        </View>
+  const renderTrackItem = ({ item }: { item: Track }) => {
+    const isInSetlist = existingTrackIds?.has(item.trackId);
 
-        {/* Artist and Type */}
-        <View className="flex-row items-center gap-2">
-          {item.artist && (
-            <Text className={`text-sm ${tailwind.textMuted.both} flex-1`} numberOfLines={1}>
-              {item.artist}
+    return (
+      <Pressable
+        className={`border-b ${tailwind.border.both} p-4`}
+        onPress={() => handleSelectTrack(item)}
+      >
+        <View className="flex-1">
+          {/* Title and Duration */}
+          <View className="flex-row items-center justify-between mb-1">
+            <Text className={`text-base font-semibold ${tailwind.text.both} flex-1`} numberOfLines={1}>
+              {item.title}
             </Text>
-          )}
-          {item.defaultTuning && (
-            <Text className={`text-xs px-2 py-1 rounded ${tailwind.activeBackground.both} ${tailwind.textMuted.both}`}>
-              {item.defaultTuning}
+            <Text className={`text-sm ${tailwind.textMuted.both} ml-2`}>
+              {formatDuration(item.defaultDuration || 0)}
             </Text>
-          )}
+          </View>
+
+          {/* Artist, Tuning, and In Setlist Badge */}
+          <View className="flex-row items-center gap-2">
+            {item.artist && (
+              <Text className={`text-sm ${tailwind.textMuted.both} flex-1`} numberOfLines={1}>
+                {item.artist}
+              </Text>
+            )}
+            {item.defaultTuning && (
+              <Text className={`text-xs px-2 py-1 rounded ${tailwind.activeBackground.both} ${tailwind.textMuted.both}`}>
+                {item.defaultTuning}
+              </Text>
+            )}
+            {isInSetlist && (
+              <View className="flex-row items-center gap-1 px-2 py-1 rounded bg-blue-100 dark:bg-blue-900/30">
+                <IconSymbol name="checkmark-circle" size={14} color={colors.brand.primary} />
+                <Text className={`text-xs font-medium`} style={{ color: colors.brand.primary }}>
+                  In List
+                </Text>
+              </View>
+            )}
+          </View>
         </View>
-      </View>
-    </Pressable>
-  );
+      </Pressable>
+    );
+  };
 
   return (
     <Modal

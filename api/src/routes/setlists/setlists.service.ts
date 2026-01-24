@@ -304,7 +304,7 @@ export const setlistService = {
       guildId?: string | null;
     }
   ) => {
-    const userId = await getUserIdByFirebaseUid(firebaseUid);
+    const { userId, displayName } = await getUserDetailsFromFirebaseUid(firebaseUid);
 
     // Check ownership
     const setlist = await prisma.setList.findUnique({
@@ -315,7 +315,7 @@ export const setlistService = {
       throw new Error('Unauthorized: only the setlist owner can update it');
     }
 
-    return await prisma.setList.update({
+    const updatedSetlist = await prisma.setList.update({
       where: { setListId: setlistId },
       data: updates,
       include: {
@@ -329,6 +329,11 @@ export const setlistService = {
         shares: true,
       },
     });
+
+    // Broadcast the update to all connected clients
+    broadcastService.setlistUpdated(setlistId, updatedSetlist, userId, displayName);
+
+    return updatedSetlist;
   },
 
   /**

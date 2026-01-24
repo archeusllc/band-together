@@ -1,5 +1,5 @@
 export type RootStackParamList = {
-  MainDrawer: { screen?: string };
+  MainDrawer: { screen?: string; params?: any };
   Login: undefined;
   Register: undefined;
   NotFound: undefined;
@@ -29,6 +29,6 @@ export type DrawerParamList = {
   // Tools
   SetlistManager: undefined;
   // Setlists
-  SetlistDetails: { setlistId: string; modalState?: string };
+  SetlistDetails: { setlistId: string; modalState?: string; shareToken?: string };
   CreateSetlist: undefined;
 };

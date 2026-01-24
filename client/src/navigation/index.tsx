@@ -303,12 +303,29 @@ export function Navigation(props: any) {
     }
   }, [colorScheme]);
 
+  // Build linking prefixes dynamically for web to support localhost and local network URLs
+  const getLinkingPrefixes = () => {
+    const prefixes = ['bandtogethermobile://'];
+
+    // On web, include both the current host and the production domain
+    if (Platform.OS === 'web' && typeof window !== 'undefined' && window.location) {
+      const { protocol, host } = window.location;
+      // Add current host prefix (e.g., http://localhost:3000, https://192.168.1.100:5173, etc.)
+      prefixes.push(`${protocol}//${host}`);
+    }
+
+    // Always include production domain as fallback
+    prefixes.push('https://band-together.app');
+
+    return prefixes;
+  };
+
   return (
     <RootNavigator
       {...props}
       theme={theme}
       linking={{
-        prefixes: ['bandtogethermobile://', 'https://band-together.app'],
+        prefixes: getLinkingPrefixes(),
       }}
     />
   );

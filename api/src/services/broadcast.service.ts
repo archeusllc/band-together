@@ -2,7 +2,7 @@ import type { Elysia } from 'elysia';
 import type { SetItem, SetSection } from '@band-together/shared';
 
 export interface BroadcastEvent {
-  type: 'item-added' | 'item-updated' | 'item-deleted' | 'reordered' | 'section-added' | 'section-updated' | 'section-deleted';
+  type: 'item-added' | 'item-updated' | 'item-deleted' | 'reordered' | 'section-added' | 'section-updated' | 'section-deleted' | 'setlist-updated';
   setlistId: string;
   data: any;
   userId: string;
@@ -171,6 +171,25 @@ export const broadcastService = {
       type: 'section-deleted',
       setlistId,
       data: { sectionId },
+      userId,
+      userName,
+      timestamp: new Date().toISOString(),
+    });
+  },
+
+  /**
+   * Broadcast setlist-updated event
+   */
+  setlistUpdated: (
+    setlistId: string,
+    setlist: any,
+    userId: string,
+    userName: string
+  ) => {
+    broadcastService.publish({
+      type: 'setlist-updated',
+      setlistId,
+      data: setlist,
       userId,
       userName,
       timestamp: new Date().toISOString(),

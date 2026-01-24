@@ -9,21 +9,24 @@ interface SetItemRowProps {
     track?: Track;
   };
   isEditing?: boolean;
-  isDragging?: boolean;
   onEdit?: () => void;
   onDelete?: () => void;
 }
 
 const formatDuration = (seconds: number): string => {
-  if (seconds === 0) return '0s';
-  if (seconds < 60) return `${seconds}s`;
+  if (seconds === 0) return '0:00';
 
-  const minutes = Math.floor(seconds / 60);
-  const remainingSeconds = seconds % 60;
-  return remainingSeconds > 0 ? `${minutes}m ${remainingSeconds}s` : `${minutes}m`;
+  const hours = Math.floor(seconds / 3600);
+  const minutes = Math.floor((seconds % 3600) / 60);
+  const secs = seconds % 60;
+
+  const mm = hours > 0 ? String(minutes).padStart(2, '0') : String(minutes);
+  const ss = String(secs).padStart(2, '0');
+
+  return hours > 0 ? `${hours}:${mm}:${ss}` : `${mm}:${ss}`;
 };
 
-export const SetItemRow = ({ item, isEditing = false, isDragging = false, onEdit, onDelete }: SetItemRowProps) => {
+export const SetItemRow = ({ item, isEditing = false, onEdit, onDelete }: SetItemRowProps) => {
   const track = item.track;
   if (!track) return null;
 
@@ -33,15 +36,8 @@ export const SetItemRow = ({ item, isEditing = false, isDragging = false, onEdit
   const displayNotes = item.customNotes;
 
   return (
-    <View className={`border-b ${tailwind.border.both} p-4 ${isDragging ? tailwind.activeBackground.both : ''}`}>
+    <View className={`border-b ${tailwind.border.both} p-4`}>
       <View className="flex-row items-center gap-3">
-        {/* Drag Handle (editing only) */}
-        {isEditing && (
-          <View className="w-5 items-center justify-center">
-            <IconSymbol name="menu" size={16} color="#9CA3AF" />
-          </View>
-        )}
-
         {/* Position Number */}
         <Text className={`text-sm font-semibold ${tailwind.textMuted.both} w-6`}>
           {item.position + 1}
@@ -89,18 +85,18 @@ export const SetItemRow = ({ item, isEditing = false, isDragging = false, onEdit
         {isEditing && (
           <View className="flex-row gap-2">
             <Pressable
-              className={`flex-row items-center gap-1 px-3 py-2 rounded ${tailwind.activeBackground.both}`}
+              className={`p-2 rounded ${tailwind.activeBackground.both}`}
               onPress={onEdit}
+              accessibilityLabel="Edit track"
             >
-              <IconSymbol name="pencil" size={16} color={colors.brand.primary} />
-              <Text className={`text-sm font-medium ${tailwind.primary}`}>Edit</Text>
+              <IconSymbol name="pencil" size={18} color={colors.brand.primary} />
             </Pressable>
             <Pressable
-              className={`flex-row items-center gap-1 px-3 py-2 rounded ${tailwind.activeBackground.both}`}
+              className={`p-2 rounded ${tailwind.activeBackground.both}`}
               onPress={onDelete}
+              accessibilityLabel="Delete track"
             >
-              <IconSymbol name="trash" size={16} color={colors.brand.error} />
-              <Text className={`text-sm font-medium ${tailwind.error}`}>Delete</Text>
+              <IconSymbol name="trash" size={18} color={colors.brand.error} />
             </Pressable>
           </View>
         )}

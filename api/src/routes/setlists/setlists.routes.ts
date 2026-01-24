@@ -901,11 +901,13 @@ export const setlistRoutes = new Elysia()
         query: t.Object({
           userId: t.Optional(t.String()),
           userName: t.Optional(t.String()),
+          shareToken: t.Optional(t.String()),
         }),
         open(ws: any) {
           const setlistId = ws.data.params.setlistId as string;
           const userId = (ws.data.query.userId as string) || null;
           const userName = (ws.data.query.userName as string) || 'Guest';
+          const shareToken = (ws.data.query.shareToken as string) || null;
 
           // Generate unique connection ID
           const connectionId = `${setlistId}-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`;

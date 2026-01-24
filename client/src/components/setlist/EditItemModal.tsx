@@ -12,6 +12,17 @@ import { tailwind, colors } from '@theme';
 import { IconSymbol } from '@ui';
 import type { SetItem, Track } from '@band-together/shared';
 
+const COMMON_TUNINGS = [
+  { label: 'Standard (E A D G B E)', value: 'Standard' },
+  { label: 'Drop D (D A D G B E)', value: 'Drop D' },
+  { label: 'Drop C (C G C F A D)', value: 'Drop C' },
+  { label: 'Half Step Down (Eb)', value: 'Half Step Down' },
+  { label: 'Whole Step Down (D)', value: 'Whole Step Down' },
+  { label: 'Open D (D A D F# A D)', value: 'Open D' },
+  { label: 'Open G (D G D G B D)', value: 'Open G' },
+  { label: 'Drop C# (C# G# C# F# A# D#)', value: 'Drop C#' },
+];
+
 interface EditItemModalProps {
   visible: boolean;
   item: (SetItem & { track?: Track }) | null;
@@ -25,19 +36,54 @@ interface EditItemModalProps {
 }
 
 const formatDuration = (seconds: number): string => {
-  if (seconds === 0) return '0s';
-  if (seconds < 60) return `${seconds}s`;
+  if (seconds === 0) return '0:00';
 
-  const minutes = Math.floor(seconds / 60);
-  const remainingSeconds = seconds % 60;
-  return remainingSeconds > 0 ? `${minutes}m ${remainingSeconds}s` : `${minutes}m`;
+  const hours = Math.floor(seconds / 3600);
+  const minutes = Math.floor((seconds % 3600) / 60);
+  const secs = seconds % 60;
+
+  const mm = hours > 0 ? String(minutes).padStart(2, '0') : String(minutes);
+  const ss = String(secs).padStart(2, '0');
+
+  return hours > 0 ? `${hours}:${mm}:${ss}` : `${mm}:${ss}`;
+};
+
+const parseDuration = (input: string): number | null => {
+  if (!input.trim()) return null;
+
+  // Format: "1:20" or "1m 20s" → 80 seconds
+  const mmssMatch = input.match(/^(\d+):(\d{1,2})$/);
+  if (mmssMatch) {
+    const minutes = parseInt(mmssMatch[1], 10);
+    const seconds = parseInt(mmssMatch[2], 10);
+    if (seconds >= 60) return null; // Invalid
+    return minutes * 60 + seconds;
+  }
+
+  // Format: "3m 45s" or "3m" → 225 or 180 seconds
+  const textMatch = input.match(/^(\d+)m\s*(\d+)?s?$/);
+  if (textMatch) {
+    const minutes = parseInt(textMatch[1], 10);
+    const seconds = textMatch[2] ? parseInt(textMatch[2], 10) : 0;
+    return minutes * 60 + seconds;
+  }
+
+  // Format: just "225" → 225 seconds
+  const numberMatch = input.match(/^\d+$/);
+  if (numberMatch) {
+    return parseInt(input, 10);
+  }
+
+  return null; // Invalid format
 };
 
 export const EditItemModal = ({ visible, item, onClose, onSave, loading = false }: EditItemModalProps) => {
   const [tuning, setTuning] = useState('');
+  const [customTuning, setCustomTuning] = useState('');
   const [notes, setNotes] = useState('');
   const [duration, setDuration] = useState('');
   const [error, setError] = useState<string | null>(null);
+  const [showTuningPicker, setShowTuningPicker] = useState(false);
 
   // Initialize form with current values when modal opens
   useEffect(() => {
@@ -62,9 +108,16 @@ export const EditItemModal = ({ visible, item, onClose, onSave, loading = false 
         updates.customNotes = notes || undefined;
       }
       if (duration !== (item.customDuration ? String(item.customDuration) : '')) {
-        const durationNum = duration ? parseInt(duration, 10) : undefined;
-        if (!isNaN(durationNum as any) || duration === '') {
-          updates.customDuration = durationNum;
+        if (duration === '') {
+          updates.customDuration = undefined;
+        } else {
+          const parsedDuration = parseDuration(duration);
+          if (parsedDuration !== null) {
+            updates.customDuration = parsedDuration;
+          } else {
+            setError('Invalid duration format. Use m:ss (e.g., 3:45), m or s (e.g., 3m 45s), or seconds (e.g., 225)');
+            return;
+          }
         }
       }
 
@@ -137,35 +190,119 @@ export const EditItemModal = ({ visible, item, onClose, onSave, loading = false 
             <Text className={`text-sm font-semibold ${tailwind.textMuted.both} mb-2`}>
               Tuning <Text className={`${tailwind.textMuted.both}}`}>(optional)</Text>
             </Text>
-            <TextInput
-              className={`${tailwind.card.both} border ${tailwind.border.both} rounded-lg px-4 py-3 ${tailwind.text.both}`}
-              placeholder={item.track.defaultTuning || 'Standard, Drop D, etc.'}
-              placeholderTextColor="#9CA3AF"
-              value={tuning}
-              onChangeText={setTuning}
-              editable={!loading}
-              returnKeyType="next"
-            />
+            <Pressable
+              onPress={() => setShowTuningPicker(true)}
+              disabled={loading}
+              className={`${tailwind.card.both} border ${tailwind.border.both} rounded-lg px-4 py-3 flex-row items-center justify-between`}
+            >
+              <Text className={tuning ? tailwind.text.both : '#9CA3AF'}>
+                {tuning || (item.track.defaultTuning || 'Select tuning')}
+              </Text>
+              <IconSymbol name="chevron-down" size={16} color="#9CA3AF" />
+            </Pressable>
           </View>
+
+          {/* Tuning Picker Modal */}
+          {showTuningPicker && (
+            <View
+              className="absolute inset-0 bg-black/50 flex items-center justify-center z-50"
+              style={{ pointerEvents: 'box-none' }}
+            >
+              <View
+                className={`${tailwind.card.both} rounded-lg max-h-96 w-80 mx-4`}
+                style={{ pointerEvents: 'box-only' }}
+              >
+                <View className={`border-b ${tailwind.border.both} p-4`}>
+                  <Text className={`text-lg font-bold ${tailwind.text.both}`}>Select Tuning</Text>
+                </View>
+
+                <ScrollView className="max-h-72">
+                  {COMMON_TUNINGS.map((t) => (
+                    <Pressable
+                      key={t.value}
+                      onPress={() => {
+                        setTuning(t.value);
+                        setCustomTuning('');
+                        if (t.value !== 'Custom') {
+                          setShowTuningPicker(false);
+                        }
+                      }}
+                      className={`border-b ${tailwind.border.both} px-4 py-3 flex-row items-center justify-between`}
+                    >
+                      <Text className={tailwind.text.both}>{t.label}</Text>
+                      {tuning === t.value && (
+                        <IconSymbol name="checkmark" size={20} color={colors.brand.primary} />
+                      )}
+                    </Pressable>
+                  ))}
+
+                  {/* Custom Option */}
+                  <Pressable
+                    onPress={() => {
+                      setTuning('');
+                      setShowTuningPicker(false);
+                    }}
+                    className={`border-b ${tailwind.border.both} px-4 py-3 flex-row items-center justify-between`}
+                  >
+                    <Text className={tailwind.text.both}>Custom</Text>
+                    {!COMMON_TUNINGS.find(t => t.value === tuning) && tuning && (
+                      <IconSymbol name="checkmark" size={20} color={colors.brand.primary} />
+                    )}
+                  </Pressable>
+                </ScrollView>
+
+                <View className={`border-t ${tailwind.border.both} p-4`}>
+                  <Pressable
+                    onPress={() => setShowTuningPicker(false)}
+                    className={`${tailwind.activeBackground.both} rounded-lg py-3`}
+                  >
+                    <Text className={`text-center font-semibold ${tailwind.text.both}`}>Done</Text>
+                  </Pressable>
+                </View>
+              </View>
+            </View>
+          )}
+
+          {/* Custom Tuning Input (when Custom is selected) */}
+          {!COMMON_TUNINGS.find(t => t.value === tuning) && tuning === '' && (
+            <View className="mb-6">
+              <Text className={`text-sm font-semibold ${tailwind.textMuted.both} mb-2`}>
+                Custom Tuning
+              </Text>
+              <TextInput
+                className={`${tailwind.card.both} border ${tailwind.border.both} rounded-lg px-4 py-3 ${tailwind.text.both}`}
+                placeholder="e.g., DADGAD"
+                placeholderTextColor="#9CA3AF"
+                value={customTuning}
+                onChangeText={(text) => {
+                  setCustomTuning(text);
+                  setTuning(text);
+                }}
+                editable={!loading}
+                returnKeyType="next"
+              />
+            </View>
+          )}
 
           {/* Duration */}
           <View className="mb-6">
             <Text className={`text-sm font-semibold ${tailwind.textMuted.both} mb-2`}>
-              Duration in Seconds <Text className={`${tailwind.textMuted.both}}`}>(optional)</Text>
+              Duration <Text className={`${tailwind.textMuted.both}}`}>(optional)</Text>
             </Text>
             <TextInput
               className={`${tailwind.card.both} border ${tailwind.border.both} rounded-lg px-4 py-3 ${tailwind.text.both}`}
-              placeholder={String(item.track.defaultDuration || 0)}
+              placeholder="e.g., 3:45 or 3m 45s or 225"
               placeholderTextColor="#9CA3AF"
               value={duration}
               onChangeText={setDuration}
               editable={!loading}
-              keyboardType="number-pad"
               returnKeyType="next"
             />
-            {duration && !isNaN(parseInt(duration, 10)) && (
+            {duration && (
               <Text className={`text-xs ${tailwind.textMuted.both} mt-2`}>
-                ≈ {formatDuration(parseInt(duration, 10))}
+                {parseDuration(duration) !== null
+                  ? `≈ ${formatDuration(parseDuration(duration)!)}`
+                  : 'Invalid format'}
               </Text>
             )}
           </View>

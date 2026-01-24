@@ -6,12 +6,12 @@ import {
   FlatList,
   Pressable,
   Alert,
+  TextInput,
 } from 'react-native';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { DrawerScreenProps } from '@react-navigation/drawer';
 import type { DrawerParamList } from '@navigation/types';
-import DraggableFlatList, { ScaleDecorator } from 'react-native-draggable-flatlist';
 import { api, setlistService } from '@services';
 import { useAuth } from '@contexts';
 import { tailwind, colors } from '@theme';
@@ -36,12 +36,15 @@ interface DisplayItem {
 
 export const SetlistDetailsScreen = ({ route }: Props) => {
   const navigation = useNavigation<NativeStackNavigationProp<DrawerParamList>>();
-  const { setlistId } = route.params;
+  const { setlistId, shareToken } = route.params;
   const { user, loading: authLoading } = useAuth();
   const [setlist, setSetlist] = useState<SetList & { setItems?: Array<SetItem & { track?: any }>; setSections?: SetSection[] } | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [initialLoading, setInitialLoading] = useState(true);
+  const [backgroundRefreshing, setBackgroundRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [isEditing, setIsEditing] = useState(false);
+  const [isEditingName, setIsEditingName] = useState(false);
+  const [editedName, setEditedName] = useState('');
+  const [duplicateTrackConfirm, setDuplicateTrackConfirm] = useState<Track | null>(null);
   const [showSongSearch, setShowSongSearch] = useState(false);
   const [showAddSection, setShowAddSection] = useState(false);
   const [showOptions, setShowOptions] = useState(false);
@@ -73,6 +76,7 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
         query: {
           userId: user?.userId || undefined,
           userName: user?.displayName || user?.email?.split('@')[0] || undefined,
+          shareToken: shareToken || undefined,
         }
       });
       setSocket(socket);
@@ -112,7 +116,7 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
         console.log('[WebSocket] Closing socket for setlist:', setlistId);
         socket.close();
       };
-    }, [setlistId])
+    }, [setlistId, shareToken, user])
   );
 
   const isOwner = user && setlist && user.userId === (setlist as any).ownerId;
@@ -122,10 +126,15 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
   const setShowShare = (show: boolean) => navigation.navigate('SetlistDetails', { setlistId, modalState: show ? 'share' : undefined });
 
   const fetchSetlistDetails = async () => {
-    setLoading(true);
+    // Only show skeleton on initial load, not for background refreshes
+    if (!setlist) {
+      setInitialLoading(true);
+    } else {
+      setBackgroundRefreshing(true);
+    }
     setError(null);
     try {
-      const { data, error: fetchError } = await setlistService.getSetlistById(setlistId);
+      const { data, error: fetchError } = await setlistService.getSetlistById(setlistId, shareToken);
 
       if (fetchError || !data) {
         // Provide more specific error message based on error content
@@ -146,7 +155,8 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
     } catch (err) {
       setError('An error occurred while loading the setlist');
     } finally {
-      setLoading(false);
+      setInitialLoading(false);
+      setBackgroundRefreshing(false);
     }
   };
 
@@ -158,17 +168,40 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
     fetchSetlistDetails();
   }, [setlistId, authLoading]);
 
-  const formatDuration = (seconds: number): string => {
-    if (seconds === 0) return '0s';
-    if (seconds < 60) return `${seconds}s`;
+  const formatDurationRounded = (seconds: number): string => {
+    if (seconds === 0) return '0 minutes';
 
-    const minutes = Math.floor(seconds / 60);
-    const remainingSeconds = seconds % 60;
-    return remainingSeconds > 0 ? `${minutes}m ${remainingSeconds}s` : `${minutes}m`;
+    const totalMinutes = seconds / 60;
+
+    // If less than 60 minutes, show in minutes
+    if (totalMinutes < 60) {
+      const minutes = Math.round(totalMinutes);
+      return `~${minutes} minutes`;
+    }
+
+    // If 60+ minutes, show in hours rounded to nearest tenth
+    const hours = totalMinutes / 60;
+    const hoursRounded = Math.round(hours * 10) / 10;
+    const hoursStr = hoursRounded % 1 === 0 ? hoursRounded.toString() : hoursRounded.toFixed(1);
+    return `~${hoursStr} hour${hoursRounded === 1 ? '' : 's'}`;
   };
 
   const handleAddTrack = async (track: Track) => {
     if (!setlist) return;
+
+    // Check if track already exists in setlist
+    const trackExists = setlist.setItems?.some(item => item.trackId === track.trackId);
+
+    if (trackExists) {
+      // Show confirmation dialog
+      setDuplicateTrackConfirm(track);
+      return;
+    }
+
+    await performAddTrack(track);
+  };
+
+  const performAddTrack = async (track: Track) => {
     setOperationLoading(true);
     try {
       await setlistService.addSetItem(setlistId, {
@@ -176,6 +209,7 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
       });
       // Refresh setlist data
       await fetchSetlistDetails();
+      setShowSongSearch(false);
     } catch (err) {
       setDeleteError(`Failed to add track: ${err instanceof Error ? err.message : 'Unknown error'}`);
     } finally {
@@ -248,28 +282,6 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
     }
   };
 
-  const handleReorderItems = async (newData: DisplayItem[]) => {
-    if (!setlist?.setItems) return;
-
-    // Extract only items (not headers) and map to reorder data
-    const reorderedItems = newData
-      .filter((item) => item.type === 'item')
-      .map((item, index) => ({
-        setItemId: (item.data as SetItem).setItemId,
-        position: index,
-      }));
-
-    setOperationLoading(true);
-    try {
-      await setlistService.reorderSetItems(setlistId, reorderedItems);
-      await fetchSetlistDetails();
-    } catch (err) {
-      setDeleteError(`Failed to reorder tracks: ${err instanceof Error ? err.message : 'Unknown error'}`);
-    } finally {
-      setOperationLoading(false);
-    }
-  };
-
   const handleDeleteSetlist = async () => {
     setOperationLoading(true);
     try {
@@ -325,7 +337,20 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
     }
   };
 
-  if (loading && !setlist) {
+  const handleUpdateSetlistName = async (newName: string) => {
+    if (!newName.trim() || !setlist) return;
+    setOperationLoading(true);
+    try {
+      await setlistService.updateSetlist(setlistId, { name: newName.trim() });
+      await fetchSetlistDetails();
+    } catch (err) {
+      setDeleteError(`Failed to update setlist name: ${err instanceof Error ? err.message : 'Unknown error'}`);
+    } finally {
+      setOperationLoading(false);
+    }
+  };
+
+  if (initialLoading && !setlist) {
     return <SetlistDetailsSkeleton />;
   }
 
@@ -377,14 +402,13 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
     });
   });
 
-  const renderItem = (props: any) => {
-    const { item, drag, isActive } = props;
-
+  const renderItem = ({ item }: { item: DisplayItem }) => {
     if (item.type === 'header') {
+      const section = item.data as SetSection;
       return (
         <SetSectionHeader
-          section={item.data}
-          isEditing={isEditing}
+          section={section}
+          isEditing={isOwner || false}
           onEdit={() => {
             Alert.prompt(
               'Edit Section Name',
@@ -397,7 +421,7 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
                     if (!newName?.trim()) return;
                     setOperationLoading(true);
                     try {
-                      await setlistService.updateSection(setlistId, item.data.sectionId, {
+                      await setlistService.updateSection(setlistId, section.sectionId, {
                         name: newName.trim(),
                       });
                       await fetchSetlistDetails();
@@ -410,33 +434,23 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
                 },
               ],
               'plain-text',
-              item.data.name
+              section.name
             );
           }}
-          onDelete={() => handleDeleteSection(item.data)}
+          onDelete={() => handleDeleteSection(section)}
         />
       );
     }
 
-    if (isEditing) {
-      return (
-        <ScaleDecorator>
-          <View>
-            <SetItemRow
-              item={item.data}
-              isEditing={true}
-              isDragging={isActive}
-              onEdit={() => setEditingItem(item.data)}
-              onDelete={() => handleDeleteItem(item.data)}
-            />
-          </View>
-        </ScaleDecorator>
-      );
-    }
-
+    const trackItem = item.data as SetItem & { track?: Track };
     return (
       <View>
-        <SetItemRow item={item.data} />
+        <SetItemRow
+          item={trackItem}
+          isEditing={isOwner || false}
+          onEdit={() => setEditingItem(trackItem)}
+          onDelete={() => handleDeleteItem(trackItem)}
+        />
       </View>
     );
   };
@@ -444,178 +458,226 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
   return (
     <View className={`flex-1 ${tailwind.background.both}`}>
 
-      {/* Header with Edit and Share Buttons */}
-      <View className={`${tailwind.card.both} border-b ${tailwind.border.both} px-4 py-3 flex-row items-center justify-between gap-2`}>
-        <View className="flex-1 flex-row items-center gap-2">
-          <Text className={`text-lg font-bold ${tailwind.text.both}`}>
-            {setlist.name}
-          </Text>
-          {presence.length > 0 && <PresenceBadge presence={presence} />}
-          <View className={`flex-row items-center gap-1 px-2 py-1 rounded-full ${isConnected ? 'bg-green-100 dark:bg-green-900' : 'bg-red-100 dark:bg-red-900'}`}>
-            <View
-              className={`w-2 h-2 rounded-full ${isConnected ? 'bg-green-500' : 'bg-red-500'}`}
-              accessibilityLabel={isConnected ? 'Connected' : 'Disconnected'}
-            />
-            <Text className={`text-xs font-medium ${isConnected ? 'text-green-700 dark:text-green-400' : 'text-red-700 dark:text-red-400'}`}>
-              {isConnected ? 'Live' : 'Offline'}
-            </Text>
-          </View>
-        </View>
-        {isOwner && (
-          <View className="flex-row gap-2">
-            <Pressable
-              onPress={() => setShowShare(true)}
-              disabled={operationLoading}
-              className={`py-2 px-3 rounded-lg ${tailwind.activeBackground.both} flex-row items-center gap-1`}
-            >
-              <IconSymbol name="link" size={16} color={colors.brand.primary} />
-              <Text className={`text-sm font-semibold ${tailwind.text.both}`}>Share</Text>
-            </Pressable>
-            <Pressable
-              onPress={() => setIsEditing(!isEditing)}
-              disabled={operationLoading}
-              className={`py-2 px-4 rounded-lg ${isEditing ? 'bg-blue-500' : tailwind.activeBackground.both}`}
-            >
-              <Text className={`font-semibold ${isEditing ? 'text-white' : tailwind.text.both}`}>
-                {isEditing ? 'Done' : 'Edit'}
-              </Text>
-            </Pressable>
-            <Pressable
-              onPress={() => {
-                setShowOptions(true);
-              }}
-              disabled={operationLoading}
-              className={`py-2 px-3 rounded-lg ${tailwind.activeBackground.both} flex-row items-center gap-1`}
-            >
-              <IconSymbol name="settings" size={16} color={colors.brand.primary} />
-              <Text className={`text-sm font-semibold ${tailwind.text.both}`}>More</Text>
-            </Pressable>
-          </View>
-        )}
-      </View>
-
-      <ScrollView showsVerticalScrollIndicator={false}>
-        {/* Header Section */}
-        <View className={`${tailwind.card.both} border-b ${tailwind.border.both} p-6`}>
-          {/* Title and Privacy Icon */}
-          <View className="flex-row items-center gap-3 mb-3">
-            <View className={`w-12 h-12 rounded-lg ${tailwind.activeBackground.both} items-center justify-center`}>
-              <IconSymbol name="musical-notes" size={24} color={colors.brand.primary} />
+      {/* Header with Setlist Name and Buttons */}
+      <View className={`${tailwind.card.both} border-b ${tailwind.border.both} px-4 py-3`}>
+        <View className="flex-row items-center justify-between gap-2 mb-2">
+          {/* Left: Setlist Name with Edit Functionality */}
+          <View className="flex-1 flex-row items-center gap-2">
+            <View className={`w-8 h-8 rounded-lg ${tailwind.activeBackground.both} items-center justify-center flex-shrink-0`}>
+              <IconSymbol name="musical-notes" size={16} color={colors.brand.primary} />
             </View>
-            <View className="flex-1">
-              <Text className={`text-2xl font-bold ${tailwind.text.both}`} numberOfLines={2}>
-                {setlist.name}
-              </Text>
+            <View className="flex-1 min-w-0">
+              {isOwner && isEditingName ? (
+                <TextInput
+                  className={`text-sm font-bold ${tailwind.text.both}`}
+                  value={editedName}
+                  onChangeText={setEditedName}
+                  onBlur={async () => {
+                    if (editedName.trim() && editedName !== setlist.name) {
+                      await handleUpdateSetlistName(editedName.trim());
+                    }
+                    setIsEditingName(false);
+                  }}
+                  autoFocus
+                  returnKeyType="done"
+                />
+              ) : (
+                <Pressable
+                  onPress={() => {
+                    if (isOwner) {
+                      setEditedName(setlist.name);
+                      setIsEditingName(true);
+                    }
+                  }}
+                >
+                  <View className="flex-row items-center gap-1">
+                    <Text className={`text-sm font-bold ${tailwind.text.both}`} numberOfLines={1}>
+                      {setlist.name}
+                    </Text>
+                    {isOwner && (
+                      <IconSymbol name="pencil" size={12} color={colors.brand.primary} />
+                    )}
+                  </View>
+                </Pressable>
+              )}
               {!setlist.guildId && (
-                <View className="flex-row items-center gap-1 mt-1">
-                  <IconSymbol name="lock-closed" size={12} color={colors.brand.primary} />
+                <View className="flex-row items-center gap-1 mt-0.5">
+                  <IconSymbol name="lock-closed" size={10} color={colors.brand.primary} />
                   <Text className={`text-xs ${tailwind.textMuted.both}`}>Private</Text>
                 </View>
               )}
             </View>
           </View>
 
-          {/* Description */}
-          {setlist.description && (
-            <Text className={`text-base ${tailwind.textMuted.both} mb-4`}>
-              {setlist.description}
-            </Text>
-          )}
-
-          {/* Stats */}
-          <View className="flex-row gap-6 mb-4">
-            {/* Track Count */}
-            <View className="items-center">
-              <Text className={`text-lg font-bold ${tailwind.text.both}`}>
-                {setlist.setItems?.length || 0}
-              </Text>
-              <Text className={`text-xs ${tailwind.textMuted.both}`}>
-                {(setlist.setItems?.length || 0) === 1 ? 'Track' : 'Tracks'}
+          {/* Right: Live Indicator, Share and Options Buttons */}
+          <View className="flex-row gap-1 flex-shrink-0 items-center">
+            {/* Live Indicator */}
+            <View className={`flex-row items-center gap-1 px-2.5 py-2 rounded-lg ${isConnected ? 'bg-green-100 dark:bg-green-900' : 'bg-red-100 dark:bg-red-900'}`}>
+              <View
+                className={`w-2 h-2 rounded-full ${isConnected ? 'bg-green-500' : 'bg-red-500'}`}
+                accessibilityLabel={isConnected ? 'Connected' : 'Disconnected'}
+              />
+              <Text className={`text-xs font-medium ${isConnected ? 'text-green-700 dark:text-green-400' : 'text-red-700 dark:text-red-400'}`}>
+                {isConnected ? 'Live' : 'Offline'}
               </Text>
             </View>
 
-            {/* Total Duration */}
-            <View className="items-center">
-              <Text className={`text-lg font-bold ${tailwind.text.both}`}>
-                {formatDuration(totalDuration)}
-              </Text>
-              <Text className={`text-xs ${tailwind.textMuted.both}`}>Duration</Text>
-            </View>
-
-            {/* Section Count */}
-            {sections.length > 0 && (
-              <View className="items-center">
-                <Text className={`text-lg font-bold ${tailwind.text.both}`}>
-                  {sections.length}
-                </Text>
-                <Text className={`text-xs ${tailwind.textMuted.both}`}>
-                  {sections.length === 1 ? 'Set' : 'Sets'}
-                </Text>
-              </View>
+            {isOwner && (
+              <>
+                <Pressable
+                  onPress={() => setShowShare(true)}
+                  disabled={operationLoading}
+                  className={`p-2 rounded-lg ${tailwind.activeBackground.both}`}
+                  accessibilityLabel="Share setlist"
+                >
+                  <IconSymbol name="share-social" size={16} color={colors.brand.primary} />
+                </Pressable>
+                <Pressable
+                  onPress={() => {
+                    setShowOptions(true);
+                  }}
+                  disabled={operationLoading}
+                  className={`p-2 rounded-lg ${tailwind.activeBackground.both}`}
+                  accessibilityLabel="More options"
+                >
+                  <IconSymbol name="ellipsis-vertical" size={16} color={colors.brand.primary} />
+                </Pressable>
+              </>
             )}
           </View>
-
-          {/* Action Buttons (editing mode) */}
-          {isEditing && isOwner && (
-            <View className="flex-row gap-2 pt-4 border-t border-slate-200 dark:border-slate-700">
-              <Pressable
-                className={`flex-1 py-3 rounded-lg flex-row items-center justify-center gap-2 ${tailwind.activeBackground.both}`}
-                onPress={() => setShowSongSearch(true)}
-                disabled={operationLoading}
-              >
-                <IconSymbol name="add-circle" size={16} color={colors.brand.primary} />
-                <Text className={`font-semibold ${tailwind.text.both}`}>Add Song</Text>
-              </Pressable>
-              <Pressable
-                className={`flex-1 py-3 rounded-lg flex-row items-center justify-center gap-2 ${tailwind.activeBackground.both}`}
-                onPress={() => setShowAddSection(true)}
-                disabled={operationLoading}
-              >
-                <IconSymbol name="add-circle" size={16} color={colors.brand.primary} />
-                <Text className={`font-semibold ${tailwind.text.both}`}>Add Section</Text>
-              </Pressable>
-            </View>
-          )}
         </View>
 
-        {/* Tracks Section */}
-        {displayItems.length > 0 ? (
-          isEditing ? (
-            <DraggableFlatList
-              data={displayItems}
-              keyExtractor={(item) => item.id}
-              renderItem={renderItem}
-              onDragEnd={({ data }) => handleReorderItems(data)}
-              scrollEnabled={false}
-              activationDistance={10}
-            />
-          ) : (
-            <FlatList
-              data={displayItems}
-              keyExtractor={(item) => item.id}
-              renderItem={({ item }) => renderItem({ item })}
-              scrollEnabled={false}
-              nestedScrollEnabled={false}
-            />
-          )
-        ) : (
+        {/* Presence Badge */}
+        {presence.length > 0 && <PresenceBadge presence={presence} />}
+      </View>
+
+      {/* Tracks Section */}
+      {displayItems.length > 0 ? (
+        <FlatList
+          data={displayItems}
+          keyExtractor={(item) => item.id}
+          renderItem={renderItem}
+          scrollEnabled={true}
+          nestedScrollEnabled={true}
+          contentContainerStyle={isOwner ? { paddingBottom: 64 } : undefined}
+          ListHeaderComponent={
+            <View className={`${tailwind.card.both} border-b ${tailwind.border.both} px-4 py-3`}>
+              {/* Stats Row */}
+              <View className="flex-row justify-around gap-2">
+                {/* Track Count */}
+                <View className="items-center">
+                  <Text className={`text-base font-bold ${tailwind.text.both}`}>
+                    {setlist.setItems?.length || 0}
+                  </Text>
+                  <Text className={`text-xs ${tailwind.textMuted.both}`}>
+                    {(setlist.setItems?.length || 0) === 1 ? 'Track' : 'Tracks'}
+                  </Text>
+                </View>
+
+                {/* Total Duration */}
+                <View className="items-center">
+                  <Text className={`text-base font-bold ${tailwind.text.both}`}>
+                    {formatDurationRounded(totalDuration)}
+                  </Text>
+                  <Text className={`text-xs ${tailwind.textMuted.both}`}>Duration</Text>
+                </View>
+
+                {/* Section Count */}
+                {sections.length > 0 && (
+                  <View className="items-center">
+                    <Text className={`text-base font-bold ${tailwind.text.both}`}>
+                      {sections.length}
+                    </Text>
+                    <Text className={`text-xs ${tailwind.textMuted.both}`}>
+                      {sections.length === 1 ? 'Set' : 'Sets'}
+                    </Text>
+                  </View>
+                )}
+              </View>
+
+            </View>
+          }
+        />
+      ) : (
+        <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={isOwner ? { paddingBottom: 64 } : undefined}>
+          <View className={`${tailwind.card.both} border-b ${tailwind.border.both} px-4 py-3`}>
+            {/* Stats Row */}
+            <View className="flex-row justify-around gap-2">
+              {/* Track Count */}
+              <View className="items-center">
+                <Text className={`text-base font-bold ${tailwind.text.both}`}>
+                  {setlist.setItems?.length || 0}
+                </Text>
+                <Text className={`text-xs ${tailwind.textMuted.both}`}>
+                  {(setlist.setItems?.length || 0) === 1 ? 'Track' : 'Tracks'}
+                </Text>
+              </View>
+
+              {/* Total Duration */}
+              <View className="items-center">
+                <Text className={`text-base font-bold ${tailwind.text.both}`}>
+                  {formatDurationRounded(totalDuration)}
+                </Text>
+                <Text className={`text-xs ${tailwind.textMuted.both}`}>Duration</Text>
+              </View>
+
+              {/* Section Count */}
+              {sections.length > 0 && (
+                <View className="items-center">
+                  <Text className={`text-base font-bold ${tailwind.text.both}`}>
+                    {sections.length}
+                  </Text>
+                  <Text className={`text-xs ${tailwind.textMuted.both}`}>
+                    {sections.length === 1 ? 'Set' : 'Sets'}
+                  </Text>
+                </View>
+              )}
+            </View>
+
+          </View>
+
           <View className="flex-1 items-center justify-center p-6 min-h-96">
             <IconSymbol name="ban" size={48} color={colors.light.muted} />
             <Text className={`text-base ${tailwind.text.both} mt-4 text-center`}>
               No tracks in this setlist yet
             </Text>
             <Text className={`text-sm ${tailwind.textMuted.both} mt-2 text-center`}>
-              {isOwner && isEditing ? 'Tap "Add Song" to get started' : 'Add songs to get started'}
+              {isOwner ? 'Tap "Add Song" to get started' : 'No tracks in this setlist'}
             </Text>
           </View>
-        )}
-      </ScrollView>
+        </ScrollView>
+      )}
+
+      {/* Bottom Action Bar (owner only) */}
+      {isOwner && (
+        <View className={`absolute bottom-0 left-0 right-0 flex-row border-t ${tailwind.border.both} ${tailwind.card.both}`}>
+          <Pressable
+            onPress={() => setShowAddSection(true)}
+            disabled={operationLoading}
+            className="flex-1 py-3 flex-row items-center justify-center gap-2 border-r border-slate-200 dark:border-slate-700"
+            accessibilityLabel="Add section"
+          >
+            <IconSymbol name="add-circle" size={20} color={colors.brand.primary} />
+            <Text className={`text-sm font-semibold ${tailwind.text.both}`}>Section</Text>
+          </Pressable>
+          <Pressable
+            onPress={() => setShowSongSearch(true)}
+            disabled={operationLoading}
+            className="flex-1 py-3 flex-row items-center justify-center gap-2"
+            accessibilityLabel="Add track"
+          >
+            <IconSymbol name="add-circle" size={20} color={colors.brand.primary} />
+            <Text className={`text-sm font-semibold ${tailwind.text.both}`}>Track</Text>
+          </Pressable>
+        </View>
+      )}
 
       {/* Modals */}
       <SongSearchModal
         visible={showSongSearch}
         onClose={() => setShowSongSearch(false)}
         onSelectTrack={handleAddTrack}
+        existingTrackIds={new Set(setlist?.setItems?.map(item => item.trackId) || [])}
       />
 
       <AddSectionModal
@@ -824,6 +886,49 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
                 <Text className={`font-semibold ${tailwind.text.both}`}>
                   Cancel
                 </Text>
+              </Pressable>
+            </View>
+          </View>
+        </View>
+      )}
+
+      {/* Duplicate Track Confirmation Modal */}
+      {duplicateTrackConfirm && (
+        <View
+          className="absolute inset-0 bg-black/50 flex items-center justify-center z-50"
+          style={{ pointerEvents: 'box-none' }}
+        >
+          <View
+            className={`${tailwind.card.both} rounded-lg p-4 w-80 max-w-full`}
+            style={{ pointerEvents: 'box-only' }}
+          >
+            <Text className={`text-lg font-bold ${tailwind.text.both} mb-2`}>
+              Add Duplicate?
+            </Text>
+            <Text className={`${tailwind.textMuted.both} mb-6`}>
+              "{duplicateTrackConfirm.title}" is already in this setlist. Add it again?
+            </Text>
+
+            <View className="gap-2">
+              <Pressable
+                onPress={() => {
+                  performAddTrack(duplicateTrackConfirm);
+                  setDuplicateTrackConfirm(null);
+                }}
+                disabled={operationLoading}
+                className={`${tailwind.activeBackground.both} rounded-lg p-3`}
+              >
+                <Text className={`font-semibold ${tailwind.text.both}`}>
+                  {operationLoading ? 'Adding...' : 'Add Duplicate'}
+                </Text>
+              </Pressable>
+
+              <Pressable
+                onPress={() => setDuplicateTrackConfirm(null)}
+                disabled={operationLoading}
+                className={`${tailwind.activeBackground.both} rounded-lg p-3`}
+              >
+                <Text className={`font-semibold ${tailwind.text.both}`}>Cancel</Text>
               </Pressable>
             </View>
           </View>
