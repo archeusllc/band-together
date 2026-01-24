@@ -579,11 +579,11 @@ export const ShareModal = ({
               >
                 <View
                   className="bg-white rounded-lg flex-1 w-full items-center justify-center"
-                  style={{ aspectRatio: 1 }}
+                  style={{ aspectRatio: 1, minHeight: 300 }}
                 >
                   <Image
                     source={{ uri: qrCodeUrl }}
-                    style={{ flex: 1, width: "100%" }}
+                    style={{ width: 300, height: 300 }}
                     resizeMode="contain"
                   />
                 </View>
