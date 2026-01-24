@@ -20,7 +20,7 @@ interface SetlistSection {
 
 export const SetlistManagerScreen = () => {
   const navigation = useNavigation<NavigationProp>();
-  const { loading: authLoading } = useAuth();
+  const { loading: authLoading, isAuthenticated } = useAuth();
 
   const [sections, setSections] = useState<SetlistSection[]>([]);
   const [loading, setLoading] = useState(true);
@@ -106,6 +106,36 @@ export const SetlistManagerScreen = () => {
         {[1, 2, 3].map((i) => (
           <SetlistCardSkeleton key={i} />
         ))}
+      </View>
+    );
+  }
+
+  // Show login prompt for unauthenticated users
+  if (!authLoading && !isAuthenticated) {
+    return (
+      <View className={`flex-1 ${tailwind.background.both}`}>
+        <View className="flex-1 justify-center items-center px-5">
+          <Text className={`text-3xl font-bold mb-4 ${tailwind.text.both}`}>
+            My Setlists
+          </Text>
+          <Text className={`text-base ${tailwind.textMuted.both} mb-8 text-center`}>
+            Please log in to create and manage your setlists
+          </Text>
+          <View className="gap-3 w-full max-w-xs">
+            <Pressable
+              className="bg-blue-500 py-3 px-6 rounded-lg items-center"
+              onPress={() => navigation.navigate('Login')}
+            >
+              <Text className="text-white text-base font-semibold">Login</Text>
+            </Pressable>
+            <Pressable
+              className="bg-transparent py-3 px-6 rounded-lg items-center border border-blue-500"
+              onPress={() => navigation.navigate('Register')}
+            >
+              <Text className={tailwind.primary}>Create Account</Text>
+            </Pressable>
+          </View>
+        </View>
       </View>
     );
   }
