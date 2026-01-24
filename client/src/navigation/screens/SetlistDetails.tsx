@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   View,
   Text,
@@ -7,12 +7,12 @@ import {
   Pressable,
   Alert,
 } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { DrawerScreenProps } from '@react-navigation/drawer';
 import type { DrawerParamList } from '@navigation/types';
 import DraggableFlatList, { ScaleDecorator } from 'react-native-draggable-flatlist';
-import { setlistService } from '@services';
+import { api, setlistService } from '@services';
 import { useAuth } from '@contexts';
 import { tailwind, colors } from '@theme';
 import { IconSymbol } from '@ui';
@@ -50,6 +50,42 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
   const [deleteError, setDeleteError] = useState<string | null>(null);
   const [editingItem, setEditingItem] = useState<SetItem & { track?: Track } | null>(null);
   const [operationLoading, setOperationLoading] = useState(false);
+
+  useFocusEffect(
+    useCallback(() => {
+      // Connect to WebSocket using Eden Treaty
+      const socket = api.setlist[setlistId].ws.subscribe();
+
+      socket.subscribe((message: any) => {
+        console.log('[WebSocket] Received message:', message.type, message);
+
+        if (message.type === 'presence-update') {
+          console.log('[WebSocket] Presence update:', message.presence);
+        } else {
+          // For any data mutation event, refresh the setlist
+          console.log('[WebSocket] Data changed, refreshing...');
+          fetchSetlistDetails();
+        }
+      });
+
+      socket.on('open', () => {
+        console.log('[WebSocket] Connected to setlist');
+      });
+
+      socket.on('close', () => {
+        console.log('[WebSocket] Disconnected from setlist');
+      });
+
+      socket.on('error', (error: any) => {
+        console.error('[WebSocket] Connection error:', error);
+      });
+
+      return () => {
+        console.log('[WebSocket] Closing socket for setlist:', setlistId);
+        socket.close();
+      };
+    }, [setlistId])
+  );
 
   const isOwner = user && setlist && user.userId === (setlist as any).ownerId;
 
@@ -764,7 +800,7 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
           <View className="absolute inset-0 flex items-center justify-center" style={{ pointerEvents: 'box-none' }}>
             <Pressable
               className={`${tailwind.card.both} rounded-lg p-6 mx-6 max-w-sm`}
-              onPress={() => {}}
+              onPress={() => { }}
               style={{ pointerEvents: 'box-only' }}
             >
               <Text className={`text-lg font-bold ${tailwind.text.both} mb-2`}>Error</Text>

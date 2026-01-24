@@ -835,6 +835,30 @@ const isOwner = setlist.ownerId === userId;
 - Rendering: Separate views for loading, error, empty, and content states
 - This structure makes screens maintainable even at 300+ lines
 
+**Screen Lifecycle and `useFocusEffect`**
+- In React Navigation, screens stay mounted in the background even when not visible
+- Use `useEffect` for effects that should run once on first mount (data fetching, setup)
+- Use `useFocusEffect` for effects that should run when the screen comes into focus
+- Use `useFocusEffect` for cleanup that should happen when the screen loses focus
+- **Common use case**: Close WebSocket connections, cancel pending requests, or reset state when user navigates away
+- Example:
+  ```typescript
+  import { useFocusEffect } from '@react-navigation/native';
+
+  useFocusEffect(
+    useCallback(() => {
+      // This runs when screen comes into focus
+      const socket = api.setlist[setlistId].ws.subscribe();
+
+      return () => {
+        // This cleanup runs when screen loses focus
+        console.log('Closing socket');
+        socket.close();
+      };
+    }, [setlistId])
+  );
+  ```
+
 **Follow State Checking Pattern**
 - After fetching main data, check follow status only if authenticated
 - Use `data.follows.some(f => f.entityType === 'GUILD' && f.guildId === targetId)` to find matches
