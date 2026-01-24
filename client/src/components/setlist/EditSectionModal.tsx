@@ -40,7 +40,7 @@ const formatDuration = (seconds: number): string => {
 const parseDuration = (input: string): number | null => {
   if (!input.trim()) return null;
 
-  // Format: "1:20" or "h:mm:ss" → seconds
+  // Format 1: "m:ss" or "h:mm:ss" → seconds
   const colonMatch = input.match(/^(\d+):(\d{1,2})(?::(\d{1,2}))?$/);
   if (colonMatch) {
     const part1 = parseInt(colonMatch[1], 10);
@@ -58,7 +58,15 @@ const parseDuration = (input: string): number | null => {
     }
   }
 
-  // Format: just "225" → 225 seconds
+  // Format 2: "m" or "m s" → seconds
+  const textMatch = input.match(/^(\d+)m\s*(\d+)?s?$/);
+  if (textMatch) {
+    const minutes = parseInt(textMatch[1], 10);
+    const seconds = textMatch[2] ? parseInt(textMatch[2], 10) : 0;
+    return minutes * 60 + seconds;
+  }
+
+  // Format 3: just "225" → 225 seconds
   const numberMatch = input.match(/^\d+$/);
   if (numberMatch) {
     return parseInt(input, 10);
@@ -114,7 +122,7 @@ export const EditSectionModal = ({ visible, section, onClose, onSave, loading = 
             setAlertConfig({
               visible: true,
               title: 'Invalid Duration',
-              message: 'Invalid duration format. Use m:ss (e.g., 15:30) or h:mm:ss (e.g., 1:30:00)',
+              message: 'Invalid duration format. Use m:ss (e.g., 15:30), h:mm:ss (e.g., 1:30:00), m or s (e.g., 15m 30s), or seconds (e.g., 930)',
             });
             return;
           }
@@ -187,7 +195,7 @@ export const EditSectionModal = ({ visible, section, onClose, onSave, loading = 
               </Text>
               <TextInput
                 className={`${tailwind.card.both} border ${tailwind.border.both} rounded-lg px-4 py-3 ${tailwind.text.both}`}
-                placeholder="e.g., 15:30 or 1:30:00"
+                placeholder="e.g., 15:30 or 1:30:00 or 15m 30s"
                 placeholderTextColor="#9CA3AF"
                 value={breakDuration}
                 onChangeText={setBreakDuration}
@@ -198,7 +206,7 @@ export const EditSectionModal = ({ visible, section, onClose, onSave, loading = 
                 <Text className={`text-xs ${tailwind.textMuted.both} mt-2`}>
                   {parseDuration(breakDuration) !== null
                     ? `≈ ${formatDuration(parseDuration(breakDuration)!)}`
-                    : 'Invalid format (use m:ss or h:mm:ss)'}
+                    : 'Invalid format (use m:ss, h:mm:ss, m or s, or seconds)'}
                 </Text>
               )}
               {breakDuration && parseDuration(breakDuration) !== null && (
