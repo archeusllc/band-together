@@ -87,9 +87,11 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
 
   useFocusEffect(
     useCallback(() => {
-      // Only create socket if not already connected
-      // Keep socket alive across app backgrounding to maintain presence state
-      if (!socketRef.current) {
+      // Create socket on focus if it doesn't exist or is closed
+      // This handles: initial load, returning after navigation, resuming from background
+      const needsNewSocket = !socketRef.current || socketRef.current.data.readyState !== 1;
+
+      if (needsNewSocket) {
         console.log('[WebSocket] Creating new socket for setlist:', setlistId);
         const socket = api.setlist[setlistId].ws.subscribe({
           query: {
