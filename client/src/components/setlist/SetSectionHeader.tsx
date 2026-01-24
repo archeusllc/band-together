@@ -93,7 +93,7 @@ const SectionContent = ({ section, isEditing, onEdit, onDelete, duration, canMov
         <Text className={`text-base font-bold ${tailwind.text.both}`}>
           {section.name}
         </Text>
-        {duration && duration > 0 && (
+        {duration !== undefined && duration > 0 && (
           <Text className={`text-sm ${tailwind.textMuted.both}`}>
             ({formatDuration(duration)})
           </Text>
