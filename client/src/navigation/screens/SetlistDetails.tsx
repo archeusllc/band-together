@@ -555,44 +555,59 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
     return displayItems.findIndex(item => item.type === 'header' && (item.data as SetSection).sectionId === sectionId);
   };
 
-  // Find previous section (skip items/breaks)
+  // Find previous element to swap with (item or section header)
+  // Sections can move past items, which changes section membership
   const findPreviousSectionIndex = (currentIndex: number): number => {
     for (let i = currentIndex - 1; i >= 0; i--) {
-      if (displayItems[i].type === 'header') {
+      // Can swap with items or section headers (breaks are just visual indicators)
+      if (displayItems[i].type === 'item' || displayItems[i].type === 'header') {
         return i;
       }
     }
     return -1;
   };
 
-  // Find next section (skip items/breaks)
+  // Find next element to swap with (item or section header)
+  // Sections can move past items, which changes section membership
   const findNextSectionIndex = (currentIndex: number): number => {
     for (let i = currentIndex + 1; i < displayItems.length; i++) {
-      if (displayItems[i].type === 'header') {
+      // Can swap with items or section headers (breaks are just visual indicators)
+      if (displayItems[i].type === 'item' || displayItems[i].type === 'header') {
         return i;
       }
     }
     return -1;
   };
 
-  // Handle moving section up - swap positions with the previous section header
-  // Items naturally stay with their section because they're ordered by position
+  // Handle moving section up - swap positions with the previous element (item or section)
   const handleMoveSectionUp = async (section: SetSection) => {
     const currentIndex = findSectionIndex(section.sectionId);
     const prevIndex = findPreviousSectionIndex(currentIndex);
 
     if (prevIndex === -1) return; // Can't move up
 
-    const prevSection = displayItems[prevIndex].data as SetSection;
+    const prevElement = displayItems[prevIndex];
+    const prevData = prevElement.data as SetItem | SetSection;
 
     setOperationLoading(true);
     try {
-      // Simply swap the two section header positions
-      // Items between them will naturally reorder because they're sorted by position
-      await setlistService.reorderSections(setlistId, [
-        { sectionId: section.sectionId, position: prevSection.position },
-        { sectionId: prevSection.sectionId, position: section.position },
-      ]);
+      if (prevElement.type === 'header') {
+        // Swapping with another section
+        const prevSection = prevData as SetSection;
+        await setlistService.reorderSections(setlistId, [
+          { sectionId: section.sectionId, position: prevSection.position },
+          { sectionId: prevSection.sectionId, position: section.position },
+        ]);
+      } else if (prevElement.type === 'item') {
+        // Swapping with an item - needs both section and item updates
+        const prevItem = prevData as SetItem;
+        await setlistService.reorderSections(setlistId, [
+          { sectionId: section.sectionId, position: prevItem.position },
+        ]);
+        await setlistService.reorderSetItems(setlistId, [
+          { setItemId: prevItem.setItemId, position: section.position },
+        ]);
+      }
       await fetchSetlistDetails();
     } catch (err) {
       setDeleteError(`Failed to move section: ${err instanceof Error ? err.message : 'Unknown error'}`);
@@ -601,24 +616,35 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
     }
   };
 
-  // Handle moving section down - swap positions with the next section header
-  // Items naturally stay with their section because they're ordered by position
+  // Handle moving section down - swap positions with the next element (item or section)
   const handleMoveSectionDown = async (section: SetSection) => {
     const currentIndex = findSectionIndex(section.sectionId);
     const nextIndex = findNextSectionIndex(currentIndex);
 
     if (nextIndex === -1) return; // Can't move down
 
-    const nextSection = displayItems[nextIndex].data as SetSection;
+    const nextElement = displayItems[nextIndex];
+    const nextData = nextElement.data as SetItem | SetSection;
 
     setOperationLoading(true);
     try {
-      // Simply swap the two section header positions
-      // Items between them will naturally reorder because they're sorted by position
-      await setlistService.reorderSections(setlistId, [
-        { sectionId: section.sectionId, position: nextSection.position },
-        { sectionId: nextSection.sectionId, position: section.position },
-      ]);
+      if (nextElement.type === 'header') {
+        // Swapping with another section
+        const nextSection = nextData as SetSection;
+        await setlistService.reorderSections(setlistId, [
+          { sectionId: section.sectionId, position: nextSection.position },
+          { sectionId: nextSection.sectionId, position: section.position },
+        ]);
+      } else if (nextElement.type === 'item') {
+        // Swapping with an item - needs both section and item updates
+        const nextItem = nextData as SetItem;
+        await setlistService.reorderSections(setlistId, [
+          { sectionId: section.sectionId, position: nextItem.position },
+        ]);
+        await setlistService.reorderSetItems(setlistId, [
+          { setItemId: nextItem.setItemId, position: section.position },
+        ]);
+      }
       await fetchSetlistDetails();
     } catch (err) {
       setDeleteError(`Failed to move section: ${err instanceof Error ? err.message : 'Unknown error'}`);
