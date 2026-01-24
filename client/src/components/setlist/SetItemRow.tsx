@@ -128,7 +128,7 @@ export const SetItemRow = ({ item, isEditing = false, isOwner = false, onEdit, o
   if (!isWeb && isOwner && isEditing) {
     return (
       <Swipeable
-        renderLeftActions={() => (
+        renderRightActions={() => (
           <View className="flex-row">
             <Pressable
               onPress={handleEdit}
@@ -145,7 +145,7 @@ export const SetItemRow = ({ item, isEditing = false, isOwner = false, onEdit, o
           </View>
         )}
         friction={2}
-        overshootLeft={false}
+        overshootRight={false}
       >
         <ItemContent
           track={track}
