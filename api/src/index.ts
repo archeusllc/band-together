@@ -4,6 +4,7 @@ import { openapi } from '@elysiajs/openapi';
 import { dts } from 'elysia-remote-dts'
 
 import { routes } from '@routes';
+import { broadcastService } from '@services/broadcast.service';
 
 const { PORT = 3000 } = process.env;
 
@@ -57,6 +58,9 @@ Protected endpoints require a Bearer token in the Authorization header.
     exclude: { paths: ['/'] }
   }))
   .listen(PORT);
+
+// Initialize broadcast service with app instance for WebSocket publishing
+broadcastService.setApp(app);
 
 const URL = `${app.server?.protocol}://${app.server?.hostname}:${app.server?.port}`;
 

@@ -914,14 +914,6 @@ export const setlistRoutes = new Elysia()
           (ws as any).setlistId = setlistId;
           (ws as any).connectionId = connectionId;
 
-          // Register publisher for this setlist
-          broadcastService.registerPublisher(setlistId, (message: any) => {
-            ws.publish(
-              `setlist:${setlistId}`,
-              JSON.stringify(message)
-            );
-          });
-
           // Add user to presence tracking
           const presence = setlistPresenceService.addUser(
             setlistId,
@@ -1012,9 +1004,6 @@ export const setlistRoutes = new Elysia()
         close(ws: any) {
           const setlistId = ws.setlistId as string;
           const connectionId = ws.connectionId as string;
-
-          // Unregister publisher for this setlist
-          broadcastService.unregisterPublisher(setlistId);
 
           // Remove user from presence tracking
           const updatedPresence = setlistPresenceService.removeUser(

@@ -1,3 +1,4 @@
+import type { Elysia } from 'elysia';
 import type { SetItem, SetSection } from '@band-together/shared';
 
 export interface BroadcastEvent {
@@ -10,43 +11,32 @@ export interface BroadcastEvent {
 }
 
 /**
- * Publisher registry for WebSocket connections
- * Maps setlistId to a publish function registered when a WebSocket connection opens
- */
-const setlistPublishers: Record<string, (message: BroadcastEvent) => void> = {};
-
-/**
  * Broadcast service for publishing WebSocket events to connected clients
+ * Stores reference to app instance to use app.server.publish() for broadcasting to all connected clients in a room
  */
+let appInstance: Elysia<any, any, any, any, any, any> | null = null;
+
 export const broadcastService = {
   /**
-   * Register a publisher function for a setlist
-   * Called when a WebSocket connection opens
+   * Initialize broadcast service with app instance
+   * Must be called once during app startup
    */
-  registerPublisher: (setlistId: string, publishFn: (message: BroadcastEvent) => void) => {
-    setlistPublishers[setlistId] = publishFn;
-  },
-
-  /**
-   * Unregister a publisher function for a setlist
-   * Called when a WebSocket connection closes
-   */
-  unregisterPublisher: (setlistId: string) => {
-    delete setlistPublishers[setlistId];
+  setApp: (app: Elysia<any, any, any, any, any, any>) => {
+    appInstance = app;
   },
 
   /**
    * Publish an event to all connected clients in a setlist room
    */
   publish: (event: BroadcastEvent) => {
-    const publishFn = setlistPublishers[event.setlistId];
-    if (!publishFn) {
-      console.warn(`No publisher registered for setlist ${event.setlistId} - broadcast skipped`);
+    if (!appInstance || !appInstance.server) {
+      console.warn(`WebSocket server not available - cannot broadcast to setlist ${event.setlistId}`);
       return;
     }
 
+    const roomId = `setlist:${event.setlistId}`;
     try {
-      publishFn(event);
+      appInstance.server.publish(roomId, JSON.stringify(event));
     } catch (error) {
       console.error(`Failed to publish event to setlist ${event.setlistId}:`, error);
     }
