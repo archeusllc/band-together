@@ -1978,6 +1978,190 @@ declare const app: Elysia<"", {
 } & {
     setlist: {
         ":setlistId": {
+            reorder: {
+                post: {
+                    body: {
+                        itemPositions?: {
+                            setItemId: string;
+                            position: number;
+                        }[] | undefined;
+                        sectionPositions?: {
+                            position: number;
+                            sectionId: string;
+                        }[] | undefined;
+                    };
+                    params: {
+                        setlistId: string;
+                    };
+                    query: {
+                        shareToken?: string | undefined;
+                    };
+                    headers: unknown;
+                    response: {
+                        200: ({
+                            setItems: ({
+                                track: {
+                                    type: import("node_modules/@band-together/shared/generated/prisma-client").$Enums.TrackType;
+                                    createdAt: Date;
+                                    updatedAt: Date;
+                                    title: string;
+                                    createdBy: string;
+                                    trackId: string;
+                                    artist: string;
+                                    defaultDuration: number | null;
+                                    defaultTuning: string | null;
+                                    isActive: boolean;
+                                };
+                                section: {
+                                    createdAt: Date;
+                                    updatedAt: Date;
+                                    name: string;
+                                    setListId: string;
+                                    position: number;
+                                    sectionId: string;
+                                    breakDuration: number | null;
+                                } | null;
+                            } & {
+                                createdAt: Date;
+                                updatedAt: Date;
+                                trackId: string;
+                                setListId: string;
+                                setItemId: string;
+                                position: number;
+                                customTuning: string | null;
+                                customNotes: string | null;
+                                customDuration: number | null;
+                                sectionId: string | null;
+                            })[];
+                            setSections: {
+                                createdAt: Date;
+                                updatedAt: Date;
+                                name: string;
+                                setListId: string;
+                                position: number;
+                                sectionId: string;
+                                breakDuration: number | null;
+                            }[];
+                        } & {
+                            description: string | null;
+                            createdAt: Date;
+                            updatedAt: Date;
+                            name: string;
+                            guildId: string | null;
+                            setListId: string;
+                            isPrivate: boolean;
+                            ownerId: string;
+                        }) | {
+                            error: string;
+                        } | null;
+                        422: {
+                            type: "validation";
+                            on: string;
+                            summary?: string;
+                            message?: string;
+                            found?: unknown;
+                            property?: string;
+                            expected?: string;
+                        };
+                    };
+                };
+            };
+        };
+    };
+} & {
+    setlist: {
+        ":setlistId": {
+            sections: {
+                reorder: {
+                    post: {
+                        body: {
+                            sectionPositions: {
+                                position: number;
+                                sectionId: string;
+                            }[];
+                        };
+                        params: {
+                            setlistId: string;
+                        };
+                        query: {
+                            shareToken?: string | undefined;
+                        };
+                        headers: unknown;
+                        response: {
+                            200: ({
+                                setItems: ({
+                                    track: {
+                                        type: import("node_modules/@band-together/shared/generated/prisma-client").$Enums.TrackType;
+                                        createdAt: Date;
+                                        updatedAt: Date;
+                                        title: string;
+                                        createdBy: string;
+                                        trackId: string;
+                                        artist: string;
+                                        defaultDuration: number | null;
+                                        defaultTuning: string | null;
+                                        isActive: boolean;
+                                    };
+                                    section: {
+                                        createdAt: Date;
+                                        updatedAt: Date;
+                                        name: string;
+                                        setListId: string;
+                                        position: number;
+                                        sectionId: string;
+                                        breakDuration: number | null;
+                                    } | null;
+                                } & {
+                                    createdAt: Date;
+                                    updatedAt: Date;
+                                    trackId: string;
+                                    setListId: string;
+                                    setItemId: string;
+                                    position: number;
+                                    customTuning: string | null;
+                                    customNotes: string | null;
+                                    customDuration: number | null;
+                                    sectionId: string | null;
+                                })[];
+                                setSections: {
+                                    createdAt: Date;
+                                    updatedAt: Date;
+                                    name: string;
+                                    setListId: string;
+                                    position: number;
+                                    sectionId: string;
+                                    breakDuration: number | null;
+                                }[];
+                            } & {
+                                description: string | null;
+                                createdAt: Date;
+                                updatedAt: Date;
+                                name: string;
+                                guildId: string | null;
+                                setListId: string;
+                                isPrivate: boolean;
+                                ownerId: string;
+                            }) | {
+                                error: string;
+                            } | null;
+                            422: {
+                                type: "validation";
+                                on: string;
+                                summary?: string;
+                                message?: string;
+                                found?: unknown;
+                                property?: string;
+                                expected?: string;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+    };
+} & {
+    setlist: {
+        ":setlistId": {
             sections: {
                 post: {
                     body: {

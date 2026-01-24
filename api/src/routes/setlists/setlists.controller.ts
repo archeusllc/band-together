@@ -263,6 +263,37 @@ export const setlistController = {
   },
 
   /**
+   * Reorder items and sections together (unified position space)
+   * @param firebaseUid - Firebase UID of the authenticated user
+   * @param shareToken - Optional share token for permission validation
+   */
+  reorderSetElements: async (
+    setlistId: string,
+    firebaseUid: string,
+    itemPositions: Array<{
+      setItemId: string;
+      position: number;
+    }> = [],
+    sectionPositions: Array<{
+      sectionId: string;
+      position: number;
+    }> = [],
+    shareToken?: string
+  ) => {
+    if (!setlistId || setlistId.trim().length === 0) {
+      throw new Error('Setlist ID is required');
+    }
+
+    return await setlistService.reorderSetElements(
+      setlistId,
+      firebaseUid,
+      itemPositions,
+      sectionPositions,
+      shareToken
+    );
+  },
+
+  /**
    * Add a section to a setlist
    * @param firebaseUid - Firebase UID of the authenticated user
    * @param shareToken - Optional share token for permission validation

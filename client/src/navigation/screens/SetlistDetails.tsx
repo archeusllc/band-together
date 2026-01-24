@@ -497,14 +497,13 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
           { setItemId: (prevItem as SetItem).setItemId, position: item.position },
         ]);
       } else if (prevElement.type === 'header') {
-        // Swapping with a section header - needs both item and section updates
+        // Swapping with a section header - use unified reorder endpoint
         const prevSection = prevItem as SetSection;
-        await setlistService.reorderSetItems(setlistId, [
-          { setItemId: item.setItemId, position: prevSection.position },
-        ]);
-        await setlistService.reorderSections(setlistId, [
-          { sectionId: prevSection.sectionId, position: item.position },
-        ]);
+        await setlistService.reorderElements(
+          setlistId,
+          [{ setItemId: item.setItemId, position: prevSection.position }],
+          [{ sectionId: prevSection.sectionId, position: item.position }]
+        );
       }
       await fetchSetlistDetails();
     } catch (err) {
@@ -533,14 +532,13 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
           { setItemId: (nextItem as SetItem).setItemId, position: item.position },
         ]);
       } else if (nextElement.type === 'header') {
-        // Swapping with a section header - needs both item and section updates
+        // Swapping with a section header - use unified reorder endpoint
         const nextSection = nextItem as SetSection;
-        await setlistService.reorderSetItems(setlistId, [
-          { setItemId: item.setItemId, position: nextSection.position },
-        ]);
-        await setlistService.reorderSections(setlistId, [
-          { sectionId: nextSection.sectionId, position: item.position },
-        ]);
+        await setlistService.reorderElements(
+          setlistId,
+          [{ setItemId: item.setItemId, position: nextSection.position }],
+          [{ sectionId: nextSection.sectionId, position: item.position }]
+        );
       }
       await fetchSetlistDetails();
     } catch (err) {
@@ -599,15 +597,13 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
           { sectionId: prevSection.sectionId, position: section.position },
         ]);
       } else if (prevElement.type === 'item') {
-        // Swapping with an item - needs both section and item updates
-        // Update item FIRST to avoid unique constraint violation
+        // Swapping with an item - use unified reorder endpoint
         const prevItem = prevData as SetItem;
-        await setlistService.reorderSetItems(setlistId, [
-          { setItemId: prevItem.setItemId, position: section.position },
-        ]);
-        await setlistService.reorderSections(setlistId, [
-          { sectionId: section.sectionId, position: prevItem.position },
-        ]);
+        await setlistService.reorderElements(
+          setlistId,
+          [{ setItemId: prevItem.setItemId, position: section.position }],
+          [{ sectionId: section.sectionId, position: prevItem.position }]
+        );
       }
       await fetchSetlistDetails();
     } catch (err) {
@@ -637,15 +633,13 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
           { sectionId: nextSection.sectionId, position: section.position },
         ]);
       } else if (nextElement.type === 'item') {
-        // Swapping with an item - needs both section and item updates
-        // Update item FIRST to avoid unique constraint violation
+        // Swapping with an item - use unified reorder endpoint
         const nextItem = nextData as SetItem;
-        await setlistService.reorderSetItems(setlistId, [
-          { setItemId: nextItem.setItemId, position: section.position },
-        ]);
-        await setlistService.reorderSections(setlistId, [
-          { sectionId: section.sectionId, position: nextItem.position },
-        ]);
+        await setlistService.reorderElements(
+          setlistId,
+          [{ setItemId: nextItem.setItemId, position: section.position }],
+          [{ sectionId: section.sectionId, position: nextItem.position }]
+        );
       }
       await fetchSetlistDetails();
     } catch (err) {

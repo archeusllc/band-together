@@ -520,14 +520,22 @@ export const setlistService = {
       throw new Error('Track not found');
     }
 
-    // 4. If position not provided, get max position + 1
+    // 4. If position not provided, get max position + 1 from both items AND sections
     let position = data.position;
     if (position === undefined) {
       const maxItem = await prisma.setItem.findFirst({
         where: { setListId: setlistId },
         orderBy: { position: 'desc' },
       });
-      position = maxItem ? maxItem.position + 1 : 0;
+      const maxSection = await prisma.setSection.findFirst({
+        where: { setListId: setlistId },
+        orderBy: { position: 'desc' },
+      });
+      const maxPosition = Math.max(
+        maxItem?.position ?? -1,
+        maxSection?.position ?? -1
+      );
+      position = maxPosition + 1;
     }
 
     // 5. Create SetItem
@@ -809,6 +817,109 @@ export const setlistService = {
   },
 
   /**
+   * Reorder items and sections together (unified position space)
+   * This handles both SetItem and SetSection position updates in a single atomic transaction
+   * @param setlistId - ID of the setlist
+   * @param firebaseUid - Firebase UID of the authenticated user
+   * @param itemPositions - Array of {setItemId, position} pairs to update
+   * @param sectionPositions - Array of {sectionId, position} pairs to update
+   * @param shareToken - Optional share token for permission validation
+   */
+  reorderSetElements: async (
+    setlistId: string,
+    firebaseUid: string,
+    itemPositions: Array<{
+      setItemId: string;
+      position: number;
+    }> = [],
+    sectionPositions: Array<{
+      sectionId: string;
+      position: number;
+    }> = [],
+    shareToken?: string
+  ) => {
+    const { userId, displayName } = await getUserDetailsFromFirebaseUid(firebaseUid);
+
+    // 1. Verify setlist exists
+    const setlist = await prisma.setList.findUnique({
+      where: { setListId: setlistId },
+    });
+
+    if (!setlist) {
+      throw new Error('Setlist not found');
+    }
+
+    // 2. Check permission: owner OR valid CAN_EDIT share
+    const isOwner = setlist.ownerId === userId;
+    const hasShareAccess = shareToken
+      ? await hasValidCAN_EDITShare(setlistId, shareToken)
+      : false;
+
+    if (!isOwner && !hasShareAccess) {
+      throw new Error('Unauthorized: You must be the owner or have CAN_EDIT access');
+    }
+
+    // 3. Use transaction to update all positions atomically (both items and sections)
+    await prisma.$transaction(async (tx) => {
+      // Step 1: Move all items to temporary negative positions to avoid unique constraint violations
+      for (let i = 0; i < itemPositions.length; i++) {
+        await tx.setItem.update({
+          where: { setItemId: itemPositions[i].setItemId },
+          data: { position: -(i + 1) },
+        });
+      }
+
+      // Step 2: Move all sections to temporary negative positions
+      for (let i = 0; i < sectionPositions.length; i++) {
+        await tx.setSection.update({
+          where: { sectionId: sectionPositions[i].sectionId },
+          data: { position: -(100 + i + 1) }, // Different offset to avoid collision
+        });
+      }
+
+      // Step 3: Update items to final positions
+      for (const { setItemId, position } of itemPositions) {
+        await tx.setItem.update({
+          where: { setItemId },
+          data: { position },
+        });
+      }
+
+      // Step 4: Update sections to final positions
+      for (const { sectionId, position } of sectionPositions) {
+        await tx.setSection.update({
+          where: { sectionId },
+          data: { position },
+        });
+      }
+    });
+
+    // 4. Return updated setlist with both items and sections
+    const updatedSetlist = await prisma.setList.findUnique({
+      where: { setListId: setlistId },
+      include: {
+        setSections: {
+          orderBy: { position: 'asc' },
+        },
+        setItems: {
+          include: {
+            track: true,
+            section: true,
+          },
+          orderBy: { position: 'asc' },
+        },
+      },
+    });
+
+    // 5. Broadcast reordered event
+    if (updatedSetlist) {
+      broadcastService.reordered(setlistId, updatedSetlist, userId, displayName);
+    }
+
+    return updatedSetlist;
+  },
+
+  /**
    * Add a section to a setlist
    * @param firebaseUid - Firebase UID of the authenticated user
    * @param shareToken - Optional share token for permission validation
@@ -844,14 +955,22 @@ export const setlistService = {
       throw new Error('Unauthorized: You must be the owner or have CAN_EDIT access');
     }
 
-    // 3. If position not provided, get max position + 1
+    // 3. If position not provided, get max position + 1 from both sections AND items
     let position = data.position;
     if (position === undefined) {
       const maxSection = await prisma.setSection.findFirst({
         where: { setListId: setlistId },
         orderBy: { position: 'desc' },
       });
-      position = maxSection ? maxSection.position + 1 : 0;
+      const maxItem = await prisma.setItem.findFirst({
+        where: { setListId: setlistId },
+        orderBy: { position: 'desc' },
+      });
+      const maxPosition = Math.max(
+        maxSection?.position ?? -1,
+        maxItem?.position ?? -1
+      );
+      position = maxPosition + 1;
     }
 
     // 4. Create SetSection

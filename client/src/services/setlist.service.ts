@@ -346,6 +346,45 @@ export const setlistService = {
   },
 
   /**
+   * Reorder items and sections together (unified position space)
+   * This allows atomically swapping items and sections in a single transaction
+   */
+  reorderElements: async (
+    setlistId: string,
+    itemPositions?: Array<{
+      setItemId: string;
+      position: number;
+    }>,
+    sectionPositions?: Array<{
+      sectionId: string;
+      position: number;
+    }>,
+    shareToken?: string
+  ) => {
+    try {
+      const idToken = await firebaseAuthService.getIdToken();
+      if (!idToken) {
+        return { data: null, error: 'Authentication required' };
+      }
+
+      const query = shareToken ? { $query: { shareToken } } : {};
+
+      const { data, error } = await api.setlist[setlistId].reorder.post({
+        $headers: {
+          authorization: `Bearer ${idToken}`,
+        },
+        ...query,
+        itemPositions: itemPositions || [],
+        sectionPositions: sectionPositions || [],
+      });
+
+      return { data, error };
+    } catch (err) {
+      return { data: null, error: err };
+    }
+  },
+
+  /**
    * Reorder sections in a setlist
    */
   reorderSections: async (

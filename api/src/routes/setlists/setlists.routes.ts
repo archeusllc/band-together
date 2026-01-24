@@ -497,6 +497,77 @@ export const setlistRoutes = new Elysia()
           },
         }
       )
+      // Reorder items and sections together (unified position space)
+      .post(
+        '/:setlistId/reorder',
+        async ({ firebase, params, query, body, set }) => {
+          try {
+            return await setlistController.reorderSetElements(
+              params.setlistId,
+              firebase.uid,
+              body.itemPositions || [],
+              body.sectionPositions || [],
+              query.shareToken
+            );
+          } catch (error) {
+            const message = (error as Error).message;
+            if (message.includes('Unauthorized')) {
+              set.status = 403;
+            } else if (message.includes('not found')) {
+              set.status = 404;
+            } else {
+              set.status = 422;
+            }
+            return { error: message };
+          }
+        },
+        {
+          params: t.Object({
+            setlistId: t.String(),
+          }),
+          query: t.Object({
+            shareToken: t.Optional(t.String()),
+          }),
+          body: t.Object({
+            itemPositions: t.Optional(
+              t.Array(
+                t.Object({
+                  setItemId: t.String(),
+                  position: t.Number(),
+                })
+              )
+            ),
+            sectionPositions: t.Optional(
+              t.Array(
+                t.Object({
+                  sectionId: t.String(),
+                  position: t.Number(),
+                })
+              )
+            ),
+          }),
+          detail: {
+            tags: ['Setlists'],
+            summary: 'Reorder Items and Sections in Setlist',
+            description:
+              'Update positions of items and/or sections in a setlist in a single atomic transaction. This allows moving items past section headers and vice versa. Provide arrays of {setItemId/sectionId, position} objects. Requires authentication and ownership or CAN_EDIT share permission.',
+            security: [{ bearerAuth: [] }],
+            responses: {
+              200: { description: 'Items and sections reordered successfully' },
+              401: {
+                description:
+                  'Unauthorized - missing or invalid Firebase token',
+              },
+              403: { description: 'Forbidden - must be owner or have CAN_EDIT share access' },
+              404: { description: 'Setlist not found' },
+              422: {
+                description:
+                  'Unprocessable Entity - invalid input data',
+              },
+            },
+          },
+        }
+      )
       // Reorder sections in setlist
       .post(
         '/:setlistId/sections/reorder',
