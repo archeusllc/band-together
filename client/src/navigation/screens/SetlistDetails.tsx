@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import {
   View,
   Text,
@@ -23,6 +23,7 @@ import { AddSectionModal } from '@components/setlist/AddSectionModal';
 import { EditItemModal } from '@components/setlist/EditItemModal';
 import { ShareModal } from '@components/setlist/ShareModal';
 import { SetlistDetailsSkeleton } from '@components/setlist/SetlistDetailsSkeleton';
+import { PresenceBadge } from '@components/ui';
 import type { SetList, SetItem, SetSection, Track } from '@band-together/shared';
 
 type Props = DrawerScreenProps<DrawerParamList, 'SetlistDetails'>;
@@ -50,37 +51,64 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
   const [deleteError, setDeleteError] = useState<string | null>(null);
   const [editingItem, setEditingItem] = useState<SetItem & { track?: Track } | null>(null);
   const [operationLoading, setOperationLoading] = useState(false);
+  const [socket, setSocket] = useState<any>(null);
+  const [presence, setPresence] = useState<any[]>([]);
+  const [isConnected, setIsConnected] = useState(false);
+  const refreshTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Debounced refresh function - waits 200ms after last broadcast before fetching
+  const debouncedRefresh = useCallback(() => {
+    if (refreshTimeoutRef.current) {
+      clearTimeout(refreshTimeoutRef.current);
+    }
+    refreshTimeoutRef.current = setTimeout(() => {
+      fetchSetlistDetails();
+    }, 200); // 200ms debounce
+  }, []);
 
   useFocusEffect(
     useCallback(() => {
-      // Connect to WebSocket using Eden Treaty
-      const socket = api.setlist[setlistId].ws.subscribe();
+      // Connect to WebSocket using Eden Treaty with authentication parameters
+      const socket = api.setlist[setlistId].ws.subscribe({
+        query: {
+          userId: user?.userId || undefined,
+          userName: user?.displayName || user?.email?.split('@')[0] || undefined,
+        }
+      });
+      setSocket(socket);
 
       socket.subscribe((message: any) => {
         console.log('[WebSocket] Received message:', message.type, message);
 
         if (message.type === 'presence-update') {
           console.log('[WebSocket] Presence update:', message.presence);
+          setPresence(message.presence);
         } else {
-          // For any data mutation event, refresh the setlist
-          console.log('[WebSocket] Data changed, refreshing...');
-          fetchSetlistDetails();
+          // For any data mutation event, debounce refresh to prevent excessive API calls
+          console.log('[WebSocket] Data changed, refresh debounced...');
+          debouncedRefresh();
         }
       });
 
       socket.on('open', () => {
         console.log('[WebSocket] Connected to setlist');
+        setIsConnected(true);
       });
 
       socket.on('close', () => {
         console.log('[WebSocket] Disconnected from setlist');
+        setIsConnected(false);
       });
 
       socket.on('error', (error: any) => {
         console.error('[WebSocket] Connection error:', error);
+        setIsConnected(false);
       });
 
       return () => {
+        if (refreshTimeoutRef.current) {
+          clearTimeout(refreshTimeoutRef.current);
+        }
         console.log('[WebSocket] Closing socket for setlist:', setlistId);
         socket.close();
       };
@@ -418,9 +446,21 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
 
       {/* Header with Edit and Share Buttons */}
       <View className={`${tailwind.card.both} border-b ${tailwind.border.both} px-4 py-3 flex-row items-center justify-between gap-2`}>
-        <Text className={`text-lg font-bold ${tailwind.text.both} flex-1`}>
-          {setlist.name}
-        </Text>
+        <View className="flex-1 flex-row items-center gap-2">
+          <Text className={`text-lg font-bold ${tailwind.text.both}`}>
+            {setlist.name}
+          </Text>
+          {presence.length > 0 && <PresenceBadge presence={presence} />}
+          <View className={`flex-row items-center gap-1 px-2 py-1 rounded-full ${isConnected ? 'bg-green-100 dark:bg-green-900' : 'bg-red-100 dark:bg-red-900'}`}>
+            <View
+              className={`w-2 h-2 rounded-full ${isConnected ? 'bg-green-500' : 'bg-red-500'}`}
+              accessibilityLabel={isConnected ? 'Connected' : 'Disconnected'}
+            />
+            <Text className={`text-xs font-medium ${isConnected ? 'text-green-700 dark:text-green-400' : 'text-red-700 dark:text-red-400'}`}>
+              {isConnected ? 'Live' : 'Offline'}
+            </Text>
+          </View>
+        </View>
         {isOwner && (
           <View className="flex-row gap-2">
             <Pressable

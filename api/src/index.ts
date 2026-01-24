@@ -8,8 +8,6 @@ import { broadcastService } from '@services/broadcast.service';
 
 const { PORT = 3000 } = process.env;
 
-const testPublishers = {}
-
 const app = new Elysia()
   .use(cors({
     origin: true,
@@ -21,32 +19,6 @@ const app = new Elysia()
     message: 'Band Together API',
     status: 'running'
   }))
-
-  .get('/testbroadcast', () => {
-    console.log('Triggering test broadcast to web-client');
-
-  })
-  .ws('testws/:id', {
-    open(ws) {
-      const { id } = ws.data.params;
-      console.log(`WebSocket connected: ${id}`);
-      console.log({ params: ws.data.params })
-
-      ws.subscribe(id);
-
-      ws.send(JSON.stringify({ message: `Connected to testws/${id} at ${new Date().toISOString()}` }));
-
-      testPublishers[id] = ws;
-
-      ws.publish(id, JSON.stringify({ message: `This is a published message from testws/${id} at ${new Date().toISOString()}` }));
-
-      setTimeout(() => {
-        testPublishers[id].publish(id, JSON.stringify({ message: `This is a delayed message from testws/${id} at ${new Date().toISOString()}` }));
-        testPublishers[id].send(JSON.stringify({ message: `Hello from testws/${id} at ${new Date().toISOString()}` }));
-      }, 3000)
-    },
-
-  })
   .use(routes)
   .use(dts('./src/index.ts'))
   .use(openapi({
