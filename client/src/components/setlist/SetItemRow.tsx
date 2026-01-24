@@ -228,7 +228,7 @@ export const SetItemRow = ({ item, isEditing = false, isOwner = false, onEdit, o
         friction={2}
         overshootRight={false}
         overshootLeft={false}
-        leftThreshold={999}
+        leftThreshold={50}
       >
         <ItemContent
           track={track}
