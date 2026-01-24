@@ -100,18 +100,18 @@ const ItemContent = ({ track, item, displayTuning, displayDuration, displayNotes
         )}
       </View>
 
-      {/* Edit/Delete Buttons (web only, or when isEditing true and not on mobile with swipe enabled) */}
+      {/* Edit/Delete Buttons (web + non-mobile) */}
       {isEditing && (
-        <View className="flex-row gap-2">
+        <View className="flex-row gap-1">
           <Pressable
-            className={`p-2 rounded ${tailwind.activeBackground.both}`}
+            className={`p-3 rounded transition-all duration-150 ${tailwind.activeBackground.both} hover:opacity-80`}
             onPress={onEdit}
             accessibilityLabel="Edit track"
           >
             <IconSymbol name="pencil" size={18} color={colors.brand.primary} />
           </Pressable>
           <Pressable
-            className={`p-2 rounded ${tailwind.activeBackground.both}`}
+            className={`p-3 rounded transition-all duration-150 ${tailwind.activeBackground.both} hover:opacity-80`}
             onPress={onDelete}
             accessibilityLabel="Delete track"
           >

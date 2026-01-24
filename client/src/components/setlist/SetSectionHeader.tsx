@@ -46,18 +46,18 @@ const SectionContent = ({ section, isEditing, onEdit, onDelete }: any) => (
     </Text>
 
     {isEditing && (
-      <View className="flex-row gap-2">
+      <View className="flex-row gap-1">
         <Pressable
-          className={`p-2 rounded ${tailwind.background.both}`}
+          className={`p-3 rounded transition-all duration-150 ${tailwind.background.both} hover:opacity-80`}
           onPress={onEdit}
         >
-          <IconSymbol name="pencil" size={14} color={colors.brand.primary} />
+          <IconSymbol name="pencil" size={16} color={colors.brand.primary} />
         </Pressable>
         <Pressable
-          className={`p-2 rounded ${tailwind.background.both}`}
+          className={`p-3 rounded transition-all duration-150 ${tailwind.background.both} hover:opacity-80`}
           onPress={onDelete}
         >
-          <IconSymbol name="trash" size={14} color={colors.brand.error} />
+          <IconSymbol name="trash" size={16} color={colors.brand.error} />
         </Pressable>
       </View>
     )}
