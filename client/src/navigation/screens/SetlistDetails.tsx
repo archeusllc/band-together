@@ -255,7 +255,9 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
     const trackExists = setlist.setItems?.some(item => item.trackId === track.trackId);
 
     if (trackExists) {
-      // Show confirmation dialog
+      // Close the song search modal first (so duplicate confirmation is visible)
+      setShowSongSearch(false);
+      // Then show confirmation dialog
       setDuplicateTrackConfirm(track);
       return;
     }
@@ -1093,7 +1095,7 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
         >
           <View
             className={`${tailwind.card.both} rounded-lg p-4 w-80 max-w-full`}
-            style={{ pointerEvents: 'box-only' }}
+            style={{ pointerEvents: 'auto' }}
           >
             <Text className={`text-lg font-bold ${tailwind.text.both} mb-4`}>
               Options
@@ -1150,7 +1152,7 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
         >
           <View
             className={`${tailwind.card.both} rounded-lg p-4 w-80 max-w-full`}
-            style={{ pointerEvents: 'box-only' }}
+            style={{ pointerEvents: 'auto' }}
           >
             <Text className={`text-lg font-bold ${tailwind.text.both} mb-2`}>
               Delete Setlist
@@ -1197,7 +1199,7 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
         >
           <View
             className={`${tailwind.card.both} rounded-lg p-4 w-80 max-w-full`}
-            style={{ pointerEvents: 'box-only' }}
+            style={{ pointerEvents: 'auto' }}
           >
             <Text className={`text-lg font-bold ${tailwind.text.both} mb-2`}>
               Delete Track
@@ -1239,7 +1241,7 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
         >
           <View
             className={`${tailwind.card.both} rounded-lg p-4 w-80 max-w-full`}
-            style={{ pointerEvents: 'box-only' }}
+            style={{ pointerEvents: 'auto' }}
           >
             <Text className={`text-lg font-bold ${tailwind.text.both} mb-2`}>
               Delete Section
@@ -1281,7 +1283,7 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
         >
           <View
             className={`${tailwind.card.both} rounded-lg p-4 w-80 max-w-full`}
-            style={{ pointerEvents: 'box-only' }}
+            style={{ pointerEvents: 'auto' }}
           >
             <Text className={`text-lg font-bold ${tailwind.text.both} mb-2`}>
               Add Duplicate?
@@ -1327,7 +1329,7 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
             <Pressable
               className={`${tailwind.card.both} rounded-lg p-6 mx-6 max-w-sm`}
               onPress={() => { }}
-              style={{ pointerEvents: 'box-only' }}
+              style={{ pointerEvents: 'auto' }}
             >
               <Text className={`text-lg font-bold ${tailwind.text.both} mb-2`}>Error</Text>
               <Text className={`text-base ${tailwind.text.both} mb-6`}>{deleteError}</Text>

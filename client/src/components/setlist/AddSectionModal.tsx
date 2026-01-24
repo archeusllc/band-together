@@ -117,7 +117,7 @@ export const AddSectionModal = ({ visible, onClose, onAdd, loading = false }: Ad
               <Pressable
                 className={`${tailwind.card.both} rounded-lg p-6 mx-6 max-w-sm`}
                 onPress={() => {}}
-                style={{ pointerEvents: 'box-only' }}
+                style={{ pointerEvents: 'auto' }}
               >
                 <Text className={`text-lg font-bold ${tailwind.text.both} mb-2`}>Error</Text>
                 <Text className={`text-base ${tailwind.text.both} mb-6`}>{error}</Text>

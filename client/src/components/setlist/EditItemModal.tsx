@@ -210,7 +210,7 @@ export const EditItemModal = ({ visible, item, onClose, onSave, loading = false 
             >
               <View
                 className={`${tailwind.card.both} rounded-lg max-h-96 w-80 mx-4`}
-                style={{ pointerEvents: 'box-only' }}
+                style={{ pointerEvents: 'auto' }}
               >
                 <View className={`border-b ${tailwind.border.both} p-4`}>
                   <Text className={`text-lg font-bold ${tailwind.text.both}`}>Select Tuning</Text>
@@ -364,7 +364,7 @@ export const EditItemModal = ({ visible, item, onClose, onSave, loading = false 
               <Pressable
                 className={`${tailwind.card.both} rounded-lg p-6 mx-6 max-w-sm`}
                 onPress={() => {}}
-                style={{ pointerEvents: 'box-only' }}
+                style={{ pointerEvents: 'auto' }}
               >
                 <Text className={`text-lg font-bold ${tailwind.text.both} mb-2`}>Error</Text>
                 <Text className={`text-base ${tailwind.text.both} mb-6`}>{error}</Text>

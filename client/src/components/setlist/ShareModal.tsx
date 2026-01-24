@@ -517,7 +517,7 @@ export const ShareModal = ({
           >
             <View
               className={`${tailwind.card.both} rounded-lg p-4 w-80 max-w-full`}
-              style={{ pointerEvents: "box-only" }}
+              style={{ pointerEvents: "auto" }}
             >
               <Text className={`text-lg font-bold ${tailwind.text.both} mb-2`}>
                 Revoke Share
@@ -611,7 +611,7 @@ export const ShareModal = ({
               <Pressable
                 className={`${tailwind.card.both} rounded-lg p-6 mx-6 max-w-sm`}
                 onPress={() => {}}
-                style={{ pointerEvents: "box-only" }}
+                style={{ pointerEvents: "auto" }}
               >
                 <Text
                   className={`text-lg font-bold ${tailwind.text.both} mb-2`}
