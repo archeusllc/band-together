@@ -542,6 +542,7 @@ export const setlistService = {
     });
 
     // 6. Broadcast item-added event
+    console.log(`[Service] Broadcasting item-added for setlist ${setlistId}`);
     broadcastService.itemAdded(setlistId, newItem, userId, displayName);
 
     return newItem;

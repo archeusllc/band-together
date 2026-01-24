@@ -23,6 +23,7 @@ export const broadcastService = {
    */
   setApp: (app: Elysia<any, any, any, any, any, any>) => {
     appInstance = app;
+    console.log('[Broadcast] Service initialized with app instance, server available:', !!app.server);
   },
 
   /**
@@ -30,15 +31,16 @@ export const broadcastService = {
    */
   publish: (event: BroadcastEvent) => {
     if (!appInstance || !appInstance.server) {
-      console.warn(`WebSocket server not available - cannot broadcast to setlist ${event.setlistId}`);
+      console.warn(`[Broadcast] WebSocket server not available - cannot broadcast to setlist ${event.setlistId}`);
       return;
     }
 
     const roomId = `setlist:${event.setlistId}`;
     try {
+      console.log(`[Broadcast] Publishing ${event.type} to room ${roomId}`);
       appInstance.server.publish(roomId, JSON.stringify(event));
     } catch (error) {
-      console.error(`Failed to publish event to setlist ${event.setlistId}:`, error);
+      console.error(`[Broadcast] Failed to publish event to setlist ${event.setlistId}:`, error);
     }
   },
 
