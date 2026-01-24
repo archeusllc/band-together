@@ -73,11 +73,15 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
     currentSetlistIdRef.current = setlistId;
   }, [setlistId]);
 
+  // Store fetchSetlistDetails in a ref so handlers don't need to recreate when it changes
+  const fetchSetlistDetailsRef = useRef<() => Promise<void>>();
+
+  // Create the actual fetch function
   const fetchSetlistDetails = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
-      const { data, error: fetchError } = await setlistService.getSetlistById(setlistId);
+      const { data, error: fetchError } = await setlistService.getSetlistById(currentSetlistIdRef.current);
 
       if (fetchError || !data) {
         // Provide more specific error message based on error content
@@ -104,7 +108,12 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
     } finally {
       setLoading(false);
     }
-  }, [setlistId]);
+  }, [user]);
+
+  // Update the ref whenever the function changes
+  useEffect(() => {
+    fetchSetlistDetailsRef.current = fetchSetlistDetails;
+  }, [fetchSetlistDetails]);
 
   // Define all WebSocket event handlers with stable references using useCallback
   // Note: These handlers check the event.setlistId, so they don't need setlistId in dependencies
@@ -116,47 +125,47 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
     console.log('[SetlistDetails] Item added event:', event);
     if (event.setlistId === currentSetlistIdRef.current) {
       console.log('[SetlistDetails] Item added to current setlist, fetching details');
-      fetchSetlistDetails();
+      fetchSetlistDetailsRef.current?.();
       setRecentlyAddedItemId(event.data.setItemId);
       setTimeout(() => setRecentlyAddedItemId(null), 3000);
     }
-  }, [fetchSetlistDetails]);
+  }, []);
 
   const handleItemUpdated = useCallback((event: any) => {
     if (event.setlistId === currentSetlistIdRef.current) {
-      fetchSetlistDetails();
+      fetchSetlistDetailsRef.current?.();
     }
-  }, [fetchSetlistDetails]);
+  }, []);
 
   const handleItemDeleted = useCallback((event: any) => {
     if (event.setlistId === currentSetlistIdRef.current) {
-      fetchSetlistDetails();
+      fetchSetlistDetailsRef.current?.();
     }
-  }, [fetchSetlistDetails]);
+  }, []);
 
   const handleReordered = useCallback((event: any) => {
     if (event.setlistId === currentSetlistIdRef.current) {
-      fetchSetlistDetails();
+      fetchSetlistDetailsRef.current?.();
     }
-  }, [fetchSetlistDetails]);
+  }, []);
 
   const handleSectionAdded = useCallback((event: any) => {
     if (event.setlistId === currentSetlistIdRef.current) {
-      fetchSetlistDetails();
+      fetchSetlistDetailsRef.current?.();
     }
-  }, [fetchSetlistDetails]);
+  }, []);
 
   const handleSectionUpdated = useCallback((event: any) => {
     if (event.setlistId === currentSetlistIdRef.current) {
-      fetchSetlistDetails();
+      fetchSetlistDetailsRef.current?.();
     }
-  }, [fetchSetlistDetails]);
+  }, []);
 
   const handleSectionDeleted = useCallback((event: any) => {
     if (event.setlistId === currentSetlistIdRef.current) {
-      fetchSetlistDetails();
+      fetchSetlistDetailsRef.current?.();
     }
-  }, [fetchSetlistDetails]);
+  }, []);
 
   // Subscribe to WebSocket events - run only once when component mounts
   useEffect(() => {
