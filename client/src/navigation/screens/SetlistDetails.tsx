@@ -454,41 +454,58 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
     return displayItems.findIndex(item => item.type === 'item' && (item.data as SetItem).setItemId === itemId);
   };
 
-  // Find previous track (skip headers/breaks)
+  // Find previous element to swap with (item or section header)
+  // Tracks can move past section headers, changing which section they belong to
   const findPreviousTrackIndex = (currentIndex: number): number => {
     for (let i = currentIndex - 1; i >= 0; i--) {
-      if (displayItems[i].type === 'item') {
+      // Can swap with items or section headers (breaks are just visual indicators)
+      if (displayItems[i].type === 'item' || displayItems[i].type === 'header') {
         return i;
       }
     }
     return -1;
   };
 
-  // Find next track (skip headers/breaks)
+  // Find next element to swap with (item or section header)
+  // Tracks can move past section headers, changing which section they belong to
   const findNextTrackIndex = (currentIndex: number): number => {
     for (let i = currentIndex + 1; i < displayItems.length; i++) {
-      if (displayItems[i].type === 'item') {
+      // Can swap with items or section headers (breaks are just visual indicators)
+      if (displayItems[i].type === 'item' || displayItems[i].type === 'header') {
         return i;
       }
     }
     return -1;
   };
 
-  // Handle moving item up - can move before any other item (including past section headers)
+  // Handle moving item up - can move before any other item or section header
   const handleMoveItemUp = async (item: SetItem & { track?: Track }) => {
     const currentIndex = findItemIndex(item.setItemId);
     const prevIndex = findPreviousTrackIndex(currentIndex);
 
     if (prevIndex === -1) return; // Can't move up
 
-    const prevItem = displayItems[prevIndex].data as SetItem;
+    const prevElement = displayItems[prevIndex];
+    const prevItem = prevElement.data as SetItem | SetSection;
 
     setOperationLoading(true);
     try {
-      await setlistService.reorderSetItems(setlistId, [
-        { setItemId: item.setItemId, position: prevItem.position },
-        { setItemId: prevItem.setItemId, position: item.position },
-      ]);
+      if (prevElement.type === 'item') {
+        // Swapping with another item
+        await setlistService.reorderSetItems(setlistId, [
+          { setItemId: item.setItemId, position: (prevItem as SetItem).position },
+          { setItemId: (prevItem as SetItem).setItemId, position: item.position },
+        ]);
+      } else if (prevElement.type === 'header') {
+        // Swapping with a section header - needs both item and section updates
+        const prevSection = prevItem as SetSection;
+        await setlistService.reorderSetItems(setlistId, [
+          { setItemId: item.setItemId, position: prevSection.position },
+        ]);
+        await setlistService.reorderSections(setlistId, [
+          { sectionId: prevSection.sectionId, position: item.position },
+        ]);
+      }
       await fetchSetlistDetails();
     } catch (err) {
       setDeleteError(`Failed to move track: ${err instanceof Error ? err.message : 'Unknown error'}`);
@@ -497,21 +514,34 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
     }
   };
 
-  // Handle moving item down - can move after any other item (including past section headers)
+  // Handle moving item down - can move after any other item or section header
   const handleMoveItemDown = async (item: SetItem & { track?: Track }) => {
     const currentIndex = findItemIndex(item.setItemId);
     const nextIndex = findNextTrackIndex(currentIndex);
 
     if (nextIndex === -1) return; // Can't move down
 
-    const nextItem = displayItems[nextIndex].data as SetItem;
+    const nextElement = displayItems[nextIndex];
+    const nextItem = nextElement.data as SetItem | SetSection;
 
     setOperationLoading(true);
     try {
-      await setlistService.reorderSetItems(setlistId, [
-        { setItemId: item.setItemId, position: nextItem.position },
-        { setItemId: nextItem.setItemId, position: item.position },
-      ]);
+      if (nextElement.type === 'item') {
+        // Swapping with another item
+        await setlistService.reorderSetItems(setlistId, [
+          { setItemId: item.setItemId, position: (nextItem as SetItem).position },
+          { setItemId: (nextItem as SetItem).setItemId, position: item.position },
+        ]);
+      } else if (nextElement.type === 'header') {
+        // Swapping with a section header - needs both item and section updates
+        const nextSection = nextItem as SetSection;
+        await setlistService.reorderSetItems(setlistId, [
+          { setItemId: item.setItemId, position: nextSection.position },
+        ]);
+        await setlistService.reorderSections(setlistId, [
+          { sectionId: nextSection.sectionId, position: item.position },
+        ]);
+      }
       await fetchSetlistDetails();
     } catch (err) {
       setDeleteError(`Failed to move track: ${err instanceof Error ? err.message : 'Unknown error'}`);
