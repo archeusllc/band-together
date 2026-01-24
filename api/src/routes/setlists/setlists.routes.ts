@@ -700,6 +700,7 @@ export const setlistRoutes = new Elysia()
               firebase.uid,
               {
                 name: body.name,
+                breakDuration: body.breakDuration,
               },
               query.shareToken
             );
@@ -725,12 +726,13 @@ export const setlistRoutes = new Elysia()
           }),
           body: t.Object({
             name: t.Optional(t.String()),
+            breakDuration: t.Optional(t.Union([t.Number(), t.Null()])),
           }),
           detail: {
             tags: ['Setlists'],
             summary: 'Update Section',
             description:
-              'Update a section name. Requires authentication and ownership or CAN_EDIT share permission.',
+              'Update a section name and/or break duration. Requires authentication and ownership or CAN_EDIT share permission.',
             security: [{ bearerAuth: [] }],
             responses: {
               200: { description: 'Section updated successfully' },

@@ -331,6 +331,7 @@ export const setlistController = {
     firebaseUid: string,
     data: {
       name?: string;
+      breakDuration?: number | null;
     },
     shareToken?: string
   ) => {

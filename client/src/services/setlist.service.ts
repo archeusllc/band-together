@@ -459,6 +459,7 @@ export const setlistService = {
     sectionId: string,
     data: {
       name?: string;
+      breakDuration?: number | null;
     },
     shareToken?: string
   ) => {
@@ -470,14 +471,21 @@ export const setlistService = {
 
       const query = shareToken ? { $query: { shareToken } } : {};
 
+      const patchData: any = { ...query };
+      if (data.name !== undefined) {
+        patchData.name = data.name;
+      }
+      if (data.breakDuration !== undefined) {
+        patchData.breakDuration = data.breakDuration;
+      }
+
       const { data: result, error } = await api.setlist[setlistId].sections[
         sectionId
       ].patch({
         $headers: {
           authorization: `Bearer ${idToken}`,
         },
-        ...query,
-        name: data.name,
+        ...patchData,
       });
 
       return { data: result, error };
