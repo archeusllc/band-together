@@ -462,21 +462,32 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
   });
 
   // Add break indicators after each section
-  sections.forEach((section) => {
-    // Find the header in displayItems
-    const headerIndex = displayItems.findIndex(
-      (item) => item.type === 'header' && (item.data as SetSection).sectionId === section.sectionId
-    );
+  // Collect insertion points first, then insert in reverse order to avoid index shifting
+  const breaksToInsert: Array<{ index: number; section: SetSection }> = [];
 
-    if (headerIndex !== -1 && section.breakDuration && section.breakDuration > 0) {
-      // Find the position to insert the break (after all items in this section, before next section)
-      let insertIndex = headerIndex + 1;
-      for (let i = headerIndex + 1; i < displayItems.length; i++) {
-        if (displayItems[i].type === 'header') break;
-        insertIndex = i + 1;
+  sections.forEach((section) => {
+    if (section.breakDuration && section.breakDuration > 0) {
+      // Find the header in displayItems
+      const headerIndex = displayItems.findIndex(
+        (item) => item.type === 'header' && (item.data as SetSection).sectionId === section.sectionId
+      );
+
+      if (headerIndex !== -1) {
+        // Find the position to insert the break (after all items in this section, before next section)
+        let insertIndex = headerIndex + 1;
+        for (let i = headerIndex + 1; i < displayItems.length; i++) {
+          if (displayItems[i].type === 'header') break;
+          insertIndex = i + 1;
+        }
+        breaksToInsert.push({ index: insertIndex, section });
       }
-      displayItems.splice(insertIndex, 0, { type: 'break', data: section, id: `break-${section.sectionId}` });
     }
+  });
+
+  // Insert breaks in reverse order to avoid index shifting
+  breaksToInsert.sort((a, b) => b.index - a.index);
+  breaksToInsert.forEach(({ index, section }) => {
+    displayItems.splice(index, 0, { type: 'break', data: section, id: `break-${section.sectionId}` });
   });
 
   // Find the index of a track item in displayItems
