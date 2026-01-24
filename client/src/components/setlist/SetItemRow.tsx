@@ -29,6 +29,31 @@ const formatDuration = (seconds: number): string => {
   return hours > 0 ? `${hours}:${mm}:${ss}` : `${mm}:${ss}`;
 };
 
+const SwipeActions = ({ onEdit, onDelete }: any) => (
+  <View style={{ flexDirection: 'row', height: '100%', gap: 12, paddingHorizontal: 12, alignItems: 'center' }}>
+    <Pressable
+      onPress={onEdit}
+      style={{
+        padding: 8,
+        alignItems: 'center',
+        justifyContent: 'center'
+      }}
+    >
+      <IconSymbol name="pencil" size={24} color={colors.brand.primary} />
+    </Pressable>
+    <Pressable
+      onPress={onDelete}
+      style={{
+        padding: 8,
+        alignItems: 'center',
+        justifyContent: 'center'
+      }}
+    >
+      <IconSymbol name="trash" size={24} color={colors.brand.error} />
+    </Pressable>
+  </View>
+);
+
 const ItemContent = ({ track, item, displayTuning, displayDuration, displayNotes, isEditing, onEdit, onDelete }: any) => (
   <View className={`border-b ${tailwind.border.both} p-4 ${tailwind.card.both}`}>
     <View className="flex-row items-center gap-3">
@@ -129,22 +154,7 @@ export const SetItemRow = ({ item, isEditing = false, isOwner = false, onEdit, o
     return (
       <Swipeable
         renderLeftActions={() => null}
-        renderRightActions={() => (
-          <View className="flex-row h-full bg-transparent">
-            <Pressable
-              onPress={handleEdit}
-              className="bg-blue-500 flex-row items-center justify-center px-6 flex-1"
-            >
-              <IconSymbol name="pencil" size={28} color="#FFFFFF" />
-            </Pressable>
-            <Pressable
-              onPress={handleDelete}
-              className="bg-red-500 flex-row items-center justify-center px-6 flex-1"
-            >
-              <IconSymbol name="trash" size={28} color="#FFFFFF" />
-            </Pressable>
-          </View>
-        )}
+        renderRightActions={() => <SwipeActions onEdit={handleEdit} onDelete={handleDelete} />}
         friction={2}
         overshootRight={false}
         overshootLeft={false}
