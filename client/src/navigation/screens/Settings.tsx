@@ -130,7 +130,7 @@ export const SettingsScreen = () => {
           <Text className={`text-base ${tailwind.text.both}`}>Version</Text>
           <Text className={`text-base ${tailwind.textMuted.both}`}>1.0.0</Text>
         </View>
-        <View className={`flex-row justify-between items-center py-3 border-b ${tailwind.border.both}`}>
+        <View className={`flex-row justify-between items-center py-3 ${process.env.NODE_ENV !== 'development' ? `border-b ${tailwind.border.both}` : ''}`}>
           <Text className={`text-base ${tailwind.text.both}`}>Build</Text>
           <Text className={`text-base ${tailwind.textMuted.both}`}>2026.01.18</Text>
         </View>
