@@ -99,7 +99,10 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
   };
 
   // Define all WebSocket event handlers with stable references using useCallback
-  // Handlers use setlistId via closure, not as a dependency
+  const handlePresenceUpdate = useCallback((event: any) => {
+    setPresence(event.presence);
+  }, []);
+
   const handleItemAdded = useCallback((event: any) => {
     if (event.setlistId === setlistId) {
       fetchSetlistDetails();
@@ -144,10 +147,6 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
     }
   }, [setlistId]);
 
-  const handlePresenceUpdate = useCallback((event: any) => {
-    setPresence(event.presence);
-  }, []);
-
   // Wait for Firebase auth to initialize before fetching
   useEffect(() => {
     if (authLoading) return;
@@ -187,7 +186,7 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
       setlistWSService.disconnect();
       setWsConnected(false);
     };
-  }, [setlistId, authLoading, user?.userId, user?.email, handleItemAdded, handleItemUpdated, handleItemDeleted, handleReordered, handleSectionAdded, handleSectionUpdated, handleSectionDeleted, handlePresenceUpdate]);
+  }, [setlistId, authLoading, user?.userId, user?.email]);
 
   // Handle editing mode changes - send status to other clients
   useEffect(() => {
