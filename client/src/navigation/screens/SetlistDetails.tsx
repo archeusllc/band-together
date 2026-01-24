@@ -72,7 +72,6 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
   const [presence, setPresence] = useState<any[]>([]);
   const [isConnected, setIsConnected] = useState(false);
   const refreshTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const socketRef = useRef<any>(null);
 
   // Debounced refresh function - waits 200ms after last broadcast before fetching
   const debouncedRefresh = useCallback(() => {
@@ -86,63 +85,46 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
 
   useFocusEffect(
     useCallback(() => {
-      // Only create socket if not already connected
-      // Keep socket alive across app backgrounding to maintain presence state
-      if (!socketRef.current) {
-        console.log('[WebSocket] Creating new socket for setlist:', setlistId);
-        const socket = api.setlist[setlistId].ws.subscribe({
-          query: {
-            userId: user?.userId || undefined,
-            userName: user?.displayName || user?.email?.split('@')[0] || undefined,
-            shareToken: shareToken || undefined,
-          }
-        });
-        socketRef.current = socket;
-        setSocket(socket);
+      // Connect to WebSocket using Eden Treaty with authentication parameters
+      const socket = api.setlist[setlistId].ws.subscribe({
+        query: {
+          userId: user?.userId || undefined,
+          userName: user?.displayName || user?.email?.split('@')[0] || undefined,
+          shareToken: shareToken || undefined,
+        }
+      });
+      setSocket(socket);
 
-        socket.subscribe((message: any) => {
-          if (message.type === 'presence-update') {
-            setPresence(message.presence);
-            setIsConnected(true); // Restore connection state on presence update
-          } else {
-            // For any data mutation event, debounce refresh to prevent excessive API calls
-            debouncedRefresh();
-          }
-        });
+      socket.subscribe((message: any) => {
+        if (message.type === 'presence-update') {
+          setPresence(message.presence);
+        } else {
+          // For any data mutation event, debounce refresh to prevent excessive API calls
+          debouncedRefresh();
+        }
+      });
 
-        socket.on('open', () => {
-          setIsConnected(true);
-        });
+      socket.on('open', () => {
+        setIsConnected(true);
+      });
 
-        socket.on('close', () => {
-          setIsConnected(false);
-        });
+      socket.on('close', () => {
+        setIsConnected(false);
+      });
 
-        socket.on('error', () => {
-          setIsConnected(false);
-        });
-      }
+      socket.on('error', () => {
+        setIsConnected(false);
+      });
 
       return () => {
-        // Only cleanup when component unmounts, not on focus loss
-        // This keeps the WebSocket alive when app is backgrounded
         if (refreshTimeoutRef.current) {
           clearTimeout(refreshTimeoutRef.current);
         }
+        console.log('[WebSocket] Closing socket for setlist:', setlistId);
+        socket.close();
       };
     }, [setlistId, shareToken, user])
   );
-
-  // Cleanup socket only when component unmounts
-  useEffect(() => {
-    return () => {
-      if (socketRef.current) {
-        console.log('[WebSocket] Closing socket for setlist:', setlistId);
-        socketRef.current.close();
-        socketRef.current = null;
-      }
-    };
-  }, [setlistId]);
 
   const isOwner = user && setlist && user.userId === (setlist as any).ownerId;
 
