@@ -130,18 +130,18 @@ export const SetItemRow = ({ item, isEditing = false, isOwner = false, onEdit, o
       <Swipeable
         renderLeftActions={() => null}
         renderRightActions={() => (
-          <View className="flex-row">
+          <View className="flex-row h-full">
             <Pressable
               onPress={handleEdit}
-              className="bg-blue-500 flex-row items-center justify-center px-4 flex-1"
+              className="bg-blue-500 flex-row items-center justify-center px-6 flex-1"
             >
-              <IconSymbol name="pencil" size={20} color="white" />
+              <IconSymbol name="pencil" size={24} color="white" />
             </Pressable>
             <Pressable
               onPress={handleDelete}
-              className="bg-red-500 flex-row items-center justify-center px-4 flex-1"
+              className="bg-red-500 flex-row items-center justify-center px-6 flex-1"
             >
-              <IconSymbol name="trash" size={20} color="white" />
+              <IconSymbol name="trash" size={24} color="white" />
             </Pressable>
           </View>
         )}
