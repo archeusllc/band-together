@@ -325,7 +325,7 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
     }
   };
 
-  if (loading) {
+  if (loading && !setlist) {
     return <SetlistDetailsSkeleton />;
   }
 
