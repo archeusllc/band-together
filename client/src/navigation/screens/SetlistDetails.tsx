@@ -667,7 +667,7 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
           renderItem={renderItem}
           scrollEnabled={true}
           nestedScrollEnabled={true}
-          contentContainerStyle={isOwner ? { paddingBottom: 64 } : undefined}
+          contentContainerStyle={isOwner ? { paddingBottom: 64 + insets.bottom } : undefined}
           ListHeaderComponent={
             <View className={`${tailwind.card.both} border-b ${tailwind.border.both} px-4 py-3`}>
               {/* Stats Row */}
@@ -707,7 +707,7 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
           }
         />
       ) : (
-        <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={isOwner ? { paddingBottom: 64 } : undefined}>
+        <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={isOwner ? { paddingBottom: 64 + insets.bottom } : undefined}>
           <View className={`${tailwind.card.both} border-b ${tailwind.border.both} px-4 py-3`}>
             {/* Stats Row */}
             <View className="flex-row justify-around gap-2">
