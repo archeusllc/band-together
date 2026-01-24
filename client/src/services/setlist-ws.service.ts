@@ -123,6 +123,7 @@ class SetlistWebSocketService {
         this.ws.onmessage = (event) => {
           try {
             const message = JSON.parse(event.data);
+            console.log('[WebSocket] Received message:', message.type);
             this.handleMessage(message);
           } catch (error) {
             console.error('[WebSocket] Failed to parse message:', error);
@@ -253,6 +254,7 @@ class SetlistWebSocketService {
 
     const handlers = this.handlers.get(message.type);
     if (handlers) {
+      console.log(`[WebSocket] Found ${handlers.size} handlers for ${message.type}`);
       handlers.forEach((handler) => {
         try {
           handler(message);
@@ -260,6 +262,8 @@ class SetlistWebSocketService {
           console.error(`[WebSocket] Error in ${message.type} handler:`, error);
         }
       });
+    } else {
+      console.warn(`[WebSocket] No handlers registered for ${message.type}`);
     }
   }
 

@@ -104,7 +104,9 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
   }, []);
 
   const handleItemAdded = useCallback((event: any) => {
+    console.log('[SetlistDetails] Item added event:', event);
     if (event.setlistId === setlistId) {
+      console.log('[SetlistDetails] Item added to current setlist, fetching details');
       fetchSetlistDetails();
       setRecentlyAddedItemId(event.data.setItemId);
       setTimeout(() => setRecentlyAddedItemId(null), 3000);
