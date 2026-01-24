@@ -126,22 +126,22 @@ export const SettingsScreen = () => {
             </Text>
           </View>
         </View>
-        <View className={`flex-row justify-between items-center py-3`}>
+        <View className={`flex-row justify-between items-center py-3 border-t ${tailwind.border.both}`}>
           <Text className={`text-base ${tailwind.text.both}`}>Version</Text>
           <Text className={`text-base ${tailwind.textMuted.both}`}>1.0.0</Text>
         </View>
-        <View className={`flex-row justify-between items-center py-3`}>
+        <View className={`flex-row justify-between items-center py-3 border-t ${tailwind.border.both}`}>
           <Text className={`text-base ${tailwind.text.both}`}>Build</Text>
           <Text className={`text-base ${tailwind.textMuted.both}`}>2026.01.18</Text>
         </View>
         {process.env.NODE_ENV === 'development' && (
           <>
-            <View className={`flex-row justify-between items-center py-3`}>
+            <View className={`flex-row justify-between items-center py-3 border-t ${tailwind.border.both}`}>
               <Text className={`text-base ${tailwind.text.both}`}>Environment</Text>
               <Text className={`text-base ${tailwind.textMuted.both}`}>{process.env.NODE_ENV}</Text>
             </View>
             {isAuthenticated && (
-              <View className={`py-3`}>
+              <View className={`py-3 border-t ${tailwind.border.both}`}>
               <View className={`flex-row justify-between items-center mb-3`}>
                 <Text className={`text-base ${tailwind.text.both}`}>Firebase Token</Text>
                 <TouchableOpacity
