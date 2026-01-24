@@ -1,4 +1,6 @@
-import { useColorScheme } from 'react-native';
+import { useColorScheme } from 'nativewind';
+import { useEffect } from 'react';
+import { Platform } from 'react-native';
 import { createStaticNavigation } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createDrawerNavigator } from '@react-navigation/drawer';
@@ -286,8 +288,20 @@ const RootStack = createNativeStackNavigator({
 const RootNavigator = createStaticNavigation(RootStack);
 
 export function Navigation(props: any) {
-  const colorScheme = useColorScheme();
+  const { colorScheme } = useColorScheme();
   const theme = colorScheme === 'dark' ? darkTheme : lightTheme;
+
+  // Apply dark class to root element on web for Tailwind dark mode
+  useEffect(() => {
+    if (Platform.OS === 'web') {
+      const htmlElement = document.documentElement;
+      if (colorScheme === 'dark') {
+        htmlElement.classList.add('dark');
+      } else {
+        htmlElement.classList.remove('dark');
+      }
+    }
+  }, [colorScheme]);
 
   return (
     <RootNavigator

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { View, Text, Pressable, useColorScheme } from 'react-native';
+import { View, Text, Pressable } from 'react-native';
+import { useColorScheme } from 'nativewind';
 import {
   DrawerContentScrollView,
   DrawerContentComponentProps,
@@ -11,7 +12,7 @@ import { colors, tailwind } from '@theme/colors';
 export function DrawerContent(props: DrawerContentComponentProps) {
   const { user, isAuthenticated, logout } = useAuth();
   const { state, navigation } = props;
-  const colorScheme = useColorScheme();
+  const { colorScheme } = useColorScheme();
   const [collapsedSections, setCollapsedSections] = useState<Set<string>>(new Set());
 
   const drawerSections = [
