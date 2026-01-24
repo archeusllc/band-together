@@ -40,7 +40,7 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
   const navigation = useNavigation<NativeStackNavigationProp<DrawerParamList>>();
   const insets = useSafeAreaInsets();
   const { setlistId, shareToken } = route.params;
-  const { user, loading: authLoading } = useAuth();
+  const { user, isAuthenticated, loading: authLoading } = useAuth();
   const [setlist, setSetlist] = useState<SetList & { setItems?: Array<SetItem & { track?: any }>; setSections?: SetSection[] } | null>(null);
   const [initialLoading, setInitialLoading] = useState(true);
   const [backgroundRefreshing, setBackgroundRefreshing] = useState(false);
@@ -356,6 +356,36 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
 
   if (initialLoading && !setlist) {
     return <SetlistDetailsSkeleton />;
+  }
+
+  // Show login prompt for unauthenticated users
+  if (!authLoading && !isAuthenticated && !shareToken) {
+    return (
+      <View className={`flex-1 ${tailwind.background.both}`}>
+        <View className="flex-1 justify-center items-center px-5">
+          <Text className={`text-3xl font-bold mb-4 ${tailwind.text.both}`}>
+            View Setlist
+          </Text>
+          <Text className={`text-base ${tailwind.textMuted.both} mb-8 text-center`}>
+            Please log in to view this setlist
+          </Text>
+          <View className="gap-3 w-full max-w-xs">
+            <Pressable
+              className="bg-blue-500 py-3 px-6 rounded-lg items-center"
+              onPress={() => navigation.navigate('Login' as any)}
+            >
+              <Text className="text-white text-base font-semibold">Login</Text>
+            </Pressable>
+            <Pressable
+              className="bg-transparent py-3 px-6 rounded-lg items-center border border-blue-500"
+              onPress={() => navigation.navigate('Register' as any)}
+            >
+              <Text className={tailwind.primary}>Create Account</Text>
+            </Pressable>
+          </View>
+        </View>
+      </View>
+    );
   }
 
   if (error || !setlist) {
