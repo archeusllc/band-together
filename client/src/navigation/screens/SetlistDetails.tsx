@@ -62,9 +62,6 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
 
   const setShowShare = (show: boolean) => navigation.navigate('SetlistDetails', { setlistId, modalState: show ? 'share' : undefined });
 
-  // Store unsubscribe functions to properly clean up WebSocket listeners
-  const unsubscribeFunctions = useRef<Array<() => void>>([]);
-
   // Keep track of current setlistId in a ref for handlers to access without recreating them
   const currentSetlistIdRef = useRef(setlistId);
 
@@ -169,24 +166,25 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
 
   // Subscribe to WebSocket events - run only once when component mounts
   useEffect(() => {
-    if (unsubscribeFunctions.current.length === 0) {
-      console.log('[SetlistDetails] Subscribing to WebSocket events');
-      unsubscribeFunctions.current.push(setlistWSService.on('item-added', handleItemAdded));
-      unsubscribeFunctions.current.push(setlistWSService.on('item-updated', handleItemUpdated));
-      unsubscribeFunctions.current.push(setlistWSService.on('item-deleted', handleItemDeleted));
-      unsubscribeFunctions.current.push(setlistWSService.on('reordered', handleReordered));
-      unsubscribeFunctions.current.push(setlistWSService.on('section-added', handleSectionAdded));
-      unsubscribeFunctions.current.push(setlistWSService.on('section-updated', handleSectionUpdated));
-      unsubscribeFunctions.current.push(setlistWSService.on('section-deleted', handleSectionDeleted));
-      unsubscribeFunctions.current.push(setlistWSService.on('presence-update', handlePresenceUpdate));
-    }
+    console.log('[SetlistDetails] Subscribing to WebSocket events');
+    const unsubs: Array<() => void> = [];
+
+    unsubs.push(setlistWSService.on('item-added', handleItemAdded));
+    unsubs.push(setlistWSService.on('item-updated', handleItemUpdated));
+    unsubs.push(setlistWSService.on('item-deleted', handleItemDeleted));
+    unsubs.push(setlistWSService.on('reordered', handleReordered));
+    unsubs.push(setlistWSService.on('section-added', handleSectionAdded));
+    unsubs.push(setlistWSService.on('section-updated', handleSectionUpdated));
+    unsubs.push(setlistWSService.on('section-deleted', handleSectionDeleted));
+    unsubs.push(setlistWSService.on('presence-update', handlePresenceUpdate));
 
     return () => {
       // Cleanup: unsubscribe from all WebSocket events when component unmounts
-      unsubscribeFunctions.current.forEach(unsub => unsub());
-      unsubscribeFunctions.current = [];
+      unsubs.forEach(unsub => unsub());
     };
-  }, [handleItemAdded, handleItemUpdated, handleItemDeleted, handleReordered, handleSectionAdded, handleSectionUpdated, handleSectionDeleted, handlePresenceUpdate]);
+    // Empty dependencies - subscribe only once on mount
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Connect to WebSocket and fetch setlist - run when auth loads and setlistId changes
   useEffect(() => {
