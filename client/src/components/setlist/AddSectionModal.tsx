@@ -61,7 +61,7 @@ export const AddSectionModal = ({ visible, onClose, onAdd, loading = false }: Ad
         <View className="flex-row items-center justify-between mb-4">
           <Text className={`text-lg font-bold ${tailwind.text.both}`}>Add Section</Text>
           <Pressable onPress={handleClose} disabled={loading}>
-            <IconSymbol name="xmark.circle.fill" size={24} color="#9CA3AF" />
+            <IconSymbol name="close-circle" size={24} color="#9CA3AF" />
           </Pressable>
         </View>
 

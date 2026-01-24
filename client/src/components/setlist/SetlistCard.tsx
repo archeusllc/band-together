@@ -55,7 +55,7 @@ export const SetlistCard = ({ setlist, onPress }: SetlistCardProps) => {
       <View className="flex-row items-start gap-3">
         {/* Icon */}
         <View className={`w-14 h-14 rounded-lg ${tailwind.activeBackground.both} items-center justify-center`}>
-          <IconSymbol name="music.note.list" size={28} color={colors.brand.primary} />
+          <IconSymbol name="musical-notes" size={28} color={colors.brand.primary} />
         </View>
 
         {/* Content */}
@@ -66,7 +66,7 @@ export const SetlistCard = ({ setlist, onPress }: SetlistCardProps) => {
               {setlist.name}
             </Text>
             {!setlist.guildId && (
-              <IconSymbol name="lock.fill" size={12} color={colors.brand.primary} />
+              <IconSymbol name="lock-closed" size={12} color={colors.brand.primary} />
             )}
           </View>
 
@@ -81,7 +81,7 @@ export const SetlistCard = ({ setlist, onPress }: SetlistCardProps) => {
           <View className="flex-row gap-4">
             {/* Tracks */}
             <View className="flex-row items-center gap-1">
-              <IconSymbol name="music.note" size={12} color={colors.brand.primary} />
+              <IconSymbol name="musical-note" size={12} color={colors.brand.primary} />
               <Text className={`text-xs ${tailwind.textMuted.both}`}>
                 {trackCount} {trackCount === 1 ? 'track' : 'tracks'}
               </Text>
@@ -89,14 +89,14 @@ export const SetlistCard = ({ setlist, onPress }: SetlistCardProps) => {
 
             {/* Duration */}
             <View className="flex-row items-center gap-1">
-              <IconSymbol name="clock" size={12} color={colors.brand.primary} />
+              <IconSymbol name="time" size={12} color={colors.brand.primary} />
               <Text className={`text-xs ${tailwind.textMuted.both}`}>{duration}</Text>
             </View>
 
             {/* Sections */}
             {sectionCount > 0 && (
               <View className="flex-row items-center gap-1">
-                <IconSymbol name="list.number" size={12} color={colors.brand.primary} />
+                <IconSymbol name="list" size={12} color={colors.brand.primary} />
                 <Text className={`text-xs ${tailwind.textMuted.both}`}>
                   {sectionCount} {sectionCount === 1 ? 'set' : 'sets'}
                 </Text>
@@ -107,7 +107,7 @@ export const SetlistCard = ({ setlist, onPress }: SetlistCardProps) => {
           {/* Shares Info */}
           {shareCount > 0 && (
             <View className="flex-row items-center gap-1 mt-2">
-              <IconSymbol name="share" size={12} color={colors.brand.primary} />
+              <IconSymbol name="share-social" size={12} color={colors.brand.primary} />
               <Text className={`text-xs ${tailwind.textMuted.both}`}>
                 Shared with {shareCount} {shareCount === 1 ? 'person' : 'people'}
               </Text>

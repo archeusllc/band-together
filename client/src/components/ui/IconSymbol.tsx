@@ -1,27 +1,15 @@
-import { SymbolView, SymbolViewProps, SFSymbol } from 'expo-symbols';
-import { StyleSheet } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 
-export function IconSymbol({
+export const IconSymbol = ({
   name,
   size = 24,
   color,
-  style,
   ...rest
-}: Omit<SymbolViewProps, 'name'> & { name: string; size?: number; color?: string }) {
-  return (
-    <SymbolView
-      weight="regular"
-      tintColor={color}
-      resizeMode="scaleAspectFit"
-      name={name as SFSymbol}
-      style={[styles.icon, { width: size, height: size }, style]}
-      {...rest}
-    />
-  );
-}
-
-const styles = StyleSheet.create({
-  icon: {
-    alignSelf: 'center',
-  },
-});
+}: {
+  name: keyof typeof Ionicons.glyphMap;
+  size?: number;
+  color?: string;
+  [key: string]: any;
+}) => {
+  return <Ionicons name={name} size={size} color={color} {...rest} />;
+};

@@ -227,7 +227,7 @@ export const ShareModal = ({ visible, setlistId, setlistName, onClose }: ShareMo
           <View className="flex-row items-center justify-between mb-4">
             <Text className={`text-lg font-bold ${tailwind.text.both}`}>Share Setlist</Text>
             <Pressable onPress={onClose} disabled={loading || listLoading} className="flex-row items-center gap-1">
-              <IconSymbol name="xmark.circle.fill" size={24} color="#9CA3AF" />
+              <IconSymbol name="close-circle" size={24} color="#9CA3AF" />
               <Text className={`text-sm font-semibold ${tailwind.text.both}`}>Close</Text>
             </Pressable>
           </View>
@@ -276,7 +276,7 @@ export const ShareModal = ({ visible, setlistId, setlistName, onClose }: ShareMo
                 onPress={handleCopyLink}
               >
                 <IconSymbol
-                  name={copyFeedback ? 'checkmark.circle.fill' : 'doc.on.doc'}
+                  name={copyFeedback ? 'checkmark-circle' : 'copy'}
                   size={16}
                   color={copyFeedback ? '#FFFFFF' : colors.brand.primary}
                 />
@@ -359,7 +359,7 @@ export const ShareModal = ({ visible, setlistId, setlistName, onClose }: ShareMo
               </View>
             ) : shares.length === 0 ? (
               <View className={`${tailwind.activeBackground.both} rounded-lg p-4 items-center`}>
-                <IconSymbol name="link.slash" size={24} color="#9CA3AF" />
+                <IconSymbol name="unlink" size={24} color="#9CA3AF" />
                 <Text className={`text-sm ${tailwind.textMuted.both} mt-2 text-center`}>
                   No active shares yet
                 </Text>

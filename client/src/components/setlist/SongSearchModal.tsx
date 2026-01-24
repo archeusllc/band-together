@@ -147,7 +147,7 @@ export const SongSearchModal = ({ visible, onClose, onSelectTrack }: SongSearchM
           <View className="flex-row items-center justify-between mb-3">
             <Text className={`text-lg font-bold ${tailwind.text.both}`}>Add Song</Text>
             <Pressable onPress={onClose} className="flex-row items-center gap-1">
-              <IconSymbol name="xmark.circle.fill" size={20} color={colors.brand.error} />
+              <IconSymbol name="close-circle" size={20} color={colors.brand.error} />
               <Text className={`text-sm font-medium ${tailwind.error}`}>Close</Text>
             </Pressable>
           </View>
@@ -174,21 +174,21 @@ export const SongSearchModal = ({ visible, onClose, onSelectTrack }: SongSearchM
           </View>
         ) : error ? (
           <View className="flex-1 justify-center items-center p-6">
-            <IconSymbol name="exclamationmark.circle" size={48} color={colors.brand.error} />
+            <IconSymbol name="alert-circle" size={48} color={colors.brand.error} />
             <Text className={`text-base ${tailwind.text.both} mt-4 text-center`}>
               {error}
             </Text>
           </View>
         ) : searchQuery.trim().length === 0 ? (
           <View className="flex-1 justify-center items-center p-6">
-            <IconSymbol name="magnifyingglass" size={48} color={colors.light.muted} />
+            <IconSymbol name="search" size={48} color={colors.light.muted} />
             <Text className={`text-base ${tailwind.text.both} mt-4 text-center`}>
               Start typing to search for songs
             </Text>
           </View>
         ) : tracks.length === 0 ? (
           <View className="flex-1 justify-center items-center p-6">
-            <IconSymbol name="music.note.slash" size={48} color={colors.light.muted} />
+            <IconSymbol name="ban" size={48} color={colors.light.muted} />
             <Text className={`text-base ${tailwind.text.both} mt-4 text-center`}>
               No songs found for "{searchQuery}"
             </Text>

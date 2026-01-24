@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, Pressable, ActivityIndicator, ScrollView, Alert, FlatList } from 'react-native';
+import { View, Text, TextInput, Pressable, ActivityIndicator, ScrollView, FlatList } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { DrawerScreenProps } from '@react-navigation/drawer';
@@ -7,7 +7,7 @@ import type { DrawerParamList } from '@navigation/types';
 import { setlistService, guildService } from '@services';
 import { useAuth } from '@contexts';
 import { tailwind, colors } from '@theme';
-import { IconSymbol } from '@ui';
+import { IconSymbol, AlertModal } from '@ui';
 
 type Props = DrawerScreenProps<DrawerParamList, 'CreateSetlist'>;
 
@@ -37,6 +37,11 @@ export const CreateSetlistScreen = () => {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [guilds, setGuilds] = useState<GuildOption[]>([]);
   const [showGuildDropdown, setShowGuildDropdown] = useState(false);
+  const [alertConfig, setAlertConfig] = useState<{
+    visible: boolean;
+    title: string;
+    message: string;
+  }>({ visible: false, title: '', message: '' });
 
   useEffect(() => {
     // Only fetch guilds after auth has finished initializing
@@ -136,7 +141,11 @@ export const CreateSetlistScreen = () => {
             errorMessage = (error as any).message;
           }
         }
-        Alert.alert('Error', errorMessage);
+        setAlertConfig({
+          visible: true,
+          title: 'Error',
+          message: errorMessage,
+        });
         console.error('Create setlist error details:', error);
         return;
       }
@@ -145,7 +154,11 @@ export const CreateSetlistScreen = () => {
       navigation.navigate('SetlistDetails', { setlistId: data.setListId });
     } catch (err) {
       console.error('Create setlist error:', err);
-      Alert.alert('Error', 'An unexpected error occurred');
+      setAlertConfig({
+        visible: true,
+        title: 'Error',
+        message: 'An unexpected error occurred',
+      });
     } finally {
       setSubmitting(false);
     }
@@ -214,7 +227,7 @@ export const CreateSetlistScreen = () => {
             </Text>
           </View>
           <IconSymbol
-            name={showGuildDropdown ? 'chevron.up' : 'chevron.down'}
+            name={showGuildDropdown ? 'chevron-up' : 'chevron-down'}
             size={20}
             color={colors.light.muted}
           />
@@ -277,6 +290,18 @@ export const CreateSetlistScreen = () => {
           )}
         </Pressable>
       </View>
+
+      <AlertModal
+        visible={alertConfig.visible}
+        title={alertConfig.title}
+        message={alertConfig.message}
+        buttons={[
+          {
+            text: 'OK',
+            onPress: () => setAlertConfig({ visible: false, title: '', message: '' }),
+          },
+        ]}
+      />
     </ScrollView>
   );
 };

@@ -218,7 +218,7 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
       // Refresh setlist data
       await fetchSetlistDetails();
     } catch (err) {
-      Alert.alert('Error', `Failed to add track: ${err instanceof Error ? err.message : 'Unknown error'}`);
+      setDeleteError(`Failed to add track: ${err instanceof Error ? err.message : 'Unknown error'}`);
     } finally {
       setOperationLoading(false);
     }
@@ -305,7 +305,7 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
       await setlistService.reorderSetItems(setlistId, reorderedItems);
       await fetchSetlistDetails();
     } catch (err) {
-      Alert.alert('Error', `Failed to reorder tracks: ${err instanceof Error ? err.message : 'Unknown error'}`);
+      setDeleteError(`Failed to reorder tracks: ${err instanceof Error ? err.message : 'Unknown error'}`);
     } finally {
       setOperationLoading(false);
     }
@@ -320,7 +320,7 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
 
       if (result.error) {
         console.error('[SetlistDetails] Delete error:', result.error);
-        Alert.alert('Error', `Failed to delete setlist: ${result.error}`);
+        setDeleteError(`Failed to delete setlist: ${result.error}`);
         return;
       }
 
@@ -331,7 +331,7 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
     } catch (err) {
       console.error('[SetlistDetails] Delete exception:', err);
       const errorMsg = err instanceof Error ? err.message : 'Unknown error';
-      Alert.alert('Error', `Failed to delete setlist: ${errorMsg}`);
+      setDeleteError(`Failed to delete setlist: ${errorMsg}`);
     } finally {
       setOperationLoading(false);
     }
@@ -362,10 +362,10 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
         }
         // Navigate to the new setlist after successful duplication
         navigation.navigate('SetlistDetails', { setlistId: result.data.setListId });
-        Alert.alert('Success', 'Setlist duplicated successfully');
+        // Success - setlist was duplicated and navigation will follow
       }
     } catch (err) {
-      Alert.alert('Error', `Failed to duplicate setlist: ${err instanceof Error ? err.message : 'Unknown error'}`);
+      setDeleteError(`Failed to duplicate setlist: ${err instanceof Error ? err.message : 'Unknown error'}`);
     } finally {
       setOperationLoading(false);
     }
@@ -378,7 +378,7 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
   if (error || !setlist) {
     return (
       <View className={`flex-1 ${tailwind.background.both} items-center justify-center p-6`}>
-        <IconSymbol name="exclamationmark.circle" size={48} color={colors.brand.error} />
+        <IconSymbol name="alert-circle" size={48} color={colors.brand.error} />
         <Text className={`text-base ${tailwind.text.both} mt-4 text-center`}>
           {error || 'Setlist not found'}
         </Text>
@@ -448,7 +448,7 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
                       });
                       await fetchSetlistDetails();
                     } catch (err) {
-                      Alert.alert('Error', `Failed to update section: ${err instanceof Error ? err.message : 'Unknown error'}`);
+                      setDeleteError(`Failed to update section: ${err instanceof Error ? err.message : 'Unknown error'}`);
                     } finally {
                       setOperationLoading(false);
                     }
@@ -526,7 +526,7 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
               disabled={operationLoading}
               className={`py-2 px-3 rounded-lg ${tailwind.activeBackground.both} flex-row items-center gap-1`}
             >
-              <IconSymbol name="gear" size={16} color={colors.brand.primary} />
+              <IconSymbol name="settings" size={16} color={colors.brand.primary} />
               <Text className={`text-sm font-semibold ${tailwind.text.both}`}>More</Text>
             </Pressable>
           </View>
@@ -539,7 +539,7 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
           {/* Title and Privacy Icon */}
           <View className="flex-row items-center gap-3 mb-3">
             <View className={`w-12 h-12 rounded-lg ${tailwind.activeBackground.both} items-center justify-center`}>
-              <IconSymbol name="music.note.list" size={24} color={colors.brand.primary} />
+              <IconSymbol name="musical-notes" size={24} color={colors.brand.primary} />
             </View>
             <View className="flex-1">
               <Text className={`text-2xl font-bold ${tailwind.text.both}`} numberOfLines={2}>
@@ -547,7 +547,7 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
               </Text>
               {!setlist.guildId && (
                 <View className="flex-row items-center gap-1 mt-1">
-                  <IconSymbol name="lock.fill" size={12} color={colors.brand.primary} />
+                  <IconSymbol name="lock-closed" size={12} color={colors.brand.primary} />
                   <Text className={`text-xs ${tailwind.textMuted.both}`}>Private</Text>
                 </View>
               )}
@@ -602,7 +602,7 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
                 onPress={() => setShowSongSearch(true)}
                 disabled={operationLoading}
               >
-                <IconSymbol name="plus.circle" size={16} color={colors.brand.primary} />
+                <IconSymbol name="add-circle" size={16} color={colors.brand.primary} />
                 <Text className={`font-semibold ${tailwind.text.both}`}>Add Song</Text>
               </Pressable>
               <Pressable
@@ -610,7 +610,7 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
                 onPress={() => setShowAddSection(true)}
                 disabled={operationLoading}
               >
-                <IconSymbol name="plus.circle" size={16} color={colors.brand.primary} />
+                <IconSymbol name="add-circle" size={16} color={colors.brand.primary} />
                 <Text className={`font-semibold ${tailwind.text.both}`}>Add Section</Text>
               </Pressable>
             </View>
@@ -639,7 +639,7 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
           )
         ) : (
           <View className="flex-1 items-center justify-center p-6 min-h-96">
-            <IconSymbol name="music.note.slash" size={48} color={colors.light.muted} />
+            <IconSymbol name="ban" size={48} color={colors.light.muted} />
             <Text className={`text-base ${tailwind.text.both} mt-4 text-center`}>
               No tracks in this setlist yet
             </Text>

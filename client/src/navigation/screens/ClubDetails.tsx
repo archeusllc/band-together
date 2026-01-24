@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, ScrollView, Image, Pressable, ActivityIndicator, Alert } from 'react-native';
+import { View, Text, ScrollView, Image, Pressable, ActivityIndicator } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import type { DrawerScreenProps } from '@react-navigation/drawer';
 import type { DrawerParamList } from '@navigation/types';
@@ -7,6 +7,7 @@ import { useAuth } from '@contexts';
 import { guildService, feedService } from '@services';
 import { tailwind, colors } from '@theme';
 import { IconSymbol } from '@ui';
+import { AlertModal } from '@ui';
 
 type Props = DrawerScreenProps<DrawerParamList, 'ClubDetails'>;
 
@@ -20,6 +21,12 @@ export const ClubDetailsScreen = ({ route, navigation }: Props) => {
   const [isFollowing, setIsFollowing] = useState(false);
   const [followLoading, setFollowLoading] = useState(false);
   const [isOwner, setIsOwner] = useState(false);
+  const [alertConfig, setAlertConfig] = useState<{
+    visible: boolean;
+    title: string;
+    message: string;
+    isDeleteConfirm?: boolean;
+  }>({ visible: false, title: '', message: '' });
 
   useEffect(() => {
     fetchDetails();
@@ -95,7 +102,11 @@ export const ClubDetailsScreen = ({ route, navigation }: Props) => {
       }
     } catch (err) {
       console.error('Follow error:', err);
-      Alert.alert('Error', 'Failed to update follow status');
+      setAlertConfig({
+            visible: true,
+            title: 'Error',
+            message: 'Failed to update follow status',
+          });
     } finally {
       setFollowLoading(false);
     }
@@ -104,26 +115,33 @@ export const ClubDetailsScreen = ({ route, navigation }: Props) => {
   const handleDelete = () => {
     if (!guild) return;
 
-    Alert.alert(
-      'Delete Club',
-      `Are you sure you want to delete ${guild.name}? This action cannot be undone.`,
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Delete',
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              await guildService.deleteClub(guild.guildId);
-              Alert.alert('Success', 'Club deleted successfully');
-              navigation.navigate('ClubsList');
-            } catch (err) {
-              Alert.alert('Error', 'Failed to delete club');
-            }
-          }
-        }
-      ]
-    );
+    setAlertConfig({
+      visible: true,
+      title: 'Delete Club',
+      message: `Are you sure you want to delete ${guild.name}? This action cannot be undone.`,
+      isDeleteConfirm: true,
+    });
+  };
+
+  const performDelete = async () => {
+    if (!guild) return;
+
+    try {
+      await guildService.deleteClub(guild.guildId);
+      setAlertConfig({
+        visible: true,
+        title: 'Success',
+        message: 'Club deleted successfully',
+      });
+      // Navigate after a short delay to allow modal to display
+      setTimeout(() => navigation.navigate('ClubsList'), 500);
+    } catch (err) {
+      setAlertConfig({
+        visible: true,
+        title: 'Error',
+        message: 'Failed to delete club',
+      });
+    }
   };
 
   if (loading) {
@@ -133,6 +151,17 @@ export const ClubDetailsScreen = ({ route, navigation }: Props) => {
         <Text className={`text-base ${tailwind.textMuted.both} mt-4`}>
           Loading club details...
         </Text>
+      <AlertModal
+        visible={alertConfig.visible}
+        title={alertConfig.title}
+        message={alertConfig.message}
+        buttons={[
+          {
+            text: 'OK',
+            onPress: () => setAlertConfig({ visible: false, title: '', message: '' }),
+          },
+        ]}
+      />
       </View>
     );
   }
@@ -153,6 +182,17 @@ export const ClubDetailsScreen = ({ route, navigation }: Props) => {
         >
           <Text className="text-white text-base font-semibold">Go Back</Text>
         </Pressable>
+      <AlertModal
+        visible={alertConfig.visible}
+        title={alertConfig.title}
+        message={alertConfig.message}
+        buttons={[
+          {
+            text: 'OK',
+            onPress: () => setAlertConfig({ visible: false, title: '', message: '' }),
+          },
+        ]}
+      />
       </View>
     );
   }
@@ -173,7 +213,7 @@ export const ClubDetailsScreen = ({ route, navigation }: Props) => {
           ) : (
             <View className={`w-32 h-32 rounded-full ${tailwind.activeBackground.both} items-center justify-center mb-3`}>
               <IconSymbol
-                name="person.3.fill"
+                name="people"
                 size={64}
                 color={colors.brand.primary}
               />
@@ -192,7 +232,7 @@ export const ClubDetailsScreen = ({ route, navigation }: Props) => {
 
           {guild.currentOwner && (
             <View className="flex-row items-center gap-2 mb-3">
-              <IconSymbol name="person.fill" size={16} color={colors.light.muted} />
+              <IconSymbol name="person" size={16} color={colors.light.muted} />
               <Text className={`text-sm ${tailwind.textMuted.both}`}>
                 Owner: {guild.currentOwner.displayName || 'Anonymous'}
               </Text>
@@ -212,7 +252,7 @@ export const ClubDetailsScreen = ({ route, navigation }: Props) => {
                 disabled={followLoading}
               >
                 <IconSymbol
-                  name={isFollowing ? 'heart.fill' : 'heart'}
+                  name={isFollowing ? 'heart' : 'heart-outline'}
                   size={20}
                   color={isFollowing ? colors.brand.primary : '#fff'}
                 />
@@ -275,7 +315,7 @@ export const ClubDetailsScreen = ({ route, navigation }: Props) => {
                   />
                 ) : (
                   <View className={`w-10 h-10 rounded-full ${tailwind.activeBackground.both} items-center justify-center`}>
-                    <IconSymbol name="person.fill" size={20} color={colors.light.muted} />
+                    <IconSymbol name="person" size={20} color={colors.light.muted} />
                   </View>
                 )}
                 <Text className={`text-base ${tailwind.text.both}`}>
@@ -286,6 +326,33 @@ export const ClubDetailsScreen = ({ route, navigation }: Props) => {
           </View>
         )}
       </View>
+
+      <AlertModal
+        visible={alertConfig.visible}
+        title={alertConfig.title}
+        message={alertConfig.message}
+        buttons={
+          alertConfig.isDeleteConfirm
+            ? [
+                {
+                  text: 'Cancel',
+                  style: 'cancel',
+                  onPress: () => setAlertConfig({ visible: false, title: '', message: '' }),
+                },
+                {
+                  text: 'Delete',
+                  style: 'destructive',
+                  onPress: performDelete,
+                },
+              ]
+            : [
+                {
+                  text: 'OK',
+                  onPress: () => setAlertConfig({ visible: false, title: '', message: '' }),
+                },
+              ]
+        }
+      />
     </ScrollView>
   );
 }

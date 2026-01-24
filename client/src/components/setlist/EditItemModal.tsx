@@ -98,7 +98,7 @@ export const EditItemModal = ({ visible, item, onClose, onSave, loading = false 
           <View className="flex-row items-center justify-between mb-4">
             <Text className={`text-lg font-bold ${tailwind.text.both}`}>Edit Track</Text>
             <Pressable onPress={handleClose} disabled={loading}>
-              <IconSymbol name="xmark.circle.fill" size={24} color="#9CA3AF" />
+              <IconSymbol name="close-circle" size={24} color="#9CA3AF" />
             </Pressable>
           </View>
 

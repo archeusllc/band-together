@@ -239,7 +239,7 @@ export const EventDetailsScreen = ({ route, navigation: drawerNavigation }: Prop
           </View>
 
           <View className="flex-row items-center gap-3">
-            <IconSymbol name="clock" size={24} color={colors.brand.primary} />
+            <IconSymbol name="time" size={24} color={colors.brand.primary} />
             <Text className={`text-base ${tailwind.textMuted.both}`}>
               {event.duration} minutes
             </Text>
@@ -252,14 +252,14 @@ export const EventDetailsScreen = ({ route, navigation: drawerNavigation }: Prop
             <View className="flex-row items-start justify-between mb-3">
               <View className="flex-1">
                 <View className="flex-row items-center gap-2 mb-2">
-                  <IconSymbol name="building.2" size={24} color={colors.brand.primary} />
+                  <IconSymbol name="business" size={24} color={colors.brand.primary} />
                   <Text className={`text-xl font-bold ${tailwind.text.both}`}>
                     {event.venue.name}
                   </Text>
                 </View>
                 {event.venue.address && (
                   <View className="flex-row items-start gap-2">
-                    <IconSymbol name="mappin.circle.fill" size={16} color={colors.brand.primary} />
+                    <IconSymbol name="location" size={16} color={colors.brand.primary} />
                     <View className="flex-1">
                       <Text className={`text-sm ${tailwind.textMuted.both}`}>
                         {event.venue.address}
@@ -287,7 +287,7 @@ export const EventDetailsScreen = ({ route, navigation: drawerNavigation }: Prop
                 disabled={followLoading}
               >
                 <IconSymbol
-                  name={followingVenue ? 'heart.fill' : 'heart'}
+                  name={followingVenue ? 'heart' : 'heart-outline'}
                   size={18}
                   color={followingVenue ? colors.brand.primary : '#fff'}
                 />
@@ -305,7 +305,7 @@ export const EventDetailsScreen = ({ route, navigation: drawerNavigation }: Prop
         {event.acts && event.acts.length > 0 && (
           <View className={`${tailwind.card.both} rounded-xl p-4 mb-4 border ${tailwind.border.both}`}>
             <View className="flex-row items-center gap-2 mb-3">
-              <IconSymbol name="music.note" size={24} color={colors.brand.primary} />
+              <IconSymbol name="musical-note" size={24} color={colors.brand.primary} />
               <Text className={`text-xl font-bold ${tailwind.text.both}`}>
                 Performing
               </Text>
@@ -337,7 +337,7 @@ export const EventDetailsScreen = ({ route, navigation: drawerNavigation }: Prop
                     disabled={followLoading}
                   >
                     <IconSymbol
-                      name={followingActs.has(act.actId) ? 'heart.fill' : 'heart'}
+                      name={followingActs.has(act.actId) ? 'heart' : 'heart-outline'}
                       size={18}
                       color={followingActs.has(act.actId) ? colors.brand.primary : '#fff'}
                     />

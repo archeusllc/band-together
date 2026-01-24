@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, ActivityIndicator, Alert } from 'react-native';
+import { View, Text, ActivityIndicator } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import type { DrawerScreenProps } from '@react-navigation/drawer';
 import type { DrawerParamList } from '@navigation/types';
 import { guildService, firebaseStorageService } from '@services';
+import { AlertModal } from '@ui';
 import { GuildForm } from '@components';
 import { tailwind, colors } from '@theme';
 
@@ -14,6 +15,12 @@ export const EditClubScreen = ({ route, navigation }: Props) => {
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [guild, setGuild] = useState<any>(null);
+  const [alertConfig, setAlertConfig] = useState<{
+    visible: boolean;
+    title: string;
+    message: string;
+    onConfirm?: () => void;
+  }>({ visible: false, title: '', message: '' });
 
   useEffect(() => {
     fetchGuild();
@@ -24,13 +31,21 @@ export const EditClubScreen = ({ route, navigation }: Props) => {
     try {
       const { data, error } = await guildService.getClubById(clubId);
       if (error || !data) {
-        Alert.alert('Error', 'Failed to load club details');
+        setAlertConfig({
+            visible: true,
+            title: 'Error',
+            message: 'Failed to load club details',
+          });
         navigation.goBack();
         return;
       }
       setGuild(data);
     } catch (err) {
-      Alert.alert('Error', 'Failed to load club details');
+      setAlertConfig({
+            visible: true,
+            title: 'Error',
+            message: 'Failed to load club details',
+          });
       navigation.goBack();
     } finally {
       setLoading(false);
@@ -52,7 +67,11 @@ export const EditClubScreen = ({ route, navigation }: Props) => {
         );
 
         if (uploadError) {
-          Alert.alert('Upload Error', 'Failed to upload image. Continuing without updating image.');
+          setAlertConfig({
+            visible: true,
+            title: 'Upload Error',
+            message: 'Failed to upload image. Continuing without updating image.',
+          });
         } else if (url) {
           avatarUrl = url;
         }
@@ -65,21 +84,29 @@ export const EditClubScreen = ({ route, navigation }: Props) => {
       });
 
       if (error || !data) {
-        Alert.alert('Error', 'Failed to update club. Please try again.');
+        setAlertConfig({
+            visible: true,
+            title: 'Error',
+            message: 'Failed to update club. Please try again.',
+          });
         return;
       }
 
-      Alert.alert('Success', 'Club updated successfully!', [
-        {
-          text: 'OK',
-          onPress: () => {
-            navigation.navigate('ClubDetails', { clubId });
-          }
-        }
-      ]);
+      setAlertConfig({
+        visible: true,
+        title: 'Success',
+        message: 'Club updated successfully!',
+        onConfirm: () => {
+          navigation.navigate('ClubDetails', { clubId });
+        },
+      });
     } catch (err) {
       console.error('Update club error:', err);
-      Alert.alert('Error', 'An unexpected error occurred');
+      setAlertConfig({
+            visible: true,
+            title: 'Error',
+            message: 'An unexpected error occurred',
+          });
     } finally {
       setSubmitting(false);
     }
@@ -97,16 +124,33 @@ export const EditClubScreen = ({ route, navigation }: Props) => {
   }
 
   return (
-    <GuildForm
-      guildType="CLUB"
-      initialData={{
-        name: guild.name,
-        description: guild.club?.description || undefined,
-        avatar: guild.club?.avatar || undefined
-      }}
-      onSubmit={handleSubmit}
-      submitLabel="Update Club"
-      loading={submitting}
-    />
+    <View className="flex-1">
+      <GuildForm
+        guildType="CLUB"
+        initialData={{
+          name: guild.name,
+          description: guild.club?.description || undefined,
+          avatar: guild.club?.avatar || undefined
+        }}
+        onSubmit={handleSubmit}
+        submitLabel="Update Club"
+        loading={submitting}
+      />
+
+      <AlertModal
+        visible={alertConfig.visible}
+        title={alertConfig.title}
+        message={alertConfig.message}
+        buttons={[
+          {
+            text: 'OK',
+            onPress: () => {
+              setAlertConfig({ visible: false, title: '', message: '' });
+              alertConfig.onConfirm?.();
+            },
+          },
+        ]}
+      />
+    </View>
   );
 }

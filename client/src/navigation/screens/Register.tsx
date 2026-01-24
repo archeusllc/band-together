@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Pressable, Alert, ScrollView } from 'react-native';
+import { View, Text, TextInput, Pressable, ScrollView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useAuth } from '@contexts';
 import { colors, tailwind } from '@theme';
+import { AlertModal } from '@ui';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 type NavigationProp = NativeStackNavigationProp<any>;
@@ -12,22 +13,39 @@ export const RegisterScreen = () => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [alertConfig, setAlertConfig] = useState<{
+    visible: boolean;
+    title: string;
+    message: string;
+  }>({ visible: false, title: '', message: '' });
   const navigation = useNavigation<NavigationProp>();
   const { register } = useAuth();
 
   const handleRegister = async () => {
     if (!email || !password) {
-      Alert.alert('Error', 'Please fill in all fields');
+      setAlertConfig({
+        visible: true,
+        title: 'Error',
+        message: 'Please fill in all fields',
+      });
       return;
     }
 
     if (password !== confirmPassword) {
-      Alert.alert('Error', 'Passwords do not match');
+      setAlertConfig({
+        visible: true,
+        title: 'Error',
+        message: 'Passwords do not match',
+      });
       return;
     }
 
     if (password.length < 8) {
-      Alert.alert('Error', 'Password must be at least 8 characters');
+      setAlertConfig({
+        visible: true,
+        title: 'Error',
+        message: 'Password must be at least 8 characters',
+      });
       return;
     }
 
@@ -37,10 +55,18 @@ export const RegisterScreen = () => {
       if (success) {
         navigation.goBack();
       } else {
-        Alert.alert('Registration Failed', 'Unable to create account. Email may already be in use.');
+        setAlertConfig({
+          visible: true,
+          title: 'Registration Failed',
+          message: 'Unable to create account. Email may already be in use.',
+        });
       }
     } catch (error) {
-      Alert.alert('Error', 'An error occurred during registration');
+      setAlertConfig({
+        visible: true,
+        title: 'Error',
+        message: 'An error occurred during registration',
+      });
     } finally {
       setLoading(false);
     }
@@ -118,6 +144,18 @@ export const RegisterScreen = () => {
         </View>
       </View>
       </View>
+
+      <AlertModal
+        visible={alertConfig.visible}
+        title={alertConfig.title}
+        message={alertConfig.message}
+        buttons={[
+          {
+            text: 'OK',
+            onPress: () => setAlertConfig({ visible: false, title: '', message: '' }),
+          },
+        ]}
+      />
     </ScrollView>
   );
 }

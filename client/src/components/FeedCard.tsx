@@ -44,7 +44,7 @@ export const FeedCard = ({ event, onPress }: FeedCardProps) => {
           </Text>
           {event.venue && (
             <View className="flex-row items-center gap-1 mb-1">
-              <IconSymbol name="mappin.circle.fill" size={16} color={colors.brand.primary} />
+              <IconSymbol name="location" size={16} color={colors.brand.primary} />
               <Text className={`text-sm ${tailwind.textMuted.both}`}>
                 {event.venue.name}
               </Text>

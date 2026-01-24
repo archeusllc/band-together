@@ -5,7 +5,6 @@ import {
   ActivityIndicator,
   FlatList,
   TouchableOpacity,
-  Alert,
   RefreshControl,
 } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
@@ -15,6 +14,7 @@ import { setlistService, setlistWSService } from '@services';
 import { useAuth } from '@contexts';
 import { SetItemRow, SetSectionHeader, SetlistPresence } from '@components';
 import { tailwind } from '@theme';
+import { AlertModal } from '@ui';
 import type { SetList, SetItem, SetSection, Track } from '@band-together/shared';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'SharedSetlist'>;
@@ -42,6 +42,17 @@ export const SharedSetlist = ({ route, navigation }: Props) => {
   const [isEditing, setIsEditing] = useState(false);
   const [wsConnected, setWsConnected] = useState(false);
   const [presence, setPresence] = useState<any[]>([]);
+  const [alertConfig, setAlertConfig] = useState<{
+    visible: boolean;
+    title: string;
+    message: string;
+    buttons?: Array<{
+      text: string;
+      onPress?: () => void;
+      style?: 'default' | 'cancel' | 'destructive';
+    }>;
+  }>({ visible: false, title: '', message: '' });
+  const [deleteItemId, setDeleteItemId] = useState<string | null>(null);
 
   // Fetch setlist by share token
   const fetchSetlist = async () => {
@@ -198,10 +209,15 @@ export const SharedSetlist = ({ route, navigation }: Props) => {
   // Handlers
   const handleEditPress = () => {
     if (!user && canEdit) {
-      Alert.alert('Sign In Required', 'You need to sign in to edit this setlist.', [
-        { text: 'Cancel', style: 'cancel' },
-        { text: 'Sign In', onPress: () => navigation.navigate('Login') },
-      ]);
+      setAlertConfig({
+        visible: true,
+        title: 'Sign In Required',
+        message: 'You need to sign in to edit this setlist.',
+        buttons: [
+          { text: 'Cancel', style: 'cancel', onPress: () => setAlertConfig({ visible: false, title: '', message: '' }) },
+          { text: 'Sign In', onPress: () => navigation.navigate('Login') },
+        ],
+      });
       return;
     }
 
@@ -219,7 +235,14 @@ export const SharedSetlist = ({ route, navigation }: Props) => {
       );
 
       if (error) {
-        Alert.alert('Error', 'Failed to add track to setlist');
+        setAlertConfig({
+          visible: true,
+          title: 'Error',
+          message: 'Failed to add track to setlist',
+          buttons: [
+            { text: 'OK', onPress: () => setAlertConfig({ visible: false, title: '', message: '' }) },
+          ],
+        });
       }
     },
     [setlist, canEdit, shareToken]
@@ -229,24 +252,40 @@ export const SharedSetlist = ({ route, navigation }: Props) => {
     async (setItemId: string) => {
       if (!setlist || !canEdit) return;
 
-      Alert.alert('Delete Track', 'Remove this track from the setlist?', [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Delete',
-          style: 'destructive',
-          onPress: async () => {
-            const { error } = await setlistService.deleteSetItem(
-              setlist.setListId,
-              setItemId,
-              shareToken
-            );
+      setDeleteItemId(setItemId);
+      setAlertConfig({
+        visible: true,
+        title: 'Delete Track',
+        message: 'Remove this track from the setlist?',
+        buttons: [
+          { text: 'Cancel', style: 'cancel', onPress: () => setAlertConfig({ visible: false, title: '', message: '' }) },
+          {
+            text: 'Delete',
+            style: 'destructive',
+            onPress: async () => {
+              const { error } = await setlistService.deleteSetItem(
+                setlist.setListId,
+                setItemId,
+                shareToken
+              );
 
-            if (error) {
-              Alert.alert('Error', 'Failed to delete track');
-            }
+              if (error) {
+                setAlertConfig({
+                  visible: true,
+                  title: 'Error',
+                  message: 'Failed to delete track',
+                  buttons: [
+                    { text: 'OK', onPress: () => setAlertConfig({ visible: false, title: '', message: '' }) },
+                  ],
+                });
+              } else {
+                setAlertConfig({ visible: false, title: '', message: '' });
+              }
+              setDeleteItemId(null);
+            },
           },
-        },
-      ]);
+        ],
+      });
     },
     [setlist, canEdit, shareToken]
   );
@@ -269,7 +308,14 @@ export const SharedSetlist = ({ route, navigation }: Props) => {
       );
 
       if (error) {
-        Alert.alert('Error', 'Failed to reorder tracks');
+        setAlertConfig({
+          visible: true,
+          title: 'Error',
+          message: 'Failed to reorder tracks',
+          buttons: [
+            { text: 'OK', onPress: () => setAlertConfig({ visible: false, title: '', message: '' }) },
+          ],
+        });
         fetchSetlist();
       }
     },
@@ -459,6 +505,13 @@ export const SharedSetlist = ({ route, navigation }: Props) => {
           }
         />
       )}
+
+      <AlertModal
+        visible={alertConfig.visible}
+        title={alertConfig.title}
+        message={alertConfig.message}
+        buttons={alertConfig.buttons}
+      />
     </View>
   );
 };

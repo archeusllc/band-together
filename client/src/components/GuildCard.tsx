@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, Pressable, Image } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { tailwind, colors } from '@theme';
 import { IconSymbol } from '@ui';
 import type { Guild, Act, Venue, Club, User } from '@band-together/shared';
@@ -14,16 +15,16 @@ interface GuildCardProps {
   onPress?: () => void;
 }
 
-const getGuildTypeIcon = (guildType: string): string => {
+const getGuildTypeIcon = (guildType: string): keyof typeof Ionicons.glyphMap => {
   switch (guildType) {
     case 'ACT':
-      return 'music.note';
+      return 'musical-note';
     case 'VENUE':
-      return 'building.2';
+      return 'business';
     case 'CLUB':
-      return 'person.3.fill';
+      return 'people';
     default:
-      return 'circle.fill';
+      return 'radio-button-on';
   }
 };
 
@@ -90,7 +91,7 @@ export const GuildCard = ({ guild, onPress }: GuildCardProps) => {
           )}
           {guild.venue?.city && guild.venue?.state && (
             <View className="flex-row items-center gap-1">
-              <IconSymbol name="mappin.circle.fill" size={14} color={colors.brand.primary} />
+              <IconSymbol name="location" size={14} color={colors.brand.primary} />
               <Text className={`text-sm ${tailwind.textMuted.both}`}>
                 {guild.venue.city}, {guild.venue.state}
               </Text>
@@ -105,7 +106,7 @@ export const GuildCard = ({ guild, onPress }: GuildCardProps) => {
           {/* Owner info */}
           {guild.currentOwner && (
             <View className="flex-row items-center gap-1 mt-2">
-              <IconSymbol name="person.fill" size={12} color={colors.light.muted} />
+              <IconSymbol name="person" size={12} color={colors.light.muted} />
               <Text className={`text-xs ${tailwind.textMuted.both}`}>
                 {guild.currentOwner.displayName || 'Anonymous'}
               </Text>

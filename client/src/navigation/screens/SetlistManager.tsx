@@ -58,7 +58,7 @@ export const SetlistManagerScreen = () => {
         newSections.push({
           title: 'My Setlists',
           data: data.personal,
-          icon: 'music.note.list',
+          icon: 'musical-notes',
         });
       }
 
@@ -66,7 +66,7 @@ export const SetlistManagerScreen = () => {
         newSections.push({
           title: 'Act Setlists',
           data: data.guild,
-          icon: 'building.2',
+          icon: 'business',
         });
       }
 
@@ -74,7 +74,7 @@ export const SetlistManagerScreen = () => {
         newSections.push({
           title: 'Shared With Me',
           data: data.sharedWithMe,
-          icon: 'share',
+          icon: 'share-social',
         });
       }
 
@@ -147,7 +147,7 @@ export const SetlistManagerScreen = () => {
             onPress={handleCreateSetlist}
             className={`bg-blue-500 px-6 py-3 rounded-lg flex-row items-center gap-2`}
           >
-            <IconSymbol name="plus" size={18} color="white" />
+            <IconSymbol name="add" size={18} color="white" />
             <Text className="text-white font-semibold">Create Setlist</Text>
           </Pressable>
         </View>
@@ -197,7 +197,7 @@ export const SetlistManagerScreen = () => {
                   onPress={handleCreateSetlist}
                   className={`${tailwind.card.both} py-4 rounded-lg border ${tailwind.border.both} items-center flex-row justify-center gap-2`}
                 >
-                  <IconSymbol name="plus" size={18} color={colors.brand.primary} />
+                  <IconSymbol name="add" size={18} color={colors.brand.primary} />
                   <Text className={`font-semibold ${tailwind.text.both}`}>
                     Create New Setlist
                   </Text>

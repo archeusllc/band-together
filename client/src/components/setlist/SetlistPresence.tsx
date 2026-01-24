@@ -38,7 +38,7 @@ export const SetlistPresence = ({ presence, isConnected }: SetlistPresenceProps)
       {/* Editing Indicator */}
       {editingCount > 0 && (
         <View className="flex-row items-center gap-1">
-          <IconSymbol name="pencil.circle.fill" size={12} color={colors.brand.primary} />
+          <IconSymbol name="create" size={12} color={colors.brand.primary} />
           <Text className={`text-xs ${tailwind.textMuted.both}`}>
             {editingCount} {editingCount === 1 ? 'editing' : 'editing'}
           </Text>

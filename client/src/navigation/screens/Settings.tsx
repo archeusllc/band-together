@@ -148,7 +148,7 @@ export const SettingsScreen = () => {
                   }`}
                 >
                   <IconSymbol
-                    name={copied ? 'checkmark' : 'doc.on.doc'}
+                    name={copied ? 'checkmark' : 'copy'}
                     size={16}
                     color={copied ? '#fff' : (tailwind.text.both === 'text-black' ? '#000' : '#fff')}
                   />

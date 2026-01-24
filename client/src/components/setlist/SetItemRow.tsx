@@ -38,7 +38,7 @@ export const SetItemRow = ({ item, isEditing = false, isDragging = false, onEdit
         {/* Drag Handle (editing only) */}
         {isEditing && (
           <View className="w-5 items-center justify-center">
-            <IconSymbol name="line.3.horizontal" size={16} color="#9CA3AF" />
+            <IconSymbol name="menu" size={16} color="#9CA3AF" />
           </View>
         )}
 
@@ -77,7 +77,7 @@ export const SetItemRow = ({ item, isEditing = false, isDragging = false, onEdit
           {/* Custom Notes (if present) */}
           {displayNotes && (
             <View className="flex-row items-start gap-2 mt-2">
-              <IconSymbol name="note.text" size={12} color="#9CA3AF" />
+              <IconSymbol name="document-text" size={12} color="#9CA3AF" />
               <Text className={`text-xs ${tailwind.textMuted.both} flex-1 italic`} numberOfLines={2}>
                 {displayNotes}
               </Text>

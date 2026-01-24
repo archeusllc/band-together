@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Pressable, Image, ActivityIndicator, ScrollView, Alert } from 'react-native';
+import { View, Text, TextInput, Pressable, Image, ActivityIndicator, ScrollView } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { tailwind, colors } from '@theme';
-import { IconSymbol } from '@ui';
+import { IconSymbol, AlertModal } from '@ui';
 
 interface GuildFormData {
   name: string;
@@ -37,12 +37,21 @@ export const GuildForm = ({ guildType, initialData, onSubmit, submitLabel, loadi
 
   const [imagePickerLoading, setImagePickerLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [alertConfig, setAlertConfig] = useState<{
+    visible: boolean;
+    title: string;
+    message: string;
+  }>({ visible: false, title: '', message: '' });
 
   const pickImage = async () => {
     const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
 
     if (!permissionResult.granted) {
-      Alert.alert('Permission Required', 'Please allow access to your photo library');
+      setAlertConfig({
+        visible: true,
+        title: 'Permission Required',
+        message: 'Please allow access to your photo library',
+      });
       return;
     }
 
@@ -59,7 +68,11 @@ export const GuildForm = ({ guildType, initialData, onSubmit, submitLabel, loadi
         setFormData(prev => ({ ...prev, avatar: result.assets[0].uri }));
       }
     } catch (error) {
-      Alert.alert('Error', 'Failed to pick image');
+      setAlertConfig({
+        visible: true,
+        title: 'Error',
+        message: 'Failed to pick image',
+      });
     } finally {
       setImagePickerLoading(false);
     }
@@ -105,7 +118,7 @@ export const GuildForm = ({ guildType, initialData, onSubmit, submitLabel, loadi
                 resizeMode="cover"
               />
             ) : (
-              <IconSymbol name="camera.fill" size={48} color={colors.light.muted} />
+              <IconSymbol name="camera" size={48} color={colors.light.muted} />
             )}
           </Pressable>
           <Text className={`text-sm ${tailwind.textMuted.both} mt-2`}>
@@ -242,6 +255,18 @@ export const GuildForm = ({ guildType, initialData, onSubmit, submitLabel, loadi
           )}
         </Pressable>
       </View>
+
+      <AlertModal
+        visible={alertConfig.visible}
+        title={alertConfig.title}
+        message={alertConfig.message}
+        buttons={[
+          {
+            text: 'OK',
+            onPress: () => setAlertConfig({ visible: false, title: '', message: '' }),
+          },
+        ]}
+      />
     </ScrollView>
   );
 };

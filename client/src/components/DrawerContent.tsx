@@ -18,22 +18,22 @@ export function DrawerContent(props: DrawerContentComponentProps) {
     {
       title: 'Browse',
       items: [
-        { name: 'Acts', icon: 'music.note', route: 'ActsList' },
-        { name: 'Venues', icon: 'building.2', route: 'VenuesList' },
-        { name: 'Clubs', icon: 'person.3.fill', route: 'ClubsList' },
+        { name: 'Acts', icon: 'musical-note' as const, route: 'ActsList' },
+        { name: 'Venues', icon: 'business' as const, route: 'VenuesList' },
+        { name: 'Clubs', icon: 'people' as const, route: 'ClubsList' },
       ],
     },
     {
       title: 'Tools',
       items: [
-        { name: 'Setlist Manager', icon: 'list.bullet.rectangle', route: 'SetlistManager' },
+        { name: 'Setlist Manager', icon: 'list' as const, route: 'SetlistManager' },
       ],
     },
     {
       title: 'Account',
       items: [
-        { name: 'Profile', icon: 'person.fill', route: 'Profile' },
-        { name: 'Settings', icon: 'gearshape.fill', route: 'Settings' },
+        { name: 'Profile', icon: 'person' as const, route: 'Profile' },
+        { name: 'Settings', icon: 'settings' as const, route: 'Settings' },
       ],
     },
   ];
@@ -72,9 +72,11 @@ export function DrawerContent(props: DrawerContentComponentProps) {
                 <Text className={`flex-1 text-xs font-semibold uppercase ${tailwind.textMuted.both}`}>
                   {section.title}
                 </Text>
-                <Text className={`text-lg ${tailwind.textMuted.both}`}>
-                  {isCollapsed ? '▶' : '▼'}
-                </Text>
+                <IconSymbol
+                  name={isCollapsed ? 'chevron-forward' : 'chevron-down'}
+                  size={20}
+                  color={colorScheme === 'dark' ? colors.dark.icon : colors.light.icon}
+                />
               </Pressable>
               {!isCollapsed && (
                 <View className="pl-3">
@@ -114,7 +116,7 @@ export function DrawerContent(props: DrawerContentComponentProps) {
               navigation.navigate('Home');
             }}
           >
-            <IconSymbol name="rectangle.portrait.and.arrow.right" size={24} color={colors.brand.error} />
+            <IconSymbol name="log-out" size={24} color={colors.brand.error} />
             <Text className={`text-base ${tailwind.error} ${tailwind.errorDark} font-semibold`}>Logout</Text>
           </Pressable>
         </View>

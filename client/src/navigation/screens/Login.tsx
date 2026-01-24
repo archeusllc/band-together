@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Pressable, Alert, ScrollView } from 'react-native';
+import { View, Text, TextInput, Pressable, ScrollView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useAuth } from '@contexts';
 import { colors, tailwind } from '@theme';
+import { AlertModal } from '@ui';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 type NavigationProp = NativeStackNavigationProp<any>;
@@ -11,12 +12,21 @@ export const LoginScreen = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [alertConfig, setAlertConfig] = useState<{
+    visible: boolean;
+    title: string;
+    message: string;
+  }>({ visible: false, title: '', message: '' });
   const navigation = useNavigation<NavigationProp>();
   const { login } = useAuth();
 
   const handleLogin = async () => {
     if (!email || !password) {
-      Alert.alert('Error', 'Please enter both email and password');
+      setAlertConfig({
+        visible: true,
+        title: 'Error',
+        message: 'Please enter both email and password',
+      });
       return;
     }
 
@@ -26,10 +36,18 @@ export const LoginScreen = () => {
       if (success) {
         navigation.goBack();
       } else {
-        Alert.alert('Login Failed', 'Invalid email or password');
+        setAlertConfig({
+          visible: true,
+          title: 'Login Failed',
+          message: 'Invalid email or password',
+        });
       }
     } catch (error) {
-      Alert.alert('Error', 'An error occurred during login');
+      setAlertConfig({
+        visible: true,
+        title: 'Error',
+        message: 'An error occurred during login',
+      });
     } finally {
       setLoading(false);
     }
@@ -93,6 +111,18 @@ export const LoginScreen = () => {
         </View>
       </View>
       </View>
+
+      <AlertModal
+        visible={alertConfig.visible}
+        title={alertConfig.title}
+        message={alertConfig.message}
+        buttons={[
+          {
+            text: 'OK',
+            onPress: () => setAlertConfig({ visible: false, title: '', message: '' }),
+          },
+        ]}
+      />
     </ScrollView>
   );
 }

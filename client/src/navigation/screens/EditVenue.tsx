@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, ActivityIndicator, Alert } from 'react-native';
+import { View, Text, ActivityIndicator } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import type { DrawerScreenProps } from '@react-navigation/drawer';
 import type { DrawerParamList } from '@navigation/types';
 import { guildService, firebaseStorageService } from '@services';
+import { AlertModal } from '@ui';
 import { GuildForm } from '@components';
 import { tailwind, colors } from '@theme';
 
@@ -14,6 +15,12 @@ export const EditVenueScreen = ({ route, navigation }: Props) => {
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [guild, setGuild] = useState<any>(null);
+  const [alertConfig, setAlertConfig] = useState<{
+    visible: boolean;
+    title: string;
+    message: string;
+    onConfirm?: () => void;
+  }>({ visible: false, title: '', message: '' });
 
   useEffect(() => {
     fetchGuild();
@@ -24,13 +31,21 @@ export const EditVenueScreen = ({ route, navigation }: Props) => {
     try {
       const { data, error } = await guildService.getVenueById(venueId);
       if (error || !data) {
-        Alert.alert('Error', 'Failed to load venue details');
+        setAlertConfig({
+            visible: true,
+            title: 'Error',
+            message: 'Failed to load venue details',
+          });
         navigation.goBack();
         return;
       }
       setGuild(data);
     } catch (err) {
-      Alert.alert('Error', 'Failed to load venue details');
+      setAlertConfig({
+            visible: true,
+            title: 'Error',
+            message: 'Failed to load venue details',
+          });
       navigation.goBack();
     } finally {
       setLoading(false);
@@ -52,7 +67,11 @@ export const EditVenueScreen = ({ route, navigation }: Props) => {
         );
 
         if (uploadError) {
-          Alert.alert('Upload Error', 'Failed to upload image. Continuing without updating image.');
+          setAlertConfig({
+            visible: true,
+            title: 'Upload Error',
+            message: 'Failed to upload image. Continuing without updating image.',
+          });
         } else if (url) {
           avatarUrl = url;
         }
@@ -68,21 +87,29 @@ export const EditVenueScreen = ({ route, navigation }: Props) => {
       });
 
       if (error || !data) {
-        Alert.alert('Error', 'Failed to update venue. Please try again.');
+        setAlertConfig({
+            visible: true,
+            title: 'Error',
+            message: 'Failed to update venue. Please try again.',
+          });
         return;
       }
 
-      Alert.alert('Success', 'Venue updated successfully!', [
-        {
-          text: 'OK',
-          onPress: () => {
-            navigation.navigate('VenueDetails', { venueId });
-          }
-        }
-      ]);
+      setAlertConfig({
+        visible: true,
+        title: 'Success',
+        message: 'Venue updated successfully!',
+        onConfirm: () => {
+          navigation.navigate('VenueDetails', { venueId });
+        },
+      });
     } catch (err) {
       console.error('Update venue error:', err);
-      Alert.alert('Error', 'An unexpected error occurred');
+      setAlertConfig({
+            visible: true,
+            title: 'Error',
+            message: 'An unexpected error occurred',
+          });
     } finally {
       setSubmitting(false);
     }
@@ -100,19 +127,36 @@ export const EditVenueScreen = ({ route, navigation }: Props) => {
   }
 
   return (
-    <GuildForm
-      guildType="VENUE"
-      initialData={{
-        name: guild.name,
-        address: guild.venue?.address || undefined,
-        city: guild.venue?.city || undefined,
-        state: guild.venue?.state || undefined,
-        zipCode: guild.venue?.zipCode || undefined,
-        avatar: guild.venue?.avatar || undefined
-      }}
-      onSubmit={handleSubmit}
-      submitLabel="Update Venue"
-      loading={submitting}
-    />
+    <View className="flex-1">
+      <GuildForm
+        guildType="VENUE"
+        initialData={{
+          name: guild.name,
+          address: guild.venue?.address || undefined,
+          city: guild.venue?.city || undefined,
+          state: guild.venue?.state || undefined,
+          zipCode: guild.venue?.zipCode || undefined,
+          avatar: guild.venue?.avatar || undefined
+        }}
+        onSubmit={handleSubmit}
+        submitLabel="Update Venue"
+        loading={submitting}
+      />
+
+      <AlertModal
+        visible={alertConfig.visible}
+        title={alertConfig.title}
+        message={alertConfig.message}
+        buttons={[
+          {
+            text: 'OK',
+            onPress: () => {
+              setAlertConfig({ visible: false, title: '', message: '' });
+              alertConfig.onConfirm?.();
+            },
+          },
+        ]}
+      />
+    </View>
   );
 }
