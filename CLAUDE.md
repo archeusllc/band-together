@@ -71,19 +71,110 @@ When working on Band Together, please follow these conventions:
 - Use TypeScript strict mode rigorously
 
 **Buttons and Icons**
-- **Always include text labels on buttons** - never use icon-only buttons
-- The app uses `expo-symbols` (iOS SF Symbols) for icons, which don't render on web
-- Even icon-only buttons on iOS should have accompanying text for accessibility and clarity
-- Pattern: `<View className="flex-row items-center gap-1"><IconSymbol ... /><Text>Label</Text></View>`
-- Example: Share button shows `link` icon + "Share" text, not just the icon alone
-- This ensures the app is truly "web-first" with proper accessibility
+- The app uses `@expo/vector-icons` (Ionicons) for all icons, which render on web, iOS, and Android
+- Icon-only buttons are now fully supported since Ionicons work universally via font-based rendering
+- `IconSymbol` wrapper component handles Ionicons rendering with proper TypeScript typing
+- Icon names use Ionicons naming convention: common names like `pencil`, `trash`, `plus`, `close`, `search`, `link`, `checkmark`
+- Pattern: `<IconSymbol name="pencil" size={24} color={colors.brand.primary} />`
+- For accessibility, consider adding text labels on action buttons in dense layouts, but icon-only buttons are acceptable since icons render everywhere
+- **Icon Library Migration Notes**:
+  - Migrated from `expo-symbols` (SF Symbols, iOS-only) to `@expo/vector-icons` (Ionicons, universal)
+  - @expo/vector-icons uses font-based rendering which works on web via CSS font files
+  - Ionicons provides 1300+ icons with consistent visual style across platforms
+  - TypeScript icon typing: `name: keyof typeof Ionicons.glyphMap` ensures valid icon names at compile time
 
 **Dialogs and Alerts**
 - **Do NOT use `Alert.alert()`** - React Native's native Alert component does not work on web
-- Instead, build custom modal dialogs using View components with overlay styling
-- Pattern: `<View className="absolute inset-0 bg-black/50"><View className={tailwind.card.both}><Text>...</Text><Pressable>...</Pressable></View></View>`
-- Use `pointerEvents: { boxNone: true }` on overlay and `pointerEvents: { boxOnly: true }` on modal for proper web click handling
-- This ensures dialogs work consistently on all platforms (web, iOS, Android)
+- Use the `AlertModal` component from `@components/ui` for all alerts and confirmation dialogs
+- `AlertModal` provides consistent styling, dark mode support, and works on all platforms (web, iOS, Android)
+
+**AlertModal Component API**:
+```typescript
+interface AlertButton {
+  text: string;
+  onPress?: () => void;
+  style?: 'default' | 'cancel' | 'destructive';
+}
+
+interface AlertModalProps {
+  visible: boolean;
+  title: string;
+  message: string;
+  buttons?: AlertButton[];
+  onDismiss?: () => void;
+}
+
+<AlertModal
+  visible={alertConfig.visible}
+  title="Confirm Delete"
+  message="This action cannot be undone."
+  buttons={[
+    { text: 'Cancel', style: 'cancel', onPress: () => setAlertConfig(...) },
+    { text: 'Delete', style: 'destructive', onPress: handleDelete },
+  ]}
+/>
+```
+
+**State Management Pattern**:
+Use a `alertConfig` state object in your component to manage alert visibility, content, and custom buttons:
+```typescript
+const [alertConfig, setAlertConfig] = useState<{
+  visible: boolean;
+  title: string;
+  message: string;
+  buttons?: AlertButton[];
+}>({ visible: false, title: '', message: '' });
+
+// Simple alert
+setAlertConfig({
+  visible: true,
+  title: 'Error',
+  message: 'Failed to save changes',
+});
+
+// Alert with custom callback
+setAlertConfig({
+  visible: true,
+  title: 'Success',
+  message: 'Saved successfully!',
+  buttons: [{ text: 'OK', onPress: () => navigation.navigate('Home') }],
+});
+
+// Delete confirmation with destructive action
+const handleDelete = async () => {
+  try {
+    await deleteItem(itemId);
+    setAlertConfig({
+      visible: true,
+      title: 'Success',
+      message: 'Deleted successfully',
+    });
+  } catch (error) {
+    setAlertConfig({
+      visible: true,
+      title: 'Error',
+      message: 'Failed to delete',
+    });
+  }
+};
+
+setAlertConfig({
+  visible: true,
+  title: 'Delete Item',
+  message: 'Are you sure? This cannot be undone.',
+  buttons: [
+    { text: 'Cancel', style: 'cancel', onPress: () => setAlertConfig({ visible: false, ... }) },
+    { text: 'Delete', style: 'destructive', onPress: handleDelete },
+  ],
+});
+```
+
+**Key Features**:
+- Button styles: `'default'` (blue), `'cancel'` (gray), `'destructive'` (red)
+- Dark mode support via Tailwind theming
+- Proper web click handling with `pointerEvents` attributes
+- Overlay dismissal by tapping outside modal (when no buttons provided)
+- Icons in modals use Ionicons (which work on web)
 
 ### API Layer (api/)
 
@@ -843,11 +934,79 @@ Co-Authored-By: Claude Haiku 4.5 <noreply@anthropic.com>
 4. **Error retry logic** - Graceful retry mechanism for transient failures
 5. **Loading states per action** - Different loading states for different operations (follow vs unfollow)
 
+### Web Compatibility - Lessons Learned
+
+**The Problem**: Band Together needed to function on web browsers, but core React Native patterns (SF Symbols icons and Alert.alert()) don't work on web.
+
+**Challenge 1: Icon Rendering on Web**
+
+Platform-specific icon systems break web compatibility:
+- **SF Symbols (expo-symbols)**: iOS-only - appears blank/missing on web and Android
+- **Solution**: Use font-based icon libraries that render everywhere
+  - Font files load via CSS on all platforms (web, iOS, Android)
+  - `@expo/vector-icons` with Ionicons provides 1300+ icons with universal support
+  - Type-safe via `keyof typeof Ionicons.glyphMap` - TypeScript validates icon names at compile time
+  - Icon names map naturally (many SF Symbol → Ionicons names are identical: `pencil`, `trash`, `plus`, etc.)
+
+**Challenge 2: Native Alert Component Not Web-Compatible**
+
+`Alert.alert()` doesn't work on web browsers:
+- **Problem**: React Native's Alert is native (iOS UIAlertController), has no web implementation
+- **Solution**: Build custom modal dialogs using View components with overlay styling
+  - Use `absolute inset-0 bg-black/50` for full-screen overlay with semi-transparent background
+  - Use `pointerEvents: { boxNone: true }` on overlay and `pointerEvents: { boxOnly: true }` on modal content for proper web click handling
+  - Reusable `AlertModal` component with consistent styling, dark mode support, and multiple button variants
+  - State management pattern with `alertConfig` object enables flexible alert usage across 30+ components
+
+**Migration Strategy**: What Made This Successful
+
+1. **Icon Migration First**: Changed the IconSymbol wrapper component once (1 file) rather than trying to add text labels to 50+ button usages
+   - Single point of change: Future icon library updates only need IconSymbol modification
+   - All existing `<IconSymbol name="..." />` usages work automatically with new library
+   - Clean separation of icon rendering logic from component usage
+
+2. **Reusable Modal Component**: Created `AlertModal.tsx` and applied consistent state management pattern across all files
+   - Pattern: `alertConfig` state object with `visible`, `title`, `message`, and optional `buttons`
+   - Eliminated code duplication: No copy-pasted modal View hierarchies across 17+ files
+   - Consistent theming: All alerts automatically respect dark/light mode via Tailwind
+
+3. **TypeScript for Confidence**: Icon names validated at compile time
+   - `name: keyof typeof Ionicons.glyphMap` catches invalid icon names before runtime
+   - Prevents "blank icon" errors from typos in icon names
+   - Enabled safe refactoring across large codebase
+
+**Scope of Migration**
+
+- **48+ Alert.alert() calls** replaced across 17 files
+- **28+ SF Symbol icon names** updated to Ionicons in 15+ components
+- **2 files created/modified**: AlertModal.tsx + IconSymbol.tsx
+- **30+ files updated** for state management or icon names
+- **Result**: Full feature parity on web, iOS, and Android
+
+**Key Takeaway**: When targeting multiple platforms, prefer universal solutions (font-based icons, custom components) over platform-specific APIs (SF Symbols, native alerts). The extra effort to build cross-platform components pays off in maintainability and coverage.
+
 ---
 
-**Last Updated**: 2026-01-22
+**Last Updated**: 2026-01-23
 
 **Recent Changes**:
+- **Completed Web Compatibility Migration** (2026-01-23)
+  - **Icon Library Migration**: Migrated from `expo-symbols` (SF Symbols, iOS-only) to `@expo/vector-icons` (Ionicons)
+    - Updated `IconSymbol` component to use Ionicons instead of SymbolView
+    - Ionicons render on web via font-based CSS, supporting all platforms (iOS, Android, web)
+    - Updated 28+ icon names across 15+ components to Ionicons equivalents
+    - Added TypeScript type safety with `keyof typeof Ionicons.glyphMap`
+    - Updated drawer navigation chevrons to use Ionicons instead of text placeholders
+  - **Alert Modal Replacement**: Replaced all 48+ `Alert.alert()` calls with `AlertModal` component
+    - Created reusable `AlertModal` component in `client/src/components/ui/AlertModal.tsx`
+    - Implemented consistent state management pattern across 17+ files
+    - Alert.alert() doesn't work on web; AlertModal uses View overlays that work everywhere
+    - Supports button styles: 'default' (blue), 'cancel' (gray), 'destructive' (red)
+    - Dark mode support via Tailwind theming
+  - **Files Modified**: 30+ files across authentication, guild/entity CRUD, detail screens, and setlist features
+  - **Key Files Created**: `client/src/components/ui/AlertModal.tsx`
+  - **Testing**: All changes verified to work on web, iOS, and Android
+  - **Result**: Band Together is now fully functional on web with feature parity to mobile
 - Completed Phase 22: Polish and Testing
   - Added loading skeleton components (Skeleton, SetlistCardSkeleton, SetlistDetailsSkeleton)
   - Fixed Firebase auth race condition in SetlistDetails and CreateSetlist
