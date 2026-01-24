@@ -10,6 +10,7 @@ interface SetItemRowProps {
   item: SetItem & {
     track?: Track;
   };
+  sectionPosition?: number;
   isEditing?: boolean;
   isOwner?: boolean;
   onEdit?: () => void;
@@ -87,19 +88,19 @@ const LeftSwipeActions = ({ onMoveUp, onMoveDown, canMoveUp, canMoveDown }: any)
   </View>
 );
 
-const ItemContent = ({ track, item, displayTuning, displayDuration, displayNotes, isEditing, onEdit, onDelete, canMoveUp, canMoveDown, onMoveUp, onMoveDown }: any) => (
-  <View className={`border-b ${tailwind.border.both} p-4 ${tailwind.card.both}`}>
+const ItemContent = ({ track, item, sectionPosition, displayTuning, displayDuration, displayNotes, isEditing, onEdit, onDelete, canMoveUp, canMoveDown, onMoveUp, onMoveDown }: any) => (
+  <View className={`border-b ${tailwind.border.both} px-4 py-2 ${tailwind.card.both}`}>
     <View className="flex-row items-center gap-3">
       {/* Position Number */}
       <Text className={`text-sm font-semibold ${tailwind.textMuted.both} w-6`}>
-        {item.position + 1}
+        {sectionPosition !== undefined ? sectionPosition + 1 : item.position + 1}
       </Text>
 
       {/* Track Info */}
-      <View className="flex-1 mb-2">
-        <View className="flex-row items-center gap-3 mb-2">
+      <View className="flex-1">
+        <View className="flex-row items-center gap-3">
           <View className="flex-1">
-            <Text className={`text-base font-semibold ${tailwind.text.both}`} numberOfLines={1}>
+            <Text className={`text-xl font-bold ${tailwind.text.both}`} numberOfLines={1}>
               {track.title}
             </Text>
           </View>
@@ -111,7 +112,7 @@ const ItemContent = ({ track, item, displayTuning, displayDuration, displayNotes
         {/* Artist and Tuning */}
         <View className="flex-row items-center gap-2">
           {track.artist && (
-            <Text className={`text-sm ${tailwind.textMuted.both} flex-1`} numberOfLines={1}>
+            <Text className={`text-xs italic ${tailwind.textMuted.both} flex-1`} numberOfLines={1}>
               {track.artist}
             </Text>
           )}
@@ -179,7 +180,7 @@ const ItemContent = ({ track, item, displayTuning, displayDuration, displayNotes
   </View>
 );
 
-export const SetItemRow = ({ item, isEditing = false, isOwner = false, onEdit, onDelete, canMoveUp = false, canMoveDown = false, onMoveUp, onMoveDown }: SetItemRowProps) => {
+export const SetItemRow = ({ item, sectionPosition, isEditing = false, isOwner = false, onEdit, onDelete, canMoveUp = false, canMoveDown = false, onMoveUp, onMoveDown }: SetItemRowProps) => {
   const track = item.track;
   if (!track) return null;
 
@@ -233,6 +234,7 @@ export const SetItemRow = ({ item, isEditing = false, isOwner = false, onEdit, o
         <ItemContent
           track={track}
           item={item}
+          sectionPosition={sectionPosition}
           displayTuning={displayTuning}
           displayDuration={displayDuration}
           displayNotes={displayNotes}
@@ -253,6 +255,7 @@ export const SetItemRow = ({ item, isEditing = false, isOwner = false, onEdit, o
     <ItemContent
       track={track}
       item={item}
+      sectionPosition={sectionPosition}
       displayTuning={displayTuning}
       displayDuration={displayDuration}
       displayNotes={displayNotes}

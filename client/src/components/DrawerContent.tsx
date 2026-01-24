@@ -35,6 +35,7 @@ export function DrawerContent(props: DrawerContentComponentProps) {
       items: [
         { name: 'Profile', icon: 'person' as const, route: 'Profile' },
         { name: 'Settings', icon: 'settings' as const, route: 'Settings' },
+        { name: 'Logout', icon: 'log-out' as const, route: 'Logout', action: 'logout' },
       ],
     },
   ];
@@ -53,20 +54,17 @@ export function DrawerContent(props: DrawerContentComponentProps) {
     <DrawerContentScrollView {...props} className={`flex-1 ${tailwind.card.dark}`}>
       <Pressable
         onPress={() => navigation.navigate('Home')}
-        className={`p-5 border-b ${tailwind.border.both}`}
+        className={`py-2 px-5 border-b ${tailwind.border.both}`}
       >
         <Image
           source={require('@assets/images/band-together-logo.png')}
-          style={{ width: 160, height: 50 }}
+          style={{ width: 200, height: 70 }}
           resizeMode="contain"
           accessibilityLabel="Band Together"
         />
-        {isAuthenticated && user && (
-          <Text className={`text-sm ${tailwind.textMuted.both}`}>{user.email}</Text>
-        )}
       </Pressable>
 
-      <View className="flex-1 pt-5">
+      <View className="flex-1 pt-2">
         {drawerSections.map((section) => {
           const isCollapsed = collapsedSections.has(section.title);
           return (
@@ -88,18 +86,27 @@ export function DrawerContent(props: DrawerContentComponentProps) {
                 <View className="pl-3">
                   {section.items.map((item) => {
                     const isActive = state.routeNames[state.index] === item.route;
+                    const isLogout = (item as any).action === 'logout';
                     return (
                       <Pressable
                         key={item.route}
                         className={`flex-row items-center py-3 px-5 gap-4 ${isActive ? tailwind.activeBackground.both : ''}`}
-                        onPress={() => navigation.navigate(item.route)}
+                        onPress={async () => {
+                          if (isLogout) {
+                            await logout();
+                            navigation.closeDrawer();
+                            navigation.navigate('Home');
+                          } else {
+                            navigation.navigate(item.route);
+                          }
+                        }}
                       >
                         <IconSymbol
                           name={item.icon}
                           size={24}
-                          color={isActive ? colors.brand.primary : (colorScheme === 'dark' ? colors.dark.icon : colors.light.icon)}
+                          color={isLogout ? colors.brand.error : (isActive ? colors.brand.primary : (colorScheme === 'dark' ? colors.dark.icon : colors.light.icon))}
                         />
-                        <Text className={`text-base ${isActive ? `${tailwind.primary} font-semibold` : tailwind.text.both}`}>
+                        <Text className={`text-base ${isLogout ? `${tailwind.error} ${tailwind.errorDark} font-semibold` : (isActive ? `${tailwind.primary} font-semibold` : tailwind.text.both)}`}>
                           {item.name}
                         </Text>
                       </Pressable>
@@ -111,22 +118,6 @@ export function DrawerContent(props: DrawerContentComponentProps) {
           );
         })}
       </View>
-
-      {isAuthenticated && (
-        <View className={`border-t ${tailwind.border.both} p-5`}>
-          <Pressable
-            className="flex-row items-center gap-4"
-            onPress={async () => {
-              await logout();
-              navigation.closeDrawer();
-              navigation.navigate('Home');
-            }}
-          >
-            <IconSymbol name="log-out" size={24} color={colors.brand.error} />
-            <Text className={`text-base ${tailwind.error} ${tailwind.errorDark} font-semibold`}>Logout</Text>
-          </Pressable>
-        </View>
-      )}
     </DrawerContentScrollView>
   );
 }

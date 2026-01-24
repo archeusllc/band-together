@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, Pressable, Platform } from 'react-native';
+import { View, Text, Pressable, Platform, Dimensions } from 'react-native';
 import { Swipeable } from 'react-native-gesture-handler';
 import * as Haptics from 'expo-haptics';
 import { tailwind, colors } from '@theme';
@@ -86,62 +86,68 @@ const SectionRightSwipeActions = ({ onEdit, onDelete }: any) => (
   </View>
 );
 
-const SectionContent = ({ section, isEditing, onEdit, onDelete, duration, canMoveUp, canMoveDown, onMoveUp, onMoveDown }: any) => (
-  <View className={`${tailwind.activeBackground.both} px-4 py-3 border-b ${tailwind.border.both} flex-row items-center justify-between`}>
-    <View className="flex-1">
-      <View className="flex-row items-center gap-2">
-        <Text className={`text-base font-bold ${tailwind.text.both}`}>
-          {section.name}
-        </Text>
-        {duration !== undefined && duration > 0 && (
-          <Text className={`text-sm ${tailwind.textMuted.both}`}>
-            ({formatDuration(duration)})
+const SectionContent = ({ section, isEditing, onEdit, onDelete, duration, canMoveUp, canMoveDown, onMoveUp, onMoveDown }: any) => {
+  const windowHeight = Dimensions.get('window').height;
+  const paddingClass = windowHeight < 800 ? 'py-2' : 'py-6';
+
+  return (
+    <View className={`${tailwind.activeBackground.both} px-4 ${paddingClass} border-b ${tailwind.border.both} flex-row items-center justify-between`}>
+      <View className="absolute left-0 right-0 items-center flex-row justify-center px-4">
+        <View className="flex-row items-center gap-2">
+          <Text className={`text-xl font-bold ${tailwind.text.both}`}>
+            {section.name}
           </Text>
-        )}
+          {duration !== undefined && duration > 0 && (
+            <Text className={`text-sm ${tailwind.textMuted.both}`}>
+              ({formatDuration(duration)})
+            </Text>
+          )}
+        </View>
       </View>
+      <View className="flex-1" />
+
+      {isEditing && (
+        <View className="flex-row gap-1">
+          {/* Move Up Button */}
+          <Pressable
+            className={`p-3 rounded transition-all duration-150 ${canMoveUp ? tailwind.background.both : 'opacity-30'} hover:opacity-80`}
+            onPress={onMoveUp}
+            disabled={!canMoveUp}
+            accessibilityLabel="Move section up"
+          >
+            <IconSymbol name="chevron-up" size={16} color={colors.brand.primary} />
+          </Pressable>
+
+          {/* Move Down Button */}
+          <Pressable
+            className={`p-3 rounded transition-all duration-150 ${canMoveDown ? tailwind.background.both : 'opacity-30'} hover:opacity-80`}
+            onPress={onMoveDown}
+            disabled={!canMoveDown}
+            accessibilityLabel="Move section down"
+          >
+            <IconSymbol name="chevron-down" size={16} color={colors.brand.primary} />
+          </Pressable>
+
+          {/* Edit Button */}
+          <Pressable
+            className={`p-3 rounded transition-all duration-150 ${tailwind.background.both} hover:opacity-80`}
+            onPress={onEdit}
+          >
+            <IconSymbol name="pencil" size={16} color={colors.brand.primary} />
+          </Pressable>
+
+          {/* Delete Button */}
+          <Pressable
+            className={`p-3 rounded transition-all duration-150 ${tailwind.background.both} hover:opacity-80`}
+            onPress={onDelete}
+          >
+            <IconSymbol name="trash" size={16} color={colors.brand.error} />
+          </Pressable>
+        </View>
+      )}
     </View>
-
-    {isEditing && (
-      <View className="flex-row gap-1">
-        {/* Move Up Button */}
-        <Pressable
-          className={`p-3 rounded transition-all duration-150 ${canMoveUp ? tailwind.background.both : 'opacity-30'} hover:opacity-80`}
-          onPress={onMoveUp}
-          disabled={!canMoveUp}
-          accessibilityLabel="Move section up"
-        >
-          <IconSymbol name="chevron-up" size={16} color={colors.brand.primary} />
-        </Pressable>
-
-        {/* Move Down Button */}
-        <Pressable
-          className={`p-3 rounded transition-all duration-150 ${canMoveDown ? tailwind.background.both : 'opacity-30'} hover:opacity-80`}
-          onPress={onMoveDown}
-          disabled={!canMoveDown}
-          accessibilityLabel="Move section down"
-        >
-          <IconSymbol name="chevron-down" size={16} color={colors.brand.primary} />
-        </Pressable>
-
-        {/* Edit Button */}
-        <Pressable
-          className={`p-3 rounded transition-all duration-150 ${tailwind.background.both} hover:opacity-80`}
-          onPress={onEdit}
-        >
-          <IconSymbol name="pencil" size={16} color={colors.brand.primary} />
-        </Pressable>
-
-        {/* Delete Button */}
-        <Pressable
-          className={`p-3 rounded transition-all duration-150 ${tailwind.background.both} hover:opacity-80`}
-          onPress={onDelete}
-        >
-          <IconSymbol name="trash" size={16} color={colors.brand.error} />
-        </Pressable>
-      </View>
-    )}
-  </View>
-);
+  );
+};
 
 export const SetSectionHeader = ({ section, isEditing = false, isOwner = false, duration, canMoveUp = false, canMoveDown = false, onEdit, onDelete, onMoveUp, onMoveDown }: SetSectionHeaderProps) => {
   const isWeb = Platform.OS === 'web';

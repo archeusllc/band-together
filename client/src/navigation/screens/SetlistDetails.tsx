@@ -86,30 +86,23 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
       setSocket(socket);
 
       socket.subscribe((message: any) => {
-        console.log('[WebSocket] Received message:', message.type, message);
-
         if (message.type === 'presence-update') {
-          console.log('[WebSocket] Presence update:', message.presence);
           setPresence(message.presence);
         } else {
           // For any data mutation event, debounce refresh to prevent excessive API calls
-          console.log('[WebSocket] Data changed, refresh debounced...');
           debouncedRefresh();
         }
       });
 
       socket.on('open', () => {
-        console.log('[WebSocket] Connected to setlist');
         setIsConnected(true);
       });
 
       socket.on('close', () => {
-        console.log('[WebSocket] Disconnected from setlist');
         setIsConnected(false);
       });
 
-      socket.on('error', (error: any) => {
-        console.error('[WebSocket] Connection error:', error);
+      socket.on('error', () => {
         setIsConnected(false);
       });
 
@@ -727,10 +720,22 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
     const canMoveUp = findPreviousTrackIndex(currentIndex) !== -1;
     const canMoveDown = findNextTrackIndex(currentIndex) !== -1;
 
+    // Calculate position within the current section (for numbering)
+    let sectionNumber = 0;
+    for (let i = currentIndex - 1; i >= 0; i--) {
+      if (displayItems[i].type === 'header') {
+        break;
+      }
+      if (displayItems[i].type === 'item') {
+        sectionNumber++;
+      }
+    }
+
     return (
       <View>
         <SetItemRow
           item={trackItem}
+          sectionPosition={sectionNumber}
           isEditing={isOwner || false}
           isOwner={isOwner || false}
           onEdit={() => setEditingItem(trackItem)}

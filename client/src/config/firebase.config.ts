@@ -1,8 +1,9 @@
 import { initializeApp } from 'firebase/app';
-import { getAuth, setPersistence, browserLocalPersistence, browserSessionPersistence } from 'firebase/auth';
+import { initializeAuth, getAuth, setPersistence, browserLocalPersistence, browserSessionPersistence, getReactNativePersistence } from 'firebase/auth';
 import { getStorage } from 'firebase/storage';
 import { getMessaging, isSupported } from 'firebase/messaging';
 import { Platform } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const firebaseConfig = {
   apiKey: process.env.EXPO_PUBLIC_FIREBASE_API_KEY,
@@ -17,17 +18,24 @@ const firebaseConfig = {
 // Initialize Firebase
 export const firebaseApp = initializeApp(firebaseConfig);
 
-// Initialize Auth (platform-agnostic)
-// Firebase SDK v12+ handles platform-specific persistence automatically
-export const auth = getAuth(firebaseApp);
+// Initialize Auth with platform-specific persistence
+let auth: ReturnType<typeof getAuth> | ReturnType<typeof initializeAuth>;
 
-// Set up persistence for web after auth is initialized
 if (Platform.OS === 'web') {
+  // Web: Use getAuth with explicit persistence
+  auth = getAuth(firebaseApp);
   setPersistence(auth, browserLocalPersistence).catch(() => {
     // Fallback to session persistence if local persistence fails
     return setPersistence(auth, browserSessionPersistence);
   });
+} else {
+  // Mobile: Use initializeAuth with AsyncStorage persistence
+  auth = initializeAuth(firebaseApp, {
+    persistence: getReactNativePersistence(AsyncStorage),
+  });
 }
+
+export { auth };
 
 // Initialize Storage
 export const storage = getStorage(firebaseApp);
