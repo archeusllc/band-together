@@ -108,7 +108,7 @@ export const SettingsScreen = () => {
     <ScrollView className={`flex-1 ${tailwind.background.both}`}>
       <View className={`mt-5 ${tailwind.card.both} px-4`}>
         <Text className={`text-xs font-semibold ${tailwind.textMuted.both} uppercase tracking-wider px-4 pt-4 pb-2 ${tailwind.background.both} -mx-4`}>About</Text>
-        <View className={`flex-row justify-between items-center py-3 border-b ${tailwind.border.both}`}>
+        <View className={`flex-row justify-between items-center py-3`}>
           <Text className={`text-base ${tailwind.text.both}`}>API Status</Text>
           <View className="items-end">
             <Text
@@ -126,17 +126,17 @@ export const SettingsScreen = () => {
             </Text>
           </View>
         </View>
-        <View className={`flex-row justify-between items-center py-3 border-b ${tailwind.border.both}`}>
+        <View className={`flex-row justify-between items-center py-3`}>
           <Text className={`text-base ${tailwind.text.both}`}>Version</Text>
           <Text className={`text-base ${tailwind.textMuted.both}`}>1.0.0</Text>
         </View>
-        <View className={`flex-row justify-between items-center py-3 ${process.env.NODE_ENV !== 'development' ? `border-b ${tailwind.border.both}` : ''}`}>
+        <View className={`flex-row justify-between items-center py-3`}>
           <Text className={`text-base ${tailwind.text.both}`}>Build</Text>
           <Text className={`text-base ${tailwind.textMuted.both}`}>2026.01.18</Text>
         </View>
         {process.env.NODE_ENV === 'development' && (
           <>
-            <View className={`flex-row justify-between items-center py-3 border-b ${tailwind.border.both}`}>
+            <View className={`flex-row justify-between items-center py-3`}>
               <Text className={`text-base ${tailwind.text.both}`}>Environment</Text>
               <Text className={`text-base ${tailwind.textMuted.both}`}>{process.env.NODE_ENV}</Text>
             </View>
