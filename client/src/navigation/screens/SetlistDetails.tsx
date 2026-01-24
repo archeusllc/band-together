@@ -5,10 +5,10 @@ import {
   ScrollView,
   FlatList,
   Pressable,
-  Alert,
   TextInput,
 } from 'react-native';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { DrawerScreenProps } from '@react-navigation/drawer';
 import type { DrawerParamList } from '@navigation/types';
@@ -18,24 +18,27 @@ import { tailwind, colors } from '@theme';
 import { IconSymbol } from '@ui';
 import { SetItemRow } from '@components/setlist/SetItemRow';
 import { SetSectionHeader } from '@components/setlist/SetSectionHeader';
+import { SetBreakIndicator } from '@components/setlist/SetBreakIndicator';
 import { SongSearchModal } from '@components/setlist/SongSearchModal';
 import { AddSectionModal } from '@components/setlist/AddSectionModal';
 import { EditItemModal } from '@components/setlist/EditItemModal';
+import { EditSectionModal } from '@components/setlist/EditSectionModal';
 import { ShareModal } from '@components/setlist/ShareModal';
 import { SetlistDetailsSkeleton } from '@components/setlist/SetlistDetailsSkeleton';
-import { PresenceBadge } from '@components/ui';
+import { PresenceBadge, AlertModal } from '@components/ui';
 import type { SetList, SetItem, SetSection, Track } from '@band-together/shared';
 
 type Props = DrawerScreenProps<DrawerParamList, 'SetlistDetails'>;
 
 interface DisplayItem {
-  type: 'header' | 'item';
+  type: 'header' | 'item' | 'break';
   data: SetSection | (SetItem & { track?: Track });
   id: string;
 }
 
 export const SetlistDetailsScreen = ({ route }: Props) => {
   const navigation = useNavigation<NativeStackNavigationProp<DrawerParamList>>();
+  const insets = useSafeAreaInsets();
   const { setlistId, shareToken } = route.params;
   const { user, loading: authLoading } = useAuth();
   const [setlist, setSetlist] = useState<SetList & { setItems?: Array<SetItem & { track?: any }>; setSections?: SetSection[] } | null>(null);
@@ -53,6 +56,7 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
   const [deleteSectionConfirm, setDeleteSectionConfirm] = useState<SetSection | null>(null);
   const [deleteError, setDeleteError] = useState<string | null>(null);
   const [editingItem, setEditingItem] = useState<SetItem & { track?: Track } | null>(null);
+  const [editingSection, setEditingSection] = useState<SetSection | null>(null);
   const [operationLoading, setOperationLoading] = useState(false);
   const [socket, setSocket] = useState<any>(null);
   const [presence, setPresence] = useState<any[]>([]);
@@ -365,11 +369,20 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
     );
   }
 
-  // Calculate total duration
-  const totalDuration = (setlist.setItems || []).reduce((sum, item) => {
+  // Calculate total duration (tracks + breaks)
+  const trackDuration = (setlist.setItems || []).reduce((sum, item) => {
     const duration = item.customDuration ?? item.track?.defaultDuration ?? 0;
     return sum + duration;
   }, 0);
+
+  const breakDuration = (setlist.setSections || []).reduce((sum, section) => {
+    return sum + (section.breakDuration ?? 0);
+  }, 0);
+
+  const totalDuration = trackDuration + breakDuration;
+
+  // Get sections list
+  const sections = setlist.setSections || [];
 
   // Group items by section for display
   const sectionMap = new Map<string | null, typeof setlist.setItems>();
@@ -381,9 +394,19 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
     sectionMap.get(sectionId)!.push(item);
   });
 
+  // Calculate per-section durations (sum of track durations, excluding breaks)
+  const sectionDurations = new Map<string, number>();
+  sections.forEach((section) => {
+    const sectionItems = sectionMap.get(section.sectionId) || [];
+    const duration = sectionItems.reduce((sum, item) => {
+      const itemDuration = item.customDuration ?? item.track?.defaultDuration ?? 0;
+      return sum + itemDuration;
+    }, 0);
+    sectionDurations.set(section.sectionId, duration);
+  });
+
   // Create display list with sections as headers
   const displayItems: DisplayItem[] = [];
-  const sections = setlist.setSections || [];
 
   // Add unsectioned items first (if any)
   const unsectionedItems = sectionMap.get(null) || [];
@@ -393,13 +416,17 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
     });
   }
 
-  // Add sections with their items
+  // Add sections with their items and breaks
   sections.forEach((section) => {
     displayItems.push({ type: 'header', data: section, id: `section-${section.sectionId}` });
     const sectionItems = sectionMap.get(section.sectionId) || [];
     sectionItems.forEach((item) => {
       displayItems.push({ type: 'item', data: item, id: `item-${item.setItemId}` });
     });
+    // Add break indicator if section has a break duration
+    if (section.breakDuration && section.breakDuration > 0) {
+      displayItems.push({ type: 'break', data: section, id: `break-${section.sectionId}` });
+    }
   });
 
   const renderItem = ({ item }: { item: DisplayItem }) => {
@@ -410,35 +437,18 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
           section={section}
           isEditing={isOwner || false}
           isOwner={isOwner || false}
-          onEdit={() => {
-            Alert.prompt(
-              'Edit Section Name',
-              'Enter new section name',
-              [
-                { text: 'Cancel', style: 'cancel' },
-                {
-                  text: 'Update',
-                  onPress: async (newName: string | undefined) => {
-                    if (!newName?.trim()) return;
-                    setOperationLoading(true);
-                    try {
-                      await setlistService.updateSection(setlistId, section.sectionId, {
-                        name: newName.trim(),
-                      });
-                      await fetchSetlistDetails();
-                    } catch (err) {
-                      setDeleteError(`Failed to update section: ${err instanceof Error ? err.message : 'Unknown error'}`);
-                    } finally {
-                      setOperationLoading(false);
-                    }
-                  },
-                },
-              ],
-              'plain-text',
-              section.name
-            );
-          }}
+          duration={sectionDurations.get(section.sectionId)}
+          onEdit={() => setEditingSection(section)}
           onDelete={() => handleDeleteSection(section)}
+        />
+      );
+    }
+
+    if (item.type === 'break') {
+      const section = item.data as SetSection;
+      return (
+        <SetBreakIndicator
+          breakDuration={section.breakDuration!}
         />
       );
     }
@@ -652,7 +662,10 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
 
       {/* Bottom Action Bar (owner only) */}
       {isOwner && (
-        <View className={`absolute bottom-0 left-0 right-0 flex-row border-t ${tailwind.border.both} ${tailwind.card.both}`}>
+        <View
+          className={`absolute bottom-0 left-0 right-0 flex-row border-t ${tailwind.border.both} ${tailwind.card.both}`}
+          style={{ paddingBottom: insets.bottom }}
+        >
           <Pressable
             onPress={() => setShowAddSection(true)}
             disabled={operationLoading}
@@ -694,6 +707,25 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
         item={editingItem}
         onClose={() => setEditingItem(null)}
         onSave={handleUpdateItem}
+        loading={operationLoading}
+      />
+
+      <EditSectionModal
+        visible={!!editingSection}
+        section={editingSection}
+        onClose={() => setEditingSection(null)}
+        onSave={async (updates) => {
+          setOperationLoading(true);
+          try {
+            await setlistService.updateSection(setlistId, editingSection!.sectionId, updates);
+            await fetchSetlistDetails();
+            setEditingSection(null);
+          } catch (err) {
+            setDeleteError(`Failed to update section: ${err instanceof Error ? err.message : 'Unknown error'}`);
+          } finally {
+            setOperationLoading(false);
+          }
+        }}
         loading={operationLoading}
       />
 

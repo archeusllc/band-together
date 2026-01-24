@@ -8,9 +8,11 @@ export type { SetSection };
 export interface CreateSetSectionInput {
   name: string;
   position: number;
+  breakDuration?: number;
 }
 
 export interface UpdateSetSectionInput {
   name?: string;
   position?: number;
+  breakDuration?: number;
 }

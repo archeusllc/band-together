@@ -431,6 +431,7 @@ export const setlistService = {
           setListId: newSetlist.setListId,
           name: section.name,
           position: section.position,
+          breakDuration: section.breakDuration,
         },
       });
       sectionMap.set(section.sectionId, newSection.sectionId);
@@ -737,6 +738,7 @@ export const setlistService = {
     data: {
       name: string;
       position?: number;
+      breakDuration?: number;
     },
     shareToken?: string
   ) => {
@@ -777,6 +779,7 @@ export const setlistService = {
         setListId: setlistId,
         name: data.name,
         position,
+        breakDuration: data.breakDuration,
       },
     });
 
@@ -787,7 +790,7 @@ export const setlistService = {
   },
 
   /**
-   * Update a section (name only)
+   * Update a section (name and/or break duration)
    * @param firebaseUid - Firebase UID of the authenticated user
    * @param shareToken - Optional share token for permission validation
    */
@@ -797,6 +800,7 @@ export const setlistService = {
     firebaseUid: string,
     data: {
       name?: string;
+      breakDuration?: number | null;
     },
     shareToken?: string
   ) => {
@@ -827,13 +831,16 @@ export const setlistService = {
       throw new Error('Unauthorized: You must be the owner or have CAN_EDIT access');
     }
 
-    // 4. Update section name if provided
-    const updateData: { name?: string } = {};
+    // 4. Update section fields if provided
+    const updateData: { name?: string; breakDuration?: number | null } = {};
     if (data.name !== undefined) {
       if (data.name.trim().length === 0) {
         throw new Error('Section name cannot be empty');
       }
       updateData.name = data.name.trim();
+    }
+    if (data.breakDuration !== undefined) {
+      updateData.breakDuration = data.breakDuration;
     }
 
     const updatedSection = await prisma.setSection.update({

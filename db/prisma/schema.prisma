@@ -288,15 +288,16 @@ model SetItem {
 }
 
 model SetSection {
-  sectionId    String    @id @default(cuid())
-  setListId    String
-  setList      SetList   @relation(fields: [setListId], references: [setListId], onDelete: Cascade)
-  name         String
-  position     Int
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
+  sectionId      String    @id @default(cuid())
+  setListId      String
+  setList        SetList   @relation(fields: [setListId], references: [setListId], onDelete: Cascade)
+  name           String
+  position       Int
+  breakDuration  Int?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
 
-  setItems     SetItem[]
+  setItems       SetItem[]
 
   @@unique([setListId, position])
   @@index([setListId])

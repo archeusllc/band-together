@@ -262,6 +262,7 @@ exports.Prisma.SetSectionScalarFieldEnum = {
   setListId: 'setListId',
   name: 'name',
   position: 'position',
+  breakDuration: 'breakDuration',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };

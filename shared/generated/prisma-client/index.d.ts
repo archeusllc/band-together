@@ -17948,10 +17948,12 @@ export namespace Prisma {
 
   export type SetSectionAvgAggregateOutputType = {
     position: number | null
+    breakDuration: number | null
   }
 
   export type SetSectionSumAggregateOutputType = {
     position: number | null
+    breakDuration: number | null
   }
 
   export type SetSectionMinAggregateOutputType = {
@@ -17959,6 +17961,7 @@ export namespace Prisma {
     setListId: string | null
     name: string | null
     position: number | null
+    breakDuration: number | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -17968,6 +17971,7 @@ export namespace Prisma {
     setListId: string | null
     name: string | null
     position: number | null
+    breakDuration: number | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -17977,6 +17981,7 @@ export namespace Prisma {
     setListId: number
     name: number
     position: number
+    breakDuration: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -17985,10 +17990,12 @@ export namespace Prisma {
 
   export type SetSectionAvgAggregateInputType = {
     position?: true
+    breakDuration?: true
   }
 
   export type SetSectionSumAggregateInputType = {
     position?: true
+    breakDuration?: true
   }
 
   export type SetSectionMinAggregateInputType = {
@@ -17996,6 +18003,7 @@ export namespace Prisma {
     setListId?: true
     name?: true
     position?: true
+    breakDuration?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -18005,6 +18013,7 @@ export namespace Prisma {
     setListId?: true
     name?: true
     position?: true
+    breakDuration?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -18014,6 +18023,7 @@ export namespace Prisma {
     setListId?: true
     name?: true
     position?: true
+    breakDuration?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -18110,6 +18120,7 @@ export namespace Prisma {
     setListId: string
     name: string
     position: number
+    breakDuration: number | null
     createdAt: Date
     updatedAt: Date
     _count: SetSectionCountAggregateOutputType | null
@@ -18138,6 +18149,7 @@ export namespace Prisma {
     setListId?: boolean
     name?: boolean
     position?: boolean
+    breakDuration?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     setList?: boolean | SetListDefaultArgs<ExtArgs>
@@ -18150,6 +18162,7 @@ export namespace Prisma {
     setListId?: boolean
     name?: boolean
     position?: boolean
+    breakDuration?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     setList?: boolean | SetListDefaultArgs<ExtArgs>
@@ -18160,6 +18173,7 @@ export namespace Prisma {
     setListId?: boolean
     name?: boolean
     position?: boolean
+    breakDuration?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     setList?: boolean | SetListDefaultArgs<ExtArgs>
@@ -18170,11 +18184,12 @@ export namespace Prisma {
     setListId?: boolean
     name?: boolean
     position?: boolean
+    breakDuration?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type SetSectionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"sectionId" | "setListId" | "name" | "position" | "createdAt" | "updatedAt", ExtArgs["result"]["setSection"]>
+  export type SetSectionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"sectionId" | "setListId" | "name" | "position" | "breakDuration" | "createdAt" | "updatedAt", ExtArgs["result"]["setSection"]>
   export type SetSectionInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     setList?: boolean | SetListDefaultArgs<ExtArgs>
     setItems?: boolean | SetSection$setItemsArgs<ExtArgs>
@@ -18198,6 +18213,7 @@ export namespace Prisma {
       setListId: string
       name: string
       position: number
+      breakDuration: number | null
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["setSection"]>
@@ -18629,6 +18645,7 @@ export namespace Prisma {
     readonly setListId: FieldRef<"SetSection", 'String'>
     readonly name: FieldRef<"SetSection", 'String'>
     readonly position: FieldRef<"SetSection", 'Int'>
+    readonly breakDuration: FieldRef<"SetSection", 'Int'>
     readonly createdAt: FieldRef<"SetSection", 'DateTime'>
     readonly updatedAt: FieldRef<"SetSection", 'DateTime'>
   }
@@ -20356,6 +20373,7 @@ export namespace Prisma {
     setListId: 'setListId',
     name: 'name',
     position: 'position',
+    breakDuration: 'breakDuration',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -21544,6 +21562,7 @@ export namespace Prisma {
     setListId?: StringFilter<"SetSection"> | string
     name?: StringFilter<"SetSection"> | string
     position?: IntFilter<"SetSection"> | number
+    breakDuration?: IntNullableFilter<"SetSection"> | number | null
     createdAt?: DateTimeFilter<"SetSection"> | Date | string
     updatedAt?: DateTimeFilter<"SetSection"> | Date | string
     setList?: XOR<SetListScalarRelationFilter, SetListWhereInput>
@@ -21555,6 +21574,7 @@ export namespace Prisma {
     setListId?: SortOrder
     name?: SortOrder
     position?: SortOrder
+    breakDuration?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     setList?: SetListOrderByWithRelationInput
@@ -21570,6 +21590,7 @@ export namespace Prisma {
     setListId?: StringFilter<"SetSection"> | string
     name?: StringFilter<"SetSection"> | string
     position?: IntFilter<"SetSection"> | number
+    breakDuration?: IntNullableFilter<"SetSection"> | number | null
     createdAt?: DateTimeFilter<"SetSection"> | Date | string
     updatedAt?: DateTimeFilter<"SetSection"> | Date | string
     setList?: XOR<SetListScalarRelationFilter, SetListWhereInput>
@@ -21581,6 +21602,7 @@ export namespace Prisma {
     setListId?: SortOrder
     name?: SortOrder
     position?: SortOrder
+    breakDuration?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: SetSectionCountOrderByAggregateInput
@@ -21598,6 +21620,7 @@ export namespace Prisma {
     setListId?: StringWithAggregatesFilter<"SetSection"> | string
     name?: StringWithAggregatesFilter<"SetSection"> | string
     position?: IntWithAggregatesFilter<"SetSection"> | number
+    breakDuration?: IntNullableWithAggregatesFilter<"SetSection"> | number | null
     createdAt?: DateTimeWithAggregatesFilter<"SetSection"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"SetSection"> | Date | string
   }
@@ -22725,6 +22748,7 @@ export namespace Prisma {
     sectionId?: string
     name: string
     position: number
+    breakDuration?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
     setList: SetListCreateNestedOneWithoutSetSectionsInput
@@ -22736,6 +22760,7 @@ export namespace Prisma {
     setListId: string
     name: string
     position: number
+    breakDuration?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
     setItems?: SetItemUncheckedCreateNestedManyWithoutSectionInput
@@ -22745,6 +22770,7 @@ export namespace Prisma {
     sectionId?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     position?: IntFieldUpdateOperationsInput | number
+    breakDuration?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     setList?: SetListUpdateOneRequiredWithoutSetSectionsNestedInput
@@ -22756,6 +22782,7 @@ export namespace Prisma {
     setListId?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     position?: IntFieldUpdateOperationsInput | number
+    breakDuration?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     setItems?: SetItemUncheckedUpdateManyWithoutSectionNestedInput
@@ -22766,6 +22793,7 @@ export namespace Prisma {
     setListId: string
     name: string
     position: number
+    breakDuration?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -22774,6 +22802,7 @@ export namespace Prisma {
     sectionId?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     position?: IntFieldUpdateOperationsInput | number
+    breakDuration?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -22783,6 +22812,7 @@ export namespace Prisma {
     setListId?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     position?: IntFieldUpdateOperationsInput | number
+    breakDuration?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -23776,12 +23806,14 @@ export namespace Prisma {
     setListId?: SortOrder
     name?: SortOrder
     position?: SortOrder
+    breakDuration?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
 
   export type SetSectionAvgOrderByAggregateInput = {
     position?: SortOrder
+    breakDuration?: SortOrder
   }
 
   export type SetSectionMaxOrderByAggregateInput = {
@@ -23789,6 +23821,7 @@ export namespace Prisma {
     setListId?: SortOrder
     name?: SortOrder
     position?: SortOrder
+    breakDuration?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -23798,12 +23831,14 @@ export namespace Prisma {
     setListId?: SortOrder
     name?: SortOrder
     position?: SortOrder
+    breakDuration?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
 
   export type SetSectionSumOrderByAggregateInput = {
     position?: SortOrder
+    breakDuration?: SortOrder
   }
 
   export type EnumSharePermissionFilter<$PrismaModel = never> = {
@@ -28403,6 +28438,7 @@ export namespace Prisma {
     sectionId?: string
     name: string
     position: number
+    breakDuration?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
     setItems?: SetItemCreateNestedManyWithoutSectionInput
@@ -28412,6 +28448,7 @@ export namespace Prisma {
     sectionId?: string
     name: string
     position: number
+    breakDuration?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
     setItems?: SetItemUncheckedCreateNestedManyWithoutSectionInput
@@ -28585,6 +28622,7 @@ export namespace Prisma {
     setListId?: StringFilter<"SetSection"> | string
     name?: StringFilter<"SetSection"> | string
     position?: IntFilter<"SetSection"> | number
+    breakDuration?: IntNullableFilter<"SetSection"> | number | null
     createdAt?: DateTimeFilter<"SetSection"> | Date | string
     updatedAt?: DateTimeFilter<"SetSection"> | Date | string
   }
@@ -28673,6 +28711,7 @@ export namespace Prisma {
     sectionId?: string
     name: string
     position: number
+    breakDuration?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
     setList: SetListCreateNestedOneWithoutSetSectionsInput
@@ -28683,6 +28722,7 @@ export namespace Prisma {
     setListId: string
     name: string
     position: number
+    breakDuration?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -28783,6 +28823,7 @@ export namespace Prisma {
     sectionId?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     position?: IntFieldUpdateOperationsInput | number
+    breakDuration?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     setList?: SetListUpdateOneRequiredWithoutSetSectionsNestedInput
@@ -28793,6 +28834,7 @@ export namespace Prisma {
     setListId?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     position?: IntFieldUpdateOperationsInput | number
+    breakDuration?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -29961,6 +30003,7 @@ export namespace Prisma {
     sectionId?: string
     name: string
     position: number
+    breakDuration?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -30014,6 +30057,7 @@ export namespace Prisma {
     sectionId?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     position?: IntFieldUpdateOperationsInput | number
+    breakDuration?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     setItems?: SetItemUpdateManyWithoutSectionNestedInput
@@ -30023,6 +30067,7 @@ export namespace Prisma {
     sectionId?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     position?: IntFieldUpdateOperationsInput | number
+    breakDuration?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     setItems?: SetItemUncheckedUpdateManyWithoutSectionNestedInput
@@ -30032,6 +30077,7 @@ export namespace Prisma {
     sectionId?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     position?: IntFieldUpdateOperationsInput | number
+    breakDuration?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
