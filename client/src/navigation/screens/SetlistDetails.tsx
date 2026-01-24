@@ -170,7 +170,7 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
     if (authLoading) return;
 
     fetchSetlistDetails();
-  }, [setlistId, authLoading]);
+  }, [setlistId, authLoading, isAuthenticated]);
 
   const formatDurationRounded = (seconds: number): string => {
     if (seconds === 0) return '0 minutes';
