@@ -4,7 +4,9 @@
   "description": "A band companion app for musicians",
   "private": true,
   "scripts": {
-    "start": "bunx concurrently \"cd api && bun start\" \"cd client && bun start\"",
+    "start": "bunx concurrently --names=\"api,client\" --prefix=\"[{name}]\" \"cd api && bun start\" \"cd client && bun start:go\"",
+    "start:dev": "bunx concurrently --names=\"api,client\" --prefix=\"[{name}]\" \"cd api && bun start\" \"cd client && bun start\"",
+    "kill": "lsof -ti:3000,3001,5173 | xargs kill -9 2>/dev/null; pkill -f 'expo start' 2>/dev/null; pkill -f 'bun start' 2>/dev/null || true",
     "preinstall": "cd shared && bun install && cd ../api && bun install && cd ../client && bun install && cd ../db && bun install",
     "postinstall": "rm -rf node_modules bun.lock package-lock.json",
     "typecheck": "bun run typecheck:client && bun run typecheck:api",

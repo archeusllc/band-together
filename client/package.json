@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.tsx",
   "scripts": {
-    "start": "expo start",
+    "start": "expo start --go --clear",
     "typecheck": "tsc --noEmit",
     "clean": "rm -rf node_modules bun.lock package-lock.json .expo",
     "reset": "bun clean && bun install",

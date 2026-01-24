@@ -7,7 +7,7 @@ import {
 } from '@react-navigation/drawer';
 import { IconSymbol } from '@ui/IconSymbol';
 import { useAuth } from '@contexts';
-import { colors, tailwind } from '@theme/colors';
+import { colors, tailwind, images } from '@theme';
 
 export function DrawerContent(props: DrawerContentComponentProps) {
   const { user, isAuthenticated, logout } = useAuth();
@@ -64,8 +64,7 @@ export function DrawerContent(props: DrawerContentComponentProps) {
         className={`py-2 px-5 border-b ${tailwind.border.both}`}
       >
         <Image
-          source={require('@assets/images/band-together-logo.png')}
-          className="dark:invert-0 invert"
+          source={colorScheme === 'dark' ? images.logo.dark : images.logo.light}
           style={{ width: 200, height: 70 }}
           resizeMode="contain"
           accessibilityLabel="Band Together"

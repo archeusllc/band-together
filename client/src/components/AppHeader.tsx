@@ -1,11 +1,12 @@
 import React from 'react';
 import { View, Text, Pressable, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useColorScheme } from 'nativewind';
 import { DrawerActions, useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { RootStackParamList, DrawerParamList } from '@navigation/types';
 import { useAuth } from '@contexts';
-import { tailwind, colors } from '@theme';
+import { tailwind, colors, images } from '@theme';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList> &
   NativeStackNavigationProp<DrawerParamList>;
@@ -13,6 +14,7 @@ type NavigationProp = NativeStackNavigationProp<RootStackParamList> &
 export const AppHeader = () => {
   const navigation = useNavigation<NavigationProp>();
   const { user, isAuthenticated } = useAuth();
+  const { colorScheme } = useColorScheme();
 
   const handleAvatarPress = () => {
     if (isAuthenticated) {
@@ -38,8 +40,8 @@ export const AppHeader = () => {
           </Text>
         </Pressable>
         <Image
-          source={require('@assets/images/band-together-logo.png')}
-          className="flex-1 dark:invert-0 invert"
+          source={colorScheme === 'dark' ? images.logo.dark : images.logo.light}
+          className="flex-1"
           style={{ height: 40 }}
           resizeMode="contain"
           accessibilityLabel="Band Together"

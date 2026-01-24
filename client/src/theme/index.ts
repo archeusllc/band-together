@@ -1,1 +1,1 @@
-export { colors, tailwind, navigationColors } from './colors';
+export { colors, tailwind, navigationColors, images } from './colors';

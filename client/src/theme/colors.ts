@@ -107,3 +107,14 @@ export const navigationColors = {
     notification: colors.brand.error,
   },
 };
+
+/**
+ * Theme-based image assets
+ * Supports different images for light/dark modes and future theme variants
+ */
+export const images = {
+  logo: {
+    light: require('@assets/images/band-together-logo-light.png'),
+    dark: require('@assets/images/band-together-logo-dark.png'),
+  },
+};

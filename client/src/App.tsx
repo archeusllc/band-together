@@ -1,10 +1,15 @@
 import 'react-native-gesture-handler';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { View, Text, ScrollView } from 'react-native';
+import { useColorScheme } from 'nativewind';
+import * as SplashScreen from 'expo-splash-screen';
 import { Navigation } from './navigation';
 import { AuthProvider, FeedProvider } from '@contexts';
-import { tailwind } from '@theme';
+import { tailwind, colors } from '@theme';
+
+// Keep the splash screen visible while the app is loading
+SplashScreen.preventAutoHideAsync();
 
 // Error Boundary to catch and display app crashes
 class ErrorBoundary extends React.Component<
@@ -81,6 +86,25 @@ class ErrorBoundary extends React.Component<
   }
 }
 
+const SplashScreenHider = ({ children }: { children: React.ReactNode }) => {
+  const { colorScheme } = useColorScheme();
+
+  useEffect(() => {
+    // Hide splash screen when app has finished initializing
+    const hideSplash = async () => {
+      try {
+        await SplashScreen.hideAsync();
+      } catch (err) {
+        console.warn('Error hiding splash screen:', err);
+      }
+    };
+
+    hideSplash();
+  }, []);
+
+  return <>{children}</>;
+};
+
 export const App = () => {
   console.log('📱 [App] Rendering...');
   return (
@@ -88,7 +112,9 @@ export const App = () => {
       <SafeAreaProvider>
         <AuthProvider>
           <FeedProvider>
-            <Navigation />
+            <SplashScreenHider>
+              <Navigation />
+            </SplashScreenHider>
           </FeedProvider>
         </AuthProvider>
       </SafeAreaProvider>
