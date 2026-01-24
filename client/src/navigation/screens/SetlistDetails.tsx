@@ -26,7 +26,7 @@ import { EditSectionModal } from '@components/setlist/EditSectionModal';
 import { ShareModal } from '@components/setlist/ShareModal';
 import { SetlistDetailsSkeleton } from '@components/setlist/SetlistDetailsSkeleton';
 import { PresenceBadge, AlertModal } from '@components/ui';
-import type { SetList, SetItem, SetSection, Track } from '@band-together/shared';
+import type { SetList, SetItem, SetSection, Track, TrackSearchResult } from '@band-together/shared';
 
 type Props = DrawerScreenProps<DrawerParamList, 'SetlistDetails'>;
 
@@ -47,7 +47,7 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
   const [error, setError] = useState<string | null>(null);
   const [isEditingName, setIsEditingName] = useState(false);
   const [editedName, setEditedName] = useState('');
-  const [duplicateTrackConfirm, setDuplicateTrackConfirm] = useState<Track | null>(null);
+  const [duplicateTrackConfirm, setDuplicateTrackConfirm] = useState<TrackSearchResult | null>(null);
   const [showSongSearch, setShowSongSearch] = useState(false);
   const [showAddSection, setShowAddSection] = useState(false);
   const [showOptions, setShowOptions] = useState(false);
@@ -183,7 +183,7 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
     return `~${hoursStr} hour${hoursRounded === 1 ? '' : 's'}`;
   };
 
-  const handleAddTrack = async (track: Track) => {
+  const handleAddTrack = async (track: TrackSearchResult) => {
     if (!setlist) return;
 
     // Check if track already exists in setlist
@@ -198,7 +198,7 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
     await performAddTrack(track);
   };
 
-  const performAddTrack = async (track: Track) => {
+  const performAddTrack = async (track: TrackSearchResult) => {
     setOperationLoading(true);
     try {
       await setlistService.addSetItem(setlistId, {

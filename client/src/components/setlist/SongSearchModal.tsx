@@ -3,20 +3,21 @@ import {
   View,
   Text,
   TextInput,
-  FlatList,
   Pressable,
   ActivityIndicator,
   Modal,
+  ScrollView,
 } from 'react-native';
 import { trackService } from '@services';
 import { tailwind, colors } from '@theme';
 import { IconSymbol } from '@ui';
-import type { Track } from '@band-together/shared';
+import type { TrackSearchResult } from '@band-together/shared';
+import { useColorScheme } from 'react-native';
 
 interface SongSearchModalProps {
   visible: boolean;
   onClose: () => void;
-  onSelectTrack: (track: Track) => void;
+  onSelectTrack: (track: TrackSearchResult) => void;
   existingTrackIds?: Set<string>;
 }
 
@@ -30,11 +31,16 @@ const formatDuration = (seconds: number): string => {
 };
 
 export const SongSearchModal = ({ visible, onClose, onSelectTrack, existingTrackIds }: SongSearchModalProps) => {
+  const colorScheme = useColorScheme();
+  const textColor = colorScheme === 'dark' ? colors.dark.text : colors.light.text;
+  const mutedColor = colorScheme === 'dark' ? colors.dark.muted : colors.light.muted;
+
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(false);
-  const [tracks, setTracks] = useState<Track[]>([]);
+  const [tracks, setTracks] = useState<TrackSearchResult[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [debounceTimer, setDebounceTimer] = useState<ReturnType<typeof setTimeout> | null>(null);
+  const [renderKey, setRenderKey] = useState(0);
 
   useEffect(() => {
     // Clear timeout on unmount
@@ -42,6 +48,16 @@ export const SongSearchModal = ({ visible, onClose, onSelectTrack, existingTrack
       if (debounceTimer) clearTimeout(debounceTimer);
     };
   }, [debounceTimer]);
+
+  useEffect(() => {
+    // Reset search state when modal opens
+    if (visible) {
+      setSearchQuery('');
+      setTracks([]);
+      setError(null);
+      if (debounceTimer) clearTimeout(debounceTimer);
+    }
+  }, [visible]);
 
   const performSearch = async (query: string) => {
     if (!query.trim()) {
@@ -64,16 +80,15 @@ export const SongSearchModal = ({ visible, onClose, onSelectTrack, existingTrack
       );
 
       if (searchError || !data) {
-        console.error('🔍 [TrackSearch] Error:', searchError);
         setError('Failed to search songs');
         setTracks([]);
         return;
       }
 
       // Handle both response formats: { data: [...] } or direct array
-      const tracksArray = Array.isArray(data) ? data : data.data || [];
-      console.log('🔍 [TrackSearch] Found tracks:', tracksArray.length);
+      const tracksArray = Array.isArray(data) ? data : (data?.data || []);
       setTracks(tracksArray);
+      setRenderKey(prev => prev + 1); // Force ScrollView remount for fresh render
       if (tracksArray.length === 0) {
         setError(null); // No error, just no results
       }
@@ -100,14 +115,13 @@ export const SongSearchModal = ({ visible, onClose, onSelectTrack, existingTrack
     setDebounceTimer(newTimer);
   };
 
-  const handleSelectTrack = (track: Track) => {
+  const handleSelectTrack = (track: TrackSearchResult) => {
     onSelectTrack(track);
-    setSearchQuery('');
-    setTracks([]);
-    onClose();
+    // Don't clear state here - let the parent component handle modal closing
+    // State will be reset when modal reopens via the useEffect on 'visible'
   };
 
-  const renderTrackItem = ({ item }: { item: Track }) => {
+  const renderTrackItem = ({ item }: { item: TrackSearchResult }) => {
     const isInSetlist = existingTrackIds?.has(item.trackId);
 
     return (
@@ -118,30 +132,31 @@ export const SongSearchModal = ({ visible, onClose, onSelectTrack, existingTrack
         <View className="flex-1">
           {/* Title and Duration */}
           <View className="flex-row items-center justify-between mb-1">
-            <Text className={`text-base font-semibold ${tailwind.text.both} flex-1`} numberOfLines={1}>
-              {item.title}
+            <Text
+              style={{ color: textColor, fontSize: 16, fontWeight: '600', flex: 1 }}
+              numberOfLines={1}
+            >
+              {item.title || 'Unknown Title'}
             </Text>
-            <Text className={`text-sm ${tailwind.textMuted.both} ml-2`}>
-              {formatDuration(item.defaultDuration || 0)}
+            <Text style={{ color: mutedColor, fontSize: 14, marginLeft: 8 }}>
+              {item.defaultDuration ? formatDuration(item.defaultDuration) : '—'}
             </Text>
           </View>
 
-          {/* Artist, Tuning, and In Setlist Badge */}
+          {/* Artist and In List Badge */}
           <View className="flex-row items-center gap-2">
             {item.artist && (
-              <Text className={`text-sm ${tailwind.textMuted.both} flex-1`} numberOfLines={1}>
+              <Text
+                style={{ color: mutedColor, fontSize: 14 }}
+                numberOfLines={1}
+              >
                 {item.artist}
-              </Text>
-            )}
-            {item.defaultTuning && (
-              <Text className={`text-xs px-2 py-1 rounded ${tailwind.activeBackground.both} ${tailwind.textMuted.both}`}>
-                {item.defaultTuning}
               </Text>
             )}
             {isInSetlist && (
               <View className="flex-row items-center gap-1 px-2 py-1 rounded bg-blue-100 dark:bg-blue-900/30">
                 <IconSymbol name="checkmark-circle" size={14} color={colors.brand.primary} />
-                <Text className={`text-xs font-medium`} style={{ color: colors.brand.primary }}>
+                <Text style={{ color: colors.brand.primary, fontSize: 12, fontWeight: '500' }}>
                   In List
                 </Text>
               </View>
@@ -183,7 +198,15 @@ export const SongSearchModal = ({ visible, onClose, onSelectTrack, existingTrack
         </View>
 
         {/* Content */}
-        {loading ? (
+        {tracks.length > 0 ? (
+          <ScrollView key={`scrollview-${renderKey}`} className="flex-1">
+            {tracks.map((item) => (
+              <View key={item.trackId}>
+                {renderTrackItem({ item })}
+              </View>
+            ))}
+          </ScrollView>
+        ) : loading ? (
           <View className="flex-1 justify-center items-center">
             <ActivityIndicator size="large" color={colors.brand.primary} />
             <Text className={`text-base ${tailwind.textMuted.both} mt-4`}>
@@ -204,20 +227,13 @@ export const SongSearchModal = ({ visible, onClose, onSelectTrack, existingTrack
               Start typing to search for songs
             </Text>
           </View>
-        ) : tracks.length === 0 ? (
+        ) : (
           <View className="flex-1 justify-center items-center p-6">
             <IconSymbol name="ban" size={48} color={colors.light.muted} />
             <Text className={`text-base ${tailwind.text.both} mt-4 text-center`}>
               No songs found for "{searchQuery}"
             </Text>
           </View>
-        ) : (
-          <FlatList
-            data={tracks}
-            keyExtractor={(item) => item.trackId}
-            renderItem={renderTrackItem}
-            contentContainerStyle={{ flexGrow: 1 }}
-          />
         )}
       </View>
     </Modal>

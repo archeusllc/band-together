@@ -1026,6 +1026,43 @@ When using `<Image>` components from React Native, there's a critical gotcha on 
 
 **Key Takeaway**: When targeting multiple platforms, prefer universal solutions (font-based icons, custom components) over platform-specific APIs (SF Symbols, native alerts). The extra effort to build cross-platform components pays off in maintainability and coverage. Always be explicit about React Native imports to avoid conflicts with DOM APIs on web.
 
+### Song Search - Lessons Learned (2026-01-24)
+
+**Problem**: Search modal displayed blank results on mobile, especially with large result sets.
+
+**Root Cause**: FlatList virtualization inefficiency when rendering search results.
+- FlatList uses "windowing" (renders only visible items) which is efficient for long scrollable lists
+- With search results (10-50 items), the overhead of virtualization caused rendering delays
+- Some items would fail to render on first pass but display correctly on subsequent renders
+- Broader searches (single letters like "A") returned many results, overwhelming FlatList's renderer
+
+**Solution**: Replaced FlatList with ScrollView + map() for search results.
+- ScrollView renders all items synchronously, eliminating virtualization overhead
+- Simple and predictable: items render consistently on first try
+- No performance penalty for typical search result sizes (< 100 items)
+- Direct React rendering is easier to debug than FlatList's complex state management
+
+**Key Insight**: FlatList is optimized for very long scrollable lists (1000+ items). For typical search results, the simplicity and predictability of ScrollView outweighs any theoretical performance benefits of virtualization.
+
+**Additional Fixes**:
+- Fixed type mismatches between API response (`TrackSearchResult`) and component expectations (`Track`)
+- Added `defaultTuning` field to API search response for completeness
+- Simplified item rendering to use inline styles instead of dynamic Tailwind classnames
+- Added reset effect when modal opens to ensure clean state for each search
+- Removed aggressive state clearing on track selection (prevented race conditions)
+- Reordered conditional rendering to show results first
+
+**Files Modified**:
+- `client/src/components/setlist/SongSearchModal.tsx` - Replaced FlatList with ScrollView, fixed types
+- `api/src/routes/tracks/tracks.service.ts` - Added `defaultTuning` to search results
+- `shared/types/Track.ts` - Updated `TrackSearchResult` interface to include `defaultTuning`
+- `client/src/navigation/screens/SetlistDetails.tsx` - Updated type expectations for track data
+
+**Takeaway**: When choosing between FlatList and ScrollView, consider the typical list size:
+- **ScrollView**: Simpler, better for < 100 items, predictable rendering
+- **FlatList**: Better for 1000+ items where virtualization provides significant benefit
+- Profile your actual use case rather than assuming FlatList is always better
+
 ---
 
 **Last Updated**: 2026-01-24

@@ -30,4 +30,5 @@ export interface TrackSearchResult {
   title: string;
   artist: string;
   defaultDuration: number | null;
+  defaultTuning: string | null;
 }

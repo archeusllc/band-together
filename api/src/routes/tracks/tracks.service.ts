@@ -39,7 +39,8 @@ export const tracksService = {
           type: true,
           title: true,
           artist: true,
-          defaultDuration: true
+          defaultDuration: true,
+          defaultTuning: true
         },
         orderBy: { [sortBy]: sortOrder },
         take: limit,
