@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, Pressable } from 'react-native';
+import { View, Text, Pressable, Image } from 'react-native';
 import { useColorScheme } from 'nativewind';
 import {
   DrawerContentScrollView,
@@ -55,7 +55,12 @@ export function DrawerContent(props: DrawerContentComponentProps) {
         onPress={() => navigation.navigate('Home')}
         className={`p-5 border-b ${tailwind.border.both}`}
       >
-        <Text className={`text-2xl font-bold mb-1 ${tailwind.text.dark}`}>Band Together</Text>
+        <Image
+          source={require('@assets/images/band-together-logo.png')}
+          style={{ width: 160, height: 50 }}
+          resizeMode="contain"
+          accessibilityLabel="Band Together"
+        />
         {isAuthenticated && user && (
           <Text className={`text-sm ${tailwind.textMuted.both}`}>{user.email}</Text>
         )}

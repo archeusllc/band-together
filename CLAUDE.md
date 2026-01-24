@@ -1007,13 +1007,37 @@ Platform-specific icon systems break web compatibility:
 - **30+ files updated** for state management or icon names
 - **Result**: Full feature parity on web, iOS, and Android
 
-**Key Takeaway**: When targeting multiple platforms, prefer universal solutions (font-based icons, custom components) over platform-specific APIs (SF Symbols, native alerts). The extra effort to build cross-platform components pays off in maintainability and coverage.
+**Challenge 3: Image Component Import Conflicts on Web**
+
+When using `<Image>` components from React Native, there's a critical gotcha on web:
+- **Problem**: React Native's `Image` component can conflict with the DOM's `Image` constructor on web
+- **Error**: "Failed to construct 'Image': Please use the 'new' operator, this DOM object constructor cannot be called as a function"
+- **Root cause**: If you use `<Image>` without importing it from `react-native`, the bundler may resolve it to the DOM's `Image` instead
+- **Solution**: Always explicitly import `Image` from `react-native` at the top of the file
+  ```typescript
+  // ✅ CORRECT - Explicit import
+  import { View, Text, Image } from 'react-native';
+
+  // ❌ WRONG - Missing Image import, bundler resolves to DOM Image
+  import { View, Text } from 'react-native';
+  ```
+- **Static asset syntax**: Use `require('@assets/path/to/image.png')` with `resizeMode="contain"` for proper aspect ratio handling
+- **Never use CSS properties**: Don't try to use `backgroundImage` or other CSS properties in React Native style objects
+
+**Key Takeaway**: When targeting multiple platforms, prefer universal solutions (font-based icons, custom components) over platform-specific APIs (SF Symbols, native alerts). The extra effort to build cross-platform components pays off in maintainability and coverage. Always be explicit about React Native imports to avoid conflicts with DOM APIs on web.
 
 ---
 
-**Last Updated**: 2026-01-23
+**Last Updated**: 2026-01-24
 
 **Recent Changes**:
+- **Logo Image Integration** (2026-01-24)
+  - Replaced "Band Together" text with `band-together-logo.png` image in AppHeader and DrawerContent
+  - **Critical lesson**: Always import `Image` from `react-native` when using `<Image>` components
+  - **Web conflict issue**: React Native's `Image` component conflicts with DOM's `Image` constructor on web
+  - **Solution**: Import `Image` explicitly from `react-native` to ensure proper component usage
+  - Never use CSS properties like `backgroundImage` with React Native - use proper `<Image>` syntax with `require()` for static assets
+  - Files modified: `client/src/components/AppHeader.tsx`, `client/src/components/DrawerContent.tsx`
 - **Completed Web Compatibility Migration** (2026-01-23)
   - **Icon Library Migration**: Migrated from `expo-symbols` (SF Symbols, iOS-only) to `@expo/vector-icons` (Ionicons)
     - Updated `IconSymbol` component to use Ionicons instead of SymbolView

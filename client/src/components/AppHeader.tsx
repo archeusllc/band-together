@@ -39,9 +39,13 @@ export const AppHeader = () => {
             ☰
           </Text>
         </Pressable>
-        <Text className={`text-lg font-bold ${tailwind.text.both} flex-1 text-center`}>
-          Band Together
-        </Text>
+        <Image
+          source={require('@assets/images/band-together-logo.png')}
+          className="flex-1"
+          style={{ height: 40 }}
+          resizeMode="contain"
+          accessibilityLabel="Band Together"
+        />
         <Pressable
           onPress={handleAvatarPress}
           className="flex-row items-center gap-2 active:opacity-70"
