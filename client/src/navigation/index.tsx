@@ -305,7 +305,7 @@ export function Navigation(props: any) {
 
   // Build linking prefixes dynamically for web to support localhost and local network URLs
   const getLinkingPrefixes = () => {
-    const prefixes = ['bandtogethermobile://'];
+    const prefixes = ['bandtogethermobile://', 'bandtogether://'];
 
     // On web, include both the current host and the production domain
     if (Platform.OS === 'web' && typeof window !== 'undefined' && window.location) {
@@ -314,8 +314,8 @@ export function Navigation(props: any) {
       prefixes.push(`${protocol}//${host}`);
     }
 
-    // Always include production domain as fallback
-    prefixes.push('https://band-together.app');
+    // Always include Expo Hosting domain
+    prefixes.push('https://band-together.expo.app');
 
     return prefixes;
   };

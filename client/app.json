@@ -12,7 +12,7 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.bandtogether.mobile",
       "associatedDomains": [
-        "applinks:band-together.app"
+        "applinks:band-together.expo.app"
       ]
     },
     "android": {
@@ -28,7 +28,7 @@
           "data": [
             {
               "scheme": "https",
-              "host": "band-together.app",
+              "host": "band-together.expo.app",
               "pathPrefix": "/setlist/shared"
             }
           ],

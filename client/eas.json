@@ -16,6 +16,7 @@
       "distribution": "internal",
       "env": {
         "EXPO_PUBLIC_API_URL": "https://band-together-staging.fly.dev",
+        "EXPO_PUBLIC_WEB_URL": "https://band-together.expo.app",
         "EXPO_PUBLIC_FIREBASE_API_KEY": "AIzaSyDIgHkzGdjEiU_4I0imBDorXhCrFen3w9U",
         "EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN": "band-together-firebase.firebaseapp.com",
         "EXPO_PUBLIC_FIREBASE_PROJECT_ID": "band-together-firebase",

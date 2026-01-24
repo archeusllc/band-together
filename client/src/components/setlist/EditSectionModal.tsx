@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -7,11 +7,12 @@ import {
   Pressable,
   ActivityIndicator,
   ScrollView,
-} from 'react-native';
-import { tailwind, colors } from '@theme';
-import { IconSymbol } from '@ui';
-import { AlertModal } from '@ui';
-import type { SetSection } from '@band-together/shared';
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { tailwind, colors } from "@theme";
+import { IconSymbol } from "@ui";
+import { AlertModal } from "@ui";
+import type { SetSection } from "@band-together/shared";
 
 interface EditSectionModalProps {
   visible: boolean;
@@ -25,14 +26,14 @@ interface EditSectionModalProps {
 }
 
 const formatDuration = (seconds: number): string => {
-  if (seconds === 0) return '0:00';
+  if (seconds === 0) return "0:00";
 
   const hours = Math.floor(seconds / 3600);
   const minutes = Math.floor((seconds % 3600) / 60);
   const secs = seconds % 60;
 
-  const mm = hours > 0 ? String(minutes).padStart(2, '0') : String(minutes);
-  const ss = String(secs).padStart(2, '0');
+  const mm = hours > 0 ? String(minutes).padStart(2, "0") : String(minutes);
+  const ss = String(secs).padStart(2, "0");
 
   return hours > 0 ? `${hours}:${mm}:${ss}` : `${mm}:${ss}`;
 };
@@ -75,20 +76,28 @@ const parseDuration = (input: string): number | null => {
   return null; // Invalid format
 };
 
-export const EditSectionModal = ({ visible, section, onClose, onSave, loading = false }: EditSectionModalProps) => {
-  const [name, setName] = useState('');
-  const [breakDuration, setBreakDuration] = useState('');
+export const EditSectionModal = ({
+  visible,
+  section,
+  onClose,
+  onSave,
+  loading = false,
+}: EditSectionModalProps) => {
+  const [name, setName] = useState("");
+  const [breakDuration, setBreakDuration] = useState("");
   const [alertConfig, setAlertConfig] = useState<{
     visible: boolean;
     title: string;
     message: string;
-  }>({ visible: false, title: '', message: '' });
+  }>({ visible: false, title: "", message: "" });
 
   // Initialize form with current values when modal opens
   useEffect(() => {
     if (section && visible) {
       setName(section.name);
-      setBreakDuration(section.breakDuration ? String(section.breakDuration) : '');
+      setBreakDuration(
+        section.breakDuration ? String(section.breakDuration) : "",
+      );
     }
   }, [section, visible]);
 
@@ -103,16 +112,19 @@ export const EditSectionModal = ({ visible, section, onClose, onSave, loading = 
         if (!name.trim()) {
           setAlertConfig({
             visible: true,
-            title: 'Invalid Name',
-            message: 'Section name cannot be empty',
+            title: "Invalid Name",
+            message: "Section name cannot be empty",
           });
           return;
         }
         updates.name = name.trim();
       }
 
-      if (breakDuration !== (section.breakDuration ? String(section.breakDuration) : '')) {
-        if (breakDuration === '') {
+      if (
+        breakDuration !==
+        (section.breakDuration ? String(section.breakDuration) : "")
+      ) {
+        if (breakDuration === "") {
           updates.breakDuration = null;
         } else {
           const parsedDuration = parseDuration(breakDuration);
@@ -121,8 +133,9 @@ export const EditSectionModal = ({ visible, section, onClose, onSave, loading = 
           } else {
             setAlertConfig({
               visible: true,
-              title: 'Invalid Duration',
-              message: 'Invalid duration format. Use m:ss (e.g., 15:30), h:mm:ss (e.g., 1:30:00), m or s (e.g., 15m 30s), or seconds (e.g., 930)',
+              title: "Invalid Duration",
+              message:
+                "Invalid duration format. Use m:ss (e.g., 15:30), h:mm:ss (e.g., 1:30:00), m or s (e.g., 15m 30s), or seconds (e.g., 930)",
             });
             return;
           }
@@ -132,23 +145,23 @@ export const EditSectionModal = ({ visible, section, onClose, onSave, loading = 
       await onSave(updates);
       handleClose();
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Unknown error';
+      const errorMessage = err instanceof Error ? err.message : "Unknown error";
       setAlertConfig({
         visible: true,
-        title: 'Error',
+        title: "Error",
         message: `Failed to update section: ${errorMessage}`,
       });
     }
   };
 
   const handleClose = () => {
-    setName('');
-    setBreakDuration('');
+    setName("");
+    setBreakDuration("");
     onClose();
   };
 
   const handleClearBreak = () => {
-    setBreakDuration('');
+    setBreakDuration("");
   };
 
   return (
@@ -159,11 +172,16 @@ export const EditSectionModal = ({ visible, section, onClose, onSave, loading = 
         animationType="slide"
         onRequestClose={handleClose}
       >
-        <View className={`flex-1 ${tailwind.background.both}`}>
+        <SafeAreaView
+          edges={["top"]}
+          className={`flex-1 ${tailwind.background.both}`}
+        >
           {/* Header */}
-          <View className={`border-b ${tailwind.border.both} p-4 pt-2`}>
+          <View className={`border-b ${tailwind.border.both} p-4`}>
             <View className="flex-row items-center justify-between">
-              <Text className={`text-lg font-bold ${tailwind.text.both}`}>Edit Section</Text>
+              <Text className={`text-lg font-bold ${tailwind.text.both}`}>
+                Edit Section
+              </Text>
               <Pressable onPress={handleClose} disabled={loading}>
                 <IconSymbol name="close-circle" size={24} color="#9CA3AF" />
               </Pressable>
@@ -171,10 +189,15 @@ export const EditSectionModal = ({ visible, section, onClose, onSave, loading = 
           </View>
 
           {/* Form */}
-          <ScrollView className="flex-1 p-4" showsVerticalScrollIndicator={false}>
+          <ScrollView
+            className="flex-1 p-4"
+            showsVerticalScrollIndicator={false}
+          >
             {/* Section Name */}
             <View className="mb-6">
-              <Text className={`text-sm font-semibold ${tailwind.textMuted.both} mb-2`}>
+              <Text
+                className={`text-sm font-semibold ${tailwind.textMuted.both} mb-2`}
+              >
                 Section Name
               </Text>
               <TextInput
@@ -190,8 +213,13 @@ export const EditSectionModal = ({ visible, section, onClose, onSave, loading = 
 
             {/* Break Duration */}
             <View className="mb-6">
-              <Text className={`text-sm font-semibold ${tailwind.textMuted.both} mb-2`}>
-                Break Duration <Text className={`${tailwind.textMuted.both}}`}>(optional)</Text>
+              <Text
+                className={`text-sm font-semibold ${tailwind.textMuted.both} mb-2`}
+              >
+                Break Duration{" "}
+                <Text className={`${tailwind.textMuted.both}}`}>
+                  (optional)
+                </Text>
               </Text>
               <TextInput
                 className={`${tailwind.card.both} border ${tailwind.border.both} rounded-lg px-4 py-3 ${tailwind.text.both}`}
@@ -206,7 +234,7 @@ export const EditSectionModal = ({ visible, section, onClose, onSave, loading = 
                 <Text className={`text-xs ${tailwind.textMuted.both} mt-2`}>
                   {parseDuration(breakDuration) !== null
                     ? `≈ ${formatDuration(parseDuration(breakDuration)!)}`
-                    : 'Invalid format (use m:ss, h:mm:ss, m or s, or seconds)'}
+                    : "Invalid format (use m:ss, h:mm:ss, m or s, or seconds)"}
                 </Text>
               )}
               {breakDuration && parseDuration(breakDuration) !== null && (
@@ -215,7 +243,9 @@ export const EditSectionModal = ({ visible, section, onClose, onSave, loading = 
                   disabled={loading}
                   className={`mt-3 ${tailwind.activeBackground.both} rounded-lg py-2`}
                 >
-                  <Text className={`text-center text-sm font-semibold ${tailwind.textMuted.both}`}>
+                  <Text
+                    className={`text-center text-sm font-semibold ${tailwind.textMuted.both}`}
+                  >
                     Clear Break
                   </Text>
                 </Pressable>
@@ -227,17 +257,23 @@ export const EditSectionModal = ({ visible, section, onClose, onSave, loading = 
           </ScrollView>
 
           {/* Buttons */}
-          <View className={`border-t ${tailwind.border.both} p-4 gap-3 flex-row`}>
+          <View
+            className={`border-t ${tailwind.border.both} p-4 gap-3 flex-row`}
+          >
             <Pressable
               className={`flex-1 py-3 rounded-lg border ${tailwind.border.both} ${tailwind.activeBackground.both}`}
               onPress={handleClose}
               disabled={loading}
             >
-              <Text className={`text-center font-semibold ${tailwind.text.both}`}>Cancel</Text>
+              <Text
+                className={`text-center font-semibold ${tailwind.text.both}`}
+              >
+                Cancel
+              </Text>
             </Pressable>
 
             <Pressable
-              className={`flex-1 py-3 rounded-lg ${loading ? 'opacity-50' : ''}`}
+              className={`flex-1 py-3 rounded-lg ${loading ? "opacity-50" : ""}`}
               style={{ backgroundColor: colors.brand.primary }}
               onPress={handleSave}
               disabled={loading}
@@ -245,11 +281,13 @@ export const EditSectionModal = ({ visible, section, onClose, onSave, loading = 
               {loading ? (
                 <ActivityIndicator color="white" />
               ) : (
-                <Text className="text-center font-semibold text-white">Save Changes</Text>
+                <Text className="text-center font-semibold text-white">
+                  Save Changes
+                </Text>
               )}
             </Pressable>
           </View>
-        </View>
+        </SafeAreaView>
       </Modal>
 
       {/* Alert Modal for errors and validation */}
@@ -259,9 +297,9 @@ export const EditSectionModal = ({ visible, section, onClose, onSave, loading = 
         message={alertConfig.message}
         buttons={[
           {
-            text: 'OK',
+            text: "OK",
             onPress: () => setAlertConfig({ ...alertConfig, visible: false }),
-            style: 'default',
+            style: "default",
           },
         ]}
       />
