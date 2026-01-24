@@ -129,39 +129,38 @@ export const SongSearchModal = ({ visible, onClose, onSelectTrack, existingTrack
         className={`border-b ${tailwind.border.both} p-4`}
         onPress={() => handleSelectTrack(item)}
       >
-        <View className="flex-1">
-          {/* Title and Duration */}
-          <View className="flex-row items-center justify-between mb-1">
-            <Text
-              style={{ color: textColor, fontSize: 16, fontWeight: '600', flex: 1 }}
-              numberOfLines={1}
-            >
-              {item.title || 'Unknown Title'}
-            </Text>
-            <Text style={{ color: mutedColor, fontSize: 14, marginLeft: 8 }}>
-              {item.defaultDuration ? formatDuration(item.defaultDuration) : '—'}
-            </Text>
-          </View>
+        {/* Top row: Title | Duration */}
+        <View className="flex-row items-center justify-between mb-2">
+          <Text
+            style={{ color: textColor, fontSize: 16, fontWeight: '600', flex: 1 }}
+            numberOfLines={1}
+          >
+            {item.title || 'Unknown Title'}
+          </Text>
+          <Text style={{ color: mutedColor, fontSize: 14, marginLeft: 8 }}>
+            {item.defaultDuration ? formatDuration(item.defaultDuration) : '—'}
+          </Text>
+        </View>
 
-          {/* Artist and In List Badge */}
-          <View className="flex-row items-center gap-2">
-            {item.artist && (
-              <Text
-                style={{ color: mutedColor, fontSize: 14 }}
-                numberOfLines={1}
-              >
-                {item.artist}
+        {/* Bottom row: Artist | In List Badge */}
+        <View className="flex-row items-center justify-between">
+          {item.artist && (
+            <Text
+              style={{ color: mutedColor, fontSize: 14 }}
+              numberOfLines={1}
+              className="flex-1"
+            >
+              {item.artist}
+            </Text>
+          )}
+          {isInSetlist && (
+            <View className="flex-row items-center gap-1 px-2 py-1 rounded bg-blue-100 dark:bg-blue-900/30 ml-2">
+              <IconSymbol name="checkmark-circle" size={12} color={colors.brand.primary} />
+              <Text style={{ color: colors.brand.primary, fontSize: 11, fontWeight: '500' }}>
+                In List
               </Text>
-            )}
-            {isInSetlist && (
-              <View className="flex-row items-center gap-1 px-2 py-1 rounded bg-blue-100 dark:bg-blue-900/30">
-                <IconSymbol name="checkmark-circle" size={14} color={colors.brand.primary} />
-                <Text style={{ color: colors.brand.primary, fontSize: 12, fontWeight: '500' }}>
-                  In List
-                </Text>
-              </View>
-            )}
-          </View>
+            </View>
+          )}
         </View>
       </Pressable>
     );
