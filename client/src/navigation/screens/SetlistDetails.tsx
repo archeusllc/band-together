@@ -600,12 +600,13 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
         ]);
       } else if (prevElement.type === 'item') {
         // Swapping with an item - needs both section and item updates
+        // Update item FIRST to avoid unique constraint violation
         const prevItem = prevData as SetItem;
-        await setlistService.reorderSections(setlistId, [
-          { sectionId: section.sectionId, position: prevItem.position },
-        ]);
         await setlistService.reorderSetItems(setlistId, [
           { setItemId: prevItem.setItemId, position: section.position },
+        ]);
+        await setlistService.reorderSections(setlistId, [
+          { sectionId: section.sectionId, position: prevItem.position },
         ]);
       }
       await fetchSetlistDetails();
@@ -637,12 +638,13 @@ export const SetlistDetailsScreen = ({ route }: Props) => {
         ]);
       } else if (nextElement.type === 'item') {
         // Swapping with an item - needs both section and item updates
+        // Update item FIRST to avoid unique constraint violation
         const nextItem = nextData as SetItem;
-        await setlistService.reorderSections(setlistId, [
-          { sectionId: section.sectionId, position: nextItem.position },
-        ]);
         await setlistService.reorderSetItems(setlistId, [
           { setItemId: nextItem.setItemId, position: section.position },
+        ]);
+        await setlistService.reorderSections(setlistId, [
+          { sectionId: section.sectionId, position: nextItem.position },
         ]);
       }
       await fetchSetlistDetails();
