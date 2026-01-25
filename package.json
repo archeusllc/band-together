@@ -5,8 +5,9 @@
   "private": true,
   "scripts": {
     "start": "bunx concurrently --names=\"api,client\" --prefix=\"[{name}]\" \"cd api && bun start\" \"cd client && bun start\"",
+    "start:all": "bunx concurrently --names=\"api,admin-api,client,admin-client\" --prefix=\"[{name}]\" \"cd api && bun start\" \"cd admin/api && bun start\" \"cd client && bun start\" \"cd admin/client && bun run dev\"",
     "kill": "lsof -ti:3000,3001,5173 | xargs kill -9 2>/dev/null; pkill -f 'expo start' 2>/dev/null; pkill -f 'bun start' 2>/dev/null || true",
-    "preinstall": "cd shared && bun install && cd ../api && bun install && cd ../client && bun install && cd ../db && bun install",
+    "preinstall": "cd shared && bun install && cd ../api && bun install && cd ../client && bun install && cd ../db && bun install && cd ../admin/api && bun install && cd ../../admin/client && bun install && cd ../..",
     "postinstall": "rm -rf node_modules bun.lock package-lock.json",
     "typecheck": "bun run typecheck:client && bun run typecheck:api",
     "typecheck:client": "cd client && bun run typecheck",
