@@ -22,9 +22,9 @@ interface SongForSeed {
   defaultTuning: string;
 }
 
-// Load Spotify credentials from admin/.env.development
+// Load Spotify credentials from api-cms/.env.development
 function loadSpotifyCredentials(): { clientId: string; clientSecret: string } {
-  const envPath = path.resolve(process.cwd(), '../admin/api/.env.development');
+  const envPath = path.resolve(process.cwd(), '../api-cms/.env.development');
 
   if (!fs.existsSync(envPath)) {
     throw new Error(`Spotify credentials file not found: ${envPath}`);

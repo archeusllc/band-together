@@ -1,13 +1,13 @@
-# Band Together Admin
+# Band Together CMS (Content Management System)
 
-A standalone admin application for managing the Band Together track database. This includes a JWT-authenticated REST API and a React frontend dashboard for content curation.
+A standalone content management system for managing the Band Together track database. This includes a JWT-authenticated REST API and a React frontend dashboard for content curation.
 
 ## Architecture
 
-The admin app is organized into two main directories:
+The CMS app is organized into two main modules:
 
-- **`api/`** - Elysia backend with JWT authentication
-- **`client/`** - React frontend with Vite
+- **`api-cms/`** - Elysia backend with JWT authentication
+- **`cms/`** - React frontend with Vite
 
 Both share a PostgreSQL database with the main Band Together application.
 
@@ -23,13 +23,13 @@ Both share a PostgreSQL database with the main Band Together application.
 
 1. **Install dependencies**:
    ```bash
-   cd admin/api && bun install
+   cd api-cms && bun install
    cd ../client && bun install
    ```
 
 2. **Configure environment variables**:
 
-   Create `admin/api/.env.development`:
+   Create `api-cms/.env.development`:
    ```bash
    DATABASE_URL="postgresql://postgres:postgres@localhost:5432/band_together"
    JWT_SECRET="your-super-secret-key-here"
@@ -39,7 +39,7 @@ Both share a PostgreSQL database with the main Band Together application.
    ADMIN_CLIENT_URL="http://localhost:5173"
    ```
 
-   Create `admin/client/.env`:
+   Create `cms/.env`:
    ```bash
    VITE_API_URL="http://localhost:3001"
    ```
@@ -48,14 +48,14 @@ Both share a PostgreSQL database with the main Band Together application.
 
    Terminal 1 - API server:
    ```bash
-   cd admin/api
+   cd api-cms
    bun start
    # API runs on http://localhost:3001
    ```
 
    Terminal 2 - React dev server:
    ```bash
-   cd admin/client
+   cd cms
    bun start
    # Client runs on http://localhost:5173
    ```
@@ -239,7 +239,7 @@ admin/
 
 API tests:
 ```bash
-cd admin/api
+cd api-cms
 bun test
 ```
 
@@ -247,13 +247,13 @@ bun test
 
 API:
 ```bash
-cd admin/api
+cd api-cms
 bun run build
 ```
 
 Client:
 ```bash
-cd admin/client
+cd cms
 bun run build
 # Output in client/dist/
 ```

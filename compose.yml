@@ -86,32 +86,32 @@ services:
       <<: *db-url
       PORT: "3000"
 
-  admin:
+  cms:
     image: oven/bun:latest
-    container_name: band-together-admin
-    working_dir: /app/admin/client
+    container_name: band-together-cms
+    working_dir: /app/cms
     restart: unless-stopped
     ports:
       - "5173:5173"
     volumes:
-      - ./admin/client:/app/admin/client
-      - /app/admin/client/node_modules
+      - ./cms:/app/cms
+      - /app/cms/node_modules
     depends_on:
-      - admin-api
+      - api-cms
     command: sh -c "bun install && bun start -- --host 0.0.0.0"
     environment:
-      VITE_API_URL: "http://admin-api:3001"
+      VITE_API_URL: "http://api-cms:3001"
 
-  admin-api:
+  api-cms:
     image: oven/bun:latest
-    container_name: band-together-admin-api
-    working_dir: /app/admin/api
+    container_name: band-together-cms-api
+    working_dir: /app/api-cms
     restart: unless-stopped
     ports:
       - "3001:3001"
     volumes:
-      - ./admin/api:/app/admin/api
-      - /app/admin/api/node_modules
+      - ./api-cms:/app/api-cms
+      - /app/api-cms/node_modules
     depends_on:
       postgres:
         condition: service_healthy
