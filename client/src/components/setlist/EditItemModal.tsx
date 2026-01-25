@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import { tailwind, colors } from '@theme';
 import { IconSymbol } from '@ui';
-import type { SetItem, Track } from '@band-together/shared';
+import type { SetItem, Track } from '@band-together/types';
 
 const COMMON_TUNINGS = [
   { label: 'Standard (E A D G B E)', value: 'Standard' },

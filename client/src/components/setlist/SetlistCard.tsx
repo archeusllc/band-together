@@ -4,7 +4,7 @@ import { useNavigation } from '@react-navigation/native';
 import type { NavigationProp } from '@react-navigation/native';
 import { tailwind, colors } from '@theme';
 import { IconSymbol } from '@ui';
-import type { SetList, SetListShare } from '@band-together/shared';
+import type { SetList, SetListShare } from '@band-together/types';
 import type { DrawerParamList } from '@navigation/types';
 
 interface SetlistCardProps {

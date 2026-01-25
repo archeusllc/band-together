@@ -1,6 +1,6 @@
 import Elysia, { t } from 'elysia';
 import { guildsController } from './guilds.controller';
-import { GuildType } from '@band-together/shared';
+import { GuildType } from '@band-together/types';
 import { firebaseGate } from '@middleware';
 
 export const actsRoutes = new Elysia()

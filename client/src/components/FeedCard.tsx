@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, Pressable, Image } from 'react-native';
 import { tailwind, colors } from '@theme';
 import { IconSymbol } from '@ui';
-import type { CalendarEvent, Act, Venue } from '@band-together/shared';
+import type { CalendarEvent, Act, Venue } from '@band-together/types';
 
 interface FeedCardProps {
   event: CalendarEvent & {

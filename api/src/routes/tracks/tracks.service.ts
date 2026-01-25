@@ -1,5 +1,5 @@
 import { prisma } from '@services';
-import type { TrackSearchResult } from '@band-together/shared';
+import type { TrackSearchResult } from '@band-together/types';
 
 interface SearchTracksOptions {
   query?: string;

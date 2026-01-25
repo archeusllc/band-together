@@ -1,4 +1,4 @@
-import { Guild, Act, Venue, Club, User } from '@band-together/shared';
+import { Guild, Act, Venue, Club, User } from '@band-together/types';
 
 // Query types
 export interface GetGuildsQuery {

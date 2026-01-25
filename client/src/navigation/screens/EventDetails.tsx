@@ -8,7 +8,7 @@ import { useAuth } from '@contexts';
 import { feedService } from '@services';
 import { tailwind, colors } from '@theme';
 import { IconSymbol } from '@ui';
-import type { CalendarEvent, Venue, Act, Guild } from '@band-together/shared';
+import type { CalendarEvent, Venue, Act, Guild } from '@band-together/types';
 
 type Props = DrawerScreenProps<DrawerParamList, 'EventDetails'>;
 

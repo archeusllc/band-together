@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { firebaseAuthService, api } from '@services';
-import type { User } from '@band-together/shared';
+import type { User } from '@band-together/types';
 import { User as FirebaseUser } from 'firebase/auth';
 
 interface AuthContextType {

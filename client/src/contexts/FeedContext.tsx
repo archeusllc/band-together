@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 import { feedService } from '@services';
-import type { CalendarEvent, Act, Venue } from '@band-together/shared';
+import type { CalendarEvent, Act, Venue } from '@band-together/types';
 
 type FeedEvent = CalendarEvent & {
   venue?: Venue;

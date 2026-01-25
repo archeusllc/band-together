@@ -11,7 +11,7 @@ import {
 import { trackService } from '@services';
 import { tailwind, colors } from '@theme';
 import { IconSymbol } from '@ui';
-import type { TrackSearchResult } from '@band-together/shared';
+import type { TrackSearchResult } from '@band-together/types';
 import { useColorScheme } from 'react-native';
 
 interface SongSearchModalProps {

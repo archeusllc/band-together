@@ -26,7 +26,7 @@ import { EditSectionModal } from '@components/setlist/EditSectionModal';
 import { ShareModal } from '@components/setlist/ShareModal';
 import { SetlistDetailsSkeleton } from '@components/setlist/SetlistDetailsSkeleton';
 import { PresenceBadge, AlertModal } from '@components/ui';
-import type { SetList, SetItem, SetSection, Track, TrackSearchResult } from '@band-together/shared';
+import type { SetList, SetItem, SetSection, Track, TrackSearchResult } from '@band-together/types';
 
 type Props = DrawerScreenProps<DrawerParamList, 'SetlistDetails'>;
 

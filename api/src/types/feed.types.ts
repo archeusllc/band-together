@@ -1,4 +1,4 @@
-import { CalendarEvent, Follow, FollowEntityType } from '@band-together/shared';
+import { CalendarEvent, Follow, FollowEntityType } from '@band-together/types';
 
 export interface GetFeedQuery {
   page?: number;

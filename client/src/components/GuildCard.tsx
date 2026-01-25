@@ -3,7 +3,7 @@ import { View, Text, Pressable, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { tailwind, colors } from '@theme';
 import { IconSymbol } from '@ui';
-import type { Guild, Act, Venue, Club, User } from '@band-together/shared';
+import type { Guild, Act, Venue, Club, User } from '@band-together/types';
 
 interface GuildCardProps {
   guild: Guild & {

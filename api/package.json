@@ -10,10 +10,11 @@
     "typecheck": "bun tsc --noEmit",
     "clean": "rm -rf node_modules bun.lock package-lock.json",
     "reset": "bun clean && bun install",
-    "generate": "curl -o ../shared/generated/api-types/server.d.ts http://localhost:3000/server.d.ts"
+    "generate": "curl -o ../types/generated/api-types/server.d.ts http://localhost:3000/server.d.ts"
   },
   "dependencies": {
-    "@band-together/shared": "file:../shared",
+    "@band-together/types": "1.0.0",
+    "@band-together/runtimes": "1.0.0",
     "@elysiajs/cors": "^1.4.1",
     "@elysiajs/jwt": "^1.4.0",
     "@elysiajs/openapi": "^1.4.13",
