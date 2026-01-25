@@ -5,8 +5,8 @@
     "": {
       "name": "@band-together/api",
       "dependencies": {
-        "@band-together/runtimes": "file:../runtimes",
-        "@band-together/types": "file:../types",
+        "@archeusllc/runtimes": "^1.0.0",
+        "@archeusllc/types": "^1.0.0",
         "@elysiajs/cors": "^1.4.1",
         "@elysiajs/jwt": "^1.4.0",
         "@elysiajs/openapi": "^1.4.13",
@@ -21,9 +21,9 @@
     },
   },
   "packages": {
-    "@band-together/runtimes": ["@band-together/runtimes@file:../runtimes", { "dependencies": { "@prisma/adapter-pg": "^6.1.0", "@prisma/client": "^6.1.0", "dotenv": "^16.4.7" } }],
+    "@archeusllc/runtimes": ["@archeusllc/runtimes@1.0.0", "https://npm.pkg.github.com/download/@archeusllc/runtimes/1.0.0/33a50e93a37dc9c6f3fe145ec4f717767fc3ae37", { "dependencies": { "@prisma/adapter-pg": "^6.1.0", "@prisma/client": "^6.1.0", "dotenv": "^16.4.7" } }, "sha512-6ivBz77PzoRLKJ6AMgPss1sJ4Qw4qgaUz1HkCoCHxanqxpbW4Wyt0il2Rn8s8UkkV/V0oVUGPPB6k910YW4U2w=="],
 
-    "@band-together/types": ["@band-together/types@file:../types", {}],
+    "@archeusllc/types": ["@archeusllc/types@1.0.0", "https://npm.pkg.github.com/download/@archeusllc/types/1.0.0/8c52ad68a7eba3268996d51dbccfd10aa120b51f", {}, "sha512-SBGlqgBULRZBX3MFLl9X9BC+6z/USiRzHeuXF4DlA8EL35vsj/W9cVsmMasGONfAPvR8OI4scCIkTyy1qNFWAw=="],
 
     "@borewit/text-codec": ["@borewit/text-codec@0.2.1", "", {}, "sha512-k7vvKPbf7J2fZ5klGRD9AeKfUvojuZIQ3BT5u7Jfv+puwXkUBUT5PVyMDfJZpy30CBDXGMgw7fguK/lpOMBvgw=="],
 
