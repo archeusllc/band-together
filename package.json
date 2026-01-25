@@ -17,7 +17,10 @@
     "status:staging": "fly status --app band-together-staging",
     "secrets:staging": "fly secrets list --app band-together-staging",
     "db:staging": "fly postgres connect --app band-together-staging-db",
-    "build:preview": "cd client && eas build --platform android --profile preview"
+    "build:preview": "cd client && eas build --platform android --profile preview",
+    "publish:types": "cd types && ../scripts/publish-shared.sh",
+    "publish:runtime": "cd runtimes && ../scripts/publish-shared.sh",
+    "publish:shared": "bun run publish:types && bun run publish:runtime"
   },
   "keywords": [
     "band",
