@@ -1,0 +1,37 @@
+[
+  {
+    "title": "Purple Haze",
+    "artist": "Jimi Hendrix",
+    "type": "SONG",
+    "duration": 189,
+    "tuning": ""
+  },
+  {
+    "title": "Smoke on the Water",
+    "artist": "Deep Purple",
+    "type": "SONG",
+    "duration": 312,
+    "tuning": ""
+  },
+  {
+    "title": "Backing Track 1",
+    "artist": "Various",
+    "type": "BACKING_TRACK",
+    "duration": 240,
+    "tuning": "E"
+  },
+  {
+    "title": "Jazz Standard",
+    "artist": "Miles Davis",
+    "type": "INSTRUMENTAL",
+    "duration": 180,
+    "tuning": "C"
+  },
+  {
+    "title": "Demo Version",
+    "artist": "Test Artist",
+    "type": "DEMO",
+    "duration": 150,
+    "tuning": "D"
+  }
+]
