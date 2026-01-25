@@ -1,4 +1,4 @@
-import { PrismaClient } from "@band-together/shared-runtime";
+import { PrismaClient } from "@band-together/runtimes";
 
 export const prisma = PrismaClient();
 

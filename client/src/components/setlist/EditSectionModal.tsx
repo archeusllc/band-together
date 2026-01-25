@@ -12,7 +12,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { tailwind, colors } from "@theme";
 import { IconSymbol } from "@ui";
 import { AlertModal } from "@ui";
-import type { SetSection } from "@band-together/shared";
+import type { SetSection } from "@band-together/types";
 
 interface EditSectionModalProps {
   visible: boolean;

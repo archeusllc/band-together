@@ -11,7 +11,7 @@
     "build:web:prod": "NODE_ENV=production bunx expo export --platform web && eas deploy --prod"
   },
   "dependencies": {
-    "@band-together/types": "1.0.0",
+    "@band-together/types": "file:../types",
     "@elysiajs/eden": "latest",
     "@expo/metro-runtime": "~6.1.0",
     "@expo/vector-icons": "^15.0.2",

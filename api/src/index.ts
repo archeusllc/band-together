@@ -5,8 +5,12 @@ import { dts } from 'elysia-remote-dts'
 
 import { routes } from '@routes';
 import { broadcastService } from '@services/broadcast.service';
+import { checkSharedTypesVersion } from '@utils/version-check';
 
 const { PORT = 3000 } = process.env;
+
+// Check version compatibility on startup
+checkSharedTypesVersion();
 
 const app = new Elysia()
   .use(cors({

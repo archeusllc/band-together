@@ -1,4 +1,4 @@
-import { User } from "@band-together/shared-types";
+import { User } from "@band-together/types";
 import { Cookie } from "elysia";
 
 export interface LoginParams {

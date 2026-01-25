@@ -7,6 +7,7 @@ import * as SplashScreen from 'expo-splash-screen';
 import { Navigation } from './navigation';
 import { AuthProvider, FeedProvider } from '@contexts';
 import { tailwind, colors } from '@theme';
+import { checkSharedTypesVersion } from './utils/version-check';
 
 // Keep the splash screen visible while the app is loading
 SplashScreen.preventAutoHideAsync();
@@ -90,6 +91,9 @@ const SplashScreenHider = ({ children }: { children: React.ReactNode }) => {
   const { colorScheme } = useColorScheme();
 
   useEffect(() => {
+    // Check version compatibility on app startup
+    checkSharedTypesVersion();
+
     // Hide splash screen when app has finished initializing
     const hideSplash = async () => {
       try {

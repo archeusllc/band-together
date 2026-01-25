@@ -53,6 +53,12 @@
       ],
       "@test/*": [
         "./test/*"
+      ],
+      "@utils": [
+        "./src/utils/index"
+      ],
+      "@utils/*": [
+        "./src/utils/*"
       ]
     }
   },
