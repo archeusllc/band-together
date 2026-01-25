@@ -4,18 +4,10 @@
   "description": "A band companion app for musicians",
   "private": true,
   "scripts": {
-    "start": "bunx concurrently --names=\"api,client\" --prefix=\"[{name}]\" \"cd api && bun start\" \"cd client && bun start\"",
-    "start:all": "bunx concurrently --names=\"api,api-cms,client,cms\" --prefix=\"[{name}]\" \"cd api && bun start\" \"cd api-cms && bun start\" \"cd client && bun start\" \"cd cms && bun run dev\"",
-    "kill": "lsof -ti:3000,3001,5173 | xargs kill -9 2>/dev/null; pkill -f 'expo start' 2>/dev/null; pkill -f 'bun start' 2>/dev/null || true",
-    "preinstall": "cd api && bun install && cd ../client && bun install && cd ../db && bun install && cd ../api-cms && bun install && cd ../cms && bun install && cd ..",
-    "postinstall": "rm -rf node_modules bun.lock package-lock.json",
-    "typecheck": "bun run typecheck:client && bun run typecheck:api",
-    "typecheck:client": "cd client && bun run typecheck",
-    "typecheck:api": "cd api && bun run typecheck",
-    "build:preview": "cd client && eas build --platform android --profile preview",
-    "publish:types": "cd types && ../scripts/publish-shared.sh",
-    "publish:runtime": "cd runtimes && ../scripts/publish-shared.sh",
-    "publish:shared": "bun run publish:types && bun run publish:runtime"
+    "start": "docker compose up -d",
+    "stop": "docker compose down",
+    "preinstall": "bash ./scripts/preinstall.sh",
+    "postinstall": "rm -rf node_modules bun.lock package-lock.json"
   },
   "keywords": [
     "band",

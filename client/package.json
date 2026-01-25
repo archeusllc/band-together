@@ -6,9 +6,7 @@
     "start": "expo start --go --clear",
     "typecheck": "tsc --noEmit",
     "clean": "rm -rf node_modules bun.lock package-lock.json .expo",
-    "reset": "bun clean && bun install",
-    "build:android:preview": "eas build --platform android --profile preview",
-    "build:web:prod": "NODE_ENV=production bunx expo export --platform web && eas deploy --prod"
+    "reset": "bun clean && bun install"
   },
   "dependencies": {
     "@archeusllc/types": "^1.0.0",
