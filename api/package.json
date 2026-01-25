@@ -13,8 +13,8 @@
     "generate": "curl -o ../types/generated/api-types/server.d.ts http://localhost:3000/server.d.ts"
   },
   "dependencies": {
-    "@band-together/types": "file:../types",
-    "@band-together/runtimes": "file:../runtimes",
+    "@band-together/types": "^1.0.0",
+    "@band-together/runtimes": "^1.0.0",
     "@elysiajs/cors": "^1.4.1",
     "@elysiajs/jwt": "^1.4.0",
     "@elysiajs/openapi": "^1.4.13",
