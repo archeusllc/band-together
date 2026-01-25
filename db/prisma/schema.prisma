@@ -3,7 +3,7 @@
 
 generator client {
   provider               = "prisma-client-js"
-  output                 = "../../shared/generated/prisma-client"
+  output                 = "../../types/generated/prisma-client"
   moduleFormat           = "esm"
   generatedFileExtension = ".ts"
   importFileExtension    = ".ts"
