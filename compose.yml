@@ -1,3 +1,6 @@
+x-common-variables: &db-url
+  DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@postgres:5432/${POSTGRES_DB:-band_together}
+
 services:
   postgres:
     image: postgres:16-alpine
@@ -24,9 +27,98 @@ services:
     ports:
       - "8080:8080"
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
     environment:
       ADMINER_DEFAULT_SERVER: postgres
+
+  prisma-studio:
+    image: oven/bun:latest
+    container_name: prisma-studio
+    working_dir: /app/db
+    restart: unless-stopped
+    ports:
+      - 51212:51212
+    volumes:
+      - ./db:/app/db
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      <<: *db-url
+    command: sh -c "bun install && bunx prisma studio --browser none"
+
+  web:
+    image: oven/bun:latest
+    container_name: band-together-web
+    working_dir: /app/client
+    restart: unless-stopped
+    ports:
+      - 8081:8081
+    volumes:
+      - ./client:/app/client
+      - ./shared:/app/shared
+      - /app/client/node_modules
+      - /app/shared/node_modules
+    depends_on:
+      - api
+    command: sh -c "cd /app/shared && bun install && cd /app/client && bun install && bun run start"
+    environment:
+      EXPO_PUBLIC_API_URL: "http://api:3000"
+
+  api:
+    image: oven/bun:latest
+    container_name: band-together-api
+    working_dir: /app/api
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./api:/app/api
+      - ./shared:/app/shared
+      - /app/api/node_modules
+      - /app/shared/node_modules
+    depends_on:
+      postgres:
+        condition: service_healthy
+    command: sh -c "cd /app/shared && bun install && cd /app/api && bun install && bun run start"
+    environment:
+      <<: *db-url
+      PORT: "3000"
+
+  admin:
+    image: oven/bun:latest
+    container_name: band-together-admin
+    working_dir: /app/admin/client
+    restart: unless-stopped
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./admin/client:/app/admin/client
+      - /app/admin/client/node_modules
+    depends_on:
+      - admin-api
+    command: sh -c "bun install && bun start -- --host 0.0.0.0"
+    environment:
+      VITE_API_URL: "http://admin-api:3001"
+
+  admin-api:
+    image: oven/bun:latest
+    container_name: band-together-admin-api
+    working_dir: /app/admin/api
+    restart: unless-stopped
+    ports:
+      - "3001:3001"
+    volumes:
+      - ./admin/api:/app/admin/api
+      - /app/admin/api/node_modules
+    depends_on:
+      postgres:
+        condition: service_healthy
+    command: sh -c "bun install && bun start"
+    environment:
+      <<: *db-url
+      PORT: "3001"
 
 volumes:
   pgdata:
