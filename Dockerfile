@@ -2,17 +2,18 @@
 FROM oven/bun:1 AS builder
 WORKDIR /workspace
 
-# Copy package files from all workspaces (building from root directory)
+# Copy package files for API (now uses published npm packages from GitHub Packages)
 COPY api/package.json api/bun.lock ./api/
 COPY db/package.json db/bun.lock ./db/
-COPY shared/package.json shared/bun.lock ./shared/
+
+# Copy .npmrc for GitHub Packages authentication
+COPY .npmrc ./
 
 # Copy entire workspace structure
 COPY api ./api
 COPY db ./db
-COPY shared ./shared
 
-# Install dependencies for API
+# Install dependencies for API (will fetch @archeusllc/types and @archeusllc/runtimes from GitHub Packages)
 WORKDIR /workspace/api
 RUN bun install --frozen-lockfile
 
@@ -26,21 +27,18 @@ WORKDIR /workspace
 
 # Copy lock files and package.json for bun install
 COPY --from=builder /workspace/api/package.json /workspace/api/bun.lock ./api/
-COPY --from=builder /workspace/shared/package.json /workspace/shared/bun.lock ./shared/
+COPY --from=builder /workspace/.npmrc ./
 
 # Copy source code
 COPY --from=builder /workspace/api/src ./api/src
 COPY --from=builder /workspace/api/tsconfig.json ./api/
-COPY --from=builder /workspace/shared/types ./shared/types
-COPY --from=builder /workspace/shared/index.ts ./shared/
-COPY --from=builder /workspace/shared/generated ./shared/generated
 
 # Copy db directory for Prisma migrations
 COPY --from=builder /workspace/db/prisma ./db/prisma
 COPY --from=builder /workspace/db/prisma.config.ts ./db/
 COPY --from=builder /workspace/db/package.json /workspace/db/bun.lock ./db/
 
-# Reinstall dependencies in runtime to create proper symlinks
+# Reinstall dependencies in runtime (will fetch from GitHub Packages via .npmrc)
 WORKDIR /workspace/api
 RUN bun install --frozen-lockfile
 

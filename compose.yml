@@ -57,12 +57,10 @@ services:
       - 8081:8081
     volumes:
       - ./client:/app/client
-      - ./shared:/app/shared
       - /app/client/node_modules
-      - /app/shared/node_modules
     depends_on:
       - api
-    command: sh -c "cd /app/shared && bun install && cd /app/client && bun install && bun run start"
+    command: sh -c "cd /app/client && bun install && bun run start"
     environment:
       EXPO_PUBLIC_API_URL: "http://api:3000"
 
@@ -75,13 +73,11 @@ services:
       - "3000:3000"
     volumes:
       - ./api:/app/api
-      - ./shared:/app/shared
       - /app/api/node_modules
-      - /app/shared/node_modules
     depends_on:
       postgres:
         condition: service_healthy
-    command: sh -c "cd /app/shared && bun install && cd /app/api && bun install && bun run start"
+    command: sh -c "cd /app/api && bun install && bun run start"
     environment:
       <<: *db-url
       PORT: "3000"
