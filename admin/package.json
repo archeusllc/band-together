@@ -1,0 +1,5 @@
+{
+  "scripts": {
+    "start": "bunx concurrently --names=\"api,client\" --prefix=\"[{name}]\" \"cd api && bun start\" \"cd client && bun start\""
+  }
+}
