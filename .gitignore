@@ -19,6 +19,9 @@ dist/
 .env*
 !.env.development
 
+# NPM registry authentication
+.npmrc
+
 # IDE
 .vscode/
 .idea/
