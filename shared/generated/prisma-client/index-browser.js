@@ -277,6 +277,16 @@ exports.Prisma.SetListShareScalarFieldEnum = {
   createdBy: 'createdBy'
 };
 
+exports.Prisma.AdminUserScalarFieldEnum = {
+  adminUserId: 'adminUserId',
+  email: 'email',
+  passwordHash: 'passwordHash',
+  displayName: 'displayName',
+  isActive: 'isActive',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -335,7 +345,8 @@ exports.Prisma.ModelName = {
   SetList: 'SetList',
   SetItem: 'SetItem',
   SetSection: 'SetSection',
-  SetListShare: 'SetListShare'
+  SetListShare: 'SetListShare',
+  AdminUser: 'AdminUser'
 };
 
 /**
