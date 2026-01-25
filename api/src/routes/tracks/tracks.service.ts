@@ -1,5 +1,5 @@
 import { prisma } from '@services';
-import type { TrackSearchResult } from '@band-together/types';
+import type { TrackSearchResult } from '@archeusllc/types';
 
 interface SearchTracksOptions {
   query?: string;

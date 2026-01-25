@@ -1,6 +1,6 @@
 import { api } from './api';
 import { firebaseAuthService } from './firebase-auth.service';
-import type { SetList, SetItem, SetSection, SetListShare, Track } from '@band-together/types';
+import type { SetList, SetItem, SetSection, SetListShare, Track } from '@archeusllc/types';
 
 type SetListWithRelations = SetList & {
   setItems: (SetItem & { track: Track; section: SetSection | null })[];

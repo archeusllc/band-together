@@ -4,7 +4,7 @@ import { Swipeable } from 'react-native-gesture-handler';
 import * as Haptics from 'expo-haptics';
 import { tailwind, colors } from '@theme';
 import { IconSymbol } from '@ui';
-import type { SetSection } from '@band-together/types';
+import type { SetSection } from '@archeusllc/types';
 
 const formatDuration = (seconds: number): string => {
   if (seconds === 0) return '0:00';

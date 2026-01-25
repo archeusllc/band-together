@@ -1,4 +1,4 @@
-import { PrismaClient } from "@band-together/runtimes";
+import { PrismaClient } from "@archeusllc/runtimes";
 
 export const prisma = PrismaClient();
 

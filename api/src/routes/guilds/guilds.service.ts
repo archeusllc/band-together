@@ -9,7 +9,7 @@ import type {
   UpdateClubBody,
   GuildResponse
 } from '@types';
-import { GuildType } from '@band-together/types';
+import { GuildType } from '@archeusllc/types';
 
 export const guildsService = {
   /**

@@ -8,7 +8,7 @@ import {
 } from 'firebase/auth';
 import { auth } from '@config/firebase.config';
 import { api } from './api';
-import type { User } from '@band-together/types';
+import type { User } from '@archeusllc/types';
 
 export const firebaseAuthService = {
   /**

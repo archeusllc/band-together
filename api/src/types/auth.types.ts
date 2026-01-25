@@ -1,4 +1,4 @@
-import { User } from "@band-together/types";
+import { User } from "@archeusllc/types";
 import { Cookie } from "elysia";
 
 export interface LoginParams {

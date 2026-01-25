@@ -1,5 +1,5 @@
 import type { Elysia } from 'elysia';
-import type { SetItem, SetSection } from '@band-together/types';
+import type { SetItem, SetSection } from '@archeusllc/types';
 
 export interface BroadcastEvent {
   type: 'item-added' | 'item-updated' | 'item-deleted' | 'reordered' | 'section-added' | 'section-updated' | 'section-deleted' | 'setlist-updated';

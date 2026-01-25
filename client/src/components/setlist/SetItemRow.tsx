@@ -4,7 +4,7 @@ import { Swipeable } from 'react-native-gesture-handler';
 import * as Haptics from 'expo-haptics';
 import { tailwind, colors } from '@theme';
 import { IconSymbol } from '@ui';
-import type { SetItem, Track } from '@band-together/types';
+import type { SetItem, Track } from '@archeusllc/types';
 
 interface SetItemRowProps {
   item: SetItem & {

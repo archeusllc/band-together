@@ -1,4 +1,4 @@
-import { Guild, Act, Venue, Club, User } from '@band-together/types';
+import { Guild, Act, Venue, Club, User } from '@archeusllc/types';
 
 // Query types
 export interface GetGuildsQuery {

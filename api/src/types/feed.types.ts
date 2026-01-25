@@ -1,4 +1,4 @@
-import { CalendarEvent, Follow, FollowEntityType } from '@band-together/types';
+import { CalendarEvent, Follow, FollowEntityType } from '@archeusllc/types';
 
 export interface GetFeedQuery {
   page?: number;

@@ -1,9 +1,9 @@
 /**
- * Runtime version checking for @band-together/types
+ * Runtime version checking for @archeusllc/types
  * Warns developers if client is using an incompatible type version
  */
 
-import { SHARED_TYPES_VERSION } from '@band-together/types';
+import { SHARED_TYPES_VERSION } from '@archeusllc/types';
 
 const EXPECTED_VERSION_RANGE = '^1.0.0';
 
@@ -22,7 +22,7 @@ export const checkSharedTypesVersion = () => {
     );
   } else if (actualMinor < expectedMinor) {
     console.warn(
-      `⚠️  Minor version behind: expected ${EXPECTED_VERSION_RANGE}, got ${SHARED_TYPES_VERSION}. Run: bun update @band-together/types`
+      `⚠️  Minor version behind: expected ${EXPECTED_VERSION_RANGE}, got ${SHARED_TYPES_VERSION}. Run: bun update @archeusllc/types`
     );
   } else {
     console.info(`✅ Shared types version: ${SHARED_TYPES_VERSION}`);

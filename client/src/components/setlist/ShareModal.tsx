@@ -15,7 +15,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { tailwind, colors } from "@theme";
 import { IconSymbol } from "@ui";
 import { setlistService } from "@services";
-import type { SetListShare } from "@band-together/types";
+import type { SetListShare } from "@archeusllc/types";
 
 interface ShareModalProps {
   visible: boolean;

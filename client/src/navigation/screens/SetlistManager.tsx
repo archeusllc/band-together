@@ -8,7 +8,7 @@ import { useAuth } from '@contexts';
 import { SetlistCard, SetlistCardSkeleton } from '@components/setlist';
 import { tailwind, colors } from '@theme';
 import { IconSymbol } from '@ui';
-import type { SetList } from '@band-together/types';
+import type { SetList } from '@archeusllc/types';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
