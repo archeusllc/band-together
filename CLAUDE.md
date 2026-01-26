@@ -167,6 +167,80 @@ cd api && bun run test
 3. Use type-safe API calls with Eden Treaty
 4. Follow [Lessons Learned - Frontend](wiki/lessons/Frontend.md) patterns
 
+## Brainstorming Features
+
+When the user wants to brainstorm a new feature, use the AskUserQuestion tool to ask:
+**"Should we do this interview style, or idea dump style?"**
+
+### Two Brainstorming Styles
+
+**Interview Style:**
+- AI agent asks structured questions about the feature
+- Questions cover: problem statement, user needs, design philosophy alignment, technical approach, edge cases
+- AI creates/updates brainstorm document as answers are collected
+- Iterative conversation until design is fully explored
+
+**Idea Dump Style:**
+- User shares random, intermittent thoughts about the feature
+- AI organizes these thoughts into a coherent brainstorm document
+- AI identifies gaps and asks clarifying questions as needed
+- AI continuously updates the brainstorm file as new ideas emerge
+
+### Brainstorm Document Structure
+
+Create/update file: `wiki/brainstorms/Brainstorm-Feature-Name.md`
+
+Template:
+```markdown
+# [Feature Name] - Brainstorm
+
+**Status**: Brainstorming
+**Created**: YYYY-MM-DD
+**Related Features**: [comma-separated list]
+**Implementation Plan**: [Link to plan if exists, or "Not yet planned"]
+
+---
+
+## Problem Statement
+
+[Clear description of the problem being addressed or opportunity being explored]
+
+---
+
+## Design Philosophy
+
+[How this feature aligns with "Cool and Useful Without Install" and project principles]
+
+---
+
+## Proposed Solution
+
+[Design exploration, ideas, trade-offs, architectural considerations]
+
+---
+
+## Open Questions
+
+[Unresolved questions, areas needing investigation]
+
+---
+
+**Last Updated**: YYYY-MM-DD | **Status**: [Brainstorming/Ready for Planning/Implemented]
+```
+
+### Workflow
+
+1. **Start brainstorm**: Ask which style (interview or idea dump)
+2. **Create/update document**: Use brainstorm template in `wiki/brainstorms/`
+3. **Evolve the design**: Update brainstorm as ideas develop
+4. **Transition to planning**: When ready, create implementation plan referencing the brainstorm
+5. **Update status**: Mark brainstorm as "Implemented" when feature is complete
+
+**Brainstorm → Plan → Implement** progression:
+- Brainstorms explore design space and capture ideas
+- Plans detail implementation steps and reference brainstorms
+- Implemented features update brainstorm status for historical record
+
 ## Questions?
 
 - **Architecture & design:** [Architecture Overview](wiki/Architecture-Overview.md)
