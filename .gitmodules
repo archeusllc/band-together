@@ -1,0 +1,21 @@
+[submodule "db"]
+	path = db
+	url = https://github.com/archeusllc/band-together-db.git
+[submodule "api"]
+	path = api
+	url = https://github.com/archeusllc/band-together-api.git
+[submodule "client"]
+	path = client
+	url = https://github.com/archeusllc/band-together-client.git
+[submodule "cms-api"]
+	path = cms-api
+	url = https://github.com/archeusllc/band-together-cms-api.git
+[submodule "cms-client"]
+	path = cms-client
+	url = https://github.com/archeusllc/band-together-cms-client.git
+[submodule "types"]
+	path = types
+	url = https://github.com/archeusllc/band-together-types.git
+[submodule "wiki"]
+	path = wiki
+	url = https://github.com/archeusllc/band-together-wiki.git
