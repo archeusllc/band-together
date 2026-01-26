@@ -11,6 +11,7 @@ For comprehensive project context, see the **[AI Context Guide](wiki/AI-Context.
 - Development workflow
 - Coding standards
 
+
 ## Design Philosophy
 
 **"Cool and Useful Without Install"**
