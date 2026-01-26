@@ -6,7 +6,4 @@
 	path = modules/types
 	url = https://github.com/archeusllc/band-together-types
 	branch = main
-[submodule "runtimes"]
-	path = modules/runtimes
-	url = https://github.com/archeusllc/band-together-runtimes
-	branch = main
+	
