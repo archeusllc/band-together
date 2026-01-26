@@ -1223,9 +1223,302 @@ When using `<Image>` components from React Native, there's a critical gotcha on 
 
 ---
 
-**Last Updated**: 2026-01-24
+## Deploying to fly.io
+
+This section documents the complete process for deploying Bun/Elysia APIs to fly.io with GitHub Packages authentication.
+
+### Prerequisites
+
+- fly.io CLI installed: `brew install flyctl`
+- Authenticated: `flyctl auth login`
+- GitHub Personal Access Token with `read:packages` scope
+- Existing fly.io app (or create with `flyctl apps create`)
+- PostgreSQL database on fly.io (optional, for apps needing DB)
+
+### Step 1: Create Dockerfile
+
+Create a multi-stage Dockerfile that uses Bun runtime and handles private GitHub Packages:
+
+```dockerfile
+# Multi-stage Dockerfile for Bun/Elysia API
+FROM oven/bun:1 AS builder
+
+WORKDIR /app
+
+# Copy package files and .npmrc for GitHub Packages auth
+COPY package.json bun.lock .npmrc ./
+
+# Install dependencies (token in .npmrc)
+# Remove .npmrc immediately after install for security
+RUN bun install --frozen-lockfile && \
+    rm .npmrc
+
+# Copy source code
+COPY . .
+
+# Runtime stage
+FROM oven/bun:1
+
+WORKDIR /app
+
+# Copy installed dependencies and source from builder
+COPY --from=builder /app /app
+
+# Expose port
+EXPOSE 3000
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+    CMD bun --eval "fetch('http://localhost:3000/').then(r => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))"
+
+# Start the application
+CMD ["bun", "run", "src/index.ts"]
+```
+
+**Key Points**:
+- Multi-stage build reduces final image size
+- `.npmrc` is copied but deleted after `bun install` (never in final image)
+- Health check uses Bun's built-in `fetch` API
+- Always use `--frozen-lockfile` to ensure reproducible builds
+
+### Step 2: Create .dockerignore
+
+Exclude unnecessary files from the Docker build context:
+
+```
+node_modules
+.git
+.github
+.gitignore
+*.log
+dist
+build
+.env.local
+.env.*.local
+README.md
+src/**/*.test.ts
+.DS_Store
+```
+
+**CRITICAL**: Do NOT include `tsconfig.json` in `.dockerignore` if you use TypeScript path aliases. Bun needs `tsconfig.json` to resolve imports like `@routes`, `@services`, etc.
+
+### Step 3: Create .npmrc (Local Only)
+
+Create `.npmrc` in your project root with your GitHub token:
+
+```
+@archeusllc:registry=https://npm.pkg.github.com
+//npm.pkg.github.com/:_authToken=YOUR_GITHUB_TOKEN_HERE
+registry=https://registry.npmjs.org/
+```
+
+**CRITICAL**:
+- Ensure `.npmrc` is in `.gitignore` (line should already exist)
+- Never commit this file
+- No trailing backslashes on token line (causes 401 errors)
+- This file is copied into Docker build but deleted after `bun install`
+
+### Step 4: Update bun.lock
+
+After adding private packages to `package.json`, update the lockfile:
+
+```bash
+bun install
+```
+
+This ensures the lockfile includes the private package versions.
+
+### Step 5: Create fly.toml
+
+Configure your fly.io app:
+
+```toml
+# fly.toml
+app = "your-app-name"
+primary_region = "iad"  # Choose region closest to your database
+
+[build]
+  dockerfile = "Dockerfile"
+
+[http_service]
+  internal_port = 3000
+  force_https = true
+  auto_stop_machines = true
+  auto_start_machines = true
+  min_machines_running = 0
+
+[[http_service.checks]]
+  grace_period = "5s"
+  interval = "30s"
+  method = "get"
+  path = "/"
+  timeout = "3s"
+  type = "http"
+
+[env]
+  PORT = "3000"
+
+[metrics]
+  port = 9090
+```
+
+**Configuration Notes**:
+- `auto_stop_machines = true` - Saves costs during development
+- `min_machines_running = 0` - Machines stop when idle
+- `primary_region` - Choose region near your database (e.g., "iad" for Ashburn, VA)
+- Health check path should match your actual health endpoint
+
+### Step 6: Set Secrets in fly.io
+
+Set all runtime secrets using `flyctl secrets set`:
+
+```bash
+# Database connection (if using PostgreSQL)
+flyctl secrets set DATABASE_URL="postgresql://user:pass@db-name.flycast:5432/dbname"
+
+# JWT secret (generate with: openssl rand -base64 32)
+flyctl secrets set JWT_SECRET="your-secure-random-secret"
+
+# Firebase Admin SDK credentials
+flyctl secrets set FIREBASE_PROJECT_ID="your-project-id"
+flyctl secrets set FIREBASE_CLIENT_EMAIL="firebase-adminsdk-xxx@your-project.iam.gserviceaccount.com"
+flyctl secrets set FIREBASE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----
+...your multi-line private key...
+-----END PRIVATE KEY-----"
+```
+
+**IMPORTANT**:
+- Use `.flycast` domain for internal database connections (not public hostname)
+- Generate strong JWT secrets with `openssl rand -base64 32`
+- Firebase private key is multiline - paste entire key including BEGIN/END lines
+- Verify secrets with: `flyctl secrets list`
+
+### Step 7: Deploy
+
+Deploy your application:
+
+```bash
+flyctl deploy --remote-only
+```
+
+**Deploy Options**:
+- `--remote-only` - Build in fly.io cloud (recommended, faster)
+- Without flag - Build locally and upload
+
+**What Happens**:
+1. Dockerfile is sent to fly.io builders
+2. `.npmrc` is copied into build context
+3. `bun install` downloads packages (including private GitHub Packages)
+4. `.npmrc` is deleted (not in final image)
+5. Application is built and deployed
+6. Health checks start running
+
+### Step 8: Verify Deployment
+
+Test your deployed API:
+
+```bash
+# Test root endpoint
+curl https://your-app-name.fly.dev/
+
+# Test health endpoint
+curl https://your-app-name.fly.dev/health
+
+# Check logs
+flyctl logs --app your-app-name
+
+# Check app status
+flyctl status --app your-app-name
+```
+
+### Troubleshooting
+
+**Problem**: `Cannot find package '@routes'` or similar import errors
+- **Cause**: `tsconfig.json` is in `.dockerignore`
+- **Solution**: Remove `tsconfig.json` from `.dockerignore` - Bun needs it for path alias resolution
+
+**Problem**: `401 Unauthorized` when installing GitHub Packages
+- **Cause**: Invalid token or backslash in `.npmrc`
+- **Solution**:
+  - Verify token has `read:packages` scope
+  - Check for trailing backslash on token line (remove it)
+  - Test locally: `bun install` should work
+
+**Problem**: `404 Not Found` for GitHub Package
+- **Cause**: Package not published or token lacks permissions
+- **Solution**: Publish package first, verify token has access to organization
+
+**Problem**: `lockfile had changes, but lockfile is frozen`
+- **Cause**: `bun.lock` is out of date
+- **Solution**: Run `bun install` locally and commit updated `bun.lock`
+
+**Problem**: Health checks failing
+- **Cause**: App not starting or wrong health check path
+- **Solution**: Check logs with `flyctl logs`, verify health endpoint exists
+
+### Security Best Practices
+
+1. **Never commit secrets**:
+   - `.npmrc` in `.gitignore`
+   - Use `flyctl secrets` for all sensitive config
+   - Review files before commit: `git status`
+
+2. **Use build secrets approach** (attempted but fly.io support is limited):
+   - fly.io's `build-secrets` in `fly.toml` doesn't work reliably
+   - Current approach (`.npmrc` in context, deleted after install) is secure
+   - `.npmrc` exists only during build, not in final image
+
+3. **Rotate secrets regularly**:
+   - GitHub tokens can be revoked/regenerated
+   - JWT secrets should be rotated periodically
+   - Firebase service accounts can be disabled in console
+
+4. **Use fine-grained tokens**:
+   - GitHub: Use fine-grained PATs with minimal scopes
+   - Limit token to specific repositories/organizations
+   - Set expiration dates
+
+### Files to Commit
+
+Safe to commit:
+- `Dockerfile` (no secrets)
+- `fly.toml` (no secrets)
+- `.dockerignore` (no secrets)
+- `bun.lock` (package versions only)
+
+Never commit:
+- `.npmrc` (contains GitHub token)
+- `.env.local` (local secrets)
+- Any file with actual credentials
+
+### Example: Band Together API Deployment
+
+Deployed: https://band-together-staging.fly.dev/
+
+**Configuration**:
+- Region: `iad` (Ashburn, VA)
+- Database: `band-together-staging-db.flycast`
+- Auto-stop: Enabled
+- Machines: 1 (no auto-scaling)
+- Health check: `GET /` and `GET /health`
+
+**Secrets**:
+- 5 runtime secrets (DATABASE_URL, JWT_SECRET, Firebase credentials)
+- 1 build secret (GITHUB_TOKEN - not actually used due to fly.io limitations)
+
+**Deployment Time**: ~2-3 minutes (including build)
+
+---
+
+**Last Updated**: 2026-01-26
 
 **Recent Changes**:
+- **Deployed API to fly.io** (2026-01-26)
+  - Created multi-stage Dockerfile with Bun runtime
+  - Configured single-machine deployment with auto-stop
+  - Set up GitHub Packages authentication via .npmrc
+  - Deployed to https://band-together-staging.fly.dev/
+  - Added comprehensive deployment documentation above
 - **Logo Image Integration** (2026-01-24)
   - Replaced "Band Together" text with `band-together-logo.png` image in AppHeader and DrawerContent
   - **Critical lesson**: Always import `Image` from `react-native` when using `<Image>` components
