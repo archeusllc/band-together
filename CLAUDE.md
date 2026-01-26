@@ -493,6 +493,52 @@ The API includes Swagger UI for interactive testing. Access it at `http://localh
 
 **Why this approach**: Uses real Firebase authentication without any environment-specific bypass code. The tokens work identically to production tokens.
 
+## Versioning Automation
+
+All submodules use automated versioning via GitHub Actions. When you push changes to a submodule, the `Auto Version` workflow automatically bumps the patch version and creates a git tag.
+
+### How It Works
+
+Each submodule has a `.github/workflows/version.yml` workflow that:
+1. Triggers on push to `main` branch when source files change
+2. Auto-bumps the patch version (e.g., 0.1.0 → 0.1.1)
+3. Creates a git tag for the version
+4. Pushes the tag to the repository
+
+### Trigger Paths by Submodule
+
+| Submodule | Trigger Paths |
+|-----------|---------------|
+| api | `src/**/*.ts`, `package.json` |
+| client | `src/**/*`, `package.json`, `app.json`, `eas.json` |
+| cms-api | `src/**/*.ts`, `package.json` |
+| cms-client | `src/**/*`, `package.json`, `index.html`, `vite.config.ts` |
+| db | `prisma/schema.prisma`, `package.json`, `scripts/**` |
+| schema | `prisma-client/**`, `package.json` (triggered by db workflow) |
+| types | `server.d.ts`, `package.json` |
+
+### Manual Version Bumps
+
+For major or minor version bumps (not automatic), use:
+
+```bash
+cd <submodule>
+npm version major    # or minor
+git push --follow-tags
+```
+
+This will:
+1. Update the version in package.json
+2. Create a git commit
+3. Create a git tag
+4. Push both to the repository
+
+The next push with source changes will then continue incrementing from the new version.
+
+### All Submodules Start at 0.1.0
+
+Following semantic versioning conventions for pre-release software, all submodules begin at version 0.1.0. This indicates early development where breaking changes may occur without a major version bump.
+
 ## Path Aliases
 
 ### Client (`modules/client/src/`)
