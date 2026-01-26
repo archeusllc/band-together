@@ -59,9 +59,7 @@ services:
     volumes:
       - ./client:/home/bun/app
       - /home/bun/app/node_modules
-      - ./.npmrc:/home/bun/.npmrc:ro
-    depends_on:
-      - api
+      - ~/.npmrc:/home/bun/.npmrc:ro
     command: sh -c "cp /home/bun/.npmrc /home/bun/app/.npmrc && cd /home/bun/app && bun install && bun run start"
     environment:
       EXPO_PUBLIC_API_URL: "http://api:3000"
@@ -76,10 +74,7 @@ services:
     volumes:
       - ./api:/home/bun/app
       - /home/bun/app/node_modules
-      - ./.npmrc:/home/bun/.npmrc:ro
-    depends_on:
-      postgres:
-        condition: service_healthy
+      - ~/.npmrc:/home/bun/.npmrc:ro
     command: sh -c "cp /home/bun/.npmrc /home/bun/app/.npmrc && cd /home/bun/app && bun install && bun run start"
     environment:
       <<: *db-url
@@ -95,9 +90,7 @@ services:
     volumes:
       - ./cms-client:/home/bun/app
       - /home/bun/app/node_modules
-      - ./.npmrc:/home/bun/.npmrc:ro
-    depends_on:
-      - cms-api
+      - ~/.npmrc:/home/bun/.npmrc:ro
     command: sh -c "cp /home/bun/.npmrc /home/bun/app/.npmrc && bun install && bun start -- --host 0.0.0.0"
     environment:
       VITE_API_URL: "http://cms-api:3001"
@@ -112,10 +105,7 @@ services:
     volumes:
       - ./cms-api:/home/bun/app
       - /home/bun/app/node_modules
-      - ./.npmrc:/home/bun/.npmrc:ro
-    depends_on:
-      postgres:
-        condition: service_healthy
+      - ~/.npmrc:/home/bun/.npmrc:ro
     command: sh -c "cp /home/bun/.npmrc /home/bun/app/.npmrc && bun install && bun start"
     environment:
       <<: *db-url
