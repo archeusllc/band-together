@@ -4,7 +4,7 @@ Welcome! This file provides quick guidance for AI assistants working on Band Tog
 
 ## Quick Start
 
-For comprehensive project context, see the **[AI Context Guide](modules/wiki/AI-Context.md)** in the wiki submodule. It covers:
+For comprehensive project context, see the **[AI Context Guide](wiki/AI-Context.md)** in the wiki submodule. It covers:
 - Project structure and tech stack
 - Path aliases and import conventions
 - Component patterns and architecture
