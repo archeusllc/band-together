@@ -92,7 +92,18 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const login = async (email: string, password: string): Promise<boolean> => {
     const { user: userData, error } = await firebaseAuthService.login(email, password);
 
-    if (userData && !error) {
+    if (error) {
+      // Ensure error is a proper Error object with a string message
+      if (error instanceof Error) {
+        throw error;
+      } else if (typeof error === 'string') {
+        throw new Error(error);
+      } else {
+        throw new Error(String(error?.message || error));
+      }
+    }
+
+    if (userData) {
       setUser(userData);
       return true;
     }
@@ -102,7 +113,18 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const register = async (email: string, password: string): Promise<boolean> => {
     const { user: userData, error } = await firebaseAuthService.register(email, password);
 
-    if (userData && !error) {
+    if (error) {
+      // Ensure error is a proper Error object with a string message
+      if (error instanceof Error) {
+        throw error;
+      } else if (typeof error === 'string') {
+        throw new Error(error);
+      } else {
+        throw new Error(String(error?.message || error));
+      }
+    }
+
+    if (userData) {
       setUser(userData);
       return true;
     }

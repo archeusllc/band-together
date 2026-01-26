@@ -1,4 +1,4 @@
-import { firebaseAuth } from '@config/firebase-admin.config';
+import { firebaseAuth, isFirebaseConfigured } from '@config/firebase-admin.config';
 import { authService } from './auth.service';
 
 export const authController = {
@@ -12,6 +12,10 @@ export const authController = {
     idToken: string;
   }) => {
     try {
+      if (!isFirebaseConfigured) {
+        return null;
+      }
+
       // Verify the ID token
       const decodedToken = await firebaseAuth.verifyIdToken(data.idToken);
 
@@ -46,6 +50,10 @@ export const authController = {
    */
   login: async (data: { firebaseUid: string; idToken: string }) => {
     try {
+      if (!isFirebaseConfigured) {
+        return null;
+      }
+
       // Verify the ID token
       const decodedToken = await firebaseAuth.verifyIdToken(data.idToken);
 

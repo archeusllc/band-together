@@ -4,6 +4,7 @@ import { dts } from 'elysia-remote-dts'
 
 import { routes } from '@routes';
 import { broadcastService } from '@services/broadcast.service';
+import { firebaseWarning } from './config/firebase-admin.config';
 
 import { documentation } from './documentation';
 
@@ -34,5 +35,10 @@ console.log(`🎸 Band Together API running on ${URL}`);
 console.log(`📊 Health check: ${URL}/health`);
 console.log(`📜 OpenAPI docs: ${URL}/openapi`);
 console.log(`📝 TypeScript definitions: ${URL}/server.d.ts`);
+
+// Show Firebase warning after other startup messages
+if (firebaseWarning) {
+  firebaseWarning();
+}
 
 export type App = typeof app;

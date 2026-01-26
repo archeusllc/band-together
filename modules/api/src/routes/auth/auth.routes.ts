@@ -9,6 +9,14 @@ export const authRoutes = new Elysia().group('/auth', (authRoute) =>
       async ({ body, set }) => {
         try {
           const user = await authController.register(body);
+          if (user === null) {
+            set.status = 503;
+            return {
+              error: 'Firebase authentication is not configured',
+              message: 'This server does not have Firebase Admin SDK credentials configured. Please set up Firebase credentials in your .env.local file and restart the server.',
+              documentation: 'See .env.development for setup instructions'
+            };
+          }
           return { user };
         } catch (error) {
           set.status = 400;
@@ -42,6 +50,14 @@ export const authRoutes = new Elysia().group('/auth', (authRoute) =>
       async ({ body, set }) => {
         try {
           const user = await authController.login(body);
+          if (user === null) {
+            set.status = 503;
+            return {
+              error: 'Firebase authentication is not configured',
+              message: 'This server does not have Firebase Admin SDK credentials configured. Please set up Firebase credentials in your .env.local file and restart the server.',
+              documentation: 'See .env.development for setup instructions'
+            };
+          }
           return { user };
         } catch (error) {
           set.status = 401;

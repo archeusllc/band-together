@@ -31,6 +31,18 @@ export const firebaseAuthService = {
       });
 
       if (error) {
+        // edenTreaty error structure - check status and value
+        const errorStatus = (error as any)?.status;
+        const errorValue = (error as any)?.value;
+
+        if (errorStatus === 503) {
+          // Extract message from the error value (which should be the response body)
+          const message = errorValue?.message || 'Firebase authentication is not configured on this server. Please contact the administrator.';
+          const firebaseError = new Error(String(message));
+          await firebaseUser.delete();
+          return { user: null, error: firebaseError };
+        }
+
         // If backend creation fails, we should delete the Firebase user
         await firebaseUser.delete();
         return { user: null, error };
@@ -61,6 +73,17 @@ export const firebaseAuthService = {
       });
 
       if (error) {
+        // edenTreaty error structure - check status and value
+        const errorStatus = (error as any)?.status;
+        const errorValue = (error as any)?.value;
+
+        if (errorStatus === 503) {
+          // Extract message from the error value (which should be the response body)
+          const message = errorValue?.message || 'Firebase authentication is not configured on this server. Please contact the administrator.';
+          const firebaseError = new Error(String(message));
+          return { user: null, error: firebaseError };
+        }
+
         return { user: null, error };
       }
 

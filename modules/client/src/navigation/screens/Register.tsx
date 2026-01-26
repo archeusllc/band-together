@@ -62,11 +62,37 @@ export const RegisterScreen = () => {
         });
       }
     } catch (error) {
-      setAlertConfig({
-        visible: true,
-        title: 'Error',
-        message: 'An error occurred during registration',
-      });
+      let errorMessage = 'An error occurred during registration';
+
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      } else if (typeof error === 'string') {
+        errorMessage = error;
+      } else if (error && typeof error === 'object') {
+        errorMessage = (error as any).message || JSON.stringify(error);
+      }
+
+      // Check if this is a Firebase configuration error
+      if (errorMessage.indexOf('not configured') > -1 || errorMessage.indexOf('Firebase Admin SDK') > -1) {
+        const apiUrl = process.env.EXPO_PUBLIC_API_URL || 'localhost:3000';
+        setAlertConfig({
+          visible: true,
+          title: 'Error',
+          message: `Firebase is not configured on ${apiUrl}`,
+        });
+      } else if (errorMessage.indexOf('Firebase') > -1) {
+        setAlertConfig({
+          visible: true,
+          title: 'Firebase Error',
+          message: errorMessage,
+        });
+      } else {
+        setAlertConfig({
+          visible: true,
+          title: 'Error',
+          message: errorMessage,
+        });
+      }
     } finally {
       setLoading(false);
     }

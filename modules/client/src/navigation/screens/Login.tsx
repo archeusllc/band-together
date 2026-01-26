@@ -43,11 +43,38 @@ export const LoginScreen = () => {
         });
       }
     } catch (error) {
-      setAlertConfig({
-        visible: true,
-        title: 'Error',
-        message: 'An error occurred during login',
-      });
+
+      let errorMessage = 'An error occurred during login';
+
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      } else if (typeof error === 'string') {
+        errorMessage = error;
+      } else if (error && typeof error === 'object') {
+        errorMessage = (error as any).message || JSON.stringify(error);
+      }
+
+      // Check if this is a Firebase configuration error
+      if (errorMessage.indexOf('not configured') > -1 || errorMessage.indexOf('Firebase Admin SDK') > -1) {
+        const apiUrl = process.env.EXPO_PUBLIC_API_URL || 'localhost:3000';
+        setAlertConfig({
+          visible: true,
+          title: 'Error',
+          message: `Firebase is not configured on ${apiUrl}`,
+        });
+      } else if (errorMessage.indexOf('Firebase') > -1) {
+        setAlertConfig({
+          visible: true,
+          title: 'Firebase Error',
+          message: errorMessage,
+        });
+      } else {
+        setAlertConfig({
+          visible: true,
+          title: 'Error',
+          message: errorMessage,
+        });
+      }
     } finally {
       setLoading(false);
     }
@@ -63,53 +90,53 @@ export const LoginScreen = () => {
         <Text className={`text-4xl font-bold mb-8 text-center ${tailwind.text.both}`}>Login</Text>
 
         <View className={`${tailwind.card.both} rounded-xl p-5`}>
-        <View className="mb-5">
-          <Text className={`text-base font-semibold mb-2 ${tailwind.text.both}`}>Email</Text>
-          <TextInput
-            className={`border rounded-lg px-4 py-3 text-base ${tailwind.border.both} ${tailwind.card.both} ${tailwind.text.both}`}
-            value={email}
-            onChangeText={setEmail}
-            placeholder="Enter your email"
-            placeholderTextColor={colors.light.muted}
-            keyboardType="email-address"
-            autoCapitalize="none"
-            autoComplete="email"
-            editable={!loading}
-          />
-        </View>
+          <View className="mb-5">
+            <Text className={`text-base font-semibold mb-2 ${tailwind.text.both}`}>Email</Text>
+            <TextInput
+              className={`border rounded-lg px-4 py-3 text-base ${tailwind.border.both} ${tailwind.card.both} ${tailwind.text.both}`}
+              value={email}
+              onChangeText={setEmail}
+              placeholder="Enter your email"
+              placeholderTextColor={colors.light.muted}
+              keyboardType="email-address"
+              autoCapitalize="none"
+              autoComplete="email"
+              editable={!loading}
+            />
+          </View>
 
-        <View className="mb-5">
-          <Text className={`text-base font-semibold mb-2 ${tailwind.text.both}`}>Password</Text>
-          <TextInput
-            className={`border rounded-lg px-4 py-3 text-base ${tailwind.border.both} ${tailwind.card.both} ${tailwind.text.both}`}
-            value={password}
-            onChangeText={setPassword}
-            placeholder="Enter your password"
-            placeholderTextColor={colors.light.muted}
-            secureTextEntry
-            autoCapitalize="none"
-            autoComplete="password"
-            editable={!loading}
-          />
-        </View>
+          <View className="mb-5">
+            <Text className={`text-base font-semibold mb-2 ${tailwind.text.both}`}>Password</Text>
+            <TextInput
+              className={`border rounded-lg px-4 py-3 text-base ${tailwind.border.both} ${tailwind.card.both} ${tailwind.text.both}`}
+              value={password}
+              onChangeText={setPassword}
+              placeholder="Enter your password"
+              placeholderTextColor={colors.light.muted}
+              secureTextEntry
+              autoCapitalize="none"
+              autoComplete="password"
+              editable={!loading}
+            />
+          </View>
 
-        <Pressable
-          className={`bg-blue-500 py-3 px-6 rounded-lg items-center mt-2 ${loading ? 'opacity-60' : ''}`}
-          onPress={handleLogin}
-          disabled={loading}
-        >
-          <Text className="text-white text-base font-semibold">
-            {loading ? 'Logging in...' : 'Login'}
-          </Text>
-        </Pressable>
-
-        <View className="flex-row justify-center mt-5">
-          <Text className={`text-sm ${tailwind.textMuted.both}`}>Don't have an account? </Text>
-          <Pressable onPress={() => navigation.navigate('Register')}>
-            <Text className={`text-sm ${tailwind.primary} font-semibold`}>Create Account</Text>
+          <Pressable
+            className={`bg-blue-500 py-3 px-6 rounded-lg items-center mt-2 ${loading ? 'opacity-60' : ''}`}
+            onPress={handleLogin}
+            disabled={loading}
+          >
+            <Text className="text-white text-base font-semibold">
+              {loading ? 'Logging in...' : 'Login'}
+            </Text>
           </Pressable>
+
+          <View className="flex-row justify-center mt-5">
+            <Text className={`text-sm ${tailwind.textMuted.both}`}>Don't have an account? </Text>
+            <Pressable onPress={() => navigation.navigate('Register')}>
+              <Text className={`text-sm ${tailwind.primary} font-semibold`}>Create Account</Text>
+            </Pressable>
+          </View>
         </View>
-      </View>
       </View>
 
       <AlertModal

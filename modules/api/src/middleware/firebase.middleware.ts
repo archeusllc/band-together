@@ -1,5 +1,5 @@
 import Elysia from 'elysia';
-import { firebaseAuth } from '@config/firebase-admin.config';
+import { firebaseAuth, isFirebaseConfigured } from '@config/firebase-admin.config';
 import { prisma } from '@services/prisma.service';
 
 /** For endpoints that may use Firebase authentication, but don't necessarily require it */
@@ -56,6 +56,17 @@ export const firebaseGate = new Elysia()
   .derive({
     as: 'scoped'
   }, async ({ firebase }) => {
+    if (!isFirebaseConfigured) {
+      throw new Response(
+        JSON.stringify({
+          error: 'Firebase authentication is not configured',
+          message: 'This server does not have Firebase Admin SDK credentials configured. Please set up Firebase credentials in your .env.local file and restart the server.',
+          documentation: 'See .env.development for setup instructions'
+        }),
+        { status: 503, headers: { 'Content-Type': 'application/json' } }
+      );
+    }
+
     if (!firebase) {
       throw new Response('Unauthorized: No valid Firebase token provided', { status: 401 });
     }

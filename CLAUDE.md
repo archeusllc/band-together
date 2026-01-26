@@ -34,23 +34,50 @@ When working on Band Together, please follow these conventions:
 
 ### Environment Variables
 
-**Client Module Configuration** (`modules/client/.env.development`)
-- The `.env.development` file contains all `EXPO_PUBLIC_*` environment variables needed for local development
-- This file serves dual purposes: **working configuration** AND **documentation** - do NOT modify it
-- Firebase API keys with `EXPO_PUBLIC_` prefix are meant to be public and are safe to commit
-- To override values locally (e.g., different IP address), create `.env.local` in `modules/client/`
-  - `.env.local` is gitignored and will override `.env.development` values
-  - Example: Create `.env.local` with `EXPO_PUBLIC_API_URL=http://YOUR_IP:3000` to use a different API server
+**Overview**
+- All modules use `.env.development` for shared, committed defaults
+- Use `.env.local` (gitignored) to override with local/sensitive values
+- `.env.local` is REQUIRED for backend modules to function (Firebase, different credentials)
+- Frontend client modules work with `.env.development` defaults only
 
-**Environment Variable Priority** (Expo/Metro loads in this order):
-1. `.env.local` (machine-specific overrides, gitignored)
+**Environment Variable Priority** (loads in this order):
+1. `.env.local` (local machine overrides, gitignored, never committed)
 2. `.env.development` (shared defaults, committed to git)
 3. `.env` (fallback, if exists)
 
-**For Cloud Builds** (EAS):
+**Client Module** (`modules/client/.env.development`)
+- Contains all `EXPO_PUBLIC_*` variables for local development
+- Firebase API keys with `EXPO_PUBLIC_` prefix are public and safe to commit
+- Works out of the box with `localhost:3000` API
+- To override (e.g., different IP): Create `.env.local` in `modules/client/`
+  - Example: `EXPO_PUBLIC_API_URL=http://192.168.1.100:3000`
+
+**API Module** (`modules/api/.env.development`)
+- Database and JWT secret work out of the box
+- **Firebase credentials are PLACEHOLDERS** - you must configure them
+- Create `.env.local` in `modules/api/` with real Firebase credentials:
+  ```bash
+  FIREBASE_PROJECT_ID="your-project-id"
+  FIREBASE_CLIENT_EMAIL="firebase-adminsdk-xxx@your-project.iam.gserviceaccount.com"
+  FIREBASE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----\n"
+  ```
+- Get these from Firebase Console > Project Settings > Service Accounts > Generate New Private Key
+- If Firebase is not configured, the API will throw a helpful error on startup
+
+**CMS API Module** (`modules/api-cms/.env.development`)
+- Database, JWT, and Admin Client URL work out of the box
+- Spotify credentials are optional (leave empty to skip integration)
+
+**Cloud Builds** (EAS):
 - The `preview`, `production`, and `release` profiles in `eas.json` have hardcoded `env` values
 - These are used by EAS cloud builds (local `.env` files aren't uploaded)
 - Future enhancement: Migrate to EAS Environments for better credential management
+
+**Security Notes**
+- Never commit `.env.local` files
+- Never commit real Firebase private keys
+- `.env.development` files are safe to commit (contain placeholders and shared, non-sensitive config)
+- Database credentials in `.env.development` are for local Docker setup only
 
 ### React Native Client
 
