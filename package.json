@@ -6,7 +6,8 @@
   "scripts": {
     "start": "docker compose up -d",
     "stop": "docker compose down",
-    "preinstall": "bash ./scripts/preinstall.sh",
+    "nuke": "docker compose down && docker system prune -a -f --volumes",
+    "preinstall": "cd modules/api && bun install && cd ../client && bun install",
     "postinstall": "rm -rf node_modules bun.lock package-lock.json"
   },
   "keywords": [

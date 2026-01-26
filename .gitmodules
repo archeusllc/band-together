@@ -1,10 +1,12 @@
 [submodule "wiki"]
-	path = wiki
+	path = modules/wiki
 	url = https://github.com/archeusllc/band-together.wiki.git
 	branch = master
 [submodule "types"]
-	path = types
+	path = modules/types
 	url = https://github.com/archeusllc/band-together-types
+	branch = main
 [submodule "runtimes"]
-	path = runtimes
+	path = modules/runtimes
 	url = https://github.com/archeusllc/band-together-runtimes
+	branch = main

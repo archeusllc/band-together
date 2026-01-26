@@ -35,12 +35,12 @@ services:
   prisma-studio:
     image: oven/bun:latest
     container_name: prisma-studio
-    working_dir: /app/db
+    working_dir: /home/bun/app
     restart: unless-stopped
     ports:
       - 51212:51212
     volumes:
-      - ./db:/app/db
+      - ./modules/db:/home/bun/app
     depends_on:
       postgres:
         condition: service_healthy
@@ -51,33 +51,35 @@ services:
   web:
     image: oven/bun:latest
     container_name: band-together-web
-    working_dir: /app/client
+    working_dir: /home/bun/app
     restart: unless-stopped
     ports:
       - 8081:8081
     volumes:
-      - ./client:/app/client
-      - /app/client/node_modules
+      - ./modules/client:/home/bun/app
+      - /home/bun/app/node_modules
+      - ./.npmrc:/home/bun/.npmrc:ro
     depends_on:
       - api
-    command: sh -c "cd /app/client && bun install && bun run start"
+    command: sh -c "cp /home/bun/.npmrc /home/bun/app/.npmrc && cd /home/bun/app && bun install && bun run start"
     environment:
       EXPO_PUBLIC_API_URL: "http://api:3000"
 
   api:
     image: oven/bun:latest
     container_name: band-together-api
-    working_dir: /app/api
+    working_dir: /home/bun/app
     restart: unless-stopped
     ports:
       - "3000:3000"
     volumes:
-      - ./api:/app/api
-      - /app/api/node_modules
+      - ./modules/api:/home/bun/app
+      - /home/bun/app/node_modules
+      - ./.npmrc:/home/bun/.npmrc:ro
     depends_on:
       postgres:
         condition: service_healthy
-    command: sh -c "cd /app/api && bun install && bun run start"
+    command: sh -c "cp /home/bun/.npmrc /home/bun/app/.npmrc && cd /home/bun/app && bun install && bun run start"
     environment:
       <<: *db-url
       PORT: "3000"
@@ -85,33 +87,35 @@ services:
   cms:
     image: oven/bun:latest
     container_name: band-together-cms
-    working_dir: /app/cms
+    working_dir: /home/bun/app
     restart: unless-stopped
     ports:
       - "5173:5173"
     volumes:
-      - ./cms:/app/cms
-      - /app/cms/node_modules
+      - ./modules/cms:/home/bun/app
+      - /home/bun/app/node_modules
+      - ./.npmrc:/home/bun/.npmrc:ro
     depends_on:
       - api-cms
-    command: sh -c "bun install && bun start -- --host 0.0.0.0"
+    command: sh -c "cp /home/bun/.npmrc /home/bun/app/.npmrc && bun install && bun start -- --host 0.0.0.0"
     environment:
       VITE_API_URL: "http://api-cms:3001"
 
   api-cms:
     image: oven/bun:latest
     container_name: band-together-cms-api
-    working_dir: /app/api-cms
+    working_dir: /home/bun/app
     restart: unless-stopped
     ports:
       - "3001:3001"
     volumes:
-      - ./api-cms:/app/api-cms
-      - /app/api-cms/node_modules
+      - ./modules/api-cms:/home/bun/app
+      - /home/bun/app/node_modules
+      - ./.npmrc:/home/bun/.npmrc:ro
     depends_on:
       postgres:
         condition: service_healthy
-    command: sh -c "bun install && bun start"
+    command: sh -c "cp /home/bun/.npmrc /home/bun/app/.npmrc && bun install && bun start"
     environment:
       <<: *db-url
       PORT: "3001"

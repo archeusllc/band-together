@@ -1,0 +1,19 @@
+{
+  "name": "@band-together/db",
+  "version": "0.1.0",
+  "description": "Database schema and migrations for Band Together",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "bunx --bun prisma studio",
+    "generate": "bunx --bun prisma generate"
+  },
+  "dependencies": {
+    "@prisma/client": "latest"
+  },
+  "devDependencies": {
+    "@types/node": "^25.0.6",
+    "prisma": "latest",
+    "typescript": "^5.9.3"
+  }
+}

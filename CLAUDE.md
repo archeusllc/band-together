@@ -4,7 +4,7 @@ Welcome! This file provides quick guidance for AI assistants working on Band Tog
 
 ## Quick Start
 
-For comprehensive project context, see the **[AI Context Guide](wiki/AI-Context.md)** in the wiki submodule. It covers:
+For comprehensive project context, see the **[AI Context Guide](modules/wiki/AI-Context.md)** in the wiki submodule. It covers:
 - Project structure and tech stack
 - Path aliases and import conventions
 - Component patterns and architecture
@@ -31,6 +31,26 @@ When working on Band Together, please follow these conventions:
 ### Package Management
 - **Use `bun` for all commands** - never use npm
 - Examples: `bun install`, `bun add package`, `bun run [script]`
+
+### Environment Variables
+
+**Client Module Configuration** (`modules/client/.env.development`)
+- The `.env.development` file contains all `EXPO_PUBLIC_*` environment variables needed for local development
+- This file serves dual purposes: **working configuration** AND **documentation** - do NOT modify it
+- Firebase API keys with `EXPO_PUBLIC_` prefix are meant to be public and are safe to commit
+- To override values locally (e.g., different IP address), create `.env.local` in `modules/client/`
+  - `.env.local` is gitignored and will override `.env.development` values
+  - Example: Create `.env.local` with `EXPO_PUBLIC_API_URL=http://YOUR_IP:3000` to use a different API server
+
+**Environment Variable Priority** (Expo/Metro loads in this order):
+1. `.env.local` (machine-specific overrides, gitignored)
+2. `.env.development` (shared defaults, committed to git)
+3. `.env` (fallback, if exists)
+
+**For Cloud Builds** (EAS):
+- The `preview`, `production`, and `release` profiles in `eas.json` have hardcoded `env` values
+- These are used by EAS cloud builds (local `.env` files aren't uploaded)
+- Future enhancement: Migrate to EAS Environments for better credential management
 
 ### React Native Client
 
@@ -271,10 +291,10 @@ export * from './types/index';
 **Schema Change Workflow:**
 ```bash
 # 1. Edit schema
-vim db/prisma/schema.prisma
+vim modules/db/prisma/schema.prisma
 
 # 2. Push to database (auto-regenerates types)
-cd db && bun push
+cd modules/db && bun push
 
 # 3. Types updated everywhere - zero manual sync!
 ```
@@ -305,9 +325,9 @@ cd db && bun push
 bun install
 ```
 
-### Database Commands (from `db/` directory)
+### Database Commands (from `modules/db/` directory)
 ```bash
-cd db
+cd modules/db
 
 bun start                 # Open Prisma Studio
 bun push                  # Push schema changes to database
@@ -316,15 +336,15 @@ bun clean                # Clean node_modules and lock files
 bun reset                # Clean and reinstall dependencies
 ```
 
-**CRITICAL**: After running `bun push` or `bun generate` in db/, you MUST reinstall the shared module in client and api:
+**CRITICAL**: After running `bun push` or `bun generate` in modules/db/, you MUST reinstall the shared module in client and api:
 ```bash
 cd ../client && bun install
 cd ../api && bun install
 ```
 
-### API Commands (from `api/` directory)
+### API Commands (from `modules/api/` directory)
 ```bash
-cd api
+cd modules/api
 
 bun start                # Start API server with watch mode
 bun generate             # Generate API types from running server
@@ -332,7 +352,7 @@ bun clean                # Clean node_modules and lock files
 bun reset                # Clean and reinstall dependencies
 ```
 
-**CRITICAL**: After running `bun generate` in api/, you MUST reinstall the shared module in client and api:
+**CRITICAL**: After running `bun generate` in modules/api/, you MUST reinstall the shared module in client and api:
 ```bash
 cd ../client && bun install
 cd ../api && bun install
@@ -340,21 +360,21 @@ cd ../api && bun install
 
 ### Shared Module Workflow
 
-After ANY changes to files in `shared/` (especially generated types), you must reinstall the shared module in dependent workspaces:
+After ANY changes to files in `modules/shared/` (especially generated types), you must reinstall the shared module in dependent workspaces:
 
 ```bash
-# After changes in shared/
-cd client && bun install
+# After changes in modules/shared/
+cd modules/client && bun install
 cd ../api && bun install
 ```
 
 **Why this matters**: Bun symlinks workspace dependencies. When generated files change in shared/, the symlink doesn't automatically update - you must reinstall to refresh the dependency link.
 
 **When to reinstall**:
-- After `bun generate` in api/ (updates shared/generated/api-types/server.d.ts)
-- After `bun push` or `bun generate` in db/ (updates shared/generated/prisma-client/)
-- After manually editing shared/types/* files
-- After ANY changes to shared/index.ts or other shared source files
+- After `bun generate` in modules/api/ (updates modules/shared/generated/api-types/server.d.ts)
+- After `bun push` or `bun generate` in modules/db/ (updates modules/shared/generated/prisma-client/)
+- After manually editing modules/shared/types/* files
+- After ANY changes to modules/shared/index.ts or other shared source files
 
 ### Local Database Setup
 ```bash
@@ -362,8 +382,8 @@ cd ../api && bun install
 docker-compose up -d
 
 # Apply schema and manage database
-cd db && bun push        # Apply schema migrations
-cd db && bun start       # Open Prisma Studio for visual management
+cd modules/db && bun push        # Apply schema migrations
+cd modules/db && bun start       # Open Prisma Studio for visual management
 ```
 
 ### OpenAPI/Swagger Testing
@@ -371,7 +391,7 @@ cd db && bun start       # Open Prisma Studio for visual management
 The API includes Swagger UI for interactive testing. Access it at `http://localhost:3000/openapi` when the API is running.
 
 **Testing Protected Endpoints**:
-1. Run the client app in development mode: `cd client && bun start`
+1. Run the client app in development mode: `cd modules/client && bun start`
 2. Log in with a test account (or register a new one)
 3. Navigate to Settings screen (only visible in development - tap your profile avatar, then scroll to Settings)
 4. Find the "Firebase Token" section with a truncated token preview
@@ -390,7 +410,7 @@ The API includes Swagger UI for interactive testing. Access it at `http://localh
 
 ## Path Aliases
 
-### Client (`client/src/`)
+### Client (`modules/client/src/`)
 - `@components` / `@components/*` - Reusable UI components
 - `@ui` / `@ui/*` - UI primitives
 - `@screens` / `@screens/*` - Screen components
@@ -401,7 +421,7 @@ The API includes Swagger UI for interactive testing. Access it at `http://localh
 - `@constants` - App constants
 - `@assets/*` - Images, fonts
 
-### API (`api/src/`)
+### API (`modules/api/src/`)
 - `@routes` - Route definitions
 - `@controllers` - Route handlers
 - `@middleware` - Auth & validation
@@ -412,22 +432,33 @@ The API includes Swagger UI for interactive testing. Access it at `http://localh
 
 ```
 band-together/
-├── client/        # React Native app
-├── api/           # REST API (Elysia)
-├── shared/        # Shared types & utilities
-├── db/            # Database & Prisma config
-└── wiki/          # GitHub wiki (git submodule)
-    └── AI-Context.md  # Full project context
+├── modules/
+│   ├── client/        # React Native app
+│   ├── api/           # REST API (Elysia)
+│   ├── shared/        # Shared types & utilities
+│   ├── db/            # Database & Prisma config
+│   ├── api-cms/       # CMS API (Elysia)
+│   ├── cms/           # CMS web app (Vite)
+│   ├── types/         # Shared type definitions
+│   ├── runtimes/      # Shared runtime utilities
+│   └── wiki/          # GitHub wiki (git submodule)
+│       └── AI-Context.md  # Full project context
+├── scripts/           # Utility scripts
+└── compose.yml        # Docker composition config
 ```
 
 ## Submodule Definition
 
-For planning and task organization purposes, a **submodule** is any directory exactly one level deeper from the project root:
-- `api/` - Backend API layer
-- `client/` - React Native client app
-- `db/` - Database & Prisma configuration
-- `shared/` - Shared types and utilities
-- `wiki/` - Documentation and context
+For planning and task organization purposes, a **submodule** is any directory exactly one level deeper from `modules/`:
+- `modules/api/` - Backend API layer
+- `modules/client/` - React Native client app
+- `modules/db/` - Database & Prisma configuration
+- `modules/shared/` - Shared types and utilities
+- `modules/wiki/` - Documentation and context
+- `modules/api-cms/` - CMS API layer
+- `modules/cms/` - CMS web application
+- `modules/types/` - Shared type definitions
+- `modules/runtimes/` - Shared runtime utilities
 
 Tasks should be scoped to work within a single submodule when possible, keeping changes focused and independent.
 
@@ -449,10 +480,10 @@ Tasks should be scoped to work within a single submodule when possible, keeping 
 The app implements automatic device-based dark mode using NativeWind v4 with `darkMode: 'media'`. This automatically responds to the device's system color scheme preference without any manual context or state management.
 
 ### Key Files
-- **[client/tailwind.config.js](client/tailwind.config.js)** - Configured with `darkMode: 'media'` to enable automatic detection
-- **[client/src/theme/colors.ts](client/src/theme/colors.ts)** - **Single source of truth** for all theme colors and Tailwind classnames
-- **[client/src/theme/index.ts](client/src/theme/index.ts)** - Barrel export for clean imports via `@theme`
-- **[client/src/navigation/themes.ts](client/src/navigation/themes.ts)** - React Navigation theme objects (headers/drawer)
+- **[modules/client/tailwind.config.js](modules/client/tailwind.config.js)** - Configured with `darkMode: 'media'` to enable automatic detection
+- **[modules/client/src/theme/colors.ts](modules/client/src/theme/colors.ts)** - **Single source of truth** for all theme colors and Tailwind classnames
+- **[modules/client/src/theme/index.ts](modules/client/src/theme/index.ts)** - Barrel export for clean imports via `@theme`
+- **[modules/client/src/navigation/themes.ts](modules/client/src/navigation/themes.ts)** - React Navigation theme objects (headers/drawer)
 
 ### Color & Classname System
 The `@theme` module exports three objects:

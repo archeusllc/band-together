@@ -2,6 +2,7 @@ node_modules/
 .env*
 !.env.development
 
-.npmrc
+.expo/
+dist/
 
-secrets/
+.npmrc
