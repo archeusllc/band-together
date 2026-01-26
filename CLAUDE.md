@@ -1,1568 +1,183 @@
 # CLAUDE.md - AI Assistant Guide
 
-Welcome! This file provides quick guidance for AI assistants working on Band Together.
+Welcome! This guide helps AI assistants work effectively on Band Together.
 
-## Quick Start
+## Architecture First
 
-For comprehensive project context, see the **[AI Context Guide](wiki/AI-Context.md)** in the wiki submodule. It covers:
-- Project structure and tech stack
-- Path aliases and import conventions
-- Component patterns and architecture
-- Development workflow
-- Coding standards
+Band Together is organized as a **modular orchestration architecture**:
 
+- **Root repo** = Lean orchestration layer
+- **Submodules** = Self-contained, independently deployable modules
+- **Type packages** = Clean interfaces (schema, types, models)
+- **Philosophy** = "Cool and Useful Without Install" - no login or install required for core functionality
+
+## Getting Started
+
+1. **Read Architecture:** [Architecture Overview](wiki/Architecture-Overview.md)
+2. **Understand Packages:** ⚠️ **[Package System](wiki/Architecture-Packages.md) - CRITICAL KNOWLEDGE**
+3. **Know the Principles:** [Coding Philosophy](wiki/Coding-Philosophy.md)
+4. **Check the Module:** See the specific submodule's CLAUDE.md and README.md
+
+## Where to Work
+
+### If working at root repo level (orchestration):
+- Read [Architecture Overview](wiki/Architecture-Overview.md)
+- Understand the package system (links below)
+- Coordinate changes across submodules
+- Update submodule references
+
+### If working in `api/` submodule:
+- Read [api/CLAUDE.md](api/CLAUDE.md) for patterns
+- See [api/README.md](api/README.md) for setup
+- Reference [Lessons Learned - Backend](wiki/lessons/Backend.md)
+
+### If working in `client/` submodule:
+- Read [client/CLAUDE.md](client/CLAUDE.md) for patterns
+- See [client/README.md](client/README.md) for setup
+- Reference [Lessons Learned - Frontend](wiki/lessons/Frontend.md)
+
+### If working in `db/` submodule:
+- Read [db/CLAUDE.md](db/CLAUDE.md) for patterns
+- See [db/README.md](db/README.md) for setup
+- Reference [Lessons Learned - Database](wiki/lessons/Database.md)
+
+### If working in `cms-api/` or `cms-client/`:
+- Same patterns as api/ and client/ respectively
+- Separate authentication (not Firebase)
+
+### If working with `schema/`, `types/`, or `models/`:
+- See [Package System](wiki/Architecture-Packages.md) for how they work
+- See relevant submodule's README.md for quick start
 
 ## Design Philosophy
 
-**"Cool and Useful Without Install"**
+### "Cool and Useful Without Install"
 
-Band Together is designed to be fully functional for users who access it via web browser, without requiring app installation or account registration. This philosophy applies to the entire application:
+- Full functionality via web browser, no app install required
+- No account registration needed for core features
+- Authentication only at natural security boundaries (editing, creating content)
+- Organic adoption: demonstrate value first, ask for signup later
 
-- **No Feature Walls** - Features should work without login whenever possible; authentication should be reserved for natural security boundaries (editing, creating content)
-- **Web-First Functionality** - Web version should have full real-time capabilities, not be a degraded experience
-- **Organic Adoption** - Demonstrate value before asking for signup; avoid "nag screens" or forced registrations
-- **Natural Security** - Editing and content creation require authentication as a security measure, not an engagement tactic
+This philosophy informs all architectural decisions.
 
-This approach creates viral sharing opportunities and reduces friction for new users while maintaining security and data integrity.
+## Key Principles
 
-## Key Preferences
+Read [Coding Philosophy](wiki/Coding-Philosophy.md) for full details. Summary:
 
-When working on Band Together, please follow these conventions:
+1. **Favor brevity and simplicity** over complexity
+2. **Implement minimum-viable solutions** - avoid over-engineering
+3. **Follow DRY** - Don't Repeat Yourself
+4. **Comments for why** - Only comment non-obvious logic
+5. **Avoid backwards-compatibility hacks** - Just change the code
+6. **Three similar lines is better than premature abstraction**
 
-### Package Management
-- **Use `bun` for all commands** - never use npm
-- Examples: `bun install`, `bun add package`, `bun run [script]`
+## Package System ⚠️ CRITICAL
 
-### Environment Variables
+This project uses a **3-package architecture**:
 
-**Overview**
-- All modules use `.env.development` for shared, committed defaults
-- Use `.env.local` (gitignored) to override with local/sensitive values
-- `.env.local` is REQUIRED for backend modules to function (Firebase, different credentials)
-- Frontend client modules work with `.env.development` defaults only
+- **`@archeusllc/schema`** - Prisma-generated database types
+- **`@archeusllc/types`** - Eden Treaty API client types
+- **`@archeusllc/models`** - Hand-crafted business types
 
-**Environment Variable Priority** (loads in this order):
-1. `.env.local` (local machine overrides, gitignored, never committed)
-2. `.env.development` (shared defaults, committed to git)
-3. `.env` (fallback, if exists)
+**Why this matters:**
+- Types are installed via package.json, not workspace symlinks
+- Enables independent versioning and swappable modules
+- APIs consume schema + models
+- Clients consume types + models
 
-**Client Module** (`modules/client/.env.development`)
-- Contains all `EXPO_PUBLIC_*` variables for local development
-- Firebase API keys with `EXPO_PUBLIC_` prefix are public and safe to commit
-- Works out of the box with `localhost:3000` API
-- To override (e.g., different IP): Create `.env.local` in `modules/client/`
-  - Example: `EXPO_PUBLIC_API_URL=http://192.168.1.100:3000`
+**Must read:** [Package System - Full Details](wiki/Architecture-Packages.md)
 
-**API Module** (`modules/api/.env.development`)
-- Database and JWT secret work out of the box
-- **Firebase credentials are PLACEHOLDERS** - you must configure them
-- Create `.env.local` in `modules/api/` with real Firebase credentials:
-  ```bash
-  FIREBASE_PROJECT_ID="your-project-id"
-  FIREBASE_CLIENT_EMAIL="firebase-adminsdk-xxx@your-project.iam.gserviceaccount.com"
-  FIREBASE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----\n"
-  ```
-- Get these from Firebase Console > Project Settings > Service Accounts > Generate New Private Key
-- If Firebase is not configured, the API will throw a helpful error on startup
+## Environment Variables
 
-**CMS API Module** (`modules/api-cms/.env.development`)
-- Database, JWT, and Admin Client URL work out of the box
-- Spotify credentials are optional (leave empty to skip integration)
+**Short version:** `.env.development` provides defaults, `.env.local` (gitignored) overrides for local/sensitive values.
 
-**Cloud Builds** (EAS):
-- The `preview`, `production`, and `release` profiles in `eas.json` have hardcoded `env` values
-- These are used by EAS cloud builds (local `.env` files aren't uploaded)
-- Future enhancement: Migrate to EAS Environments for better credential management
+**For API modules:** Firebase credentials REQUIRED in `.env.local`
+**For client:** API URL override optional in `.env.local` (defaults to localhost:3000)
 
-**Security Notes**
-- Never commit `.env.local` files
-- Never commit real Firebase private keys
-- `.env.development` files are safe to commit (contain placeholders and shared, non-sensitive config)
-- Database credentials in `.env.development` are for local Docker setup only
+See individual module READMEs for specific setup.
 
-### React Native Client
-
-**Component Syntax**
-- Use arrow functions for all component exports, including screen components
-- Export directly with `export const` pattern
-- ```typescript
-  export const MyComponent = () => {
-    return <View>Content</View>;
-  };
-
-  export const HomeScreen = () => {
-    return <View>Content</View>;
-  };
-  ```
-- **Prefer named exports over default exports** for better refactoring and IDE support
-
-**Import Style**
-- Use path aliases without `@/` prefix
-- ```typescript
-  // ✅ Correct
-  import { useAuth } from '@contexts'
-  import { HomeScreen } from '@screens'
-  import { IconSymbol } from '@components/ui'
-
-  // ❌ Incorrect
-  import { useAuth } from '@/contexts'
-  import { HomeScreen } from './screens'
-  import { HomeScreen } from '@/navigation/screens/Home.tsx'
-  ```
-- Never include file extensions (`.ts`, `.tsx`, `.js`) in imports
-
-**Code Quality**
-- Favor brevity and simplicity over complexity
-- Implement minimum-viable solutions - avoid over-engineering
-- Follow DRY (Don't Repeat Yourself) principles
-- Add comments only when logic isn't self-evident
-- Use TypeScript strict mode rigorously
-
-**Buttons and Icons**
-- The app uses `@expo/vector-icons` (Ionicons) for all icons, which render on web, iOS, and Android
-- Icon-only buttons are now fully supported since Ionicons work universally via font-based rendering
-- `IconSymbol` wrapper component handles Ionicons rendering with proper TypeScript typing
-- Icon names use Ionicons naming convention: common names like `pencil`, `trash`, `plus`, `close`, `search`, `link`, `checkmark`
-- Pattern: `<IconSymbol name="pencil" size={24} color={colors.brand.primary} />`
-- For accessibility, consider adding text labels on action buttons in dense layouts, but icon-only buttons are acceptable since icons render everywhere
-- **Icon Library Migration Notes**:
-  - Migrated from `expo-symbols` (SF Symbols, iOS-only) to `@expo/vector-icons` (Ionicons, universal)
-  - @expo/vector-icons uses font-based rendering which works on web via CSS font files
-  - Ionicons provides 1300+ icons with consistent visual style across platforms
-  - TypeScript icon typing: `name: keyof typeof Ionicons.glyphMap` ensures valid icon names at compile time
-
-**Dialogs and Alerts**
-- **Do NOT use `Alert.alert()`** - React Native's native Alert component does not work on web
-- Use the `AlertModal` component from `@components/ui` for all alerts and confirmation dialogs
-- `AlertModal` provides consistent styling, dark mode support, and works on all platforms (web, iOS, Android)
-
-**AlertModal Component API**:
-```typescript
-interface AlertButton {
-  text: string;
-  onPress?: () => void;
-  style?: 'default' | 'cancel' | 'destructive';
-}
-
-interface AlertModalProps {
-  visible: boolean;
-  title: string;
-  message: string;
-  buttons?: AlertButton[];
-  onDismiss?: () => void;
-}
-
-<AlertModal
-  visible={alertConfig.visible}
-  title="Confirm Delete"
-  message="This action cannot be undone."
-  buttons={[
-    { text: 'Cancel', style: 'cancel', onPress: () => setAlertConfig(...) },
-    { text: 'Delete', style: 'destructive', onPress: handleDelete },
-  ]}
-/>
-```
-
-**State Management Pattern**:
-Use a `alertConfig` state object in your component to manage alert visibility, content, and custom buttons:
-```typescript
-const [alertConfig, setAlertConfig] = useState<{
-  visible: boolean;
-  title: string;
-  message: string;
-  buttons?: AlertButton[];
-}>({ visible: false, title: '', message: '' });
-
-// Simple alert
-setAlertConfig({
-  visible: true,
-  title: 'Error',
-  message: 'Failed to save changes',
-});
-
-// Alert with custom callback
-setAlertConfig({
-  visible: true,
-  title: 'Success',
-  message: 'Saved successfully!',
-  buttons: [{ text: 'OK', onPress: () => navigation.navigate('Home') }],
-});
-
-// Delete confirmation with destructive action
-const handleDelete = async () => {
-  try {
-    await deleteItem(itemId);
-    setAlertConfig({
-      visible: true,
-      title: 'Success',
-      message: 'Deleted successfully',
-    });
-  } catch (error) {
-    setAlertConfig({
-      visible: true,
-      title: 'Error',
-      message: 'Failed to delete',
-    });
-  }
-};
-
-setAlertConfig({
-  visible: true,
-  title: 'Delete Item',
-  message: 'Are you sure? This cannot be undone.',
-  buttons: [
-    { text: 'Cancel', style: 'cancel', onPress: () => setAlertConfig({ visible: false, ... }) },
-    { text: 'Delete', style: 'destructive', onPress: handleDelete },
-  ],
-});
-```
-
-**Key Features**:
-- Button styles: `'default'` (blue), `'cancel'` (gray), `'destructive'` (red)
-- Dark mode support via Tailwind theming
-- Proper web click handling with `pointerEvents` attributes
-- Overlay dismissal by tapping outside modal (when no buttons provided)
-- Icons in modals use Ionicons (which work on web)
-
-### API Layer (api/)
-
-**Route Organization - Subdirectory Pattern**
-
-Each route group must follow this structure in `api/src/routes/<name>/`:
-```
-routes/auth/
-├── index.ts                 # Barrel export: export { authRoutes }
-├── auth.routes.ts           # Route definitions with Elysia
-├── auth.controller.ts       # Business logic
-├── auth.service.ts          # Data access layer (Prisma)
-└── auth.test.ts             # Test suite (REQUIRED)
-```
-
-All routes must:
-1. **Create a dedicated subdirectory** with co-located files
-2. **Export controller/service locally** - use `from './auth.controller'` not `@controllers`
-3. **Include test file** - `<name>.test.ts` with comprehensive coverage
-4. **Create barrel export** - `index.ts` exporting only the routes
-
-**Endpoint Development**
-- Use Elysia framework patterns with layered architecture (routes → controller → service)
-- Always include OpenAPI documentation for new endpoints using JSDoc comments
-- Service layer handles all Prisma operations
-- Controller handles business logic and validation
-- Routes handle HTTP concerns and middleware
-
-**OpenAPI Documentation**
-- Add JSDoc comments to all endpoint handlers with `@summary`, `@description`, `@param`, `@returns` tags
-- Keep endpoint documentation in sync with implementation changes
-- Example:
-  ```typescript
-  /**
-   * @summary Get user's activity feed
-   * @description Returns personalized feed of calendar events from followed entities
-   * @param {string} userId - User ID
-   * @returns {CalendarEvent[]} Array of events sorted by startTime
-   */
-  export const getFeed = async (userId: string) => { /* ... */ }
-  ```
-
-**Testing Requirements**
-- Every route MUST have comprehensive tests in `<name>.test.ts`
-- Use Bun test framework (`describe`, `test`, `expect`, `mock`)
-- Coverage must include:
-  - Happy path (successful requests)
-  - Authentication (protected endpoints reject unauthorized)
-  - Validation (invalid input returns 422)
-  - Not found (non-existent resources return 404)
-  - Edge cases (duplicate data, authorization failures)
-- Tests are in global preload `api/src/test/index.ts` with Firebase mocks
-- Run with: `bun run test` (not `bun test` - uses package.json script)
-
-### Planning & Execution
-
-- **Keep plans focused and small in scope** - prefer incremental changes
-- **Read existing code before proposing modifications** - understand patterns first
-- **Ask clarifying questions** when requirements are ambiguous
-- **Avoid premature abstractions** - three similar lines is better than an unnecessary helper
-- **Implementation plan phases** - When creating implementation plans, use many small phases instead of few large ones:
-  - Each phase should touch only ONE submodule (api, db, client) at a time
-  - Each phase should focus on ONE feature/entity at a time
-  - Build dependencies sequentially (e.g., SetItem models → SetItem endpoints → SetItem UI → SetList models → SetList endpoints → SetList UI)
-  - Prefer 6 small focused phases over 3 large multi-entity phases
-
-### Type Packages Architecture
-
-Band Together uses **two separate type packages** to avoid circular dependencies:
-
-**1. `@archeusllc/schema` (Database Types)**
-- **Source**: Generated by Prisma from `db/prisma/schema.prisma`
-- **Contents**: Prisma models (User, Guild, Track, etc.) + enums + custom DTOs
-- **Published by**: GitHub Action in `db/.github/workflows/generate-types.yml`
-- **Consumed by**: `api` (devDependency) and `client` (dependency)
-- **Update trigger**: Changes to `db/prisma/schema.prisma`
-
-**2. `@archeusllc/types` (API Client Types)**
-- **Source**: Generated by Elysia from `api/src/index.ts`
-- **Contents**: Eden Treaty types for type-safe API calls from client
-- **Published by**: GitHub Action in `types/.github/workflows/publish.yml`
-- **Consumed by**: `client` (dependency)
-- **Update trigger**: Changes to `types/server.d.ts`
-
-**Dependency Flow:**
-```
-db/schema → @archeusllc/schema → api
-                ↓
-              client ← @archeusllc/types ← api
-```
-
-**API Type Generation Workflow:**
-
-To update API types after making route changes:
+## Useful Commands
 
 ```bash
-# 1. Make changes to api/src/routes/**/*.ts
-# 2. Start the API server
-cd api
-bun start
+# Root repo
+bun run submodule:install  # Install all submodules
+docker compose up -d        # Start local services
 
-# 3. In another terminal, generate types
-bun run generate
-
-# 4. Commit to types repo (will auto-publish)
-cd ../types
-git add server.d.ts
-git commit -m "Auto-generate: Updated API types"
-git push
-
-# 5. Update client with new types
-cd ../client
-bun install  # or bun update @archeusllc/types
+# Individual modules
+cd api && bun start         # Start API server
+cd client && bun start      # Start Expo dev server
+cd db && bun push          # Apply schema changes to database
+bun run test               # Run tests (in api, cms-api)
 ```
 
-**Why Two Packages?**
-- ✅ Avoids circular dependency: `api` → `types` → `api`
-- ✅ Clear separation: database models vs API contract
-- ✅ Independent versioning: Schema changes don't force API type updates
-- ✅ Scalable: Multiple clients can consume same API types
-- ✅ Consistent with monorepo pattern: Published packages, not workspace symlinks
+## Git Workflow
 
-### Type System & Prisma
+- Create feature branches with descriptive names: `feature/my-feature`, `fix/bug-fix`
+- Commit messages explain the why, not just the what
+- Read [Git Workflow](wiki/Git-Workflow.md) for full details
+- Reference issues/PRs in commit messages
 
-**Prisma Schema is the Single Source of Truth**
+## Testing
 
-Never manually define base model types - Prisma auto-generates types from the schema that are always in sync.
-
-**Correct Pattern:**
-```typescript
-// shared/index.ts - Export Prisma-generated types
-export type {
-  User, Guild, Track, CalendarEvent,  // Base models
-} from './generated/prisma-client/index.js';
-
-export {
-  GuildType, TrackType, SharePermission,  // Enums (as values)
-} from './generated/prisma-client/index.js';
-
-// Also export custom DTOs from manual types
-export * from './types/index';
-```
-
-**What to Keep in shared/types/:**
-- Custom DTOs: `CreateInput`, `UpdateInput`, `SearchResult`
-- Extended types: `WithDetails`, `WithRelations`
-- Business logic types not in schema
-- **Never** redefine base models (User, Guild, etc.)
-
-**Schema Change Workflow:**
-```bash
-# 1. Edit schema
-vim modules/db/prisma/schema.prisma
-
-# 2. Push to database (auto-regenerates types)
-cd modules/db && bun push
-
-# 3. Types updated everywhere - zero manual sync!
-```
-
-**Benefits:**
-- ✅ Schema changes instantly reflected in TypeScript
-- ✅ No manual type maintenance or drift
-- ✅ Compile-time errors if using wrong field names
-- ✅ Enums work as both types and runtime values
-
-## Project Essentials
-
-| Aspect | Details |
-|--------|---------|
-| **Runtime** | Bun (all packages) |
-| **Language** | TypeScript (strict mode) |
-| **Client** | React Native + Expo + NativeWind |
-| **API** | Elysia framework |
-| **Database** | PostgreSQL + Prisma |
-| **State** | React Context API |
-| **Styling** | Tailwind CSS via NativeWind |
-
-## Development Commands
-
-### Root Commands
-```bash
-# Installation (runs preinstall to set up all workspaces)
-bun install
-```
-
-### Database Commands (from `modules/db/` directory)
-```bash
-cd modules/db
-
-bun start                 # Open Prisma Studio
-bun push                  # Push schema changes to database
-bun generate             # Generate Prisma client
-bun clean                # Clean node_modules and lock files
-bun reset                # Clean and reinstall dependencies
-```
-
-**CRITICAL**: After running `bun push` or `bun generate` in modules/db/, you MUST reinstall the schema package in client and api:
-```bash
-cd ../client && bun install
-cd ../api && bun install
-```
-
-This updates `@archeusllc/schema` to the latest version with new Prisma types.
-
-### API Commands (from `modules/api/` directory)
-```bash
-cd modules/api
-
-bun start                # Start API server with watch mode
-bun generate             # Generate API types from running server
-bun clean                # Clean node_modules and lock files
-bun reset                # Clean and reinstall dependencies
-```
-
-**CRITICAL**: After running `bun generate` in modules/api/, you MUST reinstall the shared module in client and api:
-```bash
-cd ../client && bun install
-cd ../api && bun install
-```
-
-### Shared Module Workflow
-
-After ANY changes to files in `modules/shared/` (especially generated types), you must reinstall the shared module in dependent workspaces:
+API modules require comprehensive tests. See [Lessons Learned - Testing](wiki/lessons/Testing.md) for patterns.
 
 ```bash
-# After changes in modules/shared/
-cd modules/client && bun install
-cd ../api && bun install
+cd api && bun run test
 ```
 
-**Why this matters**: Bun symlinks workspace dependencies. When generated files change in shared/, the symlink doesn't automatically update - you must reinstall to refresh the dependency link.
-
-**When to reinstall**:
-- After `bun generate` in modules/api/ (updates modules/shared/generated/api-types/server.d.ts)
-- After `bun push` or `bun generate` in modules/db/ (updates modules/shared/generated/prisma-client/)
-- After manually editing modules/shared/types/* files
-- After ANY changes to modules/shared/index.ts or other shared source files
-
-### Local Database Setup
-```bash
-# Start PostgreSQL + Adminer (from project root)
-docker-compose up -d
-
-# Apply schema and manage database
-cd modules/db && bun push        # Apply schema migrations
-cd modules/db && bun start       # Open Prisma Studio for visual management
-```
-
-### OpenAPI/Swagger Testing
-
-The API includes Swagger UI for interactive testing. Access it at `http://localhost:3000/openapi` when the API is running.
-
-**Testing Protected Endpoints**:
-1. Run the client app in development mode: `cd modules/client && bun start`
-2. Log in with a test account (or register a new one)
-3. Navigate to Settings screen (only visible in development - tap your profile avatar, then scroll to Settings)
-4. Find the "Firebase Token" section with a truncated token preview
-5. Click the "Copy" button to copy the full token to clipboard
-6. In Swagger UI, click the "Authorize" button
-7. Paste the token (no "Bearer" prefix needed - Swagger adds it automatically)
-8. Click "Authorize" to save
-
-**Token Details**:
-- Tap the token display to expand/collapse the full token value
-- The truncated view shows first 10 and last 10 characters
-- Copy button provides visual feedback (turns green with checkmark)
-- Firebase ID tokens expire after 1 hour - refresh Settings screen to get a new token if you get 401 errors
-
-**Why this approach**: Uses real Firebase authentication without any environment-specific bypass code. The tokens work identically to production tokens.
-
-## Versioning Automation
-
-All submodules use automated versioning via GitHub Actions. When you push changes to a submodule, the `Auto Version` workflow automatically bumps the patch version and creates a git tag.
-
-### How It Works
-
-Each submodule has a `.github/workflows/version.yml` workflow that:
-1. Triggers on push to `main` branch when source files change
-2. Auto-bumps the patch version (e.g., 0.1.0 → 0.1.1)
-3. Creates a git tag for the version
-4. Pushes the tag to the repository
-
-### Trigger Paths by Submodule
-
-| Submodule | Trigger Paths |
-|-----------|---------------|
-| api | `src/**/*.ts`, `package.json` |
-| client | `src/**/*`, `package.json`, `app.json`, `eas.json` |
-| cms-api | `src/**/*.ts`, `package.json` |
-| cms-client | `src/**/*`, `package.json`, `index.html`, `vite.config.ts` |
-| db | `prisma/schema.prisma`, `package.json`, `scripts/**` |
-| schema | `prisma-client/**`, `package.json` (triggered by db workflow) |
-| types | `server.d.ts`, `package.json` |
-
-### Manual Version Bumps
-
-For major or minor version bumps (not automatic), use:
-
-```bash
-cd <submodule>
-npm version major    # or minor
-git push --follow-tags
-```
-
-This will:
-1. Update the version in package.json
-2. Create a git commit
-3. Create a git tag
-4. Push both to the repository
-
-The next push with source changes will then continue incrementing from the new version.
-
-### All Submodules Start at 0.1.0
-
-Following semantic versioning conventions for pre-release software, all submodules begin at version 0.1.0. This indicates early development where breaking changes may occur without a major version bump.
-
-## Path Aliases
-
-### Client (`modules/client/src/`)
-- `@components` / `@components/*` - Reusable UI components
-- `@ui` / `@ui/*` - UI primitives
-- `@screens` / `@screens/*` - Screen components
-- `@navigation` - Navigation config
-- `@hooks` - Custom hooks
-- `@contexts` - React contexts
-- `@services` - API & business logic
-- `@constants` - App constants
-- `@assets/*` - Images, fonts
-
-### API (`modules/api/src/`)
-- `@routes` - Route definitions
-- `@controllers` - Route handlers
-- `@middleware` - Auth & validation
-- `@services` - Business logic
-- `@types` - Type definitions
-
-## File Organization
-
-```
-band-together/
-├── api/               # REST API (Elysia) - submodule
-├── client/            # React Native app - submodule
-├── db/                # Database & Prisma config - submodule
-├── schema/            # Database types (@archeusllc/schema) - submodule
-├── types/             # API types (@archeusllc/types) - submodule
-├── api-cms/           # CMS API (Elysia) - submodule
-├── cms/               # CMS web app (Vite) - submodule
-├── wiki/              # GitHub wiki (git submodule)
-├── scripts/           # Utility scripts
-└── compose.yml        # Docker composition config
-```
-
-## Submodule Definition
-
-For planning and task organization purposes, a **submodule** is any directory exactly one level deeper from the root:
-- `api/` - Backend API layer (REST API with Elysia)
-- `client/` - React Native client app (mobile + web)
-- `db/` - Database & Prisma configuration
-- `schema/` - Database schema types (`@archeusllc/schema`)
-- `types/` - API client types (`@archeusllc/types`)
-- `api-cms/` - CMS API layer
-- `cms/` - CMS web application
-- `wiki/` - Documentation and context
-
-Tasks should be scoped to work within a single submodule when possible, keeping changes focused and independent.
-
-## Key Standards
-
-1. **Arrow functions** - Use for all component/function exports (except screen defaults)
-2. **Alias imports** - No relative paths, no `@/` prefix
-3. **No file extensions** - Skip `.ts`, `.tsx`, `.js` in imports
-4. **Barrel exports** - Each major directory has `index.ts`
-5. **TypeScript strict** - No `any` type, strict mode enforced
-6. **Context API** - Global state via React Context (no Redux/Zustand)
-7. **NativeWind** - Tailwind CSS via `className` prop (no StyleSheet.create)
-8. **Services layer** - Abstract API & Firebase into service files
-9. **Dark mode** - Always prefer Tailwind `dark:` variants over React Navigation theme colors for component styling (see Theming section below)
-
-## Theming & Dark Mode
-
-### Overview
-The app implements automatic device-based dark mode using NativeWind v4 with `darkMode: 'media'`. This automatically responds to the device's system color scheme preference without any manual context or state management.
-
-### Key Files
-- **[modules/client/tailwind.config.js](modules/client/tailwind.config.js)** - Configured with `darkMode: 'media'` to enable automatic detection
-- **[modules/client/src/theme/colors.ts](modules/client/src/theme/colors.ts)** - **Single source of truth** for all theme colors and Tailwind classnames
-- **[modules/client/src/theme/index.ts](modules/client/src/theme/index.ts)** - Barrel export for clean imports via `@theme`
-- **[modules/client/src/navigation/themes.ts](modules/client/src/navigation/themes.ts)** - React Navigation theme objects (headers/drawer)
-
-### Color & Classname System
-The `@theme` module exports three objects:
-
-```typescript
-// Hex color values for all light/dark mode colors
-export const colors = {
-  light: { background: '#F1F5F9', card: '#FFFFFF', text: '#000000', ... },
-  dark: { background: '#0F172A', card: '#1E293B', text: '#FFFFFF', ... },
-  brand: { primary: '#3B82F6', success: '#10B981', error: '#FF3B30', ... },
-};
-
-// Pre-built Tailwind classname combinations for common patterns
-export const tailwind = {
-  background: { light: 'bg-slate-100', dark: 'dark:bg-slate-900', both: 'bg-slate-100 dark:bg-slate-900' },
-  card: { light: 'bg-white', dark: 'dark:bg-slate-800', both: 'bg-white dark:bg-slate-800' },
-  text: { light: 'text-black', dark: 'dark:text-white', both: 'text-black dark:text-white' },
-  textMuted: { light: 'text-gray-600', dark: 'dark:text-gray-400', both: 'text-gray-600 dark:text-gray-400' },
-  border: { light: 'border-slate-200', dark: 'dark:border-slate-700', both: 'border-slate-200 dark:border-slate-700' },
-  activeBackground: { light: 'bg-slate-100', dark: 'dark:bg-slate-700', both: 'bg-slate-100 dark:bg-slate-700' },
-  primary: 'text-blue-500',
-  error: 'text-red-600',
-  errorDark: 'dark:text-red-500',
-};
-
-// React Navigation theme color mappings
-export const navigationColors = {
-  light: { primary: '#3B82F6', background: '#F1F5F9', card: '#FFFFFF', text: '#000000', ... },
-  dark: { primary: '#3B82F6', background: '#0F172A', card: '#1E293B', text: '#FFFFFF', ... },
-};
-```
-
-### Usage in Components
-Always use the centralized theme instead of hardcoding classnames:
-
-```typescript
-// ✅ Correct - Uses centralized theme
-import { tailwind, colors } from '@theme';
-
-<View className={`flex-1 ${tailwind.background.both}`}>
-  <Text className={`text-base ${tailwind.text.both}`}>Hello</Text>
-  <TextInput
-    className={`border ${tailwind.border.both} ${tailwind.card.both}`}
-    placeholderTextColor={colors.light.muted}
-  />
-</View>
-
-// ❌ Incorrect - Hardcoded classes
-<View className="flex-1 bg-slate-100 dark:bg-slate-900">
-  <Text className="text-base text-black dark:text-white">Hello</Text>
-  <TextInput className="border border-slate-200 dark:border-slate-700 ..." />
-</View>
-```
-
-### Color Mappings
-| Element | Light Mode | Dark Mode |
-|---------|-----------|-----------|
-| Page background | `bg-slate-100` | `dark:bg-slate-900` |
-| Card background | `bg-white` | `dark:bg-slate-800` |
-| Primary text | `text-black` | `dark:text-white` |
-| Muted text | `text-gray-600` | `dark:text-gray-400` |
-| Borders | `border-slate-200` | `dark:border-slate-700` |
-| Active/highlight | `bg-slate-100` | `dark:bg-slate-700` |
-
-### Important Notes
-- TextInput requires explicit `text-black dark:text-white` class or text will be invisible in dark mode
-- Use `placeholderTextColor={colors.light.muted}` for consistent placeholder styling
-- Headers and drawer automatically follow device theme via React Navigation themes
-- No app restart needed for theme changes in most cases, but may be required after initial app launch
-
-## Common Patterns
-
-**Custom Hook**
-```typescript
-export const useCustomLogic = () => {
-  const [state, setState] = useState(null);
-  // Logic here
-  return { state, setState };
-};
-```
-
-**Context Setup**
-```typescript
-const MyContext = createContext<MyContextType | undefined>(undefined);
-
-export const MyProvider = ({ children }) => (
-  <MyContext.Provider value={...}>{children}</MyContext.Provider>
-);
-
-export const useMyContext = () => {
-  const context = useContext(MyContext);
-  if (!context) throw new Error('useMyContext must be used within MyProvider');
-  return context;
-};
-```
-
-**Service Pattern**
-```typescript
-export const myService = {
-  fetchData: async () => { /* ... */ },
-  processData: (data) => { /* ... */ },
-};
-```
-
-## Activity Feed Implementation - Lessons Learned
-
-### Overview
-Phases 1-4 of the Activity Feed feature are complete. Key learnings for future feature development:
-
-### Navigation & Type Safety
-
-**Type-Safe Navigation with RootStackParamList**
-- Define all screens and their params in a centralized `RootStackParamList` type
-- Use `useNavigation<NavigationProp>()` with proper generic typing for compile-time safety
-- Screen components receive props via `NativeStackScreenProps<RootStackParamList, 'ScreenName'>`
-- This pattern catches route name and param typos at compile time rather than runtime
-
-Example:
-```typescript
-// navigation/types.ts
-export type RootStackParamList = {
-  EventDetails: { eventId: string };
-  Login: undefined;
-};
-
-// In component
-const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-navigation.navigate('EventDetails', { eventId: '123' }); // Type-safe
-```
-
-**Static Navigation Configuration**
-- Use static navigation config with `createNativeStackNavigator()` and `createDrawerNavigator()`
-- Register all screens upfront in the navigator configuration
-- Screens remain as default exports for ease of registration
-- Drawer + Stack composition works well for main app (drawer) and modal flows (stack)
-
-### API Client Patterns
-
-**Eden Treaty Path Parameters with Bracket Notation**
-- **CRITICAL**: Use bracket notation for dynamic segments: `api.resource[id].get()` not `api.resource({ id }).get()`
-- Bracket notation properly interpolates path parameters into URLs
-- Object notation treats values as query/body parameters (incorrect for path params)
-- This was a critical bug fix in Phase 4: `api.events({ eventId })` → `api.events[eventId]`
-
-Example:
-```typescript
-// ✅ Correct - path parameter
-const { data } = await api.events[eventId].get()
-
-// ❌ Incorrect - treats as query param
-const { data } = await api.events({ eventId }).get()
-```
-
-**Bearer Token Transmission**
-- When sending Bearer tokens with request bodies (POST/PATCH), merge headers into the request object using `$headers`
-- Example: `api.acts.post({ ...body, $headers: { authorization: `Bearer ${token}` } })`
-- Headers passed as separate arguments don't properly merge with request body in Eden Treaty client
-
-**Public Endpoints with Optional Authentication**
-- Use `firebaseUid || null` pattern to support both authenticated and unauthenticated access
-- Service layer catches auth errors and returns null as fallback
-- API endpoints can check `if (firebaseUid || null)` to provide personalized data when authenticated
-- This pattern allows graceful degradation: unauthenticated users get public data, authenticated users get personalized data
-
-### Firebase Authentication Pattern (Elysia)
-
-**Two-Tier Authentication System**
-
-The API uses two Firebase authentication middleware layers with different purposes:
-
-1. **`firebaseMiddleware`** - Optional authentication for endpoints that can work with or without auth
-2. **`firebaseGate`** - Required authentication that rejects requests without valid tokens
-
-**Optional Authentication (`firebaseMiddleware`)**
-
-Use this for endpoints that may receive authentication but don't require it:
-
-```typescript
-// api/src/middleware/firebase.middleware.ts
-export const firebaseMiddleware = new Elysia({
-  name: 'firebase'
-})
-  .derive({
-    as: 'global'
-  }, async ({ request }) => {
-    const authHeader = request.headers.get('authorization');
-    if (!authHeader || !authHeader.startsWith('Bearer ')) return;
-    const decoded = await firebaseAuth.verifyIdToken(authHeader.substring(7))
-
-    return {
-      firebase: {
-        uid: decoded.uid,
-        email: decoded.email,
-      }
-    }
-  })
-```
-
-Key characteristics:
-- Uses `.derive({ as: 'global' })` to make `firebase` context available to dependent middleware (like `firebaseGate`)
-- Returns early if no Bearer token is present (no error thrown)
-- Makes `firebase` context object available when token is valid
-- `firebase` will be `undefined` if no token was provided
-- Allows endpoints to provide personalized data when authenticated, public data otherwise
-
-**Required Authentication (`firebaseGate`)**
-
-Use this for endpoints that must have valid Firebase authentication:
-
-```typescript
-// api/src/middleware/firebase.middleware.ts
-export const firebaseGate = new Elysia()
-  .use(firebaseMiddleware)
-  .derive({
-    as: 'scoped'
-  }, async ({ firebase }) => {
-    if (!firebase) {
-      throw new Error('Unauthorized: No valid Firebase token provided');
-    }
-    return { firebase }
-  })
-```
-
-Key characteristics:
-- Builds on top of `firebaseMiddleware`
-- Throws error if `firebase` context is undefined
-- Guarantees `firebase.uid` and `firebase.email` are present in handlers
-- Request fails with 401 before handler executes if token is missing/invalid
-
-**Usage Example - Mixed Public and Protected Routes**:
-
-```typescript
-// api/src/routes/auth.routes.ts
-export const authRoutes = new Elysia().group('/auth', (authRoute) =>
-  authRoute
-    // Public routes (no authentication middleware)
-    .post('/register', async ({ body, set }) => { /* ... */ })
-    .post('/login', async ({ body, set }) => { /* ... */ })
-    .post('/reset', async ({ body }) => { /* ... */ })
-
-    // Protected routes (require valid Firebase token)
-    .use(firebaseGate)
-    .get(
-      '/me',
-      async ({ firebase }) => {
-        // firebase.uid is guaranteed to be present here
-        return await authController.me(firebase.uid);
-      },
-      {
-        detail: {
-          security: [{ bearerAuth: [] }],
-          responses: {
-            200: { description: 'Current user profile retrieved' },
-            401: { description: 'Unauthorized - missing or invalid Firebase token' }
-          }
-        }
-      }
-    )
-)
-```
-
-**Key Points**:
-- **Base middleware (`firebaseMiddleware`)** uses `.derive({ as: 'global' })` so the `firebase` context is available to dependent middleware like `firebaseGate`
-- **Gate middleware (`firebaseGate`)** uses `.derive({ as: 'scoped' })` as the final authentication guard
-- Middleware placement within `.group()` callback determines which routes it applies to
-- Routes defined before `.use(firebaseGate)` are public
-- Routes defined after `.use(firebaseGate)` require authentication
-- This pattern allows mixing public and protected routes in the same file
-- Always document protected endpoints with `security: [{ bearerAuth: [] }]` in OpenAPI detail
-
-**CRITICAL: Waiting for Auth Initialization on App Load**
-
-On the **first app load**, Firebase's `auth.currentUser` may be `null` until `onAuthStateChanged` fires. This causes a race condition:
-- Component mounts and calls `useEffect` immediately
-- Calls `getIdToken()` which returns `null` (session not restored yet)
-- Request fails with 401
-- User sees "Try Again" error screen
-- After tapping retry, Firebase has restored the session and call succeeds
-
-**The Fix**:
-- Import `useAuth()` from `@contexts` to access the `loading` state
-- Wait for `loading` to become `false` before fetching authenticated data
-- Example:
-  ```typescript
-  const { loading: authLoading } = useAuth();
-
-  useEffect(() => {
-    // Only fetch after auth initialization completes
-    if (!authLoading) {
-      fetchSetlists();
-    }
-  }, [authLoading]);
-  ```
-
-**Why This Matters**:
-- `AuthContext.loading` is set to `true` initially
-- `onAuthStateChanged` listener restores the Firebase session
-- `loading` becomes `false` once session is ready
-- Only then is `getIdToken()` guaranteed to return a valid token
-- Critical for first-load UX on apps with persisted authentication
-
-**Applies to**:
-- Any screen that needs authenticated API calls on mount
-- Data-fetching screens in protected navigation flows
-- Initial app setup screens after authentication
-
-**CRITICAL: Firebase UID vs Database UserID Type Mismatch**
-
-The app uses two different user identifiers that must be handled carefully:
-
-1. **Firebase UID** (`firebase.uid`) - String returned by Firebase authentication (e.g., `"abc123xyz"`)
-2. **Database UserID** (`userId`) - CUID stored in database (e.g., `"clp1234...abc"`)
-
-**The Problem**:
-- Middleware provides `firebase.uid` from Firebase tokens
-- Database stores `userId` (CUID) as the primary user identifier
-- Directly comparing them causes type mismatches: `"clp1234...abc" !== "abc123xyz"`
-- This leads to failed permission checks and unexpected 404/403 errors
-
-**The Solution**:
-All service methods that need permission checks must convert Firebase UID to database UserID:
-
-```typescript
-const getUserIdByFirebaseUid = async (firebaseUid: string): Promise<string> => {
-  const user = await prisma.user.findUnique({
-    where: { firebaseUid },
-    select: { userId: true },
-  });
-  if (!user) {
-    throw new Error('User not found in database');
-  }
-  return user.userId;
-};
-
-// In service method:
-const databaseUserId = await getUserIdByFirebaseUid(firebaseUid);
-const isOwner = setlist.ownerId === databaseUserId; // Now both are CUIDs
-```
-
-**Pattern to Follow**:
-- Routes pass `firebase.uid` (required by middleware)
-- Controllers receive `firebaseUid` parameter name (for clarity)
-- Services convert `firebaseUid` → `userId` before permission checks
-- Always compare database identifiers to database fields
-
-**Critical Mistake to Avoid**:
-```typescript
-// ❌ WRONG - Compares Firebase UID to database CUID
-const isOwner = setlist.ownerId === firebase.uid;
-
-// ✅ CORRECT - Converts Firebase UID first
-const userId = await getUserIdByFirebaseUid(firebase.uid);
-const isOwner = setlist.ownerId === userId;
-```
-
-**Where This Matters**:
-- Permission checks (owner, guild member validation)
-- Any Prisma query comparing user identifiers
-- Optional authentication flows that need to check if user is the owner
-
-### State Management
-
-**Local State vs Global Context**
-- For simple, screen-scoped state (like follow status in EventDetails), use local `useState`
-- Only promote to Context when state needs to be shared across multiple screens
-- Follow state in EventDetails is intentionally local: updates immediately but doesn't require feed refresh
-- Future enhancement: Move to Context when multiple screens need synchronized follow state
-
-**Set Data Structure for Multi-Item State**
-- Use `Set<string>` for tracking which items are in a particular state across a collection
-- Example: `followingActs = Set<string>` where strings are act IDs
-- Faster lookup with `.has()` than array filtering
-- Immutable updates: `new Set(prev).add(id)` when spreading state
-
-### Component Patterns
-
-**Separation of Concerns in Screens**
-- Data fetching: `useEffect` on screen mount, separate async functions
-- Business logic: Handlers like `handleFollowVenue()`, `handleFollowAct()` kept together
-- Rendering: Separate views for loading, error, empty, and content states
-- This structure makes screens maintainable even at 300+ lines
-
-**Screen Lifecycle and `useFocusEffect`**
-- In React Navigation, screens stay mounted in the background even when not visible
-- Use `useEffect` for effects that should run once on first mount (data fetching, setup)
-- Use `useFocusEffect` for effects that should run when the screen comes into focus
-- Use `useFocusEffect` for cleanup that should happen when the screen loses focus
-- **Common use case**: Close WebSocket connections, cancel pending requests, or reset state when user navigates away
-- Example:
-  ```typescript
-  import { useFocusEffect } from '@react-navigation/native';
-
-  useFocusEffect(
-    useCallback(() => {
-      // This runs when screen comes into focus
-      const socket = api.setlist[setlistId].ws.subscribe();
-
-      return () => {
-        // This cleanup runs when screen loses focus
-        console.log('Closing socket');
-        socket.close();
-      };
-    }, [setlistId])
-  );
-  ```
-
-**Follow State Checking Pattern**
-- After fetching main data, check follow status only if authenticated
-- Use `data.follows.some(f => f.entityType === 'GUILD' && f.guildId === targetId)` to find matches
-- This pattern works for both venues and acts with the same comparison logic
-
-### API Endpoint Design
-
-**Public Endpoints with Guild Relations**
-- When an endpoint needs to support follow features, include guild relations in response
-- Include relations eagerly: `include: { guild: true }` in Prisma queries
-- This prevents N+1 queries and provides all data needed for follow status checking
-- Single endpoint can serve both authenticated and unauthenticated users
-
-**OpenAPI Documentation**
-- Always include `detail` object in Elysia route definitions with tags, summary, description
-- Document response codes: 200 for success, 404 for not found, 401 for unauthorized, 500 for errors
-- This auto-generates Swagger docs and helps API consumers understand behavior
-
-### Dark Mode Integration
-
-**Use Centralized Theme for All Components**
-- Import `{ tailwind, colors }` from `@theme` instead of hardcoding Tailwind classes
-- Always use `.both` variants for dual light/dark mode support: `${tailwind.background.both}`
-- The centralized theme makes it trivial to update color scheme globally
-- All components automatically inherit new colors when theme is updated
-
-### Error Handling
-
-**User-Facing Error Messages**
-- Catch API errors and display human-readable messages to users
-- Show loading indicators (spinners) while operations are in progress
-- Disable buttons during loading to prevent duplicate requests
-- This pattern: loading → success/error → user action flow
-
-### Commits & Documentation
-
-**Git Commits are Now Enabled**
-- AI assistants can now execute git commits with proper safety measures
-- Always create NEW commits (never use `--amend` unless explicitly requested)
-- Commit messages should be clear and follow the format below
-- Each commit should represent a working, tested state
-
-**Workflow for Phase Completion**
-When completing a phase from the plan:
-1. Implement all changes in the phase
-2. **Update the plan file** (e.g., `wiki/Plan-Setlist-Manager.md`):
-   - Mark phase with ✅ **COMPLETE** status
-   - Add "Implementation Summary" section describing what was built
-   - List "Completed Tasks" with checkmarks
-   - List "Files Created/Modified"
-   - List "Deliverables Achieved"
-   - Update top-level plan status if needed (e.g., "Phases 2, 6-10 complete")
-3. Stage files with `git add [files]`
-4. **Generate a detailed commit message** describing:
-   - What phase was completed
-   - Key files modified/created
-   - Main features/functionality added
-   - Include co-author credit: `Co-Authored-By: Claude [Model] <noreply@anthropic.com>`
-5. Provide the commit message to the human
-6. Human executes: `git commit -m "[message]"`
-
-Example commit message format:
-```
-Phase 10: Create client services layer for tracks and setlists
-
-- Add trackService with searchTracks method for global track database
-- Add comprehensive setlistService with full CRUD operations:
-  - SetList CRUD: create, read, update, delete, duplicate
-  - SetItem operations: add, update, delete, reorder tracks
-  - SetSection operations: add, update, delete sections
-  - Sharing: create, list, and revoke share links
-- All methods handle Firebase authentication and error handling
-- Services follow established patterns with optional auth support
-
-Co-Authored-By: Claude Haiku 4.5 <noreply@anthropic.com>
-```
-
-**Incremental Commits**
-- Phase 4 was split into 2 commits: initial implementation + critical bug fix
-- Each commit should represent a working state (even if buggy features are still present)
-- Bug fix commits should clearly reference the issue: "Fix API call for getting event by ID"
-- Commit messages help future developers understand "why" not just "what"
-
-### What Worked Well
-
-1. **Type-safe navigation** - Caught bugs early and enabled confident refactoring
-2. **Service layer abstraction** - `feedService` kept API details away from components
-3. **NativeWind styling** - Dark mode support with minimal extra code
-4. **Incremental phases** - Breaking work into digestible chunks made it manageable
-5. **Local state for follow tracking** - Simple and sufficient for Phase 4
-
-### Areas for Improvement (Phase 5+)
-
-1. **Global follow state** - Share follow updates across multiple screens
-2. **Feed refresh on follow changes** - Currently requires manual feed refresh
-3. **Optimistic updates** - Update UI immediately, roll back on error
-4. **Error retry logic** - Graceful retry mechanism for transient failures
-5. **Loading states per action** - Different loading states for different operations (follow vs unfollow)
-
-### Web Compatibility - Lessons Learned
-
-**The Problem**: Band Together needed to function on web browsers, but core React Native patterns (SF Symbols icons and Alert.alert()) don't work on web.
-
-**Challenge 1: Icon Rendering on Web**
-
-Platform-specific icon systems break web compatibility:
-- **SF Symbols (expo-symbols)**: iOS-only - appears blank/missing on web and Android
-- **Solution**: Use font-based icon libraries that render everywhere
-  - Font files load via CSS on all platforms (web, iOS, Android)
-  - `@expo/vector-icons` with Ionicons provides 1300+ icons with universal support
-  - Type-safe via `keyof typeof Ionicons.glyphMap` - TypeScript validates icon names at compile time
-  - Icon names map naturally (many SF Symbol → Ionicons names are identical: `pencil`, `trash`, `plus`, etc.)
-
-**Challenge 2: Native Alert Component Not Web-Compatible**
-
-`Alert.alert()` doesn't work on web browsers:
-- **Problem**: React Native's Alert is native (iOS UIAlertController), has no web implementation
-- **Solution**: Build custom modal dialogs using View components with overlay styling
-  - Use `absolute inset-0 bg-black/50` for full-screen overlay with semi-transparent background
-  - Use `pointerEvents: { boxNone: true }` on overlay and `pointerEvents: { boxOnly: true }` on modal content for proper web click handling
-  - Reusable `AlertModal` component with consistent styling, dark mode support, and multiple button variants
-  - State management pattern with `alertConfig` object enables flexible alert usage across 30+ components
-
-**Migration Strategy**: What Made This Successful
-
-1. **Icon Migration First**: Changed the IconSymbol wrapper component once (1 file) rather than trying to add text labels to 50+ button usages
-   - Single point of change: Future icon library updates only need IconSymbol modification
-   - All existing `<IconSymbol name="..." />` usages work automatically with new library
-   - Clean separation of icon rendering logic from component usage
-
-2. **Reusable Modal Component**: Created `AlertModal.tsx` and applied consistent state management pattern across all files
-   - Pattern: `alertConfig` state object with `visible`, `title`, `message`, and optional `buttons`
-   - Eliminated code duplication: No copy-pasted modal View hierarchies across 17+ files
-   - Consistent theming: All alerts automatically respect dark/light mode via Tailwind
-
-3. **TypeScript for Confidence**: Icon names validated at compile time
-   - `name: keyof typeof Ionicons.glyphMap` catches invalid icon names before runtime
-   - Prevents "blank icon" errors from typos in icon names
-   - Enabled safe refactoring across large codebase
-
-**Scope of Migration**
-
-- **48+ Alert.alert() calls** replaced across 17 files
-- **28+ SF Symbol icon names** updated to Ionicons in 15+ components
-- **2 files created/modified**: AlertModal.tsx + IconSymbol.tsx
-- **30+ files updated** for state management or icon names
-- **Result**: Full feature parity on web, iOS, and Android
-
-**Challenge 3: Image Component Import Conflicts on Web**
-
-When using `<Image>` components from React Native, there's a critical gotcha on web:
-- **Problem**: React Native's `Image` component can conflict with the DOM's `Image` constructor on web
-- **Error**: "Failed to construct 'Image': Please use the 'new' operator, this DOM object constructor cannot be called as a function"
-- **Root cause**: If you use `<Image>` without importing it from `react-native`, the bundler may resolve it to the DOM's `Image` instead
-- **Solution**: Always explicitly import `Image` from `react-native` at the top of the file
-  ```typescript
-  // ✅ CORRECT - Explicit import
-  import { View, Text, Image } from 'react-native';
-
-  // ❌ WRONG - Missing Image import, bundler resolves to DOM Image
-  import { View, Text } from 'react-native';
-  ```
-- **Static asset syntax**: Use `require('@assets/path/to/image.png')` with `resizeMode="contain"` for proper aspect ratio handling
-- **Never use CSS properties**: Don't try to use `backgroundImage` or other CSS properties in React Native style objects
-
-**Key Takeaway**: When targeting multiple platforms, prefer universal solutions (font-based icons, custom components) over platform-specific APIs (SF Symbols, native alerts). The extra effort to build cross-platform components pays off in maintainability and coverage. Always be explicit about React Native imports to avoid conflicts with DOM APIs on web.
-
-### Song Search - Lessons Learned (2026-01-24)
-
-**Problem**: Search modal displayed blank results on mobile, especially with large result sets.
-
-**Root Cause**: FlatList virtualization inefficiency when rendering search results.
-- FlatList uses "windowing" (renders only visible items) which is efficient for long scrollable lists
-- With search results (10-50 items), the overhead of virtualization caused rendering delays
-- Some items would fail to render on first pass but display correctly on subsequent renders
-- Broader searches (single letters like "A") returned many results, overwhelming FlatList's renderer
-
-**Solution**: Replaced FlatList with ScrollView + map() for search results.
-- ScrollView renders all items synchronously, eliminating virtualization overhead
-- Simple and predictable: items render consistently on first try
-- No performance penalty for typical search result sizes (< 100 items)
-- Direct React rendering is easier to debug than FlatList's complex state management
-
-**Key Insight**: FlatList is optimized for very long scrollable lists (1000+ items). For typical search results, the simplicity and predictability of ScrollView outweighs any theoretical performance benefits of virtualization.
-
-**Additional Fixes**:
-- Fixed type mismatches between API response (`TrackSearchResult`) and component expectations (`Track`)
-- Added `defaultTuning` field to API search response for completeness
-- Simplified item rendering to use inline styles instead of dynamic Tailwind classnames
-- Added reset effect when modal opens to ensure clean state for each search
-- Removed aggressive state clearing on track selection (prevented race conditions)
-- Reordered conditional rendering to show results first
-
-**Files Modified**:
-- `client/src/components/setlist/SongSearchModal.tsx` - Replaced FlatList with ScrollView, fixed types
-- `api/src/routes/tracks/tracks.service.ts` - Added `defaultTuning` to search results
-- `shared/types/Track.ts` - Updated `TrackSearchResult` interface to include `defaultTuning`
-- `client/src/navigation/screens/SetlistDetails.tsx` - Updated type expectations for track data
-
-**Takeaway**: When choosing between FlatList and ScrollView, consider the typical list size:
-- **ScrollView**: Simpler, better for < 100 items, predictable rendering
-- **FlatList**: Better for 1000+ items where virtualization provides significant benefit
-- Profile your actual use case rather than assuming FlatList is always better
+## Documentation Structure
+
+- **Root README.md** - Project overview, quick start
+- **Root CLAUDE.md** - This file, AI assistant guide
+- **Submodule README.md** - Quick start for each module
+- **Submodule CLAUDE.md** - Domain-specific patterns
+- **wiki/Home.md** - Documentation hub
+- **wiki/** - Architecture, principles, lessons learned, deployment
+
+## Before You Code
+
+1. **Understand the architecture** - [Architecture Overview](wiki/Architecture-Overview.md)
+2. **Know the package system** - [Package System](wiki/Architecture-Packages.md)
+3. **Read the principles** - [Coding Philosophy](wiki/Coding-Philosophy.md)
+4. **Check the submodule docs** - Module-specific CLAUDE.md and README.md
+
+## Common Workflows
+
+### Making Changes to Database Schema
+
+1. Edit `db/prisma/schema.prisma`
+2. Run `bun push` in db module
+3. Run `bun install` in api, client, cms-api to get new schema package
+4. Make necessary code changes in dependent modules
+5. Commit and push changes
+
+### Adding New API Endpoint
+
+1. Create route in `api/src/routes/`
+2. Write comprehensive tests
+3. Add OpenAPI documentation
+4. Run `bun generate` in api to update types
+5. `types` submodule auto-publishes new version
+6. Client runs `bun install` to use new endpoint types
+
+### Adding New Feature to Client
+
+1. Check if API supports it (or add API endpoint first)
+2. Import types from `@archeusllc/types`
+3. Use type-safe API calls with Eden Treaty
+4. Follow [Lessons Learned - Frontend](wiki/lessons/Frontend.md) patterns
+
+## Questions?
+
+- **Architecture & design:** [Architecture Overview](wiki/Architecture-Overview.md)
+- **Package system:** [Package System](wiki/Architecture-Packages.md) ⚠️ CRITICAL
+- **Code patterns:** [Coding Philosophy](wiki/Coding-Philosophy.md)
+- **Git workflow:** [Git Workflow](wiki/Git-Workflow.md)
+- **Module-specific:** Check module's CLAUDE.md
+- **Setup instructions:** Check module's README.md
+- **Technical lessons:** [Lessons Learned](wiki/lessons/)
+- **Everything else:** [Wiki Home](wiki/Home.md)
 
 ---
 
-## Deploying to fly.io
-
-This section documents the complete process for deploying Bun/Elysia APIs to fly.io with GitHub Packages authentication.
-
-### Prerequisites
-
-- fly.io CLI installed: `brew install flyctl`
-- Authenticated: `flyctl auth login`
-- GitHub Personal Access Token with `read:packages` scope
-- Existing fly.io app (or create with `flyctl apps create`)
-- PostgreSQL database on fly.io (optional, for apps needing DB)
-
-### Step 1: Create Dockerfile
-
-Create a multi-stage Dockerfile that uses Bun runtime and handles private GitHub Packages:
-
-```dockerfile
-# Multi-stage Dockerfile for Bun/Elysia API
-FROM oven/bun:1 AS builder
-
-WORKDIR /app
-
-# Copy package files and .npmrc for GitHub Packages auth
-COPY package.json bun.lock .npmrc ./
-
-# Install dependencies (token in .npmrc)
-# Remove .npmrc immediately after install for security
-RUN bun install --frozen-lockfile && \
-    rm .npmrc
-
-# Copy source code
-COPY . .
-
-# Runtime stage
-FROM oven/bun:1
-
-WORKDIR /app
-
-# Copy installed dependencies and source from builder
-COPY --from=builder /app /app
-
-# Expose port
-EXPOSE 3000
-
-# Health check
-HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-    CMD bun --eval "fetch('http://localhost:3000/').then(r => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))"
-
-# Start the application
-CMD ["bun", "run", "src/index.ts"]
-```
-
-**Key Points**:
-- Multi-stage build reduces final image size
-- `.npmrc` is copied but deleted after `bun install` (never in final image)
-- Health check uses Bun's built-in `fetch` API
-- Always use `--frozen-lockfile` to ensure reproducible builds
-
-### Step 2: Create .dockerignore
-
-Exclude unnecessary files from the Docker build context:
-
-```
-node_modules
-.git
-.github
-.gitignore
-*.log
-dist
-build
-.env.local
-.env.*.local
-README.md
-src/**/*.test.ts
-.DS_Store
-```
-
-**CRITICAL**: Do NOT include `tsconfig.json` in `.dockerignore` if you use TypeScript path aliases. Bun needs `tsconfig.json` to resolve imports like `@routes`, `@services`, etc.
-
-### Step 3: Create .npmrc (Local Only)
-
-Create `.npmrc` in your project root with your GitHub token:
-
-```
-@archeusllc:registry=https://npm.pkg.github.com
-//npm.pkg.github.com/:_authToken=YOUR_GITHUB_TOKEN_HERE
-registry=https://registry.npmjs.org/
-```
-
-**CRITICAL**:
-- Ensure `.npmrc` is in `.gitignore` (line should already exist)
-- Never commit this file
-- No trailing backslashes on token line (causes 401 errors)
-- This file is copied into Docker build but deleted after `bun install`
-
-### Step 4: Update bun.lock
-
-After adding private packages to `package.json`, update the lockfile:
-
-```bash
-bun install
-```
-
-This ensures the lockfile includes the private package versions.
-
-### Step 5: Create fly.toml
-
-Configure your fly.io app:
-
-```toml
-# fly.toml
-app = "your-app-name"
-primary_region = "iad"  # Choose region closest to your database
-
-[build]
-  dockerfile = "Dockerfile"
-
-[http_service]
-  internal_port = 3000
-  force_https = true
-  auto_stop_machines = true
-  auto_start_machines = true
-  min_machines_running = 0
-
-[[http_service.checks]]
-  grace_period = "5s"
-  interval = "30s"
-  method = "get"
-  path = "/"
-  timeout = "3s"
-  type = "http"
-
-[env]
-  PORT = "3000"
-
-[metrics]
-  port = 9090
-```
-
-**Configuration Notes**:
-- `auto_stop_machines = true` - Saves costs during development
-- `min_machines_running = 0` - Machines stop when idle
-- `primary_region` - Choose region near your database (e.g., "iad" for Ashburn, VA)
-- Health check path should match your actual health endpoint
-
-### Step 6: Set Secrets in fly.io
-
-Set all runtime secrets using `flyctl secrets set`:
-
-```bash
-# Database connection (if using PostgreSQL)
-flyctl secrets set DATABASE_URL="postgresql://user:pass@db-name.flycast:5432/dbname"
-
-# JWT secret (generate with: openssl rand -base64 32)
-flyctl secrets set JWT_SECRET="your-secure-random-secret"
-
-# Firebase Admin SDK credentials
-flyctl secrets set FIREBASE_PROJECT_ID="your-project-id"
-flyctl secrets set FIREBASE_CLIENT_EMAIL="firebase-adminsdk-xxx@your-project.iam.gserviceaccount.com"
-flyctl secrets set FIREBASE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----
-...your multi-line private key...
------END PRIVATE KEY-----"
-```
-
-**IMPORTANT**:
-- Use `.flycast` domain for internal database connections (not public hostname)
-- Generate strong JWT secrets with `openssl rand -base64 32`
-- Firebase private key is multiline - paste entire key including BEGIN/END lines
-- Verify secrets with: `flyctl secrets list`
-
-### Step 7: Deploy
-
-Deploy your application:
-
-```bash
-flyctl deploy --remote-only
-```
-
-**Deploy Options**:
-- `--remote-only` - Build in fly.io cloud (recommended, faster)
-- Without flag - Build locally and upload
-
-**What Happens**:
-1. Dockerfile is sent to fly.io builders
-2. `.npmrc` is copied into build context
-3. `bun install` downloads packages (including private GitHub Packages)
-4. `.npmrc` is deleted (not in final image)
-5. Application is built and deployed
-6. Health checks start running
-
-### Step 8: Verify Deployment
-
-Test your deployed API:
-
-```bash
-# Test root endpoint
-curl https://your-app-name.fly.dev/
-
-# Test health endpoint
-curl https://your-app-name.fly.dev/health
-
-# Check logs
-flyctl logs --app your-app-name
-
-# Check app status
-flyctl status --app your-app-name
-```
-
-### Troubleshooting
-
-**Problem**: `Cannot find package '@routes'` or similar import errors
-- **Cause**: `tsconfig.json` is in `.dockerignore`
-- **Solution**: Remove `tsconfig.json` from `.dockerignore` - Bun needs it for path alias resolution
-
-**Problem**: `401 Unauthorized` when installing GitHub Packages
-- **Cause**: Invalid token or backslash in `.npmrc`
-- **Solution**:
-  - Verify token has `read:packages` scope
-  - Check for trailing backslash on token line (remove it)
-  - Test locally: `bun install` should work
-
-**Problem**: `404 Not Found` for GitHub Package
-- **Cause**: Package not published or token lacks permissions
-- **Solution**: Publish package first, verify token has access to organization
-
-**Problem**: `lockfile had changes, but lockfile is frozen`
-- **Cause**: `bun.lock` is out of date
-- **Solution**: Run `bun install` locally and commit updated `bun.lock`
-
-**Problem**: Health checks failing
-- **Cause**: App not starting or wrong health check path
-- **Solution**: Check logs with `flyctl logs`, verify health endpoint exists
-
-### Security Best Practices
-
-1. **Never commit secrets**:
-   - `.npmrc` in `.gitignore`
-   - Use `flyctl secrets` for all sensitive config
-   - Review files before commit: `git status`
-
-2. **Use build secrets approach** (attempted but fly.io support is limited):
-   - fly.io's `build-secrets` in `fly.toml` doesn't work reliably
-   - Current approach (`.npmrc` in context, deleted after install) is secure
-   - `.npmrc` exists only during build, not in final image
-
-3. **Rotate secrets regularly**:
-   - GitHub tokens can be revoked/regenerated
-   - JWT secrets should be rotated periodically
-   - Firebase service accounts can be disabled in console
-
-4. **Use fine-grained tokens**:
-   - GitHub: Use fine-grained PATs with minimal scopes
-   - Limit token to specific repositories/organizations
-   - Set expiration dates
-
-### Files to Commit
-
-Safe to commit:
-- `Dockerfile` (no secrets)
-- `fly.toml` (no secrets)
-- `.dockerignore` (no secrets)
-- `bun.lock` (package versions only)
-
-Never commit:
-- `.npmrc` (contains GitHub token)
-- `.env.local` (local secrets)
-- Any file with actual credentials
-
-### Example: Band Together API Deployment
-
-Deployed: https://band-together-staging.fly.dev/
-
-**Configuration**:
-- Region: `iad` (Ashburn, VA)
-- Database: `band-together-staging-db.flycast`
-- Auto-stop: Enabled
-- Machines: 1 (no auto-scaling)
-- Health check: `GET /` and `GET /health`
-
-**Secrets**:
-- 5 runtime secrets (DATABASE_URL, JWT_SECRET, Firebase credentials)
-- 1 build secret (GITHUB_TOKEN - not actually used due to fly.io limitations)
-
-**Deployment Time**: ~2-3 minutes (including build)
-
----
-
-**Last Updated**: 2026-01-26
-
-**Recent Changes**:
-- **Deployed API to fly.io** (2026-01-26)
-  - Created multi-stage Dockerfile with Bun runtime
-  - Configured single-machine deployment with auto-stop
-  - Set up GitHub Packages authentication via .npmrc
-  - Deployed to https://band-together-staging.fly.dev/
-  - Added comprehensive deployment documentation above
-- **Logo Image Integration** (2026-01-24)
-  - Replaced "Band Together" text with `band-together-logo.png` image in AppHeader and DrawerContent
-  - **Critical lesson**: Always import `Image` from `react-native` when using `<Image>` components
-  - **Web conflict issue**: React Native's `Image` component conflicts with DOM's `Image` constructor on web
-  - **Solution**: Import `Image` explicitly from `react-native` to ensure proper component usage
-  - Never use CSS properties like `backgroundImage` with React Native - use proper `<Image>` syntax with `require()` for static assets
-  - Files modified: `client/src/components/AppHeader.tsx`, `client/src/components/DrawerContent.tsx`
-- **Completed Web Compatibility Migration** (2026-01-23)
-  - **Icon Library Migration**: Migrated from `expo-symbols` (SF Symbols, iOS-only) to `@expo/vector-icons` (Ionicons)
-    - Updated `IconSymbol` component to use Ionicons instead of SymbolView
-    - Ionicons render on web via font-based CSS, supporting all platforms (iOS, Android, web)
-    - Updated 28+ icon names across 15+ components to Ionicons equivalents
-    - Added TypeScript type safety with `keyof typeof Ionicons.glyphMap`
-    - Updated drawer navigation chevrons to use Ionicons instead of text placeholders
-  - **Alert Modal Replacement**: Replaced all 48+ `Alert.alert()` calls with `AlertModal` component
-    - Created reusable `AlertModal` component in `client/src/components/ui/AlertModal.tsx`
-    - Implemented consistent state management pattern across 17+ files
-    - Alert.alert() doesn't work on web; AlertModal uses View overlays that work everywhere
-    - Supports button styles: 'default' (blue), 'cancel' (gray), 'destructive' (red)
-    - Dark mode support via Tailwind theming
-  - **Files Modified**: 30+ files across authentication, guild/entity CRUD, detail screens, and setlist features
-  - **Key Files Created**: `client/src/components/ui/AlertModal.tsx`
-  - **Testing**: All changes verified to work on web, iOS, and Android
-  - **Result**: Band Together is now fully functional on web with feature parity to mobile
-- Completed Phase 22: Polish and Testing
-  - Added loading skeleton components (Skeleton, SetlistCardSkeleton, SetlistDetailsSkeleton)
-  - Fixed Firebase auth race condition in SetlistDetails and CreateSetlist
-  - Replaced web-incompatible Alert.alert() with custom modals
-  - Added delete confirmation modal with proper error handling
-  - Added More button options modal (Duplicate, Delete, Cancel)
-  - Updated CLAUDE.md with guidance for buttons/icons and dialogs for web-first apps
-  - Created Phase-22-Polish-Bugs.md wiki documenting 4 bugs found during testing
-- Re-enabled git commits for AI assistants
-
-**Key Learning**: The correct Elysia pattern for Firebase authentication uses a two-tier approach:
-- `firebaseMiddleware`: Uses `.derive({ as: 'global' })` to create reusable base middleware that makes `firebase` context available to dependent middleware
-- `firebaseGate`: Uses `.derive({ as: 'scoped' })` as a final guard that requires authentication
-This is more composable than scoped-only approach and prevents context loss when middleware chains use routes in different scopes.
-
-**Git Workflow**:
-- AI assistants can now execute git commits directly
-- Always review staged changes with `git status` before committing
-- Use clear, descriptive commit messages that explain the "why" not just the "what"
-- Each commit should be a logical unit of work
-
-Happy coding! 🎵
+**Last Updated:** 2026-01-26 | **Status:** Current and accurate | [Full Wiki](wiki/Home.md)
