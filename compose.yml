@@ -1,3 +1,4 @@
+# NOTE: Run 'git submodule update --init --recursive' before docker compose up
 x-common-variables: &db-url
   DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@postgres:5432/${POSTGRES_DB:-band_together}
 
@@ -40,7 +41,7 @@ services:
     ports:
       - 51212:51212
     volumes:
-      - ./modules/db:/home/bun/app
+      - ./db:/home/bun/app
     depends_on:
       postgres:
         condition: service_healthy
@@ -56,7 +57,7 @@ services:
     ports:
       - 8081:8081
     volumes:
-      - ./modules/client:/home/bun/app
+      - ./client:/home/bun/app
       - /home/bun/app/node_modules
       - ./.npmrc:/home/bun/.npmrc:ro
     depends_on:
@@ -73,7 +74,7 @@ services:
     ports:
       - "3000:3000"
     volumes:
-      - ./modules/api:/home/bun/app
+      - ./api:/home/bun/app
       - /home/bun/app/node_modules
       - ./.npmrc:/home/bun/.npmrc:ro
     depends_on:
@@ -84,24 +85,24 @@ services:
       <<: *db-url
       PORT: "3000"
 
-  cms:
+  cms-client:
     image: oven/bun:latest
-    container_name: band-together-cms
+    container_name: band-together-cms-client
     working_dir: /home/bun/app
     restart: unless-stopped
     ports:
       - "5173:5173"
     volumes:
-      - ./modules/cms:/home/bun/app
+      - ./cms-client:/home/bun/app
       - /home/bun/app/node_modules
       - ./.npmrc:/home/bun/.npmrc:ro
     depends_on:
-      - api-cms
+      - cms-api
     command: sh -c "cp /home/bun/.npmrc /home/bun/app/.npmrc && bun install && bun start -- --host 0.0.0.0"
     environment:
-      VITE_API_URL: "http://api-cms:3001"
+      VITE_API_URL: "http://cms-api:3001"
 
-  api-cms:
+  cms-api:
     image: oven/bun:latest
     container_name: band-together-cms-api
     working_dir: /home/bun/app
@@ -109,7 +110,7 @@ services:
     ports:
       - "3001:3001"
     volumes:
-      - ./modules/api-cms:/home/bun/app
+      - ./cms-api:/home/bun/app
       - /home/bun/app/node_modules
       - ./.npmrc:/home/bun/.npmrc:ro
     depends_on:
