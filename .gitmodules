@@ -30,3 +30,7 @@
 	path = types
 	url = https://github.com/archeusllc/band-together-types.git
 	branch = main
+[submodule "models"]
+	path = models
+	url = https://github.com/archeusllc/band-together-models.git
+	branch = main
