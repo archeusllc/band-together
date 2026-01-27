@@ -11,14 +11,6 @@
     "submodule:install": "cd db && bunx --bun bun install && cd ../api && bun install && cd ../client && bun install && cd ../cms-api && bun install && cd ../cms-client && bun install",
     "postinstall": "rm -rf node_modules bun.lock package-lock.json"
   },
-  "workspaces": [
-    "db",
-    "api",
-    "client",
-    "cms-api",
-    "cms-client",
-    "schema"
-  ],
   "keywords": [
     "band",
     "music",
