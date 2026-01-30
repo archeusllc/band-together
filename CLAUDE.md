@@ -167,6 +167,38 @@ cd api && bun run test
 3. Use type-safe API calls with Eden Treaty
 4. Follow [Lessons Learned - Frontend](wiki/lessons/Frontend.md) patterns
 
+### Deploying to Production
+
+**Architecture:** Each submodule has its own GitHub Actions workflow triggered by pushing to the `deploy` branch.
+
+**To deploy:**
+1. Push changes to each submodule's `deploy` branch:
+   ```bash
+   cd api && git push origin HEAD:deploy
+   cd client && git push origin HEAD:deploy
+   cd db && git push origin HEAD:deploy
+   cd cms-api && git push origin HEAD:deploy
+   ```
+2. Monitor workflows: `gh run list -R archeusllc/band-together-<module>`
+3. Verify health endpoints after deployment
+
+**Key lessons learned:**
+- Workflows are in **submodule repos**, not the main orchestration repo
+- Each submodule needs its own GitHub secrets configured
+- The db module uses `prisma db push` (not migrations) with semver-based reset logic:
+  - Minor version bump = `--force-reset` (drops all data)
+  - Patch version = `--accept-data-loss` (preserves data when possible)
+- The `deployed_version.txt` file tracks the last deployed version
+
+**Required GitHub secrets per submodule:**
+- `api/`, `cms-api/`: `FLY_API_TOKEN`, `GH_PKG_TOKEN`
+- `client/`: `EXPO_TOKEN`, `GH_PKG_TOKEN`
+- `db/`: `FLY_API_TOKEN`, `DB_PASSWORD`
+
+**Health check endpoints:**
+- API: https://band-together-staging.fly.dev/health
+- CMS API: https://band-together-cms-staging.fly.dev/health
+
 ## Brainstorming Features
 
 When the user wants to brainstorm a new feature, use the AskUserQuestion tool to ask:
