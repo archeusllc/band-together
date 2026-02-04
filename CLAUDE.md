@@ -143,13 +143,26 @@ cd api && bun run test
 
 ## Common Workflows
 
+### Cross-Module Development ⚠️ CRITICAL
+
+**Work on ONE module at a time.** Pause between switching modules to commit, push, and wait for package publishing.
+
+**The dependency chain:**
+```
+db (schema) → api (types) → client
+```
+
+**Skeleton-first approach:** When building new features, create shell components, placeholder screens, and stub endpoints first. Validate routing and permissions work before full implementation.
+
 ### Making Changes to Database Schema
 
 1. Edit `db/prisma/schema.prisma`
-2. Run `bun push` in db module
-3. Run `bun install` in api, client, cms-api to get new schema package
-4. Make necessary code changes in dependent modules
-5. Commit and push changes
+2. Run `bun push` in db module to apply locally
+3. **Commit and push db submodule to `main`**
+4. **Wait for `@archeusllc/schema` package to publish** (check GitHub Actions)
+5. In api module: run `bun update` to get new schema
+6. Make necessary code changes in api
+7. Repeat publish cycle if api changes are needed by client
 
 ### Adding New API Endpoint
 
@@ -157,15 +170,41 @@ cd api && bun run test
 2. Write comprehensive tests
 3. Add OpenAPI documentation
 4. Run `bun generate` in api to update types
-5. `types` submodule auto-publishes new version
-6. Client runs `bun install` to use new endpoint types
+5. **Commit and push api submodule to `main`**
+6. **Wait for `@archeusllc/types` package to publish** (check GitHub Actions)
+7. In client module: run `bun update` to get new types
 
 ### Adding New Feature to Client
 
-1. Check if API supports it (or add API endpoint first)
-2. Import types from `@archeusllc/types`
-3. Use type-safe API calls with Eden Treaty
-4. Follow [Lessons Learned - Frontend](wiki/lessons/Frontend.md) patterns
+1. Check if API supports it (or add API endpoint first - see above)
+2. Run `bun update` to ensure latest `@archeusllc/types`
+3. Import types from `@archeusllc/types`
+4. Use type-safe API calls with Eden Treaty
+5. Follow [Lessons Learned - Frontend](wiki/lessons/Frontend.md) patterns
+
+### Multi-Module Feature Development
+
+For features spanning db → api → client:
+
+1. **Phase 1: db module**
+   - Make schema changes
+   - `bun push` locally
+   - Commit & push to main
+   - Wait for schema package to publish
+
+2. **Phase 2: api module**
+   - `bun update` to get new schema
+   - Create routes (can be stubs initially)
+   - Write tests
+   - Commit & push to main
+   - Wait for types package to publish
+
+3. **Phase 3: client module**
+   - `bun update` to get new types
+   - Create screens/components
+   - Wire up navigation and API calls
+
+**Do NOT skip the wait steps.** Using stale types causes confusing errors.
 
 ### Deploying to Production
 
