@@ -107,7 +107,6 @@ docker compose up -d        # Start local services
 cd api && bun start         # Start API server
 cd client && bun start      # Start Expo dev server
 cd db && bun push          # Apply schema changes to database
-bun run test               # Run tests (in api, cms-api)
 ```
 
 ## Git Workflow
@@ -116,14 +115,6 @@ bun run test               # Run tests (in api, cms-api)
 - Commit messages explain the why, not just the what
 - Read [Git Workflow](wiki/Git-Workflow.md) for full details
 - Reference issues/PRs in commit messages
-
-## Testing
-
-API modules require comprehensive tests. See [Lessons Learned - Testing](wiki/lessons/Testing.md) for patterns.
-
-```bash
-cd api && bun run test
-```
 
 ## Documentation Structure
 
@@ -167,12 +158,11 @@ db (schema) → api (types) → client
 ### Adding New API Endpoint
 
 1. Create route in `api/src/routes/`
-2. Write comprehensive tests
-3. Add OpenAPI documentation
-4. Run `bun generate` in api to update types
-5. **Commit and push api submodule to `main`**
-6. **Wait for `@archeusllc/types` package to publish** (check GitHub Actions)
-7. In client module: run `bun update` to get new types
+2. Add OpenAPI documentation
+3. Run `bun generate` in api to update types
+4. **Commit and push api submodule to `main`**
+5. **Wait for `@archeusllc/types` package to publish** (check GitHub Actions)
+6. In client module: run `bun update` to get new types
 
 ### Adding New Feature to Client
 
@@ -195,7 +185,6 @@ For features spanning db → api → client:
 2. **Phase 2: api module**
    - `bun update` to get new schema
    - Create routes (can be stubs initially)
-   - Write tests
    - Commit & push to main
    - Wait for types package to publish
 
