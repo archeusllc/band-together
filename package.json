@@ -12,7 +12,7 @@
     "submodule:install:update": "cd db && bunx --bun bun update && cd ../api && bun update && cd ../client && bun update && cd ../cms-api && bun update && cd ../cms-client && bun update",
     "submodule:version": "git submodule foreach 'echo package.json version: $(cat package.json | grep version)'",
     "postinstall": "rm -rf node_modules bun.lock package-lock.json",
-    "deploy:all": "cd db && bun run deploy && cd ../api && bun run deploy && cd ../client && bun run deploy && cd .."
+    "deploy:all": "cd db && bun run deploy && cd ../api && bun run deploy && cd ../client && bun run deploy && cd ../cms-api && bun run deploy && cd ../cms-client && bun run deploy && cd .."
   },
   "keywords": [
     "band",
