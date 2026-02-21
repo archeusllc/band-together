@@ -239,6 +239,7 @@ When the user wants to brainstorm a new feature, use the AskUserQuestion tool to
 - Questions cover: problem statement, user needs, design philosophy alignment, technical approach, edge cases
 - AI creates/updates brainstorm document as answers are collected
 - Iterative conversation until design is fully explored
+- **Important:** When the conversation naturally invites free-form input (e.g., "Let's hear them!", "Go ahead"), do NOT follow up with an AskUserQuestion prompt. Just end the turn and let the user type their response naturally.
 
 **Idea Dump Style:**
 - User shares random, intermittent thoughts about the feature
